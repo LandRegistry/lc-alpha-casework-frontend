@@ -1,0 +1,67 @@
+#main {
+    margin-top:20px !important;
+}
+
+.gray-panel {
+    background-color:#E6E6E6;
+    padding-bottom:15px;
+}
+
+.error {
+    color:#FF0000;
+}
+
+.type-label {
+    vertical-align:middle; 
+    margin:-15px 0px 20px 0px; 
+    padding:10px 0px 10px 0px; 
+    height:60px; 
+    background-color:#87A96B; 
+    border-radius:5px; 
+    color:#FFFFFF;
+}
+.type-label a {
+    color:#FFFFFF;
+}
+
+.circle {
+    margin-left: auto;
+    margin-right: auto;
+    border-radius: 50%;
+    width: 50%;
+    position: relative;
+}
+
+.circle-border {
+    border: 1px solid #87A96B;
+}
+
+.circle-solid{
+    background-color: whitesmoke;
+}
+
+.circle:before {
+    content: "";
+    display: block;
+    padding-top: 100%;
+}
+
+.circle-inner {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    text-align: center;
+}
+.score-text {
+    margin: auto;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    height: 1em;
+    line-height: 1em;
+    font-size: 2em;
+}

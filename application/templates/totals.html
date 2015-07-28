@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Land Charges</title>
+    {% include 'includes/ext_references.html' %}
+</head>
+<body>
+<div id="main" class="container">
+    <div class="container">
+        <div class="row">
+            <h2>Land Charges</h2>
+            <div class="row col-sm-12">
+                <ul class="breadcrumb">
+                    <li><a href="#">Home</a></li>
+                </ul>
+            </div>
+            <div class="row col-sm-12" style="margin-top:60px">
+                <div class="col-sm-3 text-center">
+                    <div class="circle circle-border">
+                        <div class="circle-inner">
+                            <div class="score-text">
+                                {{data['pabs']}}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-2" ></div>
+                    <div class="col-sm-8 type-label"><a href="/get_list?appn=pab">PA Bankruptcy<br>Registrations</a></div>
+                </div>
+                <div class="col-sm-3 text-center">
+                    <div class="circle circle-border">
+                        <div class="circle-inner">
+                            <div class="score-text">
+                                {{data['wobs']}}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-2" ></div>
+                    <div class="col-sm-8 type-label "><a href="/get_list?appn=wob">WO Bankruptcy<br>Registrations</a></div>
+                </div>
+                <div class="col-sm-3 text-center">
+                    <div class="circle circle-border">
+                        <div class="circle-inner">
+                            <div class="score-text">
+                                {{data['lcreg']}}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-2" ></div>
+                    <div class="col-sm-8 type-label"><a href="/get_list?appn=lc_regn">Land Charge<br>Registrations</a></div>
+                </div>
+                <div class="col-sm-3 text-center">
+                    <div class="circle circle-border">
+                        <div class="circle-inner">
+                            <div class="score-text">
+                                {{data['amend']}}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-2" ></div>
+                    <div class="col-sm-8 type-label"><a href="/get_list?appn=amend">Amendments</a></div>
+                </div>
+            </div>
+            <div class="row col-sm-12" style="margin-top:60px">
+
+                <div class="col-sm-3 text-center">
+                    <div class="circle circle-border">
+                        <div class="circle-inner">
+                            <div class="score-text">
+                                {{data['canc']}}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-2" ></div>
+                    <div class="col-sm-8 type-label"><a href="/get_list?appn=cancel">Cancellations</a></div>
+                </div>
+                <div class="col-sm-3 text-center">
+                    <div class="circle circle-border">
+                        <div class="circle-inner">
+                            <div class="score-text">
+                                {{data['portal']}}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-2" ></div>
+                    <div class="col-sm-8 type-label "><a href="/get_list?appn=prt_search">Portal Search</a><br>Drop-outs</div>
+                </div>
+                <div class="col-sm-3 text-center">
+                    <div class="circle circle-border">
+                        <div class="circle-inner">
+                            <div class="score-text">
+                                {{data['search']}}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-2" ></div>
+                    <div class="col-sm-8 type-label"><a href="/get_list?appn=search">Searches</a></div>
+                </div>
+                <div class="col-sm-3 text-center">
+                    <div class="circle circle-border">
+                        <div class="circle-inner">
+                            <div class="score-text">
+                                {{data['oc']}}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-2" ></div>
+                    <div class="col-sm-8 type-label"><a href="/get_list?appn=oc">Office Copies</a></div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+</body>
+</html>
