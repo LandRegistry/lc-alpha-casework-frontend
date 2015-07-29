@@ -1,5 +1,10 @@
+body {
+    background-color:#FDFDFD;
+}
+
 #main {
     margin-top:20px !important;
+    background-color:#FDFDFD;
 }
 
 .gray-panel {
@@ -10,21 +15,15 @@
 .error {
     color:#FF0000;
 }
-
-.type-label {
-    vertical-align:middle; 
-    margin:-15px 0px 20px 0px; 
-    padding:10px 0px 10px 0px; 
-    height:60px; 
-    background-color:#87A96B; 
-    border-radius:5px; 
-    color:#FFFFFF;
-}
-.type-label a {
-    color:#FFFFFF;
-}
-
 .circle {
+    margin-left: auto;
+    margin-right: auto;
+    border-radius: 50%;
+    width: 90%;
+    position: relative;
+}
+
+.circle-half {
     margin-left: auto;
     margin-right: auto;
     border-radius: 50%;
@@ -54,6 +53,7 @@
     right: 0;
     text-align: center;
 }
+
 .score-text {
     margin: auto;
     position: absolute;
@@ -63,5 +63,45 @@
     right: 0;
     height: 1em;
     line-height: 1em;
+    font-size: 3em;
+}
+
+.score-text.sm {
     font-size: 2em;
 }
+
+.type-label {
+    vertical-align:middle;
+    margin:-15px 0px 20px 0px;
+    padding:10px 0px 10px 0px;
+    height:60px;
+    background-color:#87A96B;
+    border-radius:5px;
+    color:#FFFFFF;
+    position: relative;
+}
+
+.type-label-sm {
+    vertical-align:middle;
+    margin:-8px 0px 20px 0px;
+    padding:5px 0px 5px 0px;
+    height:50px;
+    background-color:#87A96B;
+    border-radius:5px;
+    color:#000000;
+    position: relative;
+}
+
+.type-label a, .type-label-sm a {
+    color:#000000;
+    display:block;
+    width:100%;
+    height:100%;
+    font-weight:500;
+}
+
+.type-label-sm a {
+    font-size:95%;
+}
+
+
