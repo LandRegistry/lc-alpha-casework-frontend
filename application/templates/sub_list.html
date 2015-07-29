@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Land Charges</title>
+    {% include 'includes/ext_references.html' %}
+</head>
+<body>
+<input type="hidden" name="requested_list" value="{{requested_list}}">
+{% if requested_list == 'pab'%}
+    {% set page_title = 'PA Bankruptcy Registrations' %}
+{% elif requested_list == 'wob' %}
+    {% set page_title = 'WO Bankruptcy Registrations' %}
+{% elif requested_list == 'lc_regn' %}
+    {% set page_title = 'Land Charge Registrations' %}
+{% elif requested_list == 'amend' %}
+    {% set page_title = 'Amendments' %}
+{% elif requested_list == 'cancel' %}
+    {% set page_title = 'Cancellations' %}
+{% elif requested_list == 'prt_search' %}
+    {% set page_title = 'Portal Searches' %}
+{% elif requested_list == 'search' %}
+    {% set page_title = 'Searches' %}
+{% elif requested_list == 'oc' %}
+    {% set page_title = 'Office Copies' %}
+{% endif %}
+<div id="main" class="container">
+    <div class="container">
+        <div class="row">
+            <h2>Land Charges</h2>
+            <div class="row col-sm-12">
+                <ul class="breadcrumb">
+                    <li><a href="/">Home</a></li>
+                    <li><a href="#">{{page_title}}</a></li>
+                </ul>
+            </div>
+            <div class="row col-sm-12" style="margin-top:30px">
+                <div class="col-sm-6">
+                    <div class="col-sm-3 text-center">
+                        <div class="circle circle-border circle-solid">
+                            <div class="circle-inner">
+                                <div class="score-text sm">
+                                    {{data['pabs']}}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="type-label-sm"><a href="/get_list?appn=pab">PA Bankruptcy<br>Registrations</a></div>
+                    </div>
+                    <div class="col-sm-3 text-center">
+                        <div class="circle circle-border circle-solid">
+                            <div class="circle-inner">
+                                <div class="score-text sm">
+                                    {{data['wobs']}}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="type-label-sm "><a href="/get_list?appn=wob">WO Bankruptcy<br>Registrations</a></div>
+                    </div>
+                    <div class="col-sm-3 text-center">
+                        <div class="circle circle-border circle-solid">
+                            <div class="circle-inner">
+                                <div class="score-text sm">
+                                    {{data['lcreg']}}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="type-label-sm"><a href="/get_list?appn=lc_regn">Land Charge<br>Registrations</a></div>
+                    </div>
+                    <div class="col-sm-3 text-center">
+                        <div class="circle circle-border circle-solid">
+                            <div class="circle-inner">
+                                <div class="score-text sm">
+                                    {{data['amend']}}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="type-label-sm"><a href="/get_list?appn=amend">Amendments</a></div>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="col-sm-3 text-center">
+                        <div class="circle circle-border circle-solid">
+                            <div class="circle-inner">
+                                <div class="score-text sm">
+                                    {{data['canc']}}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="type-label-sm"><a href="/get_list?appn=cancel">Cancellations</a></div>
+                    </div>
+                    <div class="col-sm-3 text-center">
+                        <div class="circle circle-border circle-solid">
+                            <div class="circle-inner">
+                                <div class="score-text sm">
+                                    {{data['portal']}}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="type-label-sm "><a href="/get_list?appn=prt_search">Portal Search<br>Drop-outs</a></div>
+                    </div>
+                    <div class="col-sm-3 text-center">
+                        <div class="circle circle-border circle-solid">
+                            <div class="circle-inner">
+                                <div class="score-text sm">
+                                    {{data['search']}}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="type-label-sm"><a href="/get_list?appn=search">Searches</a></div>
+                    </div>
+                    <div class="col-sm-3 text-center">
+                        <div class="circle circle-border circle-solid">
+                            <div class="circle-inner">
+                                <div class="score-text sm">
+                                    {{data['oc']}}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="type-label-sm"><a href="/get_list?appn=oc">Office Copies</a></div>
+                    </div>
+                </div>
+            </div>
+                {% if worklist|length > 0 %}
+                    <div class="row col-sm-12" style="margin-top:10px">
+                         <h2>{{page_title}}</h2><br/>
+                        <div class="table-responsive">
+                            <table id="results" class="table table-hover" style="border: solid #CCCCCC 1px;">
+                                <thead>
+                                <tr>
+                                    <th class="col-sm-3 active" >Date</th>
+                                    <th class="col-sm-9 active" >Time</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for n in worklist %}
+                                <tr>
+                                    <td>{{n['date_received']}}</td>
+                                    <td>{{n['time_received']}}</td>
+                                </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                {% endif %}
+                {% if worklist|length == 0 and worklist|length == 0 %}
+                    <div class="row col-sm-12" style="margin-top:10px">
+                        <h2>{{page_title}}</h2><br/>
+                        <p>There are no waiting applications</p>
+                    </div>
+                {% endif %}
+
+        </div>
+    </div>
+</div>
+</body>
+</html>
