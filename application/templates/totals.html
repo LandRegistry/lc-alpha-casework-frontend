@@ -4,6 +4,13 @@
     <meta charset="utf-8">
     <title>Land Charges</title>
     {% include 'includes/ext_references.html' %}
+
+    <script>
+        $(document).ready(function() {
+            $("#refresh").hide();
+            setInterval("location.reload(true)", 30000);
+        });
+    </script>
 </head>
 <body>
 <div id="main" class="container">
@@ -12,8 +19,9 @@
             <h2>Land Charges</h2>
             <div class="row col-sm-12">
                 <ul class="breadcrumb">
-                    <li><a href="#">Home</a></li>
+                    <li><a href="/">Home</a></li>
                 </ul>
+                <a id="refresh" class="refresh-link" href="/">Refresh page</a>
             </div>
             <div class="col-sm-12" style="margin-top:60px">
                 <div class="col-sm-6" >
@@ -119,10 +127,7 @@
                    <div class="col-sm-1" ></div>
                    </div>
                </div>
-
         </div>
-
-
     </div>
 </div>
 </body>
