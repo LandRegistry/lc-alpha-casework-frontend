@@ -4,7 +4,6 @@ import requests
 from datetime import datetime
 import logging
 
-
 @app.route('/', methods=["GET"])
 def index():
 
@@ -50,6 +49,29 @@ def get_list():
         totals = get_totals()
 
         return render_template('sub_list.html', worklist=appn_list, requested_list=requested_worklist, data=totals)
+
+    except Exception as error:
+        logging.error(error)
+        return render_template('error.html', error_msg=error)
+
+
+@app.route('/get_application/<requested_worklist>/<appn_id>', methods=["GET"])
+def get_application(requested_worklist, appn_id):
+
+    try:
+        url = app.config['CASEWORK_DB_URL'] + '/search/' + appn_id
+
+        response = requests.get(url)
+
+        application_json = response.json()
+
+        # reformat dates to dd Month yyyy
+        date = datetime.strptime(application_json['date'], "%Y-%m-%d")
+        application_json['date'] = "{:%d %B %Y}".format(date)
+        date = datetime.strptime(application_json['date_of_birth'], "%Y-%m-%d")
+        application_json['date_of_birth'] = "{:%d %B %Y}".format(date)
+
+        return render_template('application.html', requested_list=requested_worklist, data=application_json)
 
     except Exception as error:
         logging.error(error)
