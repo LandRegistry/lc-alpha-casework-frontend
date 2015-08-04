@@ -1,0 +1,31 @@
+{
+  "occupation":"",
+  "debtor_name":{
+    "forenames":[
+      "fred"
+    ],
+    "surname":"smith"
+  },
+  "application_type":"PA(B)",
+  "gender":"male",
+  "application_ref":"1222",
+  "date":"2004-08-02",
+  "key_number":"152765",
+  "trading_name":"",
+  "debtor_alternative_name":[
+    {
+      "forenames":[
+        ""
+      ],
+      "surname":""
+    }
+  ],
+  "residence_withheld":true,
+  "residence":[
+
+  ],
+  "investment_property":[
+
+  ],
+  "date_of_birth":"1991-10-10"
+}

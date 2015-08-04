@@ -3,6 +3,8 @@ from flask import request, render_template
 import requests
 from datetime import datetime
 import logging
+import json
+
 
 @app.route('/', methods=["GET"])
 def index():
@@ -25,6 +27,8 @@ def get_list():
         response = requests.get(url)
 
         work_list_json = response.json()
+
+        print(json.dumps(work_list_json))
 
         appn_list = []
 
@@ -90,6 +94,8 @@ def get_totals():
         full_list = response.json()
 
         for item in full_list:
+            print(item)
+            print(type(item))
             if item['work_type'] == "bank_regn" and item['application_type'] == "PA(B)":
                 pabs += 1
             elif item['work_type'] == "bank_regn" and item['application_type'] == "WO(B)":
