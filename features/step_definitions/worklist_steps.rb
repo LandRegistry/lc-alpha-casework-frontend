@@ -40,3 +40,11 @@ Then (/^I see the application details page$/) do
     page.should have_content("Application details")
 end
 
+Then (/^I close browser$/) do
+    page.driver.browser.close
+end
+
+Then (/^I open a new browser instance$/) do
+    Capybara.send(:session_pool).delete_if { |key, value| key =~ /selenium/i }
+end
+
