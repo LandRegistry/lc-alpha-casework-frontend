@@ -9,6 +9,7 @@ end
 Then (/^I see the pab application list page$/) do
     page.should have_content("PA Bankruptcy Registrations")
     page.should have_content("21 September 2014")
+    page.should have_css('div#pab_total', :text => '6')
 end
 
 Then (/^I see the wob application list page$/) do
@@ -30,3 +31,12 @@ Then (/^I see the application totals$/) do
     page.should have_css("div#search_total")
     page.should have_css("div#oc_total")
 end
+
+When(/^I select a pab application$/) do
+    visit( "http://localhost:5010/get_application/pab/8" )
+end
+
+Then (/^I see the application details page$/) do
+    page.should have_content("Application details")
+end
+
