@@ -19,3 +19,14 @@ end
 Then (/^I see the application list page with no waiting apps$/) do
     page.should have_content("There are no waiting applications")
 end
+
+Then (/^I see the application totals$/) do
+    page.should have_css("div#pab_total")
+    page.should have_css("div#wob_total")
+    page.should have_css("div#lcreg_total")
+    page.should have_css("div#amend_total")
+    page.should have_css("div#canc_total")
+    page.should have_css("div#portal_total")
+    page.should have_css("div#search_total")
+    page.should have_css("div#oc_total")
+end
