@@ -53,11 +53,11 @@ end
 
 After do |scenario|
     if scenario.name == "Auto update application totals"
-        ids = `vagrant ssh -c "psql -d working -c \\"select id from pending_application where trim(both ' ' from forenames) = 'Bob Oscar Francis' and surname = 'Howard';\\""`.split(/\r?\n/)
+        ids = `vagrant ssh -c "psql -d working -f /vagrant/apps/casework-frontend/features/step_definitions/sql/select_bob.txt"`.split(/\r?\n/)
         param = '(' + ids[2..-2].join(',') + ')'
         puts(param)
 
-        `vagrant ssh -c "psql -d working -c \\"delete from pending_application where id in #{param}\\""`
+        `vagrant ssh -c "psql -d working -c 'delete from pending_application where id in #{param}'"`
     end
 end
 
