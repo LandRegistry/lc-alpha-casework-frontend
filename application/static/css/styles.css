@@ -31,7 +31,7 @@ body {
 }
 
 .circle-border {
-    border: 1px solid #87A96B;
+    border: 1px solid #D5E8D4;
 }
 
 .circle-solid{
@@ -63,6 +63,7 @@ body {
     height: 1em;
     line-height: 1em;
     font-size: 3em;
+    color: #000000;
 }
 
 .score-text.sm {
@@ -74,9 +75,9 @@ body {
     margin:-15px 0px 20px 0px;
     padding:10px 0px 10px 0px;
     height:60px;
-    background-color:#87A96B;
+    background-color:#D5E8D4;
     border-radius:5px;
-    color:#FFFFFF;
+    color:#000000;
     position: relative;
 }
 
@@ -85,22 +86,10 @@ body {
     margin:-8px 0px 20px 0px;
     padding:5px 0px 5px 0px;
     height:50px;
-    background-color:#87A96B;
+    background-color:#D5E8D4;
     border-radius:5px;
     color:#000000;
     position: relative;
-}
-
-.type-label a, .type-label-sm a {
-    color:#000000;
-    display:block;
-    width:100%;
-    height:100%;
-    font-weight:500;
-}
-
-.type-label-sm a {
-    font-size:95%;
 }
 
 .appn_table {

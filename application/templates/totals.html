@@ -23,110 +23,86 @@
                 </ul>
                 <a id="refresh" class="refresh-link" href="/">Refresh page</a>
             </div>
-            <div class="col-sm-12" style="margin-top:60px">
+            <div class="col-sm-12" style="margin-top:60px; margin-left:15em">
                 <div class="col-sm-6" >
-                    <div class="col-sm-1"></div>
                     <div class="col-sm-4 text-center">
-                        <div class="circle circle-border circle-solid">
-                            <div class="circle-inner">
-                                <div id="pab_total" class="score-text">
-                                    {{data['pabs']}}
+                        <a href="/get_list?appn=wob">
+                            <div class="circle circle-border circle-solid">
+                                <div class="circle-inner">
+                                    <div id="wob_total" class="score-text">
+                                        {{data['banks']}}
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="type-label" ><a href="/get_list?appn=pab">PA Bankruptcy<br>Registrations</a></div>
+                            <div class="type-label ">Bankruptcy<br>Registrations</div>
+                        </a>
                     </div>
-                    <div class="col-sm-2"></div>
                     <div class="col-sm-4 text-center">
-                        <div class="circle circle-border circle-solid">
-                            <div class="circle-inner">
-                                <div id="wob_total" class="score-text">
-                                    {{data['wobs']}}
+                        <a href="/get_list?appn=lc_regn">
+                            <div class="circle circle-border circle-solid">
+                                <div class="circle-inner">
+                                    <div id="lcreg_total" class="score-text">
+                                        {{data['lcreg']}}
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="type-label "><a href="/get_list?appn=wob">WO Bankruptcy<br>Registrations</a></div>
+                            <div class="type-label">Land Charge<br>Registrations</div>
+                        </a>
                     </div>
-                    <div class="col-sm-1"></div>
-                </div>
-                <div class="col-sm-6" >
-                    <div class="col-sm-1"></div>
                     <div class="col-sm-4 text-center">
-                        <div class="circle circle-border circle-solid">
-                            <div class="circle-inner">
-                                <div id="lcreg_total" class="score-text">
-                                    {{data['lcreg']}}
+                        <a href="/get_list?appn=amend">
+                            <div class="circle circle-border circle-solid">
+                                <div class="circle-inner">
+                                    <div id="amend_total" class="score-text">
+                                        {{data['amend']}}
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="type-label"><a href="/get_list?appn=lc_regn">Land Charge<br>Registrations</a></div>
+                            <div class="type-label">Amendments</div>
+                        </a>
                     </div>
-                    <div class="col-sm-2" ></div>
-                    <div class="col-sm-4 text-center">
-                        <div class="circle circle-border circle-solid">
-                            <div class="circle-inner">
-                                <div id="amend_total" class="score-text">
-                                    {{data['amend']}}
-                                </div>
-                            </div>
-                        </div>
-                        <div class="type-label"><a href="/get_list?appn=amend">Amendments</a></div>
-                    </div>
-                    <div class="col-sm-1" ></div>
                 </div>
             </div>
-            <div class="col-sm-12" style="margin-top:60px">
-                    <div class="col-sm-6" >
-                    <div class="col-sm-1" ></div>
-                   <div class="col-sm-4 text-center">
-                       <div class="circle circle-border circle-solid">
-                           <div class="circle-inner">
-                               <div id="canc_total" class="score-text">
-                                   {{data['canc']}}
+            <div class="col-sm-12" style="margin-top:60px; margin-left:15em">
+                <div class="col-sm-6" >
+                    <div class="col-sm-4 text-center">
+                       <a href="/get_list?appn=cancel">
+                           <div class="circle circle-border circle-solid">
+                               <div class="circle-inner">
+                                   <div id="canc_total" class="score-text">
+                                       {{data['canc']}}
+                                   </div>
                                </div>
                            </div>
-                       </div>
-                       <div class="type-label"><a href="/get_list?appn=cancel">Cancellations</a></div>
-                   </div>
-                    <div class="col-sm-2" ></div>
-                   <div class="col-sm-4 text-center">
-                       <div class="circle circle-border circle-solid">
-                           <div class="circle-inner">
-                               <div id="portal_total" class="score-text">
-                                   {{data['portal']}}
-                               </div>
-                           </div>
-                       </div>
-                       <div class="type-label "><a href="/get_list?appn=prt_search">Portal Search<br>Drop-outs</a></div>
-                   </div>
-                   <div class="col-sm-1" ></div>
-                   </div>
-                   <div class="col-sm-6" >
-                   <div class="col-sm-1" ></div>
-                   <div class="col-sm-4 text-center">
-                       <div class="circle circle-border circle-solid">
-                           <div class="circle-inner">
-                               <div id="search_total" class="score-text">
-                                   {{data['search']}}
-                               </div>
-                           </div>
-                       </div>
-                       <div class="type-label"><a href="/get_list?appn=search">Searches</a></div>
-                   </div>
-                    <div class="col-sm-2" ></div>
-                   <div class="col-sm-4 text-center">
-                       <div class="circle circle-border circle-solid">
-                           <div class="circle-inner">
-                               <div id="oc_total" class="score-text">
-                                   {{data['oc']}}
-                               </div>
-                           </div>
-                       </div>
-                       <div class="type-label"><a href="/get_list?appn=oc">Office Copies</a></div>
-                   </div>
-                   <div class="col-sm-1" ></div>
-                   </div>
-               </div>
+                           <div class="type-label">Cancellations</div>
+                       </a>
+                    </div>
+                    <div class="col-sm-4 text-center">
+                        <a href="/get_list?appn=search">
+                            <div class="circle circle-border circle-solid">
+                                <div class="circle-inner">
+                                    <div id="search_total" class="score-text">
+                                        {{data['search']}}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="type-label">Searches</div>
+                        </a>
+                    </div>
+                    <div class="col-sm-4 text-center">
+                        <a href="/get_list?appn=oc">
+                            <div class="circle circle-border circle-solid">
+                                <div class="circle-inner">
+                                    <div id="oc_total" class="score-text">
+                                        {{data['oc']}}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="type-label">Office Copies</div>
+                        </a>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>

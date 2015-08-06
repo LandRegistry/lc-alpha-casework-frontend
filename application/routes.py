@@ -85,7 +85,7 @@ def get_application(requested_worklist, appn_id):
 def get_totals():
 
     # initialise all counters to 0
-    pabs, wobs, lcreg, amend, canc, portal, search, oc = (0,)*8
+    pabs, wobs, banks, lcreg, amend, canc, portal, search, oc = (0,)*9
 
     url = app.config['CASEWORK_DB_URL'] + '/work_list/all?'
     response = requests.get(url)
@@ -98,8 +98,10 @@ def get_totals():
             print(type(item))
             if item['work_type'] == "bank_regn" and item['application_type'] == "PA(B)":
                 pabs += 1
+                banks += 1
             elif item['work_type'] == "bank_regn" and item['application_type'] == "WO(B)":
                 wobs += 1
+                banks += 1
             elif item['work_type'] == "lc_regn":
                 lcreg += 1
             elif item['work_type'] == "amend":
@@ -116,6 +118,7 @@ def get_totals():
     return {
         'pabs': pabs,
         'wobs': wobs,
+        'banks': banks,
         'lcreg': lcreg,
         'amend': amend,
         'canc': canc,
