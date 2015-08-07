@@ -41,12 +41,12 @@ class TestCaseworkFrontend:
 
     @mock.patch('requests.get', return_value= FakeResponse('stuff', 200, total_response))
     def test_get_list(self, mock_get):
-        response = self.app.get('/get_list?appn=pab')
+        response = self.app.get('/get_list?appn=bank_regn')
         assert response.status_code == 200
 
     @mock.patch('requests.get', side_effect=Exception('Fail'))
     def test_get_list_fail(self, mock_connect):
-        response = self.app.get('/get_list?appn=pab')
+        response = self.app.get('/get_list?appn=bank_regn')
         assert response.status_code == 200
 
     @mock.patch('requests.get', return_value= FakeResponse('stuff', 200, application_response))

@@ -22,6 +22,8 @@
     {% set page_title = 'PA Bankruptcy Registrations' %}
 {% elif requested_list == 'wob' %}
     {% set page_title = 'WO Bankruptcy Registrations' %}
+{% elif requested_list == 'bank_regn' %}
+{% set page_title = 'Bankruptcy Registrations' %}
 {% elif requested_list == 'lc_regn' %}
     {% set page_title = 'Land Charge Registrations' %}
 {% elif requested_list == 'amend' %}
@@ -50,87 +52,80 @@
             </div>
             <div class="row col-sm-12" style="margin-top:30px">
                 <div class="col-sm-6">
+                    <div class="col-sm-3"></div>
                     <div class="col-sm-3 text-center">
-                        <div class="circle circle-border circle-solid">
-                            <div class="circle-inner">
-                                <div id="pab_total" class="score-text sm">
-                                    {{data['pabs']}}
+                        <a href="/get_list?appn=bank_regn">
+                            <div class="circle circle-border circle-solid">
+                                <div class="circle-inner">
+                                    <div id="banks_total" class="score-text sm">
+                                        {{data['banks']}}
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="type-label-sm"><a href="/get_list?appn=pab">PA Bankruptcy<br>Registrations</a></div>
+                            <div class="type-label-sm">Bankruptcy<br>Registrations</div>
+                        </a>
                     </div>
                     <div class="col-sm-3 text-center">
-                        <div class="circle circle-border circle-solid">
-                            <div class="circle-inner">
-                                <div id="wob_total" class="score-text sm">
-                                    {{data['wobs']}}
+                        <a href="/get_list?appn=lc_regn">
+                            <div class="circle circle-border circle-solid">
+                                <div class="circle-inner">
+                                    <div id="lcreg_total" class="score-text sm">
+                                        {{data['lcreg']}}
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="type-label-sm "><a href="/get_list?appn=wob">WO Bankruptcy<br>Registrations</a></div>
+                        <div class="type-label-sm">Land Charge<br>Registrations</div>
+                        </a>
                     </div>
                     <div class="col-sm-3 text-center">
-                        <div class="circle circle-border circle-solid">
-                            <div class="circle-inner">
-                                <div id="lcreg_total" class="score-text sm">
-                                    {{data['lcreg']}}
+                        <a href="/get_list?appn=amend">
+                            <div class="circle circle-border circle-solid">
+                                <div class="circle-inner">
+                                    <div id="amend_total" class="score-text sm">
+                                        {{data['amend']}}
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="type-label-sm"><a href="/get_list?appn=lc_regn">Land Charge<br>Registrations</a></div>
-                    </div>
-                    <div class="col-sm-3 text-center">
-                        <div class="circle circle-border circle-solid">
-                            <div class="circle-inner">
-                                <div id="amend_total" class="score-text sm">
-                                    {{data['amend']}}
-                                </div>
-                            </div>
-                        </div>
-                        <div class="type-label-sm"><a href="/get_list?appn=amend">Amendments</a></div>
+                            <div class="type-label-sm">Amendments</div>
+                        </a>
                     </div>
                 </div>
                 <div class="col-sm-6">
                     <div class="col-sm-3 text-center">
-                        <div class="circle circle-border circle-solid">
-                            <div class="circle-inner">
-                                <div id="canc_total" class="score-text sm">
-                                    {{data['canc']}}
+                        <a href="/get_list?appn=cancel">
+                            <div class="circle circle-border circle-solid">
+                                <div class="circle-inner">
+                                    <div id="canc_total" class="score-text sm">
+                                        {{data['canc']}}
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="type-label-sm"><a href="/get_list?appn=cancel">Cancellations</a></div>
+                            <div class="type-label-sm">Cancellations</div>
+                        </a>
                     </div>
                     <div class="col-sm-3 text-center">
-                        <div class="circle circle-border circle-solid">
-                            <div class="circle-inner">
-                                <div id="portal_total" class="score-text sm">
-                                    {{data['portal']}}
+                        <a href="/get_list?appn=search">
+                            <div class="circle circle-border circle-solid">
+                                <div class="circle-inner">
+                                    <div id="search_total" class="score-text sm">
+                                        {{data['search']}}
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="type-label-sm "><a href="/get_list?appn=prt_search">Portal Search<br>Drop-outs</a></div>
+                            <div class="type-label-sm">Searches</div>
+                        </a>
                     </div>
                     <div class="col-sm-3 text-center">
-                        <div class="circle circle-border circle-solid">
-                            <div class="circle-inner">
-                                <div id="search_total" class="score-text sm">
-                                    {{data['search']}}
+                        <a href="/get_list?appn=oc">
+                            <div class="circle circle-border circle-solid">
+                                <div class="circle-inner">
+                                    <div id="oc_total" class="score-text sm">
+                                        {{data['oc']}}
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="type-label-sm"><a href="/get_list?appn=search">Searches</a></div>
-                    </div>
-                    <div class="col-sm-3 text-center">
-                        <div class="circle circle-border circle-solid">
-                            <div class="circle-inner">
-                                <div id="oc_total" class="score-text sm">
-                                    {{data['oc']}}
-                                </div>
-                            </div>
-                        </div>
-                        <div class="type-label-sm"><a href="/get_list?appn=oc">Office Copies</a></div>
+                            <div class="type-label-sm">Office Copies</div>
+                        </a>
                     </div>
                 </div>
             </div>
@@ -141,8 +136,11 @@
                             <table id="results" class="table table-hover" style="border: solid #CCCCCC 1px;">
                                 <thead>
                                 <tr>
-                                    <th class="col-sm-3 active" >Date</th>
-                                    <th class="col-sm-9 active" >Time</th>
+                                    <th class="col-sm-3 active" >Date received</th>
+                                    <th class="col-sm-2 active" >Time</th>
+                                    {% if requested_list == 'bank_regn' %}
+                                    <th class="col-sm-7 active" >Application Type</th>
+                                    {% endif %}
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -150,6 +148,9 @@
                                 <tr>
                                     <td><a href="/get_application/{{requested_list}}/{{n['appn_id']}}">{{n['date_received']}}</a></td>
                                     <td>{{n['time_received']}}</td>
+                                    {% if requested_list == 'bank_regn' %}
+                                    <td>{{n['application_type']}}</td>
+                                    {% endif %}
                                 </tr>
                                 {% endfor %}
                                 </tbody>
