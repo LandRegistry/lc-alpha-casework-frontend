@@ -111,7 +111,7 @@ When(/^I select a pab application$/) do
 end
 
 Then (/^I see the application details page$/) do
-    page.should have_content("Application details")
+    page.should have_content("Debtor name and details")
 end
 
 Then (/^I close browser$/) do
