@@ -69,8 +69,8 @@ When(/^I have selected to view specific the application list "(.*)"$/) do |type|
     visit( "http://localhost:5010/get_list?appn=#{type}" )
 end
 
-When(/^I can see the total PABS$/) do
-    page.should have_css("div#pab_total", :text => '6')
+When(/^I can see the total bankruptcy applications$/) do
+    page.should have_css("div#banks_total", :text => '10')
 end
 
 When(/^I have submitted a new PAB$/) do
@@ -83,18 +83,14 @@ When(/^I have waited (\d+) seconds$/) do |seconds|
 end
 
 Then(/^I see the totals refresh$/) do
-    page.should have_css("div#pab_total", :text => '7')
+    page.should have_css("div#banks_total", :text => '11')
 end
 
-Then (/^I see the pab application list page$/) do
-    page.should have_content("PA Bankruptcy Registrations")
+Then (/^I see the bankruptcy application list page$/) do
+    page.should have_content("Bankruptcy Registrations")
     page.should have_content("21 September 2014")
-    page.should have_css('div#pab_total', :text => '6')
-end
-
-Then (/^I see the wob application list page$/) do
-    page.should have_content("WO Bankruptcy Registrations")
     page.should have_content("30 August 2014")
+    page.should have_css('div#banks_total', :text => '10')
 end
 
 Then (/^I see the application list page with no waiting apps$/) do
@@ -102,12 +98,10 @@ Then (/^I see the application list page with no waiting apps$/) do
 end
 
 Then (/^I see the application totals$/) do
-    page.should have_css("div#pab_total")
-    page.should have_css("div#wob_total")
+    page.should have_css("div#banks_total")
     page.should have_css("div#lcreg_total")
     page.should have_css("div#amend_total")
     page.should have_css("div#canc_total")
-    page.should have_css("div#portal_total")
     page.should have_css("div#search_total")
     page.should have_css("div#oc_total")
 end
