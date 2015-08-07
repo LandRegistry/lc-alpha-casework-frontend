@@ -75,7 +75,8 @@ def get_application(requested_worklist, appn_id):
         date = datetime.strptime(application_json['date_of_birth'], "%Y-%m-%d")
         application_json['date_of_birth'] = "{:%d %B %Y}".format(date)
 
-        return render_template('application.html', requested_list=requested_worklist, data=application_json)
+        return render_template('application.html', requested_list=requested_worklist, data=application_json,
+                               current_page="thumbnail_1")
 
     except Exception as error:
         logging.error(error)
