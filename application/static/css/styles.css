@@ -108,5 +108,17 @@ body {
 .gi-4x{font-size: 4em;}
 .gi-5x{font-size: 5em;}
 
+a.black:visited{
+    text-decoration: none;
+}
+
+a.black:hover{
+    text-decoration: none;
+}
+
+a.black:active{
+    text-decoration: none;
+}
+
 
 
