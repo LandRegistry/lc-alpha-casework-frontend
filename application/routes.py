@@ -22,13 +22,13 @@ def get_list():
 
     try:
         requested_worklist = request.args.get('appn')
+
         url = app.config['CASEWORK_DB_URL'] + '/work_list/' + requested_worklist
+        print(url)
 
         response = requests.get(url)
 
         work_list_json = response.json()
-
-        print(json.dumps(work_list_json))
 
         appn_list = []
 
