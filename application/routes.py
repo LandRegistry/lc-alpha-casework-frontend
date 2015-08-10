@@ -83,6 +83,16 @@ def get_application(requested_worklist, appn_id):
         return render_template('error.html', error_msg=error)
 
 
+@app.route('/process_name', methods=["POST"])
+def process_name():
+    print("entered process name")
+    forename = request.form['forename']
+    surname = request.form['surname']
+    occupation = request.form['occupation']
+    print(forename, surname, occupation)
+    return render_template('application.html')
+
+
 def get_totals():
 
     # initialise all counters to 0

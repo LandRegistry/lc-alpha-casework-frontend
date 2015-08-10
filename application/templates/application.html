@@ -55,6 +55,23 @@
         ***********************************************/
 
     </script>
+
+    <script>
+    var n = 0;
+    function nameClick(sender){
+        jQuery('<div class="form-group"> \
+                    <label style="margin-top:1em" for="aliasforename">Alias Forename(s)</label> \
+                    <input class="form-control" id="aliasforename' +n+ '" value="{{aliasforename}}"> \
+                </div> \
+                <div class="form-group"> \
+                    <label for="aliassurname">Alias Surname</label> \
+                    <input class="form-control" id="aliassurname' +n+ '" value="{{aliassurname}}"> \
+                </div>').insertBefore("#addname");
+        n ++;
+        console.log(n);
+    };
+    </script>
+
 </head>
 <body>
 <input type="hidden" name="requested_list" value="{{requested_list}}">
@@ -101,10 +118,31 @@
                             <img id="main_image"  src="/static/images/page1.jpg" class="row col-sm-12"/>
                         </div>
                     </div>
-                    <div id="form_data" class="col-sm-5">
-                        <h5>Step 1of 3</h5>
+                    <div id="form_data" class="col-sm-6">
+                        <h5>Step 1 of 3</h5>
                         <h4>Debtor name and details</h4>
-                        Full name
+                        <form action="/process_name" method="POST">
+                            <div class="form-group">
+                                <label style="margin-top:1em" for="forename">Forename(s)</label>
+                                <input class="form-control" id="forename" value="{{forename}}">
+                            </div>
+                            <div class="form-group">
+                                <label for="surname">Surname</label>
+                                <input class="form-control" id="surname" value="{{surname}}">
+                            </div>
+                            <input id="addname" onclick="nameClick(this)" class="btn pull-right" style="width:8em"
+                                   type="button" value="Add name">
+                            <div>
+                                <div class="form-group">
+                                    <label style="margin-top:3em" for="occupation">Occupation</label>
+                                    <input class="form-control" id="occupation" value="{{occupation}}">
+                                </div>
+                            </div>
+                            <div style="margin-top:3em">
+                                <input class="btn pull-right" style="color:black; background-color:#D5E8D4; width:8em"
+                                       id="continue" type="button" value="Continue">
+                            </div>
+                        </form>
                     </div>
 
 
