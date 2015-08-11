@@ -19,8 +19,7 @@ When(/^I am on a page I can zoom out$/) do
 end 
 
 Then(/^I am on a page I can zoom in$/) do
-    find(:id, "thumbnail_2").click   
     find(:xpath, "//img[@title='Zoom In']").click
+    
 end 
 
- 
