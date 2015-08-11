@@ -56,23 +56,6 @@
 
     </script>
 
-    <script>
-    var n = 0;
-    function nameClick(sender){
-        jQuery('<div class="form-group"> \
-                    <label style="margin-top:1em" for="aliasforename">Alias Forename(s)</label> \
-                    <input class="form-control" id="aliasforename' +n+ '" name="aliasforename' +n+ '" value="{{aliasforename}}"> \
-                </div> \
-                <div class="form-group"> \
-                    <label for="aliassurname">Alias Surname</label> \
-                    <input class="form-control" id="aliassurname' +n+ '" name="aliassurname" value="{{aliassurname}}"> \
-                </div>').insertBefore("#addname")
-                console.log(jQuery("div.form_group").html);
-                n ++;
-        console.log(n);
-    };
-    </script>
-
 </head>
 <body>
 <input type="hidden" name="requested_list" value="{{requested_list}}">
@@ -120,28 +103,30 @@
                         </div>
                     </div>
                     <div id="form_data" class="col-sm-6">
-                        <h5>Step 1 of 3</h5>
-                        <h4>Debtor name and details</h4>
-                        <form action="/process_banks_name" method="POST">
-                            <div class="form-group">
-                                <label style="margin-top:1em" for="forename">Forename(s)</label>
-                                <input class="form-control" type="text" id="forename" name="forename" value="{{forename}}">
-                            </div>
-                            <div class="form-group">
-                                <label for="surname">Surname</label>
-                                <input class="form-control" type="text" id="surname" name="surname" value="{{surname}}">
-                            </div>
-                            <input id="addname" onclick="nameClick(this)" class="btn pull-right" style="width:8em"
-                                   type="button" value="Add name">
-                            <div>
-                                <div class="form-group">
-                                    <label style="margin-top:3em" for="occupation">Occupation</label>
-                                    <input class="form-control" type="text" id="occupation" name="occupation" value="{{occupation}}">
+                        <h5>Step 3 of 3</h5>
+                        <h4>Case information</h4>
+                        <form action="/court_details" method="POST">
+                            <div class="top-padding">
+                            <label>Class of Charge</label>
+                                <div class="input-group col-sm-8">
+                                        <label class="input-group-addon"><input type="radio" name="nature" value="PA(B)"></label>
+                                        <label type="text" class="form-control formbgclr" aria-describedby="pab">PAB</label>
+                                        <label class="input-group-addon"><input type="radio" name="nature" value="WO(B)"></label>
+                                        <label type="text" class="form-control formbgclr" aria-describedby="pab">WOB</label>
                                 </div>
+                            </div>
+                            </br>
+                            <div class="form-group top-padding">
+                                <label for="court">Court name</label>
+                                <input class="form-control" type="text" id="court" name="court" value="{{court}}">
+                            </div>
+                            <div class="form-group top-padding">
+                                <label for="court_ref">Court number and year</label>
+                                <input class="form-control" type="text" id="court_ref" name="court_ref" value="{{court_ref}}">
                             </div>
                             <div style="margin-top:3em">
                                 <input class="btn pull-right" style="color:black; background-color:#D5E8D4; width:8em"
-                                       id="continue" type="submit" value="Continue">
+                                       id="continue" type="submit" value="Submit">
                             </div>
                         </form>
                     </div>

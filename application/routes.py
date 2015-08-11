@@ -1,5 +1,5 @@
 from application import app
-from flask import request, render_template
+from flask import request, Response, render_template
 import requests
 from datetime import datetime
 import logging
@@ -83,14 +83,50 @@ def get_application(requested_worklist, appn_id):
         return render_template('error.html', error_msg=error)
 
 
-@app.route('/process_name', methods=["POST"])
-def process_name():
-    print("entered process name")
-    forename = request.form['forename']
-    surname = request.form['surname']
-    occupation = request.form['occupation']
-    print(forename, surname, occupation)
-    return render_template('application.html')
+@app.route('/process_banks_name', methods=["POST"])
+def process_banks_name():
+
+    try:
+        print("entered process name")
+        name = {"debtor_name": {"forenames": [], "surname": ""},
+                "occupation": "",
+                "debtor_alternative_name": [{"forenames":[], "surname": ""}]
+                }
+
+        forenames = request.form['forename']
+        for i in forenames.split():
+            name['debtor_name']['forenames'].append(i)
+
+        name['debtor_name']['surname'] = request.form['surname']
+        name['occupation'] = request.form['occupation']
+        print(name)
+        requested_worklist = 'bank_regn'
+
+        return render_template('banks_order.html', requested_list=requested_worklist, current_page="thumbnail_2")
+
+    except Exception as error:
+        logging.error(error)
+        return render_template('error.html', error_msg=error)
+
+
+@app.route('/court_details', methods=["POST"])
+def process_court_details():
+
+    try:
+        print("entered court details")
+        charge_details = {
+            "application_type": request.form['nature'],
+            "court_name": request.form['court'],
+            "court_ref": request.form['court_ref']
+        }
+        print(charge_details)
+        requested_worklist = 'bank_regn'
+
+        return render_template('confirmation.html', requested_list=requested_worklist, current_page="thumbnail_3")
+
+    except Exception as error:
+        logging.error(error)
+        return render_template('error.html', error_msg=error)
 
 
 def get_totals():

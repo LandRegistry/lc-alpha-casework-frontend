@@ -119,3 +119,23 @@ a.black:hover{
 a.black:active{
     text-decoration: none;
 }
+
+.top-padding{
+    padding-top: 2em;
+}
+
+.box{
+    width: 60em;
+    height: 12em;
+    border: 0.1em solid #97D077;
+    background-color: #97D077;
+    margin: auto;
+    position: absolute;
+    top: 0; left: 0; bottom: 0; right: 0;
+}
+
+.gi-tick{
+    padding-left: 2em;
+    padding-top: 0.7em;
+    color: #FFFFFF;
+}
