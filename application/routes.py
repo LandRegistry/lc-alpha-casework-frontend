@@ -97,14 +97,14 @@ def get_application(requested_worklist, appn_id):
 def process_banks_name():
 
     try:
-        print("entered process name")
         name = {"debtor_name": {"forenames": [], "surname": ""},
                 "occupation": "",
-                "debtor_alternative_name": [{"forenames": [], "surname": ""}],
+                "debtor_alternative_name": [],
                 "residence": []
                 }
-
-        print(request.form)
+        alt_name = {"forenames": [],
+                    "surname": ""
+                    }
 
         forenames = request.form['forename']
         for i in forenames.split():
@@ -112,7 +112,27 @@ def process_banks_name():
 
         name['debtor_name']['surname'] = request.form['surname']
         name['occupation'] = request.form['occupation']
-        print(name)
+
+        forename_var = "aliasforename"
+        surname_var = "aliassurname"
+        counter = 0
+        while True:
+            forename_counter = forename_var + str(counter)
+            surname_counter = surname_var + str(counter)
+            try:
+                alt_forenames = request.form[forename_counter]
+                alt_surname = request.form[surname_counter]
+            except:
+                break
+
+            for i in alt_forenames.split():
+                alt_name['forenames'].append(i)
+
+            alt_name['surname'] = alt_surname
+            name['debtor_alternative_name'].append(alt_name)
+            alt_name = {"forenames": [], "surname": ""}
+            counter += 1
+
         requested_worklist = 'bank_regn'
 
         return render_template('address.html', application=json.dumps(name), images=[
@@ -120,6 +140,7 @@ def process_banks_name():
                                "http://localhost:5014/document/9/image/2",
                                "http://localhost:5014/document/9/image/3", ],
                                requested_list=requested_worklist, current_page=1)
+
     except Exception as error:
         logging.error(error)
         return render_template('error.html', error_msg=error)
@@ -128,23 +149,23 @@ def process_banks_name():
 @app.route('/court_details', methods=["POST"])
 def process_court_details():
 
-    #try:
-    print(request.form)
-    application = json.loads(request.form['application'])
-    print(application)
-    print("entered court details")
-    application["application_type"] = request.form['nature']
-    application["court_name"] = request.form['court']
-    application["court_ref"] = request.form['court_ref']
+    try:
+        print(request.form)
+        application = json.loads(request.form['application'])
+        print(application)
+        print("entered court details")
+        application["application_type"] = request.form['nature']
+        application["court_name"] = request.form['court']
+        application["court_ref"] = request.form['court_ref']
 
-    print(application)
-    # requested_worklist = 'bank_regn'
+        print(application)
+        requested_worklist = 'bank_regn'
 
-    return render_template('confirmation.html', application=application)
+        return render_template('confirmation.html', application=application, requested_worklist=requested_worklist)
 
-    # except Exception as error:
-    #     logging.error(error)
-    #     return render_template('error.html', error_msg=error)
+    except Exception as error:
+        logging.error(error)
+        return render_template('error.html', error_msg=error)
 
 
 @app.route('/address', methods=['POST'])
@@ -197,8 +218,6 @@ def get_totals():
         full_list = response.json()
 
         for item in full_list:
-            print(item)
-            print(type(item))
             if item['work_type'] == "bank_regn" and item['application_type'] == "PA(B)":
                 pabs += 1
                 banks += 1
