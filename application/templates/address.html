@@ -8,7 +8,7 @@
         #image_area {
             position: relative;
             overflow: hidden;
-            width: 500px;
+            width: 100%;/*500px;*/
             height: 800px;
             border:1px solid black;
             margin-bottom: 50px;
@@ -16,7 +16,7 @@
 
         .sheetImage {
             position: relative;
-            width: 500px;
+            width: 33%;/*500px;*/
             height: 800px;
             display: inline-block;
             margin-left: -4px;
@@ -25,7 +25,7 @@
         #imageContainer {
             position: relative;
             padding-left: 4px;
-            width: {{images|length * 510}}px;
+            width: 3000px;/*{{images|length * 100}}%; 510}}px;*/
             left: -{{500 * current_page}}px;
         }
 
@@ -37,14 +37,6 @@
         }
         .active {
             border:1px solid blue;
-        }
-        /*Default CSS for pan containers*/
-        .pancontainerOLD{
-            position:relative; /*keep this intact*/
-            overflow:hidden; /*keep this intact*/
-            width:500px;
-            height:800px;
-            border:1px solid black;
         }
 
         .pancontainer .zoomcontrols{ /* default CSS class for magnify controls within container */
