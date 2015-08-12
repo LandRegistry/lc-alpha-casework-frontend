@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Land Charges</title>
+    {% include 'includes/ext_references.html' %}
+    <style>
+        #image_area {
+            position: relative;
+            overflow: hidden;
+            width: 500px; /* TODO: rubbish with non-fullscreen windows */
+            height: 800px;
+            border:1px solid black;
+            margin-bottom: 50px;
+        }
+
+        .sheetImage {
+            position: relative;
+            width: 500px; /* TODO: rubbish with non-fullscreen windows */
+            height: 800px;
+            display: inline-block;
+            margin-left: -4px;
+        }
+
+        #imageContainer {
+            position: relative;
+            padding-left: 4px;
+            width: {{images|length * 510}}px; /* TODO: rubbish with non-fullscreen windows */
+            left: -{{500 * current_page}}px;
+        }
+
+        .thumbnail{
+            border:1px solid #B3B3B3;
+        }
+        .thumbnail:hover{
+            cursor:pointer
+        }
+        .active {
+            border:1px solid blue;
+        }
+
+        .pancontainer .zoomcontrols{ /* default CSS class for magnify controls within container */
+            position:absolute;
+            width: 30px;
+            height: 30px;
+            background: #eee;
+            border: 1px solid gray;
+        }
+
+        .pancontainer {
+            width: 100%;
+            height: 100%;
+        }
+
+        img {
+            width: 100%;
+        }
+    </style>
+    <script>
+        function imgClick(sender, index) {
+            jQuery(".thumbnail").removeClass('active');
+            sender.classList.add("active");
+            jQuery("#imageContainer").animate({
+                left: (-index * 500) + 'px'
+            });
+        }
+    </script>
+
+    <script type="text/javascript" src="/static/js/imagepanner.js"></script>
+</head>
+<body>
+<input type="hidden" name="requested_list" value="{{requested_list}}">
+{% if requested_list == 'pab'%}
+{% set page_title = 'PA Bankruptcy Registrations' %}
+{% elif requested_list == 'wob' %}
+{% set page_title = 'WO Bankruptcy Registrations' %}
+{% elif requested_list == 'bank_regn' %}
+{% set page_title = 'Bankruptcy Registrations' %}
+{% elif requested_list == 'lc_regn' %}
+{% set page_title = 'Land Charge Registrations' %}
+{% elif requested_list == 'amend' %}
+{% set page_title = 'Amendments' %}
+{% elif requested_list == 'cancel' %}
+{% set page_title = 'Cancellations' %}
+{% elif requested_list == 'prt_search' %}
+{% set page_title = 'Portal Searches' %}
+{% elif requested_list == 'search' %}
+{% set page_title = 'Searches' %}
+{% elif requested_list == 'oc' %}
+{% set page_title = 'Office Copies' %}
+{% endif %}
+<div id="main" class="container" style="margin-top:20px !important;">
+    <div class="container">
+        <div class="row">
+            <h2>Land Charges</h2>
+            <div class="row col-sm-12">
+                <ul class="breadcrumb">
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/get_list?appn={{requested_list}}">{{page_title}}</a></li>
+                </ul>
+            </div>
+            <div class="row col-sm-12" style="margin-top:10px">
+                <h2>Bankruptcy Registration</h2><br/>
+                    <div id="images_data" class="col-sm-6" style="background-color: red">
+                        <div id="thumbnails" class="row col-sm-12" style="margin-bottom:10px">
+                            {% for image in images %}
+                                <img class="row col-sm-2 thumbnail{% if loop.index0 == current_page %} active{% endif %}" src="{{image}}" onclick="imgClick(this, {{ loop.index0 }})"/>
+                                <div class="col-sm-1"></div>
+                            {% endfor %}
+                        </div>
+
+                        <div id="image_area">
+                            <div id="imageContainer">
+                                {% for image in images %}
+                                    <div class="sheetImage">
+                                        <div class="pancontainer" data-canzoom="yes">
+                                            <img src="{{image}}"/>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+
+                    </div>
+                    <div id="form_data" class="col-sm-5">
+                        <h5>Step 2 of 3</h5>
+                        <h4>Debtor address</h4>
+                        <form action="/address" method="POST">
+
+                            <div class="form-group">
+                                <label for="address1" class="col-sm-4">Address</label>
+                                <input type="text" class="form-control" name="address1" id="address1"/>
+                                <input type="text" class="form-control" id="address2"/>
+                                <input type="text" class="form-control" id="address3"/>
+                            </div>
+                            <div class="form-group">
+                                <label for="county" class="col-sm-4">County</label>
+                                <input type="text" name="county" id="county" class="form-control"/>
+                            </div>
+                            <div class="form-group">
+                                <label for="postcode" class="col-sm-4">Post Code</label>
+                                <input type="text" class="form-control" id="postcode" name="postcode"/>
+                            </div>
+                            <label>
+                                <input type="checkbox"/> Remove Address
+                            </label>
+                            <div class="form-group">
+                                <input class="btn btn_primary" id="add_address" name="add_address" type="submit" value="Add Address"/>
+                            </div>
+
+
+                            <div class="form-group">
+                                <input class="btn btn-success" id="submit" name="submit" type="submit" value="Submit"/>
+                            </div>
+                            <input type="hidden" value="{{appn_id}}" name="appn_id"/>
+                        </form>
+                    </div>
+
+
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    /*alert('{{current_page}}');
+    jQuery( document ).ready(function() {
+        swap('{{current_page}}');
+    });*/
+</script>
+</body>
+</html>

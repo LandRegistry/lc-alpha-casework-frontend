@@ -5,55 +5,73 @@
     <title>Land Charges</title>
     {% include 'includes/ext_references.html' %}
     <style>
+        #image_area {
+            position: relative;
+            overflow: hidden;
+            width: 500px;
+            height: 800px;
+            border:1px solid black;
+            margin-bottom: 50px;
+        }
+
+        .sheetImage {
+            position: relative;
+            width: 500px;
+            height: 800px;
+            display: inline-block;
+            margin-left: -4px;
+        }
+
+        #imageContainer {
+            position: relative;
+            padding-left: 4px;
+            width: {{images|length * 510}}px;
+            left: -{{500 * current_page}}px;
+        }
+
         .thumbnail{
-        border:1px solid #B3B3B3;
+            border:1px solid #B3B3B3;
         }
         .thumbnail:hover{
-        cursor:pointer
+            cursor:pointer
         }
         .active {
-        border:1px solid blue;
+            border:1px solid blue;
         }
         /*Default CSS for pan containers*/
-        .pancontainer{
-        position:relative; /*keep this intact*/
-        overflow:hidden; /*keep this intact*/
-        width:500px;
-        height:800px;
-        border:1px solid black;
+        .pancontainerOLD{
+            position:relative; /*keep this intact*/
+            overflow:hidden; /*keep this intact*/
+            width:500px;
+            height:800px;
+            border:1px solid black;
         }
 
         .pancontainer .zoomcontrols{ /* default CSS class for magnify controls within container */
-        position:absolute;
-        width: 30px;
-        height: 30px;
-        background: #eee;
-        border: 1px solid gray;
+            position:absolute;
+            width: 30px;
+            height: 30px;
+            background: #eee;
+            border: 1px solid gray;
+        }
+
+        .pancontainer {
+            width: 100%;
+            height: 100%;
+        }
+
+        img {
+            width: 100%;
         }
     </style>
     <script>
-        function swap(new_image) {
-             document.getElementById("main_image").src = document.getElementById(new_image).src;
-             if ( jQuery('#thumbnail_1').hasClass('active') ) {
-                jQuery('#thumbnail_1').removeClass('active');
-             }  else if ( jQuery('#thumbnail_2').hasClass('active') ) {
-                jQuery('#thumbnail_2').removeClass('active');
-             }  else if ( jQuery('#thumbnail_3').hasClass('active') ) {
-                jQuery('#thumbnail_3').removeClass('active');
-             }
-             jQuery('#'+ new_image).addClass('active');
-         }
-
-    </script>
-
-    <script type="text/javascript" src="/static/js/imagepanner.js">
-
-        /***********************************************
-        * Simple Image Panner and Zoomer- (c) Dynamic Drive DHTML code library (www.dynamicdrive.com)
-        * Please keep this notice intact
-        * Visit Dynamic Drive at http://www.dynamicdrive.com/ for this script and 100s more
-        ***********************************************/
-
+        function imgClick(sender, index) {
+            jQuery(".thumbnail").removeClass('active');
+            sender.classList.add("active");
+            jQuery("#imageContainer").animate({
+                left: (-index * 500) + 'px'
+            });
+        }
     </script>
 
     <script>
@@ -72,6 +90,7 @@
         console.log(n);
     };
     </script>
+    <script type="text/javascript" src="/static/js/imagepanner.js"></script>
 
 </head>
 <body>
@@ -107,54 +126,58 @@
             </div>
             <div class="row col-sm-12" style="margin-top:10px">
                 <h2>Bankruptcy Registration</h2><br/>
-                    <div id="images_data" class="col-sm-6">
-                        <div id="thumbnails" class="row col-sm-12" style="margin-bottom:10px">
-                            <img id="thumbnail_1"  src="/static/images/page1.jpg" onclick="swap(this.id);" class="row col-sm-2 thumbnail active"/>
+                <div id="images_data" class="col-sm-6">
+                    <div id="thumbnails" class="row col-sm-12" style="margin-bottom:10px">
+                        {% for image in images %}
+                            <img class="row col-sm-2 thumbnail{% if loop.index0 == current_page %} active{% endif %}" src="{{image}}" onclick="imgClick(this, {{ loop.index0 }})"/>
                             <div class="col-sm-1"></div>
-                            <img id="thumbnail_2"  src="/static/images/page2.jpg" onclick="swap(this.id);" class="row col-sm-2 thumbnail"/>
-                            <div class="col-sm-1"></div>
-                            <img id="thumbnail_3"  src="/static/images/page3.jpg" onclick="swap(this.id);" class="row col-sm-2 thumbnail"/>
-                        </div>
-                        <div id="full_image" class="pancontainer" style="width:100%" data-canzoom="yes" >
-                            <img id="main_image"  src="/static/images/page1.jpg" class="row col-sm-12"/>
-                        </div>
+                        {% endfor %}
                     </div>
-                    <div id="form_data" class="col-sm-6">
-                        <h5>Step 1 of 3</h5>
-                        <h4>Debtor name and details</h4>
-                        <form action="/process_banks_name" method="POST">
-                            <div class="form-group">
-                                <label style="margin-top:1em" for="forename">Forename(s)</label>
-                                <input class="form-control" type="text" id="forename" name="forename" value="{{forename}}">
-                            </div>
-                            <div class="form-group">
-                                <label for="surname">Surname</label>
-                                <input class="form-control" type="text" id="surname" name="surname" value="{{surname}}">
-                            </div>
-                            <input id="addname" onclick="nameClick(this)" class="btn pull-right" style="width:8em"
-                                   type="button" value="Add name">
-                            <div>
-                                <div class="form-group">
-                                    <label style="margin-top:3em" for="occupation">Occupation</label>
-                                    <input class="form-control" type="text" id="occupation" name="occupation" value="{{occupation}}">
+
+                    <div id="image_area">
+                        <div id="imageContainer">
+                            {% for image in images %}
+                                <div class="sheetImage">
+                                    <div class="pancontainer" data-canzoom="yes">
+                                        <img src="{{image}}"/>
+                                    </div>
                                 </div>
-                            </div>
-                            <div style="margin-top:3em">
-                                <input class="btn pull-right" style="color:black; background-color:#D5E8D4; width:8em"
-                                       id="continue" type="submit" value="Continue">
-                            </div>
-                        </form>
+                            {% endfor %}
+                        </div>
                     </div>
 
 
+                </div>
+                <div id="form_data" class="col-sm-6">
+                    <h5>Step 1 of 3</h5>
+                    <h4>Debtor name and details</h4>
+
+                    <form action="/process_banks_name" method="POST">
+                        <div class="form-group">
+                            <label style="margin-top:1em" for="forename">Forename(s)</label>
+                            <input class="form-control" type="text" id="forename" name="forename" value="{{forename}}">
+                        </div>
+                        <div class="form-group">
+                            <label for="surname">Surname</label>
+                            <input class="form-control" type="text" id="surname" name="surname" value="{{surname}}">
+                        </div>
+                        <input id="addname" onclick="nameClick(this)" class="btn pull-right" style="width:8em"
+                               type="button" value="Add name">
+                        <div>
+                            <div class="form-group">
+                                <label style="margin-top:3em" for="occupation">Occupation</label>
+                                <input class="form-control" type="text" id="occupation" name="occupation" value="{{occupation}}">
+                            </div>
+                        </div>
+                        <div style="margin-top:3em">
+                            <input class="btn pull-right" style="color:black; background-color:#D5E8D4; width:8em"
+                                   id="continue" type="submit" value="Continue">
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
 </div>
-<script>
-    jQuery( document ).ready(function() {
-        swap('{{current_page}}');
-    });
-</script>
 </body>
 </html>
