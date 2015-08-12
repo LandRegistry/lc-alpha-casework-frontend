@@ -1,0 +1,62 @@
+    <style>
+        #image_area {
+            position: relative;
+            overflow: hidden;
+            width: 500px; /* TODO: rubbish with non-fullscreen windows */
+            height: 800px;
+            border:1px solid black;
+            margin-bottom: 50px;
+        }
+
+        .sheetImage {
+            position: relative;
+            width: 500px; /* TODO: rubbish with non-fullscreen windows */
+            height: 800px;
+            display: inline-block;
+            margin-left: -4px;
+        }
+
+        #imageContainer {
+            position: relative;
+            padding-left: 4px;
+            width: {{images|length * 510}}px; /* TODO: rubbish with non-fullscreen windows */
+            left: -{{500 * current_page}}px;
+        }
+
+        .thumbnail{
+            border:1px solid #B3B3B3;
+        }
+        .thumbnail:hover{
+            cursor:pointer
+        }
+        .active {
+            border:1px solid blue;
+        }
+
+        .pancontainer .zoomcontrols{ /* default CSS class for magnify controls within container */
+            position:absolute;
+            width: 30px;
+            height: 30px;
+            background: #eee;
+            border: 1px solid gray;
+        }
+
+        .pancontainer {
+            width: 100%;
+            height: 100%;
+        }
+
+        img {
+            width: 100%;
+        }
+    </style>
+    <script>
+        function imgClick(sender, index) {
+            jQuery(".thumbnail").removeClass('active');
+            sender.classList.add("active");
+            jQuery("#imageContainer").animate({
+                left: (-index * 500) + 'px'
+            });
+        }
+    </script>
+    <script type="text/javascript" src="/static/js/imagepanner.js"></script>
