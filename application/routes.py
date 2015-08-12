@@ -150,18 +150,40 @@ def process_banks_name():
 def process_court_details():
 
     try:
-        print(request.form)
         application = json.loads(request.form['application'])
-        print(application)
-        print("entered court details")
         application["application_type"] = request.form['nature']
         application["court_name"] = request.form['court']
         application["court_ref"] = request.form['court_ref']
 
-        print(application)
-        requested_worklist = 'bank_regn'
+        # these are needed at the moment for registration but are not captured on the form
+        application["key_number"] = "2244095"
+        application["application_ref"] = "customer reference"
+        today = datetime.now().strftime('%Y-%m-%d')
+        application["date"] = today
+        application["residence_withheld"] = False
+        application['date_of_birth'] = "1980-01-01"
 
-        return render_template('confirmation.html', application=application, requested_worklist=requested_worklist)
+        # print(application)
+        # print(json.dumps(application))
+
+        url = app.config['BANKRUPTCY_DATABASE_URL'] + '/register'
+        headers = {'Content-Type': 'application/json'}
+        response = requests.post(url, data=json.dumps(application), headers=headers)
+
+        if response.status_code == 200:
+            data = json.loads(response.text)
+            reg_list = []
+            for n in data['new_registrations']:
+                reg_list.append(n)
+            requested_worklist = 'bank_regn'
+            display_date = datetime.now().strftime('%d-%m-%Y')
+            return render_template('confirmation.html', application=application, data=reg_list, date=display_date,
+                                   requested_list=requested_worklist)
+        else:
+            print("failed with", response.status_code)
+            error = response.status_code + response.text
+            logging.error(error)
+            return render_template('error.html', error_msg=error)
 
     except Exception as error:
         logging.error(error)
@@ -176,34 +198,36 @@ def application_step_2():
         application['residence'] = []
 
     # handle empty 'last address'.
-    if request.form['address1'] != '' and 'address2' in request.form and 'submit' in request.form:
-        address = {'address_lines': []}
-        if 'address1' in request.form:
-            address['address_lines'].append(request.form['address1'])
-        if 'address2' in request.form:
-            address['address_lines'].append(request.form['address2'])
-        if 'address3' in request.form:
-            address['address_lines'].append(request.form['address3'])
-        address['address_lines'].append(request.form['county'])
-        address['postcode'] = request.form['postcode']
-        application['residence'].append(address)
+    # if request.form['address1'] != '' and 'address2' in request.form and 'submit' in request.form:
+    address = {'address_lines': []}
+    if 'address1' in request.form:
+        address['address_lines'].append(request.form['address1'])
+    if 'address2' in request.form:
+        address['address_lines'].append(request.form['address2'])
+    if 'address3' in request.form:
+        address['address_lines'].append(request.form['address3'])
+    address['address_lines'].append(request.form['county'])
+    address['postcode'] = request.form['postcode']
+    application['residence'].append(address)
 
     # print(request.form)
     # print(application)
+
+    requested_worklist = 'bank_regn'
 
     if 'add_address' in request.form:
         return render_template('address.html', application=json.dumps(application), images=[
             "http://localhost:5014/document/9/image/1",
             "http://localhost:5014/document/9/image/2",
             "http://localhost:5014/document/9/image/3",
-        ], residences=application['residence'], current_page=0)
+        ], residences=application['residence'], requested_list=requested_worklist, current_page=0)
     else:
         return render_template('banks_order.html', application=json.dumps(application),
                                images=[
                                    "http://localhost:5014/document/9/image/1",
                                    "http://localhost:5014/document/9/image/2",
                                    "http://localhost:5014/document/9/image/3", ],
-                               current_page=0)
+                               requested_list=requested_worklist, current_page=0)
 
 
 def get_totals():

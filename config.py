@@ -8,3 +8,4 @@ class Config(object):
 class DevelopmentConfig(object):
     DEBUG = True
     CASEWORK_DB_URL = "http://localhost:5006"
+    BANKRUPTCY_DATABASE_URL = "http://localhost:5004"

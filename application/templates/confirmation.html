@@ -52,22 +52,23 @@
                 </div>
             </div>
             <div style="margin-top: 23em; text-align: center">
+                {% if data|length < 1 %}
                 <h2>Your application reference number is:</h2>
-                <h3>1223344</h3>
+                {% else %}
+                <h2>Your application reference numbers are:</h2>
+                {% endif %}
+                {% for n in data %}
+                <h3>{{n}}</h3>
+                {% endfor %}
                 </br>
-                <h3>Registered on 12.05.2016</h3>
+                <h3>Registered on {{date}}</h3>
             </div>
         </div>
         <div>
             <a href="/get_list?appn={{requested_list}}">
-                <input class="btn pull-right return-btn"  id="continue" type="submit" value="Return to Worklist"></a>
+                <input class="btn-lg pull-right return-btn"  id="continue" type="submit" value="Return to Worklist"></a>
         </div>
     </div>
 </div>
-<script>
-    jQuery( document ).ready(function() {
-        swap('{{current_page}}');
-    });
-</script>
 </body>
 </html>
