@@ -100,7 +100,8 @@ def process_banks_name():
         print("entered process name")
         name = {"debtor_name": {"forenames": [], "surname": ""},
                 "occupation": "",
-                "debtor_alternative_name": [{"forenames": [], "surname": ""}]
+                "debtor_alternative_name": [{"forenames": [], "surname": ""}],
+                "residence": []
                 }
 
         print(request.form)
@@ -114,12 +115,11 @@ def process_banks_name():
         print(name)
         requested_worklist = 'bank_regn'
 
-        return render_template('address.html', images=[
+        return render_template('address.html', application=json.dumps(name), images=[
                                "http://localhost:5014/document/9/image/1",
                                "http://localhost:5014/document/9/image/2",
-                               "http://localhost:5014/document/9/image/3",
-                           ], requested_list=requested_worklist, current_page=1)
-
+                               "http://localhost:5014/document/9/image/3", ],
+                               requested_list=requested_worklist, current_page=1)
     except Exception as error:
         logging.error(error)
         return render_template('error.html', error_msg=error)
@@ -128,33 +128,61 @@ def process_banks_name():
 @app.route('/court_details', methods=["POST"])
 def process_court_details():
 
-    try:
-        print("entered court details")
-        charge_details = {
-            "application_type": request.form['nature'],
-            "court_name": request.form['court'],
-            "court_ref": request.form['court_ref']
-        }
-        print(charge_details)
-        requested_worklist = 'bank_regn'
+    #try:
+    print(request.form)
+    application = json.loads(request.form['application'])
+    print(application)
+    print("entered court details")
+    application["application_type"] = request.form['nature']
+    application["court_name"] = request.form['court']
+    application["court_ref"] = request.form['court_ref']
 
-        return render_template('confirmation.html', requested_list=requested_worklist, current_page="thumbnail_3")
+    print(application)
+    # requested_worklist = 'bank_regn'
 
-    except Exception as error:
-        logging.error(error)
-        return render_template('error.html', error_msg=error)
+    return render_template('confirmation.html', application=application)
+
+    # except Exception as error:
+    #     logging.error(error)
+    #     return render_template('error.html', error_msg=error)
 
 
 @app.route('/address', methods=['POST'])
 def application_step_2():
-    application_json = {}  # TODO: will contain body
-    return render_template('banks_order.html', data=application_json,
-                           images=[
-                               "http://localhost:5014/document/9/image/1",
-                               "http://localhost:5014/document/9/image/2",
-                               "http://localhost:5014/document/9/image/3",
-                           ],
-                           current_page=0)
+    application = json.loads(request.form['application'])
+
+    if 'residence' not in application:
+        application['residence'] = []
+
+    # handle empty 'last address'.
+    if request.form['address1'] != '' and 'address2' in request.form and 'submit' in request.form:
+        address = {'address_lines': []}
+        if 'address1' in request.form:
+            address['address_lines'].append(request.form['address1'])
+        if 'address2' in request.form:
+            address['address_lines'].append(request.form['address2'])
+        if 'address3' in request.form:
+            address['address_lines'].append(request.form['address3'])
+        address['address_lines'].append(request.form['county'])
+        address['postcode'] = request.form['postcode']
+        application['residence'].append(address)
+
+    # print(request.form)
+    # print(application)
+
+    if 'add_address' in request.form:
+        return render_template('address.html', application=json.dumps(application), images=[
+            "http://localhost:5014/document/9/image/1",
+            "http://localhost:5014/document/9/image/2",
+            "http://localhost:5014/document/9/image/3",
+        ], residences=application['residence'], current_page=0)
+    else:
+        return render_template('banks_order.html', application=json.dumps(application),
+                               images=[
+                                   "http://localhost:5014/document/9/image/1",
+                                   "http://localhost:5014/document/9/image/2",
+                                   "http://localhost:5014/document/9/image/3", ],
+                               current_page=0)
 
 
 def get_totals():
