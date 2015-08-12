@@ -139,3 +139,19 @@ a.black:active{
     padding-top: 0.7em;
     color: #FFFFFF;
 }
+
+.continue-btn {
+    position: relative;
+    bottom: 0px;
+    right: 0px;
+    color:black;
+    background-color:#D5E8D4;
+    width:8em;
+}
+
+.return-btn {
+    color: black;
+    background-color: #D5E8D4;
+    width: 12em;
+    margin-top: 10em;
+}
