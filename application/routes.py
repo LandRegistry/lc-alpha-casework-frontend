@@ -100,8 +100,10 @@ def process_banks_name():
         print("entered process name")
         name = {"debtor_name": {"forenames": [], "surname": ""},
                 "occupation": "",
-                "debtor_alternative_name": [{"forenames":[], "surname": ""}]
+                "debtor_alternative_name": [{"forenames": [], "surname": ""}]
                 }
+
+        print(request.form)
 
         forenames = request.form['forename']
         for i in forenames.split():
@@ -112,7 +114,11 @@ def process_banks_name():
         print(name)
         requested_worklist = 'bank_regn'
 
-        return render_template('banks_order.html', requested_list=requested_worklist, current_page="thumbnail_2")
+        return render_template('address.html', images=[
+                               "http://localhost:5014/document/9/image/1",
+                               "http://localhost:5014/document/9/image/2",
+                               "http://localhost:5014/document/9/image/3",
+                           ], requested_list=requested_worklist, current_page=1)
 
     except Exception as error:
         logging.error(error)
@@ -139,17 +145,16 @@ def process_court_details():
         return render_template('error.html', error_msg=error)
 
 
-# @app.route('/register_step_2', methods=['POST'])
-# def application_step_2():
-#     application_json = {}  # TODO: will contain body
-#     return render_template('address.html', data=application_json,
-#                            images=[
-#                                "http://localhost:5014/document/9/image/1",
-#                                "http://localhost:5014/document/9/image/2",
-#                                "http://localhost:5014/document/9/image/3",
-#                            ],
-#                            current_page=0)
-
+@app.route('/address', methods=['POST'])
+def application_step_2():
+    application_json = {}  # TODO: will contain body
+    return render_template('banks_order.html', data=application_json,
+                           images=[
+                               "http://localhost:5014/document/9/image/1",
+                               "http://localhost:5014/document/9/image/2",
+                               "http://localhost:5014/document/9/image/3",
+                           ],
+                           current_page=0)
 
 
 def get_totals():
