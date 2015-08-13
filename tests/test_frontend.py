@@ -7,7 +7,14 @@ import requests
 dir_ = os.path.dirname(__file__)
 total_response = open(os.path.join(dir_, 'data/totals.json'), 'r').read()
 application_response = open(os.path.join(dir_, 'data/application.json'), 'r').read()
-
+name = "{'debtor_name': {'forenames': ['John', 'James'], 'surname': 'Smith'}, 'residence': [], 'occupation': '', 'debtor_alternative_name': []}"
+forename = "'forenames': ['John', 'James']"
+test_data = [
+    {
+        "input": "forename='John James', occupation='', surname='Smith'",
+        "expected": "{'debtor_name': {'forenames': ['John', 'James'], 'surname': 'Smith'}, 'residence': [], 'occupation': '', 'debtor_alternative_name': []}"
+        }
+]
 
 class FakeResponse(requests.Response):
     def __init__(self, content='', status_code=200, response_file=''):
@@ -58,6 +65,34 @@ class TestCaseworkFrontend:
     def test_get_appliction_fail(self, mock_get):
         response = self.app.get('/get_application/pab/1')
         assert response.status_code == 200
+
+    def test_process_name(self):
+        response = self.app.post('/process_banks_name', data=dict(forename='John', occupation='', surname='Smith'))
+        assert ('John' in response.data.decode())
+
+    def test_multi_forename(self):
+        data = test_data[0]
+        data1 = data['input']
+        response = self.app.post('/process_banks_name', data=dict(forename='John James', occupation='', surname='Smith'))
+        # assert ("{'residence': [], 'occupation': '', 'debtor_name': {'surname': 'Smith', 'forenames': ['John', 'James']}, 'debtor_alternative_name': []}" in response.data.decode())
+        assert ('John' in response.data.decode())
+        assert ('James' in response.data.decode())
+
+    def test_alias_name(self):
+        response = self.app.post('/process_banks_name',
+                                 data=dict(forename='John James', occupation='',surname='Smith',
+                                           aliasforename0="Joan Jean", aliassurname0="Smyth",
+                                           aliasforename1="John", aliassurname1="Smithers"))
+        assert ('Joan' in response.data.decode())
+        assert ('Jean' in response.data.decode())
+        assert ('Smithers' in response.data.decode())
+
+    def test_process_name_fail(self):
+        response = self.app.post('/process_banks_name', data='John')
+        assert ('error' in response.data.decode())
+
+
+
 
 
 
