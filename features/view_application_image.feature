@@ -11,23 +11,22 @@ Given I am on the view application screen
 When I have selected to view specific the application list
 When the image of the application is displayed I can click on all available pages
 When I click on a page the image it is visible
-When the image is initially displayed it starts a 1x magnify
 When I am on a page I can zoom in
 Then I am on a page I can zoom out
 
-Scenario: Supplying the Debtors name
+#US008 Supplying the Debtors name 
 Given I am on the debtors name and details screen
 When I complete the Forename and Surname details remain visible 
 When I click the add name button Alias Forename(s) and Alias Surname is displayed
 When I amend a Forename the new details remain visable
 Then I amend the Surname of the Alias Surname and the new details remain visible
 
-Scenario: Supplying the occupation details
+#US020 Supplying the occupation details
 Given I am on the debtors name and details screen 
 When I enter an Occupation the details remain visible
 Then I click the continue button and the debtors address screen is displayed
 
-Scenario: Supplying the debtors address
+#US010 Supplying the debtors address
 Given I am on the debtors address screen
 When I supply the address details in the address fields 
 And click the add address button the address is added to the top of the screen
@@ -35,19 +34,19 @@ When I supply additional address details
 And click the add address button the address is added to the top of the screen
 Then I click the continue button and the case information screen is displayed
 
-Scenario: Supplying class of charge
+#US007 Supplying class of charge
 Given I am on the case information screen
 When I first see the class of charge neither PAB or WOB are checked
 When I select a Class of Charge of PAB this becomes checked
 Then I select a Class of Charge of WOB this becomes checked and PAB becomes unchecked
 
-Scenario: Supplying the court details
+#US014 AND US015 Supplying the court details
 Given I am on the case information screen
 When I enter a court name the details remain visible
 When I enter a court number and year the details remain visible
 Then I click the continue button and the application complete screen is displayed
 
-Scenario: Unique Identifier
+#US006 Unique Identifier
 Given the submit button on the case information page has been clicked
 When the Application complete screen is visible 
 Then the unique identifier is displayed to the user on the screen

@@ -10,11 +10,9 @@ end
 
 When(/^the image of the application is displayed I can click on all available pages$/) do 
    find(:xpath, "html/body/div[1]/div/div/div[2]/div[1]/div[1]/img[2]").click
-   sleep(5)
    find(:xpath, "html/body/div[1]/div/div/div[2]/div[1]/div[1]/img[3]").click
-   sleep(5)
    find(:xpath, "html/body/div[1]/div/div/div[2]/div[1]/div[1]/img[1]").click 
-   sleep(10)
+
 end 
 
 When(/^I click on a page the image it is visible$/) do
@@ -22,18 +20,16 @@ When(/^I click on a page the image it is visible$/) do
   #page.should have_content("http://localhost:5014/document/9/image/2")  
 end
 
-When(/^the image is initially displayed it starts a (\d+)x magnify$/) do |arg1|
-  pending # Write code here that turns the phrase above into concrete actions
-end
-
 When(/^I am on a page I can zoom in$/) do
-  find(:xpath, "html/body/div[1]/div/div/div[2]/div[1]/div[2]/div/div[2]/div/img[2]").click    
-  puts('zoom in')
+  all('.zoomcontrols')[0].click
+  thing = find(:xpath, '//*[@id="imageContainer"]/div[1]/div/div')
+  expect(thing.text).to eq "2x Magnify"
 end
 
 Then(/^I am on a page I can zoom out$/) do
-  find(:xpath, "html/body/div[1]/div/div/div[2]/div[1]/div[2]/div/div[2]/div/img[3]").click
-  puts('zoom out')
+  all('.zoomcontrols')[1].click
+  thing = find(:xpath, '//*[@id="imageContainer"]/div[1]/div/div')
+  expect(thing.text).to eq "1x Magnify"
 end
 
 Given(/^I am on the debtors name and details screen$/) do
@@ -42,35 +38,33 @@ Given(/^I am on the debtors name and details screen$/) do
 end
 
 When(/^I complete the Forename and Surname details remain visible$/) do
-  puts('heloo')
-  sleep(20)
-  puts('hello')
-  find(:xpath, "html/body/div[1]/div/div/div[2]/div[1]/div[1]/img[3]").click
-  puts('good')
-  find(:xpath, "html/body/div[1]/div/div/div[2]/div[2]/form/div[1]/input").clear
-  find(:xpath, "html/body/div[1]/div/div/div[2]/div[2]/form/div[1]/input").send_keys "nicola"
-  find(:id, "surname").clear
-  find(:id, "surname").send_keys "andrews"
+    fill_in('forename', :with => 'Nicola')
+  fill_in('surname', :with => 'Andrews')
 end
 
 When(/^I click the add name button Alias Forename\(s\) and Alias Surname is displayed$/) do
-  pending # Write code here that turns the phrase above into concrete actions
+   click_button('Add alias name')
+   fill_in('aliasforename0', :with =>'Nichola')
+   fill_in('aliassurname0', :with => 'Andrews')
+   click_button('Add alias name')
+   fill_in('aliasforename1', :with =>'Nicola')
+   fill_in('aliassurname1', :with => 'Andrewson')
 end
 
 When(/^I amend a Forename the new details remain visable$/) do
-  pending # Write code here that turns the phrase above into concrete actions
+  fill_in('forename', :with => 'Nicola Jayne')
 end
 
 Then(/^I amend the Surname of the Alias Surname and the new details remain visible$/) do
-  pending # Write code here that turns the phrase above into concrete actions
+  fill_in('aliasforename0', :with => 'Nicola')
 end
 
 When(/^I enter an Occupation the details remain visible$/) do
-  pending # Write code here that turns the phrase above into concrete actions
+  fill_in('occupation', :with => 'civil servant')
 end
 
 Then(/^I click the continue button and the debtors address screen is displayed$/) do
-  pending # Write code here that turns the phrase above into concrete actions
+  click_button('Continue')
 end
 
 Given(/^I am on the debtors address screen$/) do
