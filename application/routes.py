@@ -17,10 +17,6 @@ def index():
         return render_template('error.html', error_msg=error)
 
 
-@app.route('/idea', methods=['GET'])
-def idea():
-    return render_template('idea.html')
-
 @app.route('/get_list', methods=["GET"])
 def get_list():
 
