@@ -159,15 +159,12 @@ def process_court_details():
         application["residence_withheld"] = False
         application['date_of_birth'] = "1980-01-01"
 
-        # print(application)
-        # print(json.dumps(application))
-
         url = app.config['BANKRUPTCY_DATABASE_URL'] + '/register'
         headers = {'Content-Type': 'application/json'}
         response = requests.post(url, data=json.dumps(application), headers=headers)
 
         if response.status_code == 200:
-            data = json.loads(response.text)
+            data = response.json()
             reg_list = []
             for n in data['new_registrations']:
                 reg_list.append(n)
@@ -177,7 +174,7 @@ def process_court_details():
                                    requested_list=requested_worklist)
         else:
             print("failed with", response.status_code)
-            error = response.status_code + response.text
+            error = response.status_code
             logging.error(error)
             return render_template('error.html', error_msg=error)
 

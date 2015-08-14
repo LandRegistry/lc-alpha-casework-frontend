@@ -3,18 +3,15 @@ from unittest import mock
 import os
 import json
 import requests
+from tests import test_data
 
 dir_ = os.path.dirname(__file__)
 total_response = open(os.path.join(dir_, 'data/totals.json'), 'r').read()
 application_response = open(os.path.join(dir_, 'data/application.json'), 'r').read()
-name = "{'debtor_name': {'forenames': ['John', 'James'], 'surname': 'Smith'}, 'residence': [], 'occupation': '', 'debtor_alternative_name': []}"
-forename = "'forenames': ['John', 'James']"
-test_data = [
-    {
-        "input": "forename='John James', occupation='', surname='Smith'",
-        "expected": "{'debtor_name': {'forenames': ['John', 'James'], 'surname': 'Smith'}, 'residence': [], 'occupation': '', 'debtor_alternative_name': []}"
-        }
-]
+
+registration = '{"new_registrations": [512344]}'
+multi_name_reg = '{"new_registrations": [512344, 512345]}'
+
 
 class FakeResponse(requests.Response):
     def __init__(self, content='', status_code=200, response_file=''):
@@ -71,10 +68,7 @@ class TestCaseworkFrontend:
         assert ('John' in response.data.decode())
 
     def test_multi_forename(self):
-        data = test_data[0]
-        data1 = data['input']
         response = self.app.post('/process_banks_name', data=dict(forename='John James', occupation='', surname='Smith'))
-        # assert ("{'residence': [], 'occupation': '', 'debtor_name': {'surname': 'Smith', 'forenames': ['John', 'James']}, 'debtor_alternative_name': []}" in response.data.decode())
         assert ('John' in response.data.decode())
         assert ('James' in response.data.decode())
 
@@ -91,12 +85,60 @@ class TestCaseworkFrontend:
         response = self.app.post('/process_banks_name', data='John')
         assert ('error' in response.data.decode())
 
+    def test_residence_empty(self):
+        response = self.app.post('/address', data=test_data.data_no_residence)
+        assert ('application' in response.data.decode())
+        assert ('John' in response.data.decode())
+        assert response.status_code == 200
 
+    def test_address(self):
+        response = self.app.post('/address', data=test_data.address)
+        assert ('application' in response.data.decode())
+        assert ('John' in response.data.decode())
+        assert ('North Shore' in response.data.decode())
+        assert response.status_code == 200
 
+    def test_addresss_2_lines(self):
+        response = self.app.post('/address', data=test_data.address_2_lines)
+        assert ('application' in response.data.decode())
+        assert ('John' in response.data.decode())
+        assert ('North Shore' in response.data.decode())
+        assert response.status_code == 200
 
+    def test_additional_address(self):
+        response = self.app.post('/address', data=test_data.additional_address)
+        assert ('application' in response.data.decode())
+        assert ('John' in response.data.decode())
+        assert ('Add Address' in response.data.decode())
+        assert response.status_code == 200
 
+    def test_residence(self):
+        response = self.app.post('/address', data=test_data.residence)
+        assert ('application' in response.data.decode())
+        assert ('John' in response.data.decode())
+        assert response.status_code == 200
 
+    @mock.patch('requests.post', return_value=FakeResponse('stuff', 200))
+    def test_pab(self, mock_post):
+        response = self.app.post('/court_details', data=test_data.process_pab)
+        assert response.status_code == 200
 
+    @mock.patch('requests.post', return_value=FakeResponse('stuff', 200))
+    def test_pab(self, mock_post):
+        response = self.app.post('/court_details', data=test_data.process_wob)
+        assert response.status_code == 200
 
+    @mock.patch('requests.post', return_value=FakeResponse('stuff', 200, registration))
+    def test_process_court(self, mock_post):
+        response = self.app.post('/court_details', data=test_data.process_court)
+        assert response.status_code == 200
 
+    @mock.patch('requests.post', return_value=FakeResponse('stuff', 500, registration))
+    def test_process_court_fail(self, mock_post):
+        response = self.app.post('/court_details', data=test_data.process_court)
+        assert response.status_code == 200
 
+    @mock.patch('requests.post', return_value=FakeResponse('stuff', 200, multi_name_reg))
+    def test_multi_name(self, mock_post):
+        response = self.app.post('/court_details', data=test_data.multi_name)
+        assert response.status_code == 200
