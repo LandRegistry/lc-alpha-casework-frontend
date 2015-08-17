@@ -188,26 +188,22 @@ def process_court_details():
 @app.route('/address', methods=['POST'])
 def application_step_2():
     application = json.loads(request.form['application'])
-
     if 'residence' not in application:
         application['residence'] = []
 
     # handle empty 'last address'.
     # if request.form['address1'] != '' and 'address2' in request.form and 'submit' in request.form:
     address = {'address_lines': []}
-    if 'address1' in request.form:
+    if 'address1' in request.form and request.form['address1'] != '':
         address['address_lines'].append(request.form['address1'])
-    if request.form['address2'] != '':
+    if 'address2' in request.form and request.form['address2'] != '':
         address['address_lines'].append(request.form['address2'])
-    if request.form['address3'] != '':
+    if 'address3' in request.form and request.form['address3'] != '':
         address['address_lines'].append(request.form['address3'])
+
     address['address_lines'].append(request.form['county'])
     address['postcode'] = request.form['postcode']
     application['residence'].append(address)
-
-    # print(request.form)
-    # print("json passed to form",application)
-
     requested_worklist = 'bank_regn'
 
     if 'add_address' in request.form:

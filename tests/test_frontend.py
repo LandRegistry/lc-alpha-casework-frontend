@@ -109,7 +109,7 @@ class TestCaseworkFrontend:
         response = self.app.post('/address', data=test_data.additional_address)
         assert ('application' in response.data.decode())
         assert ('John' in response.data.decode())
-        assert ('Add Address' in response.data.decode())
+        assert ('34 Haden Close<br/>' in response.data.decode())
         assert response.status_code == 200
 
     def test_residence(self):
