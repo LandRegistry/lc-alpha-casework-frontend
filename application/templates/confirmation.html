@@ -60,13 +60,12 @@
                 {% for n in data %}
                 <h3>{{n}}</h3>
                 {% endfor %}
-                </br>
+                <br/>
                 <h3>Registered on {{date}}</h3>
             </div>
         </div>
         <div>
-            <a href="/get_list?appn={{requested_list}}">
-                <input class="btn-lg pull-right return-btn"  id="continue" type="submit" value="Return to Worklist"></a>
+            <a class="btn-lg pull-right return-btn" href="/get_list?appn={{requested_list}}">Return to Worklist</a>
         </div>
     </div>
 </div>

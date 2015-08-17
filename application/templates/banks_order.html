@@ -4,57 +4,7 @@
     <meta charset="utf-8">
     <title>Land Charges</title>
     {% include 'includes/ext_references.html' %}
-    <style>
-        .thumbnail{
-        border:1px solid #B3B3B3;
-        }
-        .thumbnail:hover{
-        cursor:pointer
-        }
-        .active {
-        border:1px solid blue;
-        }
-        /*Default CSS for pan containers*/
-        .pancontainer{
-        position:relative; /*keep this intact*/
-        overflow:hidden; /*keep this intact*/
-        width:500px;
-        height:800px;
-        border:1px solid black;
-        }
-
-        .pancontainer .zoomcontrols{ /* default CSS class for magnify controls within container */
-        position:absolute;
-        width: 30px;
-        height: 30px;
-        background: #eee;
-        border: 1px solid gray;
-        }
-    </style>
-    <script>
-        function swap(new_image) {
-             document.getElementById("main_image").src = document.getElementById(new_image).src;
-             if ( jQuery('#thumbnail_1').hasClass('active') ) {
-                jQuery('#thumbnail_1').removeClass('active');
-             }  else if ( jQuery('#thumbnail_2').hasClass('active') ) {
-                jQuery('#thumbnail_2').removeClass('active');
-             }  else if ( jQuery('#thumbnail_3').hasClass('active') ) {
-                jQuery('#thumbnail_3').removeClass('active');
-             }
-             jQuery('#'+ new_image).addClass('active');
-         }
-
-    </script>
-
-    <script type="text/javascript" src="/static/js/imagepanner.js">
-
-        /***********************************************
-        * Simple Image Panner and Zoomer- (c) Dynamic Drive DHTML code library (www.dynamicdrive.com)
-        * Please keep this notice intact
-        * Visit Dynamic Drive at http://www.dynamicdrive.com/ for this script and 100s more
-        ***********************************************/
-
-    </script>
+    {% include 'includes/image_view_head.html' %}
 
 </head>
 <body>
@@ -90,18 +40,7 @@
             </div>
             <div class="row col-sm-12" style="margin-top:10px">
                 <h2>Bankruptcy Registration</h2><br/>
-                    <div id="images_data" class="col-sm-6">
-                        <div id="thumbnails" class="row col-sm-12" style="margin-bottom:10px">
-                            <img id="thumbnail_1"  src="/static/images/page1.jpg" onclick="swap(this.id);" class="row col-sm-2 thumbnail active"/>
-                            <div class="col-sm-1"></div>
-                            <img id="thumbnail_2"  src="/static/images/page2.jpg" onclick="swap(this.id);" class="row col-sm-2 thumbnail"/>
-                            <div class="col-sm-1"></div>
-                            <img id="thumbnail_3"  src="/static/images/page3.jpg" onclick="swap(this.id);" class="row col-sm-2 thumbnail"/>
-                        </div>
-                        <div id="full_image" class="pancontainer" style="width:100%" data-canzoom="yes" >
-                            <img id="main_image"  src="/static/images/page1.jpg" class="row col-sm-12"/>
-                        </div>
-                    </div>
+                {% include 'includes/image_view_body.html' %}
                     <div id="form_data" class="col-sm-6">
                         <h5>Step 3 of 3</h5>
                         <h4>Case information</h4>
@@ -109,13 +48,13 @@
                             <div class="top-padding">
                             <label>Class of Charge</label>
                                 <div class="input-group col-sm-8">
-                                        <label class="input-group-addon"><input type="radio" name="nature" value="PA(B)"></label>
-                                        <label type="text" class="form-control formbgclr" aria-describedby="pab">PAB</label>
-                                        <label class="input-group-addon"><input type="radio" name="nature" value="WO(B)"></label>
-                                        <label type="text" class="form-control formbgclr" aria-describedby="pab">WOB</label>
+                                        <label for='PA(B)' class="input-group-addon"><input type="radio" id='PA(B)' name="nature" value="PA(B)"></label>
+                                        <label for='PA(B)' class="form-control formbgclr">PAB</label>
+                                        <label for='WO(B)' class="input-group-addon"><input type="radio" id='WO(B)' name="nature" value="WO(B)"></label>
+                                        <label for='WO(B)' class="form-control formbgclr">WOB</label>
                                 </div>
                             </div>
-                            </br>
+                            <br/>
                             <div class="form-group top-padding">
                                 <label for="court">Court name</label>
                                 <input class="form-control" type="text" id="court" name="court" value="{{court}}">

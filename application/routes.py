@@ -125,7 +125,9 @@ def process_banks_name():
                 alt_name['forenames'].append(i)
 
             alt_name['surname'] = alt_surname
-            name['debtor_alternative_name'].append(alt_name)
+            if alt_forenames != '' and alt_surname != '':
+                name['debtor_alternative_name'].append(alt_name)
+
             alt_name = {"forenames": [], "surname": ""}
             counter += 1
 
@@ -169,7 +171,7 @@ def process_court_details():
             for n in data['new_registrations']:
                 reg_list.append(n)
             requested_worklist = 'bank_regn'
-            display_date = datetime.now().strftime('%d-%m-%Y')
+            display_date = datetime.now().strftime('%d.%m.%Y')
             return render_template('confirmation.html', application=application, data=reg_list, date=display_date,
                                    requested_list=requested_worklist)
         else:
@@ -195,16 +197,16 @@ def application_step_2():
     address = {'address_lines': []}
     if 'address1' in request.form:
         address['address_lines'].append(request.form['address1'])
-    if 'address2' in request.form:
+    if request.form['address2'] != '':
         address['address_lines'].append(request.form['address2'])
-    if 'address3' in request.form:
+    if request.form['address3'] != '':
         address['address_lines'].append(request.form['address3'])
     address['address_lines'].append(request.form['county'])
     address['postcode'] = request.form['postcode']
     application['residence'].append(address)
 
     # print(request.form)
-    # print(application)
+    # print("json passed to form",application)
 
     requested_worklist = 'bank_regn'
 
