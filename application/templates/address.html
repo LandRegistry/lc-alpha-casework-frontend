@@ -52,7 +52,7 @@
 
                         <div id="address_area">
                             {% for address in residences %}
-                            <div class="address">
+                            <div class="address" style="vertical-align: text-top">
                                 {% for line in address['address_lines'] %}
                                     {{line}}<br/>
                                 {% endfor %}
@@ -63,28 +63,23 @@
                         <form action="/address" method="POST">
 
                             <div class="form-group">
-                                <label for="address1" class="col-sm-4">Address</label>
+                                <label for="address1">Address</label>
                                 <input type="text" class="form-control" name="address1" id="address1"/>
-                                <input type="text" class="form-control" name="address2" id="address2"/>
-                                <input type="text" class="form-control" name="address3" id="address3"/>
+                                <input type="text" class="form-control" style="margin-top: 5px" name="address2" id="address2"/>
+                                <input type="text" class="form-control" style="margin-top: 5px" name="address3" id="address3"/>
                             </div>
                             <div class="form-group">
-                                <label for="county" class="col-sm-4">County</label>
+                                <label for="county">County</label>
                                 <input type="text" name="county" id="county" class="form-control"/>
                             </div>
                             <div class="form-group">
-                                <label for="postcode" class="col-sm-4">Post Code</label>
+                                <label for="postcode">Post Code</label>
                                 <input type="text" class="form-control" id="postcode" name="postcode"/>
                             </div>
-                            <label>
-                                <input type="checkbox"/> Remove Address
-                            </label>
                             <div class="form-group">
-                                <input class="btn pull-right btn_primary" id="add_address" name="add_address" type="submit" value="Add Address"/>
+                                <input class="btn pull-right btn_primary" id="add_address" name="add_address" type="submit" value="Add additional address"/>
                             </div>
-
-
-                            <div class="form-group" style="padding-top:3em">
+                            <div class="form-group" style="padding-top:4em">
                                 <input class="btn-lg pull-right continue-btn" id="submit" name="submit" type="submit" value="Continue"/>
                             </div>
                             <input type="hidden" value="{{application}}" name="application"/>
