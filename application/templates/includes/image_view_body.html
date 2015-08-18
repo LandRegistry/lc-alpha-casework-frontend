@@ -10,7 +10,7 @@
         <div id="imageContainer">
             {% for image in images %}
                 <div class="sheetImage">
-                    <div class="pancontainer" data-canzoom="yes">
+                    <div class="pancontainer" id="container{{loop.index0}}" data-canzoom="yes">
                         <img alt="" src="{{image}}"/>
                     </div>
                 </div>

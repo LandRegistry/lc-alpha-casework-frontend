@@ -1,5 +1,6 @@
 Given(/^I am on the view application screen$/) do 
   visit('http://localhost:5010')
+  page.driver.browser.manage.window.maximize
 end 
 
 When(/^I have selected to view specific the application list$/) do 
@@ -16,19 +17,30 @@ When(/^the image of the application is displayed I can click on all available pa
 end 
 
 When(/^I click on a page the image it is visible$/) do
-  #find(:xpath, "html/body/div[1]/div/div/div[2]/div[1]/div[1]/img[2]").displayed?
-  #page.should have_content("http://localhost:5014/document/9/image/2")  
+  find(:xpath, "html/body/div[1]/div/div/div[2]/div[1]/div[1]/img[1]").click 
+  #page.has_src("http://localhost:5010/static/images/page1.jpg")
 end
-
+#container0 > div:nth-child(5)
 When(/^I am on a page I can zoom in$/) do
-  all('.zoomcontrols')[0].click
-  thing = find(:xpath, '//*[@id="imageContainer"]/div[1]/div/div')
-  expect(thing.text).to eq "2x Magnify"
+  sleep(1)
+
+  find(:xpath, '//*[@id="container0"]/img[2]').click 
+  #container0>div
+  #all('.zoomcontrols')[0].click
+ thing = find(:csspath, '#container0 > div:nth-child(2)')
+ expect(thing.text).to eq "2x Magnify"
 end
 
 Then(/^I am on a page I can zoom out$/) do
-  all('.zoomcontrols')[1].click
-  thing = find(:xpath, '//*[@id="imageContainer"]/div[1]/div/div')
+sleep(1)
+
+  find(:xpath, '//*[@id="container0"]/img[3]').click
+   
+  #container0>div
+  #all('.zoomcontrols')[0].click
+  #container0 > div:nth-child(2)
+   
+ thing = find(:csspath, '#container0 > div:nth-child(2)')
   expect(thing.text).to eq "1x Magnify"
 end
 
@@ -71,20 +83,29 @@ Given(/^I am on the debtors address screen$/) do
   page.has_content?('Debtor address')
 end
 
-When(/^I supply the address details in the address fields$/) do
-  pending # Write code here that turns the phrase above into concrete actions
+When(/^I supply the address details in the address fields they remain visible$/) do
+  fill_in('address1', :with => '1 Addison Square')
+  fill_in('address2', :with => 'Ringwood')
+  fill_in('address3', :with => '')
+  fill_in('county', :with => 'Hants')
+  fill_in('postcode', :with => 'BH23 1NY')
 end
 
-When(/^click the add address button the address is added to the top of the screen$/) do
-  pending # Write code here that turns the phrase above into concrete actions
+When(/^I click the add address button the address is added to the top of the screen$/) do
+  click_button('Add additional address')
+  #check that address is displayed at top
 end
 
 When(/^I supply additional address details$/) do
-  pending # Write code here that turns the phrase above into concrete actions
+  fill_in('address1', :with => '1 Longview Terrace')
+  fill_in('address2', :with => 'Ringwood')
+  fill_in('address3', :with => 'New Forest')
+  fill_in('county', :with => 'Hants')
+  fill_in('postcode', :with => 'BH23 1NY')
 end
 
 Then(/^I click the continue button and the case information screen is displayed$/) do
-  pending # Write code here that turns the phrase above into concrete actions
+  click_button('Continue')
 end
 
 Given(/^I am on the case information screen$/) do
@@ -92,37 +113,46 @@ Given(/^I am on the case information screen$/) do
 end
 
 When(/^I first see the class of charge neither PAB or WOB are checked$/) do
-  pending # Write code here that turns the phrase above into concrete actions
+ find_field("PA(B)").checked?
+ find_field("WO(B)").checked?
+ #find_field("WO(B)").should be_unchecked 
 end
 
 When(/^I select a Class of Charge of PAB this becomes checked$/) do 
-  pending # Write code here that turns the phrase above into concrete actions 
+  #find_field("PA(B)").should be_checked 
+  choose('PA(B)')
 end 
 
 Then(/^I select a Class of Charge of WOB this becomes checked and PAB becomes unchecked$/) do 
-  pending # Write code here that turns the phrase above into concrete actions 
+  choose('WO(B)')
+   
 end 
 
 When(/^I enter a court name the details remain visible$/) do 
-  pending # Write code here that turns the phrase above into concrete actions 
+  fill_in('court', :with => 'Bournemouth County court')
 end 
 
 When(/^I enter a court number and year the details remain visible$/) do 
-  pending # Write code here that turns the phrase above into concrete actions 
+  fill_in('court_ref', :with => '123/2015')
 end 
 
-Then(/^I click the continue button and the application complete screen is displayed$/) do 
-  pending # Write code here that turns the phrase above into concrete actions 
+Then(/^I click the submit button and the application complete screen is displayed$/) do 
+  click_button('Submit') 
 end 
 
-Given(/^the submit button on the case information page has been clicked$/) do 
-  pending # Write code here that turns the phrase above into concrete actions 
-end 
+Given(/^the Application complete screen is visible$/) do
+  page.has_content?('Applciation Complete')
+  
+end
 
-When(/^the Application complete screen is visible$/) do 
-  pending # Write code here that turns the phrase above into concrete actions 
-end 
+When(/^the Application has been submitted the unique identifier is displayed to the user on the screen$/) do
+  page.has_content?('Your application reference number is:')
+  page.has_content?('Registered on')
+end
 
-Then(/^the unique identifier is displayed to the user on the screen$/) do 
-  pending # Write code here that turns the phrase above into concrete actions 
-end 
+Then(/^the user can return to the worklist$/) do
+  #page.driver.browser.link(:href => "/get_list?appn=bank_regn").click
+  click_link('Return to Worklist')
+  sleep(10)
+   #find(:link, "Return to Worklist").clicklink
+end
