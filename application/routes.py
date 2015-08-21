@@ -89,6 +89,38 @@ def get_application(requested_worklist, appn_id):
         return render_template('error.html', error_msg=error)
 
 
+@app.route('/get_details/<application_type>/<regn_no>', methods=["GET"])
+def get_bankruptcy_details(application_type, regn_no):
+
+    try:
+
+        url = app.config['BANKRUPTCY_DATABASE_URL'] + '/registration/' + regn_no
+
+        response = requests.get(url)
+
+        application_json = response.json()
+
+        # reformat dates to dd Month yyyy
+        date = datetime.strptime(application_json['date'], "%Y-%m-%d")
+        application_json['date'] = "{:%d %B %Y}".format(date)
+        date = datetime.strptime(application_json['date_of_birth'], "%Y-%m-%d")
+        application_json['date_of_birth'] = "{:%d %B %Y}".format(date)
+
+        return Response(json.dumps(application_json), status=200, mimetype='application/json')
+
+    #    return render_template('regn_details.html', application_type=application_type, data=application_json,
+    #                           images=[
+    #                               "http://localhost:5014/document/9/image/1",
+    #                               "http://localhost:5014/document/9/image/2",
+    #                               "http://localhost:5014/document/9/image/3",
+    #                               ],
+    #                           current_page=0)
+
+    except Exception as error:
+        logging.error(error)
+        return render_template('error.html', error_msg=error)
+
+
 @app.route('/process_banks_name', methods=["POST"])
 def process_banks_name():
 
