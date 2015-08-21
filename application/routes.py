@@ -59,8 +59,8 @@ def get_list():
         return render_template('error.html', error_msg=error)
 
 
-@app.route('/get_application/<requested_worklist>/<appn_id>', methods=["GET"])
-def get_application(requested_worklist, appn_id):
+@app.route('/get_application/<application_type>/<appn_id>', methods=["GET"])
+def get_application(application_type, appn_id):
 
     try:
         url = app.config['CASEWORK_DB_URL'] + '/search/' + appn_id
@@ -75,8 +75,12 @@ def get_application(requested_worklist, appn_id):
         date = datetime.strptime(application_json['date_of_birth'], "%Y-%m-%d")
         application_json['date_of_birth'] = "{:%d %B %Y}".format(date)
 
-        return render_template('application.html', requested_list=requested_worklist, appn_id=appn_id,
-                               data=application_json,
+        if application_type == "amend" or application_type == "cancel":
+            template = 'regn_retrieve.html'
+        else:
+            template = 'application.html'
+
+        return render_template(template, application_type=application_type, data=application_json,
                                images=[
                                    "http://localhost:5014/document/9/image/1",
                                    "http://localhost:5014/document/9/image/2",
@@ -89,36 +93,64 @@ def get_application(requested_worklist, appn_id):
         return render_template('error.html', error_msg=error)
 
 
-@app.route('/get_details/<application_type>/<regn_no>', methods=["GET"])
-def get_bankruptcy_details(application_type, regn_no):
+@app.route('/get_details', methods=["POST"])
+def get_bankruptcy_details():
 
     try:
+        application_type = request.form['application_type']
+        regn_no = request.form['reg_no']
 
         url = app.config['BANKRUPTCY_DATABASE_URL'] + '/registration/' + regn_no
 
         response = requests.get(url)
 
-        application_json = response.json()
+        image_details = [
+            "http://localhost:5014/document/9/image/1",
+            "http://localhost:5014/document/9/image/2",
+            "http://localhost:5014/document/9/image/3",
+            ]
 
-        # reformat dates to dd Month yyyy
-        date = datetime.strptime(application_json['date'], "%Y-%m-%d")
-        application_json['date'] = "{:%d %B %Y}".format(date)
-        date = datetime.strptime(application_json['date_of_birth'], "%Y-%m-%d")
-        application_json['date_of_birth'] = "{:%d %B %Y}".format(date)
+        if response.status_code == 404:
+            error_msg = "Registration not found please re-enter"
+            if application_type == "amend" or application_type == "cancel":
+                template = 'regn_retrieve.html'
+            else:
+                template = 'application.html'
 
-        return Response(json.dumps(application_json), status=200, mimetype='application/json')
+            return render_template(template, application_type=application_type,
+                                   error_msg=error_msg, images=image_details, current_page=0)
 
-    #    return render_template('regn_details.html', application_type=application_type, data=application_json,
-    #                           images=[
-    #                               "http://localhost:5014/document/9/image/1",
-    #                               "http://localhost:5014/document/9/image/2",
-    #                               "http://localhost:5014/document/9/image/3",
-    #                               ],
-    #                           current_page=0)
+        else:
+            application_json = response.json()
+
+            #  json missing court details at the moment, waiting for Ian to redesign the database to include them
+            #  Will hard code for now
+            application_json['court_name'] = "Liverpool"
+            application_json['court_number'] = "523 / 15"
+
+        return render_template('regn_details.html', application_type=application_type, data=application_json,
+                               images=image_details, current_page=0)
 
     except Exception as error:
         logging.error(error)
         return render_template('error.html', error_msg=error)
+
+@app.route('/process_request', methods=["POST"])
+def process_request():
+
+    application = request.form['application']
+    application_type = request.form['application_type']
+    images = request.form['images']
+
+    if application_type == "amend":
+        template = 'regn_amend.html'
+    else:
+        template = 'regn_amend.html'
+
+    print('application ' + application)
+
+    return render_template(template, application_type=application_type, data=application,
+                           images=images, current_page=0)
 
 
 @app.route('/process_banks_name', methods=["POST"])
@@ -276,13 +308,13 @@ def get_totals():
             elif item['work_type'] == "amend":
                 amend += 1
             elif item['work_type'] == "cancel":
-                amend += 1
+                canc += 1
             elif item['work_type'] == "prt_search":
-                amend += 1
+                portal += 1
             elif item['work_type'] == "search":
-                amend += 1
+                search += 1
             elif item['work_type'] == "oc":
-                amend += 1
+                oc += 1
 
     return {
         'pabs': pabs,

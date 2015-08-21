@@ -1,11 +1,9 @@
 <div id="images_data" class="col-sm-6">
-    <div id="thumbnails" class="row col-sm-12" style="margin-bottom:10px">
+    <div id="thumbnails" class="row col-sm-12">
         {% for image in images %}
-            <img class="row col-sm-2 thumbnail{% if loop.index0 == current_page %} active{% endif %}" src="{{image}}" alt="" onclick="imgClick(this, {{ loop.index0 }})"/>
-            <div class="col-sm-1"></div>
+            <img class="thumbnail{% if loop.index0 == current_page %} active{% endif %}" src="{{image}}" alt="" onclick="imgClick(this, {{ loop.index0 }})"/>
         {% endfor %}
     </div>
-
     <div id="image_area">
         <div id="imageContainer">
             {% for image in images %}
