@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Land Charges</title>
+    {% include 'includes/ext_references.html' %}
+    {% include 'includes/image_view_head.html' %}
+
+
+
+</head>
+<form action="/process_banks_name" method="POST">
+<input type="hidden" name="application_type" value="{{application_type}}">
+<input type="hidden" name="application" value="{{data}}">
+<input type="hidden" name="images" value="{{images}}">
+{% if application_type == 'amend'%}
+{% set page_title = 'Bankruptcy Amendment' %}
+{% set trail = 'Amendments' %}
+{% elif application_type == 'cancel' %}
+{% set page_title = 'Bankruptcy Cancellation' %}
+{% set trail = 'Cancellations' %}
+{% endif %}
+<div id="main" class="container" style="margin-top:20px !important;">
+    <div class="container">
+        <div class="row">
+            <h2>Land Charges</h2>
+            <div class="row col-sm-12">
+                <ul class="breadcrumb">
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/get_list?appn={{application_type}}">{{trail}}</a></li>
+                </ul>
+            </div>
+            <div class="row col-sm-12" style="margin-top:10px">
+                <h2>{{page_title}}</h2><br/>
+                {% include 'includes/image_view_body.html' %}
+                <div id="form_data" class="col-sm-6">
+                    <h5>Step 2 of 4</h5>
+                    <h4>Bankruptcy details</h4>
+                        <div class="col-sm-12" style="margin:10px 0px">
+                            <h5>Debtor details</h5>
+                                <div class="col-sm-3" style="height:100%; margin:10px 5px 0px 0px; border:solid 1px #d1d1d1; border-radius:5px;">
+                                    <p>
+                                    {% for forename in data.debtor_name.forenames %}
+                                        {{forename}}
+                                    {% endfor %}<br/>
+                                    {{data.debtor_name.surname}}
+                                    </p>
+                                    <p>{{data.occupation}}</p>
+                                </div>
+                                {% for name in data.debtor_alias %}
+                                <div class="col-sm-3" style="height:100%; margin:10px 5px 0px 0px; border:solid 1px #d1d1d1; border-radius:5px;">
+                                    <p>
+                                        {% for forename in name.forenames %}
+                                            {{forename}}
+                                        {% endfor %}<br/>
+                                        {{name.surname}}
+                                    </p>
+                                </div>
+                                {% endfor %}
+                        </div>
+                        {% if data.residence|length > 0 and data.residence[0].address_lines|length > 0 %}
+                            <div class="row col-sm-12" style="margin:10px 0px">
+                                <h5>Address details</h5>
+                                {% for address in data.residence %}
+                                <a href="amend_address">
+                                <div class="col-sm-4" style="height:100%; margin:10px 5px 0px 0px; border:solid 1px #d1d1d1; border-radius:5px;">
+                                    <p>
+                                        {% for line in address.address_lines %}
+                                        {{line}}<br/>
+                                        {% endfor %}
+                                    </p>
+                                </div>
+                                </a>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        <div class="row col-sm-12" style="margin:10px 0px">
+                            <h5>Court name and number</h5>
+                            <a href="amend_court">
+                                <div class="col-sm-4" style="height:100%; margin:10px 5px 0px 0px; border:solid 1px #d1d1d1; border-radius:5px;">
+                                    <p>
+                                        {{data.court_name}}<br/>
+                                        {{data.court_number}}
+                                    </p>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="form-group">
+                            <input class="btn-lg pull-right continue-btn" id="continue" type="submit" value="Amend details">
+                            <input class="btn-lg pull-right btn-danger" id="reject" type="submit" value="Reject">
+                        </div>
+                        </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</form>
+</body>
+</html>
