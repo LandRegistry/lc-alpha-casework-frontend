@@ -52,14 +52,19 @@
                 </div>
             </div>
             <div style="margin-top: 23em; text-align: center">
-                {% if data|length <= 1 %}
-                <h2>Your application reference number is:</h2>
+                {% if requested_list == 'cancel' %}
+                    <h2>The following application has been cancelled:</h2>
+                    <h3>{{data}}</h3>
                 {% else %}
-                <h2>Your application reference numbers are:</h2>
+                    {% if data|length <= 1 %}
+                    <h2>Your application reference number is:</h2>
+                    {% else %}
+                    <h2>Your application reference numbers are:</h2>
+                    {% endif %}
+                    {% for n in data %}
+                    <h3>{{n}}</h3>
+                    {% endfor %}
                 {% endif %}
-                {% for n in data %}
-                <h3>{{n}}</h3>
-                {% endfor %}
                 <br/>
                 <h3 id="registereddate">Registered on {{date}}</h3>
             </div>

@@ -134,18 +134,45 @@ def get_bankruptcy_details():
 def process_request():
 
     application = request.form['application']
+    print(type(application))
     application_type = request.form['application_type']
     images = request.form['images']
+    regn = json.loads(request.form['application'])
+    print(regn)
+    print(type(regn))
+    regn_no = regn['registration_no']
+
+    print(application)
 
     if application_type == "amend":
         template = 'regn_amend.html'
     else:
-        template = 'regn_amend.html'
+        # template = 'regn_amend.html'
+        print("trying to get confirmation screen")
+        url = app.config['BANKRUPTCY_DATABASE_URL'] + '/registration/' + regn_no
+        headers = {'Content-Type': 'application/json'}
+        response = requests.delete(url, data=json.dumps(application), headers=headers)
+        print("tried to delete row", response.status_code)
+        if response.status_code == 200:
+            data = response.json()
+            reg = data['cancelled']
+            # reg_list = []
+            # for n in data['new_registrations']:
+            # reg_list.append(n)
+            requested_worklist = 'cancel'
+            display_date = datetime.now().strftime('%d.%m.%Y')
+            return render_template('confirmation.html', application=application, data=reg, date=display_date,
+                                   requested_list=requested_worklist)
+        else:
+            print("failed with", response.status_code)
+            error = response.status_code
+            logging.error(error)
+            return render_template('error.html', error_msg=error)
 
     print('application ' + application)
 
-    return render_template(template, application_type=application_type, data=application,
-                           images=images, current_page=0)
+    # return render_template(template, application_type=application_type, data=application,
+                         #  images=images, current_page=0)
 
 
 @app.route('/process_banks_name', methods=["POST"])
@@ -220,7 +247,7 @@ def process_court_details():
         application["residence_withheld"] = False
         application['date_of_birth'] = "1980-01-01"
 
-        url = app.config['BANKRUPTCY_DATABASE_URL'] + '/register'
+        url = app.config['BANKRUPTCY_DATABASE_URL'] + '/registration'
         headers = {'Content-Type': 'application/json'}
         response = requests.post(url, data=json.dumps(application), headers=headers)
 
