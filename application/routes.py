@@ -1,5 +1,5 @@
 from application import app
-from flask import request, Response, render_template
+from flask import request, Response, render_template, session
 import requests
 from datetime import datetime
 import logging
@@ -66,9 +66,15 @@ def get_application(application_type, appn_id):
         url = app.config['CASEWORK_DB_URL'] + '/search/' + appn_id
 
         response = requests.get(url)
-
         application_json = response.json()
+        document_id = application_json['document_id']
+        doc_response = requests.get(app.config["DOCUMENT_URL"] + "/document/" + str(document_id))
+        image_data = doc_response.json()
 
+        images = []
+        for image in image_data['images']:
+            images.append(app.config["DOCUMENT_URL"] + image)
+        session['images'] = images
 
         if application_type == "amend" or application_type == "cancel":
             template = 'regn_retrieve.html'
@@ -76,11 +82,7 @@ def get_application(application_type, appn_id):
             template = 'application.html'
 
         return render_template(template, application_type=application_type, data=application_json,
-                               images=[
-                                   "http://localhost:5014/document/9/image/1",
-                                   "http://localhost:5014/document/9/image/2",
-                                   "http://localhost:5014/document/9/image/3",
-                               ],
+                               images=images,
                                current_page=0)
 
     except Exception as error:
@@ -218,11 +220,9 @@ def process_banks_name():
             counter += 1
 
         requested_worklist = 'bank_regn'
+        images = session['images']
 
-        return render_template('address.html', application=json.dumps(name), images=[
-                               "http://localhost:5014/document/9/image/1",
-                               "http://localhost:5014/document/9/image/2",
-                               "http://localhost:5014/document/9/image/3", ],
+        return render_template('address.html', application=json.dumps(name), images=images,
                                requested_list=requested_worklist, current_page=1)
 
     except Exception as error:
