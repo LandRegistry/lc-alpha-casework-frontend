@@ -115,11 +115,11 @@ end
 When(/^I first see the class of charge neither PAB or WOB are checked$/) do
  find_field("PA(B)").checked?
  find_field("WO(B)").checked?
- #find_field("WO(B)").should be_unchecked 
+ 
 end
 
 When(/^I select a Class of Charge of PAB this becomes checked$/) do 
-  #find_field("PA(B)").should be_checked 
+
   choose('PA(B)')
 end 
 
@@ -150,9 +150,18 @@ When(/^the Application has been submitted the unique identifier is displayed to 
   page.has_content?('Registered on')
 end
 
+When(/^the Application has been submitted the date is displayed to the user on the screen$/) do
+  require 'Date'
+  current_date = Date.today
+  date_format = current_date.strftime('%d.%m.%Y')
+  puts(current_date)
+  puts(date_format)
+  registerdate = find(:id, 'registereddate').text
+  puts(registerdate)
+  expect(registerdate).to eq 'Registered on '+ date_format
+end
+
 Then(/^the user can return to the worklist$/) do
-  #page.driver.browser.link(:href => "/get_list?appn=bank_regn").click
   click_link('Return to Worklist')
   sleep(10)
-   #find(:link, "Return to Worklist").clicklink
 end
