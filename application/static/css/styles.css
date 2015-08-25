@@ -108,6 +108,7 @@ body {
 .gi-4x{font-size: 4em;}
 .gi-5x{font-size: 5em;}
 
+
 a.black:visited{
     text-decoration: none;
 }
@@ -155,4 +156,27 @@ a.black:active{
     width: 12em;
     margin-top: 10em;
     text-align: center;
+}
+
+.div_link {
+    margin-top:10px;
+    margin-right:5px;
+    padding:0px;
+}
+
+.div_link a {
+    display:block;
+    border: 1px solid #4dc3ff;
+    height:100%;
+    width:100%;
+    border-radius:5px;
+    padding-left:15px;
+    background: #4dc3ff;
+    color:black;
+}
+
+.div_link a:hover, .div_link a:focus{
+    background: #49A6F5;
+    color:black;
+    text-decoration:none;
 }

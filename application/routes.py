@@ -4,6 +4,7 @@ import requests
 from datetime import datetime
 import logging
 import json
+import ast
 
 
 @app.route('/', methods=["GET"])
@@ -133,19 +134,23 @@ def get_bankruptcy_details():
 @app.route('/process_request', methods=["POST"])
 def process_request():
 
-    application = request.form['application']
     application_type = request.form['application_type']
-    images = request.form['images']
 
-    if application_type == "amend":
+    # convert application the application retrieved from the request from a string to a dict
+    application_dict = ast.literal_eval(request.form['application'])
+
+    # convert application the application retrieved from the request from a string to a dict
+    image_list = eval(request.form['images'])
+
+    if 'Amend' in request.form:
         template = 'regn_amend.html'
+    elif 'Continue' in request.form:
+        template = 'regn_details.html'
     else:
-        template = 'regn_amend.html'
+        template = 'regn_details.html'
 
-    print('application ' + application)
-
-    return render_template(template, application_type=application_type, data=application,
-                           images=images, current_page=0)
+    return render_template(template, application_type=application_type, data=application_dict,
+                           images=image_list, current_page=0)
 
 
 @app.route('/process_banks_name', methods=["POST"])
