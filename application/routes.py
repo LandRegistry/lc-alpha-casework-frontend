@@ -96,16 +96,12 @@ def get_bankruptcy_details():
     try:
         application_type = request.form['application_type']
         regn_no = request.form['reg_no']
+        session['regn_no']=regn_no
+        image_details = session['images']
 
         url = app.config['BANKRUPTCY_DATABASE_URL'] + '/registration/' + regn_no
 
         response = requests.get(url)
-
-        image_details = [
-            "http://localhost:5014/document/9/image/1",
-            "http://localhost:5014/document/9/image/2",
-            "http://localhost:5014/document/9/image/3",
-            ]
 
         if response.status_code == 404:
             error_msg = "Registration not found please re-enter"
@@ -119,6 +115,16 @@ def get_bankruptcy_details():
 
         else:
             application_json = response.json()
+            if application_json['status'] == 'cancelled':
+                error_msg = "Application cancelled please re-enter"
+                if application_type == "amend" or application_type == "cancel":
+                    template = 'regn_retrieve.html'
+                else:
+                    template = 'application.html'
+
+                return render_template(template, application_type=application_type,
+                                       error_msg=error_msg, images=image_details, current_page=0)
+
 
             #  json missing court details at the moment, waiting for Ian to redesign the database to include them
             #  Will hard code for now
@@ -136,45 +142,33 @@ def get_bankruptcy_details():
 def process_request():
 
     application = request.form['application']
-    print(type(application))
     application_type = request.form['application_type']
-    images = request.form['images']
-    regn = json.loads(request.form['application'])
-    print(regn)
-    print(type(regn))
-    regn_no = regn['registration_no']
-
-    print(application)
+    images = session['images']
+    regn_no = session['regn_no']
+    display_date = datetime.now().strftime('%d.%m.%Y')
 
     if application_type == "amend":
-        template = 'regn_amend.html'
+        template = 'rejection.html'
     else:
-        # template = 'regn_amend.html'
-        print("trying to get confirmation screen")
+        template = 'confirmation.html'
         url = app.config['BANKRUPTCY_DATABASE_URL'] + '/registration/' + regn_no
         headers = {'Content-Type': 'application/json'}
         response = requests.delete(url, data=json.dumps(application), headers=headers)
-        print("tried to delete row", response.status_code)
         if response.status_code == 200:
             data = response.json()
-            reg = data['cancelled']
-            # reg_list = []
-            # for n in data['new_registrations']:
-            # reg_list.append(n)
-            requested_worklist = 'cancel'
-            display_date = datetime.now().strftime('%d.%m.%Y')
-            return render_template('confirmation.html', application=application, data=reg, date=display_date,
-                                   requested_list=requested_worklist)
+            application = []
+            for n in data['cancelled']:
+                application.append(n)
         else:
             print("failed with", response.status_code)
             error = response.status_code
             logging.error(error)
             return render_template('error.html', error_msg=error)
 
-    print('application ' + application)
+    print('application ', application)
 
-    # return render_template(template, application_type=application_type, data=application,
-                         #  images=images, current_page=0)
+    return render_template(template, application_type=application_type, data=application,
+                           images=images, current_page=0, date=display_date)
 
 
 @app.route('/process_banks_name', methods=["POST"])

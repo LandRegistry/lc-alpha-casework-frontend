@@ -134,6 +134,16 @@ a.black:active{
     top: 0; left: 0; bottom: 0; right: 0;
 }
 
+.box-red{
+    width: 60em;
+    height: 12em;
+    border: 0.1em solid #FF3333;
+    background-color: #FF3333;
+    margin: auto;
+    position: absolute;
+    top: 0; left: 0; bottom: 0; right: 0;
+}
+
 .gi-tick{
     padding-left: 2em;
     padding-top: 0.7em;
