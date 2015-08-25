@@ -69,11 +69,6 @@ def get_application(application_type, appn_id):
 
         application_json = response.json()
 
-        # reformat dates to dd Month yyyy
-        date = datetime.strptime(application_json['date'], "%Y-%m-%d")
-        application_json['date'] = "{:%d %B %Y}".format(date)
-        date = datetime.strptime(application_json['date_of_birth'], "%Y-%m-%d")
-        application_json['date_of_birth'] = "{:%d %B %Y}".format(date)
 
         if application_type == "amend" or application_type == "cancel":
             template = 'regn_retrieve.html'
