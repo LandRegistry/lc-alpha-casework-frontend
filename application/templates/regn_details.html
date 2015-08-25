@@ -6,13 +6,8 @@
     {% include 'includes/ext_references.html' %}
     {% include 'includes/image_view_head.html' %}
 
-
-
 </head>
 <form action="/process_request" method="POST">
-<input type="hidden" name="application_type" value="{{application_type}}">
-<input type="hidden" name="application" value="{{data}}">
-<input type="hidden" name="images" value="{{images}}">
 {% if application_type == 'amend'%}
 {% set page_title = 'Bankruptcy Amendment' %}
 {% set trail = 'Amendments' %}
