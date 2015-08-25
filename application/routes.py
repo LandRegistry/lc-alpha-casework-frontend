@@ -24,7 +24,6 @@ def get_list():
         requested_worklist = request.args.get('appn')
 
         url = app.config['CASEWORK_DB_URL'] + '/work_list/' + requested_worklist
-        print(url)
 
         response = requests.get(url)
 
@@ -81,6 +80,8 @@ def get_application(application_type, appn_id):
         else:
             template = 'application.html'
 
+        session['application_type'] = application_type
+
         return render_template(template, application_type=application_type, data=application_json,
                                images=images,
                                current_page=0)
@@ -94,18 +95,14 @@ def get_application(application_type, appn_id):
 def get_bankruptcy_details():
 
     try:
-        application_type = request.form['application_type']
+        application_type = session['application_type']
         regn_no = request.form['reg_no']
 
         url = app.config['BANKRUPTCY_DATABASE_URL'] + '/registration/' + regn_no
 
         response = requests.get(url)
 
-        image_details = [
-            "http://localhost:5014/document/9/image/1",
-            "http://localhost:5014/document/9/image/2",
-            "http://localhost:5014/document/9/image/3",
-            ]
+        image_details = session['images']
 
         if response.status_code == 404:
             error_msg = "Registration not found please re-enter"
@@ -125,6 +122,8 @@ def get_bankruptcy_details():
             application_json['court_name'] = "Liverpool"
             application_json['court_number'] = "523 / 15"
 
+        session['application_dict'] = application_json
+
         return render_template('regn_details.html', application_type=application_type, data=application_json,
                                images=image_details, current_page=0)
 
@@ -135,19 +134,41 @@ def get_bankruptcy_details():
 @app.route('/process_request', methods=["POST"])
 def process_request():
 
-    application = request.form['application']
-    application_type = request.form['application_type']
-    images = request.form['images']
+    application_type = session['application_type']
+    application_dict = session['application_dict']
+    image_list = session['images']
 
-    if application_type == "amend":
+    if 'Amend' in request.form:
         template = 'regn_amend.html'
+    elif 'Continue' in request.form:
+        template = 'regn_details.html'
     else:
-        template = 'regn_amend.html'
+        template = 'regn_details.html'
 
-    print('application ' + application)
+    return render_template(template, application_type=application_type, data=application_dict,
+                           images=image_list, current_page=0)
 
-    return render_template(template, application_type=application_type, data=application,
-                           images=images, current_page=0)
+@app.route('/amend_name', methods=["GET"])
+def show_name():
+
+    application_type = session['application_type']
+    application_dict = session['application_dict']
+    image_list = session['images']
+
+    return render_template('regn_name.html', application_type=application_type, data=application_dict,
+                           images=image_list, current_page=0)
+
+@app.route('/update_name', methods=["POST"])
+def update_name_details():
+
+    application_type = session['application_type']
+    application_dict = session['application_dict']
+    image_list = session['images']
+
+    return render_template('regn_amend.html', application_type=application_type, data=application_dict,
+                           images=image_list, current_page=0)
+
+
 
 
 @app.route('/process_banks_name', methods=["POST"])
