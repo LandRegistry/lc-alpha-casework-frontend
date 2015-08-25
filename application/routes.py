@@ -75,6 +75,7 @@ def get_application(application_type, appn_id):
         for image in image_data['images']:
             images.append(app.config["DOCUMENT_URL"] + image)
         session['images'] = images
+        session['document_id'] = document_id
 
         if application_type == "amend" or application_type == "cancel":
             template = 'regn_retrieve.html'
@@ -219,6 +220,7 @@ def process_court_details():
         application["date"] = today
         application["residence_withheld"] = False
         application['date_of_birth'] = "1980-01-01"
+        application["document_id"] = session['document_id']
 
         url = app.config['BANKRUPTCY_DATABASE_URL'] + '/register'
         headers = {'Content-Type': 'application/json'}
@@ -266,17 +268,11 @@ def application_step_2():
     requested_worklist = 'bank_regn'
 
     if 'add_address' in request.form:
-        return render_template('address.html', application=json.dumps(application), images=[
-            "http://localhost:5014/document/9/image/1",
-            "http://localhost:5014/document/9/image/2",
-            "http://localhost:5014/document/9/image/3",
-        ], residences=application['residence'], requested_list=requested_worklist, current_page=0)
+        return render_template('address.html', application=json.dumps(application), images=session['images'],
+                               residences=application['residence'], requested_list=requested_worklist, current_page=0)
     else:
         return render_template('banks_order.html', application=json.dumps(application),
-                               images=[
-                                   "http://localhost:5014/document/9/image/1",
-                                   "http://localhost:5014/document/9/image/2",
-                                   "http://localhost:5014/document/9/image/3", ],
+                               images=session['images'],
                                requested_list=requested_worklist, current_page=0)
 
 
