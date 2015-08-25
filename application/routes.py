@@ -210,8 +210,8 @@ def process_court_details():
     try:
         application = json.loads(request.form['application'])
         application["application_type"] = request.form['nature']
-        application["court_name"] = request.form['court']
-        application["court_ref"] = request.form['court_ref']
+        application["legal_body"] = request.form['court']
+        application["legal_body_ref"] = request.form['court_ref']
 
         # these are needed at the moment for registration but are not captured on the form
         application["key_number"] = "2244095"
@@ -222,7 +222,7 @@ def process_court_details():
         application['date_of_birth'] = "1980-01-01"
         application["document_id"] = session['document_id']
 
-        url = app.config['BANKRUPTCY_DATABASE_URL'] + '/register'
+        url = app.config['BANKRUPTCY_DATABASE_URL'] + '/registration'
         headers = {'Content-Type': 'application/json'}
         response = requests.post(url, data=json.dumps(application), headers=headers)
 
