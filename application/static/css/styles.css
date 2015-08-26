@@ -181,6 +181,7 @@ a.black:active{
     width:100%;
     border-radius:5px;
     padding-left:15px;
+    padding-right:15px;
     background: #4dc3ff;
     color:black;
 }

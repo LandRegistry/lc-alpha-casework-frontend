@@ -81,6 +81,7 @@ def get_application(application_type, appn_id):
             template = 'application.html'
 
         session['application_type'] = application_type
+        session['worklist_id'] = appn_id
 
         return render_template(template, application_type=application_type, data=application_json,
                                images=images,
@@ -176,12 +177,50 @@ def process_request():
     return render_template(template, application_type=application_type, data=application_dict,
                            images=image_list, current_page=0, date=display_date)
 
+@app.route('/submit_amendment', methods=["POST"])
+def submit_amendment():
+    application_type = session['application_type']
+    application_dict = session['application_dict']
+    regn_no = session['regn_no']
+    display_date = datetime.now().strftime('%d.%m.%Y')
+
+    # these are needed at the moment for registration but are not captured on the form
+    application_dict["key_number"] = "2244095"
+    application_dict["application_ref"] = "customer reference"
+    today = datetime.now().strftime('%Y-%m-%d')
+    application_dict["date"] = today
+    application_dict["residence_withheld"] = False
+    application_dict['date_of_birth'] = "1980-01-01"
+
+    url = app.config['BANKRUPTCY_DATABASE_URL'] + '/registration/' + regn_no
+    headers = {'Content-Type': 'application/json'}
+    response = requests.put(url, json.dumps(application_dict), headers=headers)
+    if response.status_code == 200:
+        data = response.json()
+        reg_list = []
+        for n in data['new_registrations']:
+            reg_list.append(n)
+        display_date = datetime.now().strftime('%d.%m.%Y')
+        try:
+            delete_from_worklist(session['worklist_id'])
+        except Exception as error:
+            logging.error(error)
+            return render_template('error.html', error_msg=error)
+    else:
+        error = response.status_code
+        logging.error(error)
+        return render_template('error.html', error_msg=error)
+
+    return render_template('confirmation.html', application_type=application_type, data=reg_list,
+                           date=display_date)
+
 
 @app.route('/amend_name', methods=["GET"])
 def show_name():
 
     application_type = session['application_type']
     application_dict = session['application_dict']
+
     image_list = session['images']
 
     return render_template('regn_name.html', application_type=application_type, data=application_dict,
@@ -195,8 +234,32 @@ def update_name_details():
     application_dict = session['application_dict']
     image_list = session['images']
 
+    forenames = request.form['forenames'].strip()
+    surname = request.form['surname'].strip()
+    occupation = request.form['occupation'].strip()
+
+    new_debtor_name = {
+        'forenames': forenames.split(),
+        'surname': surname
+    }
+
+    application_dict['debtor_name'] = new_debtor_name
+    application_dict['occupation'] = occupation
+
     return render_template('regn_amend.html', application_type=application_type, data=application_dict,
                            images=image_list, current_page=0)
+
+
+def delete_from_worklist(application_id):
+
+    url = app.config['CASEWORK_DB_URL'] + '/workitem/' + application_id
+    response = requests.delete(url)
+    if response.status_code != 204:
+        print(response.status_code)
+        raise RuntimeError('Failed to delete application ' + application_id + ' from the worklist. Error code:'
+                           + response.status_code)
+
+
 
 
 @app.route('/process_banks_name', methods=["POST"])
