@@ -199,6 +199,48 @@ def update_name_details():
                            images=image_list, current_page=0)
 
 
+@app.route('/amend_address/<int:addr>', methods=["GET"])
+def show_address(addr):
+
+    application_type = session['application_type']
+    application_dict = session['application_dict']
+    image_list = session['images']
+    address = addr
+
+    return render_template('regn_address.html', application_type=application_type, data=application_dict,
+                           images=image_list, current_page=0, addr=address)
+
+
+@app.route('/update_address/<int:addr>', methods=["POST"])
+def update_address_details(addr):
+
+    application_type = session['application_type']
+    application_dict = session['application_dict']
+    image_list = session['images']
+    address_index = addr
+
+    address = {'address_lines': []}
+    if 'address1' in request.form and request.form['address1'] != '':
+        address['address_lines'].append(request.form['address1'])
+    if 'address2' in request.form and request.form['address2'] != '':
+        address['address_lines'].append(request.form['address2'])
+    if 'address3' in request.form and request.form['address3'] != '':
+        address['address_lines'].append(request.form['address3'])
+    if 'address4' in request.form and request.form['address4'] != '':
+        address['address_lines'].append(request.form['address4'])
+    if 'address5' in request.form and request.form['address5'] != '':
+        address['address_lines'].append(request.form['address5'])
+    if 'address6' in request.form and request.form['address6'] != '':
+        address['address_lines'].append(request.form['address6'])
+
+    address['county'] = request.form['county']
+    address['postcode'] = request.form['postcode']
+    application_dict['residence'][address_index] = address
+
+    return render_template('regn_amend.html', application_type=application_type, data=application_dict,
+                           images=image_list, current_page=0)
+
+
 @app.route('/process_banks_name', methods=["POST"])
 def process_banks_name():
 
@@ -281,7 +323,7 @@ def process_court_details():
             requested_worklist = 'bank_regn'
             display_date = datetime.now().strftime('%d.%m.%Y')
             return render_template('confirmation.html', application=application, data=reg_list, date=display_date,
-                                   requested_list=requested_worklist)
+                                   application_type=requested_worklist)
         else:
             print("failed with", response.status_code)
             error = response.status_code
@@ -309,7 +351,7 @@ def application_step_2():
     if 'address3' in request.form and request.form['address3'] != '':
         address['address_lines'].append(request.form['address3'])
 
-    address['address_lines'].append(request.form['county'])
+    address['county'] = request.form['county']
     address['postcode'] = request.form['postcode']
     application['residence'].append(address)
     requested_worklist = 'bank_regn'

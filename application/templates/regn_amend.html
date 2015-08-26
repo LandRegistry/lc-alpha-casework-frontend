@@ -67,7 +67,7 @@
                                 {% for address in data.residence %}
 
                                 <div class="col-sm-4 div_link">
-                                    <a href="amend_address?adrr={{loop.index}}">
+                                    <a href="/amend_address/{{loop.index-1}}">
                                     <p>
                                         {% for line in address.address_lines %}
                                         {{line}}<br/>
