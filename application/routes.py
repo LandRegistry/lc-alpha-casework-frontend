@@ -276,6 +276,22 @@ def application_step_2():
                                requested_list=requested_worklist, current_page=0)
 
 
+@app.route('/acknowledgement', methods=['GET'])
+def acknowledgement():
+    data = {
+        "type": "PAB",
+        "ref_no": 50001,
+        "date": "26/08/2015",
+        "details": [{
+                "name": "Bob Howard",
+                "particulars": "what goes here?"
+            }
+        ]
+    }
+
+    return render_template('K20.html', data=data)
+
+
 def get_totals():
 
     # initialise all counters to 0
