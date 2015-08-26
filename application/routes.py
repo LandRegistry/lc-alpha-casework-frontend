@@ -130,7 +130,7 @@ def get_bankruptcy_details():
 
 
             #  json missing court details at the moment, waiting for Ian to redesign the database to include them
-            #  Will hard code for now
+            #  TODO: Will hard code for now
             application_json['court_name'] = "Liverpool"
             application_json['court_number'] = "523 / 15"
 
@@ -158,8 +158,10 @@ def process_request():
     elif 'Continue' in request.form:
         template = 'confirmation.html'
         url = app.config['BANKRUPTCY_DATABASE_URL'] + '/registration/' + regn_no
+        # TODO: pass empty dict for now, ian mentioned about doc id needed?
+        data = {}
         headers = {'Content-Type': 'application/json'}
-        response = requests.delete(url, headers=headers)
+        response = requests.delete(url, data=json.dumps(data), headers=headers)
         if response.status_code == 200:
             data = response.json()
             # although this is list it is called application_dict to reuse render template statement below
@@ -167,7 +169,7 @@ def process_request():
             for n in data['cancelled']:
                 application_dict.append(n)
         else:
-            print("failed with", response.status_code)
+            print("failed to cancel application on register", response.status_code)
             error = response.status_code
             logging.error(error)
             return render_template('error.html', error_msg=error)
@@ -200,7 +202,6 @@ def submit_amendment():
         reg_list = []
         for n in data['new_registrations']:
             reg_list.append(n)
-        display_date = datetime.now().strftime('%d.%m.%Y')
         try:
             delete_from_worklist(session['worklist_id'])
         except Exception as error:
