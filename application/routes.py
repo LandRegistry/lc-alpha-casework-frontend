@@ -340,6 +340,17 @@ def show_alias(name_index):
     return render_template('regn_alias.html', application_type=application_type, data=application_dict,
                            images=image_list, current_page=0, name_index=name_index)
 
+@app.route('/remove_alias/<int:name>', methods=["GET"])
+def remove_alias(name):
+
+    application_type = session['application_type']
+    application_dict = session['application_dict']
+    image_list = session['images']
+    del(application_dict['debtor_alternative_name'][name])
+
+    return render_template('regn_amend.html', application_type=application_type, data=application_dict,
+                           images=image_list, current_page=0)
+
 
 @app.route('/update_alias/<name_index>', methods=["POST"])
 def update_alias(name_index):
