@@ -309,6 +309,21 @@ def update_address_details(addr):
                            images=image_list, current_page=0)
 
 
+@app.route('/remove_address/<int:addr>', methods=["GET"])
+def remove_address(addr):
+
+    application_type = session['application_type']
+    application_dict = session['application_dict']
+    image_list = session['images']
+    print(application_dict)
+    del(application_dict['residence'][addr])
+    print(application_dict)
+
+    return render_template('regn_amend.html', application_type=application_type, data=application_dict,
+                           images=image_list, current_page=0)
+
+
+
 @app.route('/amend_alias/<int:name_index>', methods=["GET"])
 def show_alias(name_index):
 
@@ -426,8 +441,8 @@ def process_court_details():
     try:
         application = json.loads(request.form['application'])
         application["application_type"] = request.form['nature']
-        application["court_name"] = request.form['court']
-        application["court_ref"] = request.form['court_ref']
+        application["legal_body"] = request.form['court']
+        application["legal_body_ref"] = request.form['court_ref']
 
         # these are needed at the moment for registration but are not captured on the form
         application["key_number"] = "2244095"
