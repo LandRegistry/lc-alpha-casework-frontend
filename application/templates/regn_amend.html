@@ -50,7 +50,7 @@
                                 {% for name in data.debtor_alternative_name %}
 
                                     <div class="col-sm-3 div_link">
-                                        <a href="/amend_alias?alias={{loop.index}}">
+                                        <a href="/amend_alias/{{loop.index-1}}">
                                         <p>
                                             {% for forename in name.forenames %}
                                                 {{forename}}
@@ -86,8 +86,8 @@
                                 <div class="col-sm-4 div_link" >
                                     <a href="amend_court">
                                     <p>
-                                        {{data.court_name}}<br/>
-                                        {{data.court_number}}
+                                        {{data.legal_body}}<br/>
+                                        {{data.legal_body_ref}}
                                     </p>
                                     </a>
                                 </div>
