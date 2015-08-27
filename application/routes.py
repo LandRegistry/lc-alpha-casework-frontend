@@ -82,6 +82,7 @@ def get_application(application_type, appn_id):
 
         session['application_type'] = application_type
         session['worklist_id'] = appn_id
+        session['document_id'] = document_id
 
         return render_template(template, application_type=application_type, data=application_json,
                                images=images,
@@ -105,6 +106,10 @@ def get_bankruptcy_details():
         response = requests.get(url)
 
         image_details = session['images']
+        if application_type == 'amend':
+            template = 'regn_amend.html'
+        else:
+            template = 'regn_cancel.html'
 
         if response.status_code == 404:
             error_msg = "Registration not found please re-enter"
@@ -118,8 +123,8 @@ def get_bankruptcy_details():
 
         else:
             application_json = response.json()
-            if application_json['status'] == 'cancelled':
-                error_msg = "Application cancelled please re-enter"
+            if application_json['status'] == 'cancelled' or application_json['status'] == 'superseded':
+                error_msg = "Application has been cancelled or amended - please re-enter"
                 if application_type == "amend" or application_type == "cancel":
                     template = 'regn_retrieve.html'
                 else:
@@ -130,7 +135,7 @@ def get_bankruptcy_details():
 
         session['application_dict'] = application_json
 
-        return render_template('regn_details.html', application_type=application_type, data=application_json,
+        return render_template(template, application_type=application_type, data=application_json,
                                images=image_details, current_page=0)
 
     except Exception as error:
@@ -256,25 +261,28 @@ def delete_from_worklist(application_id):
         raise RuntimeError(error)
 
 
-@app.route('/amend_address/<int:addr>', methods=["GET"])
+@app.route('/amend_address/<addr>', methods=["GET"])
 def show_address(addr):
 
     application_type = session['application_type']
     application_dict = session['application_dict']
     image_list = session['images']
-    address = addr
+
+    if addr == 'new':
+        address = addr
+    else:
+        address = int(addr)
 
     return render_template('regn_address.html', application_type=application_type, data=application_dict,
                            images=image_list, current_page=0, addr=address)
 
 
-@app.route('/update_address/<int:addr>', methods=["POST"])
+@app.route('/update_address/<addr>', methods=["POST"])
 def update_address_details(addr):
 
     application_type = session['application_type']
     application_dict = session['application_dict']
     image_list = session['images']
-    address_index = addr
 
     address = {'address_lines': []}
     if 'address1' in request.form and request.form['address1'] != '':
@@ -292,7 +300,10 @@ def update_address_details(addr):
 
     address['county'] = request.form['county']
     address['postcode'] = request.form['postcode']
-    application_dict['residence'][address_index] = address
+    if addr == 'new':
+        application_dict['residence'].append(address)
+    else:
+        application_dict['residence'][int(addr)] = address
 
     return render_template('regn_amend.html', application_type=application_type, data=application_dict,
                            images=image_list, current_page=0)
@@ -402,7 +413,7 @@ def process_banks_name():
         images = session['images']
 
         return render_template('address.html', application=json.dumps(name), images=images,
-                               requested_list=requested_worklist, current_page=1)
+                               requested_list=requested_worklist, current_page=0)
 
     except Exception as error:
         logging.error(error)
@@ -425,6 +436,7 @@ def process_court_details():
         application["date"] = today
         application["residence_withheld"] = False
         application['date_of_birth'] = "1980-01-01"
+        application['document_id'] = session['document_id']
 
         url = app.config['BANKRUPTCY_DATABASE_URL'] + '/registration'
         headers = {'Content-Type': 'application/json'}
@@ -478,10 +490,7 @@ def application_step_2():
         ], residences=application['residence'], requested_list=requested_worklist, current_page=0)
     else:
         return render_template('banks_order.html', application=json.dumps(application),
-                               images=[
-                                   "http://localhost:5014/document/9/image/1",
-                                   "http://localhost:5014/document/9/image/2",
-                                   "http://localhost:5014/document/9/image/3", ],
+                               images=session['images'],
                                requested_list=requested_worklist, current_page=0)
 
 
