@@ -18,7 +18,7 @@
 <div id="main" class="container" style="margin-top:20px !important;">
     <div class="container">
         <div class="row">
-            <h2>Land Charges</h2>
+            <h3>Land Charges - {{page_title}}</h3>
             <div class="row col-sm-12">
                 <ul class="breadcrumb">
                     <li><a href="/">Home</a></li>
@@ -26,7 +26,6 @@
                 </ul>
             </div>
             <div class="row col-sm-12" style="margin-top:10px">
-                <h2>{{page_title}}</h2><br/>
                 {% include 'includes/image_view_body.html' %}
                 <div id="form_data" class="col-sm-6">
                     <h5>Step 3 of 3</h5>
@@ -34,16 +33,16 @@
                         <div class="col-sm-12" style="margin:10px 0px">
                                 <div class="form-group">
                                     <label for="court">Court name</label>
-                                    <input type="text" class="form-control" name="court" id="court"
+                                    <input type="text" class="form-control defined" name="court" id="court"
                                             value="{{ data.legal_body }}"/>
                                 </div>
                                 <div class="form-group">
                                     <label for="ref">Court number and year</label>
-                                    <input type="text" name="ref" id="ref" class="form-control" value="{{data.legal_body_ref}}"/>
+                                    <input type="text" name="ref" id="ref" class="form-control defined" value="{{data.legal_body_ref}}"/>
                                 </div>
                         </div>
                         <div class="form-group">
-                            <input class="btn-lg pull-right continue-btn" id="continue" type="submit" value="Continue">
+                            <input class="btn-lg pull-right btn-primary" id="continue" type="submit" value="Continue">
                         </div>
                         </div>
                 </div>
