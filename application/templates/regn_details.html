@@ -44,7 +44,7 @@
                                     </p>
                                     <p>{{data.occupation}}</p>
                                 </div>
-                                {% for name in data.debtor_alias %}
+                                {% for name in data.debtor_alternative_name %}
                                 <div class="col-sm-3" style="height:100%; margin:10px 5px 0px 0px; border:solid 1px #d1d1d1; border-radius:5px;">
                                     <p>
                                         {% for forename in name.forenames %}
@@ -64,6 +64,8 @@
                                         {% for line in address.address_lines %}
                                         {{line}}<br/>
                                         {% endfor %}
+                                        {{address.county}}<br/>
+                                        {{address.postcode}}<br/>
                                     </p>
                                 </div>
                                 {% endfor %}
