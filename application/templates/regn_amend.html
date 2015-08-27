@@ -7,7 +7,7 @@
     {% include 'includes/image_view_head.html' %}
 
 </head>
-<form action="/process_banks_name" method="POST">
+<form action="/submit_amendment" method="POST">
 {% if application_type == 'amend'%}
 {% set page_title = 'Bankruptcy Amendment' %}
 {% set trail = 'Amendments' %}
@@ -36,7 +36,7 @@
                             <h5>Debtor details</h5>
 
                                     <div class="col-sm-3 div_link" >
-                                        <a href="amend_name">
+                                        <a href="/amend_name">
                                         <p>
                                         {% for forename in data.debtor_name.forenames %}
                                             {{forename}}
@@ -47,10 +47,10 @@
                                         </a>
                                     </div>
 
-                                {% for name in data.debtor_alias %}
+                                {% for name in data.debtor_alternative_name %}
 
                                     <div class="col-sm-3 div_link">
-                                        <a href="amend_alias?alias={{loop.index}}">
+                                        <a href="/amend_alias/{{loop.index-1}}">
                                         <p>
                                             {% for forename in name.forenames %}
                                                 {{forename}}
@@ -72,6 +72,8 @@
                                         {% for line in address.address_lines %}
                                         {{line}}<br/>
                                         {% endfor %}
+                                        {{address.county}}<br/>
+                                        {{address.postcode}}<br/
                                     </p>
                                     </a>
                                 </div>
@@ -84,8 +86,8 @@
                                 <div class="col-sm-4 div_link" >
                                     <a href="amend_court">
                                     <p>
-                                        {{data.court_name}}<br/>
-                                        {{data.court_number}}
+                                        {{data.legal_body}}<br/>
+                                        {{data.legal_body_ref}}
                                     </p>
                                     </a>
                                 </div>
