@@ -130,7 +130,7 @@ def get_bankruptcy_details():
 
 
             #  json missing court details at the moment, waiting for Ian to redesign the database to include them
-            #  Will hard code for now
+            #  TODO: Will hard code for now
             application_json['court_name'] = "Liverpool"
             application_json['court_number'] = "523 / 15"
 
@@ -158,8 +158,10 @@ def process_request():
     elif 'Continue' in request.form:
         template = 'confirmation.html'
         url = app.config['BANKRUPTCY_DATABASE_URL'] + '/registration/' + regn_no
+        # TODO: pass empty dict for now, ian mentioned about doc id needed?
+        data = {}
         headers = {'Content-Type': 'application/json'}
-        response = requests.delete(url, headers=headers)
+        response = requests.delete(url, data=json.dumps(data), headers=headers)
         if response.status_code == 200:
             data = response.json()
             # although this is list it is called application_dict to reuse render template statement below
@@ -167,7 +169,7 @@ def process_request():
             for n in data['cancelled']:
                 application_dict.append(n)
         else:
-            print("failed with", response.status_code)
+            print("failed to cancel application on register", response.status_code)
             error = response.status_code
             logging.error(error)
             return render_template('error.html', error_msg=error)
@@ -200,7 +202,6 @@ def submit_amendment():
         reg_list = []
         for n in data['new_registrations']:
             reg_list.append(n)
-        display_date = datetime.now().strftime('%d.%m.%Y')
         try:
             delete_from_worklist(session['worklist_id'])
         except Exception as error:
@@ -260,6 +261,47 @@ def delete_from_worklist(application_id):
                            + response.status_code)
 
 
+
+@app.route('/amend_address/<int:addr>', methods=["GET"])
+def show_address(addr):
+
+    application_type = session['application_type']
+    application_dict = session['application_dict']
+    image_list = session['images']
+    address = addr
+
+    return render_template('regn_address.html', application_type=application_type, data=application_dict,
+                           images=image_list, current_page=0, addr=address)
+
+
+@app.route('/update_address/<int:addr>', methods=["POST"])
+def update_address_details(addr):
+
+    application_type = session['application_type']
+    application_dict = session['application_dict']
+    image_list = session['images']
+    address_index = addr
+
+    address = {'address_lines': []}
+    if 'address1' in request.form and request.form['address1'] != '':
+        address['address_lines'].append(request.form['address1'])
+    if 'address2' in request.form and request.form['address2'] != '':
+        address['address_lines'].append(request.form['address2'])
+    if 'address3' in request.form and request.form['address3'] != '':
+        address['address_lines'].append(request.form['address3'])
+    if 'address4' in request.form and request.form['address4'] != '':
+        address['address_lines'].append(request.form['address4'])
+    if 'address5' in request.form and request.form['address5'] != '':
+        address['address_lines'].append(request.form['address5'])
+    if 'address6' in request.form and request.form['address6'] != '':
+        address['address_lines'].append(request.form['address6'])
+
+    address['county'] = request.form['county']
+    address['postcode'] = request.form['postcode']
+    application_dict['residence'][address_index] = address
+
+    return render_template('regn_amend.html', application_type=application_type, data=application_dict,
+                           images=image_list, current_page=0)
 
 
 @app.route('/process_banks_name', methods=["POST"])
@@ -344,7 +386,7 @@ def process_court_details():
             requested_worklist = 'bank_regn'
             display_date = datetime.now().strftime('%d.%m.%Y')
             return render_template('confirmation.html', application=application, data=reg_list, date=display_date,
-                                   requested_list=requested_worklist)
+                                   application_type=requested_worklist)
         else:
             print("failed with", response.status_code)
             error = response.status_code
@@ -372,7 +414,7 @@ def application_step_2():
     if 'address3' in request.form and request.form['address3'] != '':
         address['address_lines'].append(request.form['address3'])
 
-    address['address_lines'].append(request.form['county'])
+    address['county'] = request.form['county']
     address['postcode'] = request.form['postcode']
     application['residence'].append(address)
     requested_worklist = 'bank_regn'
