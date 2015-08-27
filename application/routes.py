@@ -350,7 +350,7 @@ def process_banks_name():
         images = session['images']
 
         return render_template('address.html', application=json.dumps(name), images=images,
-                               requested_list=requested_worklist, current_page=1)
+                               requested_list=requested_worklist, current_page=0)
 
     except Exception as error:
         logging.error(error)
@@ -427,10 +427,7 @@ def application_step_2():
         ], residences=application['residence'], requested_list=requested_worklist, current_page=0)
     else:
         return render_template('banks_order.html', application=json.dumps(application),
-                               images=[
-                                   "http://localhost:5014/document/9/image/1",
-                                   "http://localhost:5014/document/9/image/2",
-                                   "http://localhost:5014/document/9/image/3", ],
+                               images=session['images'],
                                requested_list=requested_worklist, current_page=0)
 
 
