@@ -129,12 +129,6 @@ def get_bankruptcy_details():
                 return render_template(template, application_type=application_type,
                                        error_msg=error_msg, images=image_details, current_page=0)
 
-
-            #  json missing court details at the moment, waiting for Ian to redesign the database to include them
-            #  TODO: Will hard code for now
-            application_json['court_name'] = "Liverpool"
-            application_json['court_number'] = "523 / 15"
-
         session['application_dict'] = application_json
 
         return render_template('regn_details.html', application_type=application_type, data=application_json,
@@ -170,7 +164,6 @@ def process_request():
             for n in data['cancelled']:
                 application_dict.append(n)
         else:
-            print("failed to cancel application on register", response.status_code)
             error = response.status_code
             logging.error(error)
             return render_template('error.html', error_msg=error)
@@ -179,6 +172,7 @@ def process_request():
 
     return render_template(template, application_type=application_type, data=application_dict,
                            images=image_list, current_page=0, date=display_date)
+
 
 @app.route('/submit_amendment', methods=["POST"])
 def submit_amendment():
@@ -257,10 +251,10 @@ def delete_from_worklist(application_id):
     url = app.config['CASEWORK_DB_URL'] + '/workitem/' + application_id
     response = requests.delete(url)
     if response.status_code != 204:
-        print(response.status_code)
-        raise RuntimeError('Failed to delete application ' + application_id + ' from the worklist. Error code:'
-                           + response.status_code)
-
+        error = 'Failed to delete application ' + application_id + ' from the worklist. Error code:'
+        + response.status_code
+        logging.error(error)
+        raise RuntimeError(error)
 
 
 @app.route('/amend_address/<int:addr>', methods=["GET"])
@@ -300,6 +294,64 @@ def update_address_details(addr):
     address['county'] = request.form['county']
     address['postcode'] = request.form['postcode']
     application_dict['residence'][address_index] = address
+
+    return render_template('regn_amend.html', application_type=application_type, data=application_dict,
+                           images=image_list, current_page=0)
+
+
+@app.route('/amend_alias/<int:name_index>', methods=["GET"])
+def show_alias(name_index):
+
+    application_type = session['application_type']
+    application_dict = session['application_dict']
+    image_list = session['images']
+
+    return render_template('regn_alias.html', application_type=application_type, data=application_dict,
+                           images=image_list, current_page=0, name_index=name_index)
+
+
+@app.route('/update_alias/<int:name_index>', methods=["POST"])
+def update_alias(name_index):
+
+    application_type = session['application_type']
+    application_dict = session['application_dict']
+    image_list = session['images']
+
+    forenames = request.form['forenames'].strip()
+    surname = request.form['surname'].strip()
+
+    alias_name = {
+        'forenames': forenames.split(),
+        'surname': surname
+    }
+
+    application_dict['debtor_alternative_name'][name_index] = alias_name
+
+    return render_template('regn_amend.html', application_type=application_type, data=application_dict,
+                           images=image_list, current_page=0)
+
+
+@app.route('/amend_court', methods=["GET"])
+def show_court():
+
+    application_type = session['application_type']
+    application_dict = session['application_dict']
+
+    image_list = session['images']
+
+    return render_template('regn_court.html', application_type=application_type, data=application_dict,
+                           images=image_list, current_page=0)
+
+
+@app.route('/update_court', methods=["POST"])
+def update_court():
+
+    application_type = session['application_type']
+    application_dict = session['application_dict']
+    image_list = session['images']
+
+    application_dict['legal_body'] = request.form['court'].strip()
+    application_dict['legal_body_ref'] = request.form['ref'].strip()
 
     return render_template('regn_amend.html', application_type=application_type, data=application_dict,
                            images=image_list, current_page=0)
@@ -390,7 +442,6 @@ def process_court_details():
             return render_template('confirmation.html', application=application, data=reg_list, date=display_date,
                                    application_type=requested_worklist)
         else:
-            print("failed with", response.status_code)
             error = response.status_code
             logging.error(error)
             return render_template('error.html', error_msg=error)
