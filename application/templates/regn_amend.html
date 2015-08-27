@@ -75,7 +75,7 @@
                                         {% endfor %}
                                         {{name.surname}}
                                     </td>
-                                        <td><a type="button" class="btn btn-primary btn-sm pull-right"><i class="fa fa-trash-o fa-fw fa-lg"></i> Remove</a></td>
+                                        <td><a href="/remove_alias/{{loop.index-1}}" class="btn btn-primary btn-sm pull-right"><i class="fa fa-trash-o fa-fw fa-lg"></i>Remove</a></td>
                                         <td><a href="/amend_alias/{{loop.index-1}}" class="btn btn-primary btn-sm pull-right"><i class="fa fa-pencil-square-o fa-fw fa-lg"></i> Amend</a></td></tr>
                                     </tr>
                                     {% endfor %}
