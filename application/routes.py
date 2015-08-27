@@ -257,25 +257,28 @@ def delete_from_worklist(application_id):
         raise RuntimeError(error)
 
 
-@app.route('/amend_address/<int:addr>', methods=["GET"])
+@app.route('/amend_address/<addr>', methods=["GET"])
 def show_address(addr):
 
     application_type = session['application_type']
     application_dict = session['application_dict']
     image_list = session['images']
-    address = addr
+
+    if addr == 'new':
+        address = addr
+    else:
+        address = int(addr)
 
     return render_template('regn_address.html', application_type=application_type, data=application_dict,
                            images=image_list, current_page=0, addr=address)
 
 
-@app.route('/update_address/<int:addr>', methods=["POST"])
+@app.route('/update_address/<addr>', methods=["POST"])
 def update_address_details(addr):
 
     application_type = session['application_type']
     application_dict = session['application_dict']
     image_list = session['images']
-    address_index = addr
 
     address = {'address_lines': []}
     if 'address1' in request.form and request.form['address1'] != '':
@@ -293,7 +296,10 @@ def update_address_details(addr):
 
     address['county'] = request.form['county']
     address['postcode'] = request.form['postcode']
-    application_dict['residence'][address_index] = address
+    if addr == 'new':
+        application_dict['residence'].append(address)
+    else:
+        application_dict['residence'][int(addr)] = address
 
     return render_template('regn_amend.html', application_type=application_type, data=application_dict,
                            images=image_list, current_page=0)

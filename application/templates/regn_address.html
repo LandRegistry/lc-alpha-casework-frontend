@@ -34,20 +34,31 @@
                         <div class="col-sm-12" style="margin:10px 0px">
                             <div class="form-group">
                                 <label for="address1">Address</label>
-                                <input type="text" class="form-control" name="address1" id="address1" value="{{data.residence[addr].address_lines[0]}}"/>
-                                <input type="text" class="form-control" style="margin-top: 5px" name="address2" id="address2" value="{{data.residence[addr].address_lines[1]}}"/>
-                                <input type="text" class="form-control" style="margin-top: 5px" name="address3" id="address3" value="{{data.residence[addr].address_lines[2]}}"/>
-                                <input type="text" class="form-control" style="margin-top: 5px" name="address4" id="address4" value="{{data.residence[addr].address_lines[3]}}"/>
-                                <input type="text" class="form-control" style="margin-top: 5px" name="address5" id="address5" value="{{data.residence[addr].address_lines[4]}}"/>
-                                <input type="text" class="form-control" style="margin-top: 5px" name="address6" id="address6" value="{{data.residence[addr].address_lines[5]}}"/>
+                                {% if addr !='new' %}
+                                {% set address1 = data.residence[addr].address_lines[0] %}
+                                {% set address2 = data.residence[addr].address_lines[1] %}
+                                {% set address3 = data.residence[addr].address_lines[2] %}
+                                {% set address4 = data.residence[addr].address_lines[3] %}
+                                {% set address5 = data.residence[addr].address_lines[4] %}
+                                {% set address6 = data.residence[addr].address_lines[5] %}
+                                {% set county = data.residence[addr].county %}
+                                {% set postcode = data.residence[addr].postcode %}
+                                {% endif %}
+                                <input type="text" class="form-control" name="address1" id="address1"
+                                       value="{{address1}}"/>
+                                <input type="text" class="form-control" style="margin-top: 5px" name="address2" id="address2" value="{{address2}}"/>
+                                <input type="text" class="form-control" style="margin-top: 5px" name="address3" id="address3" value="{{address3}}"/>
+                                <input type="text" class="form-control" style="margin-top: 5px" name="address4" id="address4" value="{{address4}}"/>
+                                <input type="text" class="form-control" style="margin-top: 5px" name="address5" id="address5" value="{{address5}}"/>
+                                <input type="text" class="form-control" style="margin-top: 5px" name="address6" id="address6" value="{{address6}}"/>
                             </div>
                             <div class="form-group">
                                 <label for="county">County</label>
-                                <input type="text" name="county" id="county" class="form-control" value="{{data.residence[addr].county}}"/>
+                                <input type="text" name="county" id="county" class="form-control" value="{{county}}"/>
                             </div>
                             <div class="form-group">
                                 <label for="postcode">Post code</label>
-                                <input type="text" class="form-control" id="postcode" name="postcode" value="{{data.residence[addr].postcode}}"/>
+                                <input type="text" class="form-control" id="postcode" name="postcode" value="{{postcode}}"/>
                             </div>
                         </div>
                         <div class="form-group">
