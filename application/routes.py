@@ -106,6 +106,10 @@ def get_bankruptcy_details():
         response = requests.get(url)
 
         image_details = session['images']
+        if application_type == 'amend':
+            template = 'regn_amend.html'
+        else:
+            template = 'regn_cancel.html'
 
         if response.status_code == 404:
             error_msg = "Registration not found please re-enter"
@@ -119,8 +123,8 @@ def get_bankruptcy_details():
 
         else:
             application_json = response.json()
-            if application_json['status'] == 'cancelled':
-                error_msg = "Application cancelled please re-enter"
+            if application_json['status'] == 'cancelled' or application_json['status'] == 'superseded':
+                error_msg = "Application has been cancelled or amended - please re-enter"
                 if application_type == "amend" or application_type == "cancel":
                     template = 'regn_retrieve.html'
                 else:
@@ -131,7 +135,7 @@ def get_bankruptcy_details():
 
         session['application_dict'] = application_json
 
-        return render_template('regn_details.html', application_type=application_type, data=application_json,
+        return render_template(template, application_type=application_type, data=application_json,
                                images=image_details, current_page=0)
 
     except Exception as error:
