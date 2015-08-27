@@ -314,18 +314,21 @@ def update_address_details(addr):
                            images=image_list, current_page=0)
 
 
-@app.route('/amend_alias/<int:name_index>', methods=["GET"])
+@app.route('/amend_alias/<name_index>', methods=["GET"])
 def show_alias(name_index):
 
     application_type = session['application_type']
     application_dict = session['application_dict']
     image_list = session['images']
 
+    if name_index != 'new':
+        name_index = int(name_index)
+
     return render_template('regn_alias.html', application_type=application_type, data=application_dict,
                            images=image_list, current_page=0, name_index=name_index)
 
 
-@app.route('/update_alias/<int:name_index>', methods=["POST"])
+@app.route('/update_alias/<name_index>', methods=["POST"])
 def update_alias(name_index):
 
     application_type = session['application_type']
@@ -340,7 +343,10 @@ def update_alias(name_index):
         'surname': surname
     }
 
-    application_dict['debtor_alternative_name'][name_index] = alias_name
+    if name_index == 'new':
+        application_dict['debtor_alternative_name'].append(alias_name)
+    else:
+        application_dict['debtor_alternative_name'][int(name_index)] = alias_name
 
     return render_template('regn_amend.html', application_type=application_type, data=application_dict,
                            images=image_list, current_page=0)
