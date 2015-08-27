@@ -166,7 +166,7 @@ def process_request():
             for n in data['cancelled']:
                 application_dict.append(n)
         else:
-            print("failed with", response.status_code)
+            print("failed to cancel from register with", response.status_code)
             error = response.status_code
             logging.error(error)
             return render_template('error.html', error_msg=error)
