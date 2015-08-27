@@ -167,6 +167,11 @@ def process_request():
             application_dict = []
             for n in data['cancelled']:
                 application_dict.append(n)
+            try:
+                delete_from_worklist(session['worklist_id'])
+            except Exception as error:
+                logging.error(error)
+                return render_template('error.html', error_msg=error)
         else:
             error = response.status_code
             logging.error(error)
@@ -464,6 +469,7 @@ def process_court_details():
                 reg_list.append(n)
             requested_worklist = 'bank_regn'
             display_date = datetime.now().strftime('%d.%m.%Y')
+
             return render_template('confirmation.html', application=application, data=reg_list, date=display_date,
                                    application_type=requested_worklist)
         else:
