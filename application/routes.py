@@ -82,6 +82,7 @@ def get_application(application_type, appn_id):
 
         session['application_type'] = application_type
         session['worklist_id'] = appn_id
+        session['document_id'] = document_id
 
         return render_template(template, application_type=application_type, data=application_json,
                                images=images,
@@ -373,6 +374,7 @@ def process_court_details():
         application["date"] = today
         application["residence_withheld"] = False
         application['date_of_birth'] = "1980-01-01"
+        application['document_id'] = session['document_id']
 
         url = app.config['BANKRUPTCY_DATABASE_URL'] + '/registration'
         headers = {'Content-Type': 'application/json'}
