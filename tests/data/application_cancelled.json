@@ -23,7 +23,7 @@
   "residence_withheld":true,
   "document_id": 12,
   "images": ["/document/12/image/1"],
-  "status": "current",
+  "status": "cancelled",
   "residence":[
 
   ],

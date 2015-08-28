@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8">
+    <meta charset="utf-8"/>
     <title>Land Charges</title>
     {% include 'includes/ext_references.html' %}
     {% include 'includes/image_view_head.html' %}
 
 </head>
+<body>
 <form action="/process_request" method="POST">
     {% if application_type == 'amend'%}
     {% set page_title = 'Bankruptcy Amendment' %}
@@ -96,9 +97,8 @@
                                             {% endfor %}
                                             {{address.county}}
                                             {{address.postcode}}
-                                        </td>
+                                        </td></tr>
                                         {% endfor %}
-                                        </tr>
                                         </tbody>
                                     </table>
                                 </div>
@@ -130,8 +130,8 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            <input class="btn-lg pull-right btn-primary" style="margin-left:5px" name="Continue" id="continue" type="submit" value="Continue">
-                            <input class="btn-lg pull-right btn-danger" name="Reject" id="reject" type="submit" value="Reject">
+                            <input class="btn-lg pull-right btn-primary" style="margin-left:5px" name="Continue" id="continue" type="submit" value="Continue"/>
+                            <input class="btn-lg pull-right btn-danger" name="Reject" id="reject" type="submit" value="Reject"/>
                         </div>
                     </div>
                 </div>
