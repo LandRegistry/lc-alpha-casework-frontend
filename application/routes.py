@@ -188,10 +188,15 @@ def process_request():
 
 @app.route('/submit_amendment', methods=["POST"])
 def submit_amendment():
+
+
     application_type = session['application_type']
     application_dict = session['application_dict']
     regn_no = session['regn_no']
     display_date = datetime.now().strftime('%d.%m.%Y')
+
+    if 'Reject' in request.form:
+        return render_template('rejection.html', application_type=application_type)
 
     # these are needed at the moment for registration but are not captured on the form
     application_dict["key_number"] = "2244095"
