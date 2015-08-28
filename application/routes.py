@@ -4,7 +4,7 @@ import requests
 from datetime import datetime
 import logging
 import json
-
+from threading import Thread
 
 @app.route('/', methods=["GET"])
 def index():
@@ -84,6 +84,7 @@ def get_application(application_type, appn_id):
         session['application_type'] = application_type
         session['worklist_id'] = appn_id
         session['document_id'] = document_id
+        session['application_dict'] = application_json
 
         return render_template(template, application_type=application_type, data=application_json,
                                images=images,
@@ -262,15 +263,37 @@ def update_name_details():
                            images=image_list, current_page=0, addr_len=addr_len)
 
 
+# TODO: renamed as 'complete', move to back-end?
 def delete_from_worklist(application_id):
-
     url = app.config['CASEWORK_DB_URL'] + '/workitem/' + application_id
     response = requests.delete(url)
     if response.status_code != 204:
-        error = 'Failed to delete application ' + application_id + ' from the worklist. Error code:'
-        + response.status_code
+        error = 'Failed to delete application ' + application_id + ' from the worklist. Error code:' \
+                + str(response.status_code)
         logging.error(error)
         raise RuntimeError(error)
+
+
+# Commented out - it's quite slow...
+# def send_notification(application):
+#     logging.info('Sending notification')
+#     import subprocess
+#     from requests.utils import quote
+#     #print(session)
+#     #application = session['application_dict']
+#     name = quote(' '.join(application['debtor_name']['forenames']) + ' ' + application['debtor_name']['surname'])
+#     app_type = quote(application['application_type'])
+#     date = quote(application['date'])
+#     reg_no = quote(str(application['reg_nos'][0]))
+#     parts = quote('[Insert particulars here]')
+#     params = "type={}&date={}&reg_no={}&name={}&parts={}".format(
+#         app_type, date, reg_no, name, parts
+#     )
+#     url = "localhost:5010/acknowledgement?" + params
+#     subprocess.check_output(['wkhtmltopdf', 'http://' + url, '/tmp/' + reg_no + '.pdf'])
+#
+#     # localhost:5010/acknowledgement?type=PA(B)&reg_no=50001&date=26.12.2014&name=Bob%20Howard&parts=Stuff%20Goes%20Here
+#     print(application)
 
 
 @app.route('/amend_address/<addr>', methods=["GET"])
@@ -464,6 +487,7 @@ def process_banks_name():
 
         requested_worklist = 'bank_regn'
         images = session['images']
+        session['application_dict'] = name
 
         return render_template('address.html', application=json.dumps(name), images=images,
                                requested_list=requested_worklist, current_page=0)
@@ -477,7 +501,8 @@ def process_banks_name():
 def process_court_details():
 
     try:
-        application = json.loads(request.form['application'])
+        # application = json.loads(request.form['application'])
+        application = session['application_dict']
         application["application_type"] = request.form['nature']
         application["legal_body"] = request.form['court']
         application["legal_body_ref"] = request.form['court_ref']
@@ -500,8 +525,14 @@ def process_court_details():
             reg_list = []
             for n in data['new_registrations']:
                 reg_list.append(n)
+            application['reg_nos'] = reg_list
             requested_worklist = 'bank_regn'
             display_date = datetime.now().strftime('%d.%m.%Y')
+            delete_from_worklist(session['worklist_id'])
+
+            # thread = Thread(target=send_notification, args=(session['application_dict'],))
+            # thread.start()
+            #send_notification(session['application_dict'])
 
             return render_template('confirmation.html', application=application, data=reg_list, date=display_date,
                                    application_type=requested_worklist)
@@ -517,7 +548,8 @@ def process_court_details():
 
 @app.route('/address', methods=['POST'])
 def application_step_2():
-    application = json.loads(request.form['application'])
+    # application = json.loads(request.form['application'])
+    application = session['application_dict']
     if 'residence' not in application:
         application['residence'] = []
 
@@ -545,20 +577,36 @@ def application_step_2():
                                requested_list=requested_worklist, current_page=0)
 
 
-@app.route('/acknowledgement', methods=['GET'])
-def acknowledgement():
+@app.route('/notification', methods=['GET'])
+def notification():
+    application = session['application_dict']
     data = {
-        "type": "PAB",
-        "ref_no": 50001,
-        "date": "26/08/2015",
-        "details": [{
-                "name": "Bob Howard",
-                "particulars": "what goes here?"
+        "type": application['application_type'],
+        "reg_no": application['reg_nos'][0],
+        "date": application['date'],
+        "details": [
+            {
+                "name": ' '.join(application['debtor_name']['forenames']) + ' ' + application['debtor_name']['surname'],
+                "particulars": 'TODO: what goes here?'
             }
         ]
     }
+    return render_template('K22.html', data=data)
 
-    return render_template('K20.html', data=data)
+# @app.route('/acknowledgement', methods=['GET'])
+# def acknowledgement():
+#     data = {
+#         "type": request.args.get('type'),
+#         "reg_no": request.args.get('reg_no'),
+#         "date": request.args.get('date'),
+#         "details": [
+#             {
+#                 "name": request.args.get('name'),
+#                 "particulars": request.args.get('parts')
+#             }
+#         ]
+#     }
+#     return render_template('K22.html', data=data)
 
 
 def get_totals():
