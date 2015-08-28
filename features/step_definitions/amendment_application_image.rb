@@ -1,4 +1,12 @@
-Given(/^I have selected to view a specific record on the amendments application list the individual record is displayed$/) do 
+Before do |scenario|
+  `vagrant ssh -c reset-data`
+end
+
+After do |scenario|
+    `vagrant ssh -c reset-data`
+end
+
+Given(/^I have selected to view a specific record on the amendments application list the individual record is displayed$/) do
   pending # Write code here that turns the phrase above into concrete actions 
 end 
 

@@ -1,4 +1,12 @@
-Given(/^I am on the view application screen$/) do 
+Before do |scenario|
+  `vagrant ssh -c reset-data`
+end
+
+After do |scenario|
+    `vagrant ssh -c reset-data`
+end
+
+Given(/^I am on the view application screen$/) do
   visit('http://localhost:5010')
   page.driver.browser.manage.window.maximize
 end 
@@ -10,10 +18,7 @@ When(/^I have selected to view specific the application list$/) do
 end 
 
 When(/^the image of the application is displayed I can click on all available pages$/) do 
-   find(:xpath, "html/body/div[1]/div/div/div[2]/div[1]/div[1]/img[2]").click
-   find(:xpath, "html/body/div[1]/div/div/div[2]/div[1]/div[1]/img[3]").click
-   find(:xpath, "html/body/div[1]/div/div/div[2]/div[1]/div[1]/img[1]").click 
-
+   find(:xpath, '//*[@id="thumbnails"]/img').click
 end 
 
 When(/^I click on a page the image it is visible$/) do
