@@ -18,7 +18,7 @@
 <div id="main" class="container" style="margin-top:20px !important;">
     <div class="container">
         <div class="row">
-            <h2>Land Charges</h2>
+            <h3>Land Charges - {{page_title}}</h3>
             <div class="row col-sm-12">
                 <ul class="breadcrumb">
                     <li><a href="/">Home</a></li>
@@ -26,74 +26,128 @@
                 </ul>
             </div>
             <div class="row col-sm-12" style="margin-top:10px">
-                <h2>{{page_title}}</h2><br/>
                 {% include 'includes/image_view_body.html' %}
                 <div id="form_data" class="col-sm-6">
-                    <h5>Step 3 of 3</h5>
-                    <h4>Amend details - select an item</h4>
-
-                        <div class="col-sm-12" style="margin:10px 0px">
+                    <h5>Step 2 of 3</h5>
+                    <h4>Amend details</h4>
+                    <div class="row">
+                        <div class="col-md-12">
                             <h5>Debtor details</h5>
-
-                                    <div class="col-sm-3 div_link" >
-                                        <a href="/amend_name">
-                                        <p>
+                            <div class="panel panel-default" id="debtor">
+                                <table class="table table-hover" width="100%">
+                                    <thead>
+                                    <tr>
+                                        <th style="width:80%">Name</th>
+                                        <th style="width:10%">Occupation</th>
+                                        <th style="width:5%"></th>
+                                        <th style="width:5%"></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr>
+                                        <td>
                                         {% for forename in data.debtor_name.forenames %}
-                                            {{forename}}
-                                        {% endfor %}<br/>
-                                        {{data.debtor_name.surname}}
-                                        </p>
-                                        <p>{{data.occupation}}</p>
-                                        </a>
-                                    </div>
-
-                                {% for name in data.debtor_alternative_name %}
-
-                                    <div class="col-sm-3 div_link">
-                                        <a href="/amend_alias?alias={{loop.index}}">
-                                        <p>
-                                            {% for forename in name.forenames %}
-                                                {{forename}}
-                                            {% endfor %}<br/>
-                                            {{name.surname}}
-                                        </p>
-                                        </a>
-                                    </div>
-                                {% endfor %}
-                        </div>
-                        {% if data.residence|length > 0 and data.residence[0].address_lines|length > 0 %}
-                            <div class="row col-sm-12" style="margin:10px 0px" >
-                                <h5>Address details</h5>
-                                {% for address in data.residence %}
-
-                                <div class="col-sm-4 div_link">
-                                    <a href="/amend_address/{{loop.index-1}}">
-                                    <p>
-                                        {% for line in address.address_lines %}
-                                        {{line}}<br/>
+                                        {{forename}}
                                         {% endfor %}
-                                        {{address.county}}<br/>
-                                        {{address.postcode}}<br/
-                                    </p>
-                                    </a>
-                                </div>
-
-                                {% endfor %}
+                                        {{data.debtor_name.surname}}
+                                        </td>
+                                        <td>{{data.occupation}}</td>
+                                        <td></td>
+                                        <td><a href="/amend_name" class="btn btn-primary btn-sm pull-right"><i class="fa fa-pencil-square-o fa-fw fa-lg"></i> Amend</a></td></tr>
+                                    </tr>
+                                    </tbody>
+                                </table>
                             </div>
-                        {% endif %}
-                        <div class="row col-sm-12" style="margin:10px 0px">
-                            <h5>Court name and number</h5>
-                                <div class="col-sm-4 div_link" >
-                                    <a href="amend_court">
-                                    <p>
-                                        {{data.court_name}}<br/>
-                                        {{data.court_number}}
-                                    </p>
-                                    </a>
+                            <div class="panel panel-default" id="alias">
+                                <table class="table table-hover">
+                                    <thead>
+                                    <tr>
+                                        <th width="80%">Alias Name</th>
+                                        <th width="10%"></th>
+                                        <th width="10%"><a href="/amend_alias/new" class="btn btn-primary btn-sm pull-right"><i class="fa fa-pencil-square-o fa-fw fa-lg"></i> Add</a></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for name in data.debtor_alternative_name %}
+                                    <tr><td>
+                                        {% for forename in name.forenames %}
+                                        {{forename}}
+                                        {% endfor %}
+                                        {{name.surname}}
+                                    </td>
+                                        <td><a href="/remove_alias/{{loop.index-1}}" class="btn btn-primary btn-sm pull-right"><i class="fa fa-trash-o fa-fw fa-lg"></i>Remove</a></td>
+                                        <td><a href="/amend_alias/{{loop.index-1}}" class="btn btn-primary btn-sm pull-right"><i class="fa fa-pencil-square-o fa-fw fa-lg"></i> Amend</a></td></tr>
+                                    </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                        {% if data.residence|length > 0 and data.residence[0].address_lines|length > 0 %}
+                        <div class="row">
+                            <div class="col-md-12">
+                                <h5>Address details</h5>
+                                <div class="panel panel-default" id="address">
+                                    <table class="table table-hover">
+                                        <thead>
+                                        <tr>
+                                            <th width="80%">Address</th>
+                                            <th width="10%"></th>
+                                            <th width="10%"><a href="/amend_address/new" class="btn btn-primary btn-sm pull-right"><i class="fa fa-plus-square-o fa-fw fa-lg"></i> Add</a></th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {% for address in data.residence %}
+                                        <tr><td>
+                                                    {% for line in address.address_lines %}
+                                                    {{line}}
+                                                    {% endfor %}<br/>
+                                                    {{address.county}}
+                                                    {{address.postcode}}
+                                        </td>
+                                            <td>{% if addr_len > 1 %}
+                                            <a href="/remove_address/{{loop.index-1}}" type="button" class="btn btn-primary btn-sm pull-right"><i class="fa fa-trash-o fa-fw fa-lg"></i> Remove</a>
+
+                                            {% endif %}</td>
+                                            <td><a href="/amend_address/{{loop.index-1}}" class="btn btn-primary btn-sm pull-right"><i class="fa fa-pencil-square-o fa-fw fa-lg"></i> Amend</a></td></tr>
+                                        {% endfor %}
+                                        </tr>
+                                        </tbody>
+                                    </table>
                                 </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                        <div class="row">
+                            <div class="col-md-12">
+                                <h5>Court details</h5>
+                                <div class="panel panel-default" id="court">
+                                    <table class="table table-hover">
+                                        <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Reference</th>
+                                            <th></th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr><td>
+                                            {{data.legal_body}}
+                                        </td>
+                                            <td>
+                                                {{data.legal_body_ref}}
+                                            </td>
+                                            <td><a href="/amend_court" class="btn btn-primary btn-sm pull-right"><i class="fa fa-pencil-square-o fa-fw fa-lg"></i> Amend</a></td></tr>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
                         </div>
                         <div class="form-group">
-                            <input class="btn-lg pull-right continue-btn" id="save_changes" type="submit" value="Submit">
+                            <input class="btn-lg pull-right btn-primary" id="save_changes" type="submit" value="Submit">
                         </div>
                         </div>
                 </div>

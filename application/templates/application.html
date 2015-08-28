@@ -12,11 +12,11 @@
     function nameClick(sender){
         jQuery('<div class="form-group"> \
                     <label style="margin-top:1em" for="aliasforename">Alias Forename(s)</label> \
-                    <input class="form-control" id="aliasforename' +n+ '" name="aliasforename' +n+ '" value="{{aliasforename}}"> \
+                    <input class="form-control defined" id="aliasforename' +n+ '" name="aliasforename' +n+ '" value="{{aliasforename}}"> \
                 </div> \
                 <div class="form-group"> \
                     <label for="aliassurname">Alias Surname</label> \
-                    <input class="form-control" id="aliassurname' +n+ '" name="aliassurname' +n+ '" value="{{aliassurname}}"> \
+                    <input class="form-control defined" id="aliassurname' +n+ '" name="aliassurname' +n+ '" value="{{aliassurname}}"> \
                 </div>').insertBefore("#addname");
                 n ++;
         console.log(n);
@@ -48,7 +48,7 @@
 <div id="main" class="container" style="margin-top:20px !important;">
     <div class="container">
         <div class="row">
-            <h2>Land Charges</h2>
+            <h3>Land Charges</h3>
             <div class="row col-sm-12">
                 <ul class="breadcrumb">
                     <li><a href="/">Home</a></li>
@@ -56,7 +56,7 @@
                 </ul>
             </div>
             <div class="row col-sm-12" style="margin-top:10px">
-                <h2>Bankruptcy Registration</h2><br/>
+                <h3>Bankruptcy Registration</h3><br/>
                 {% include 'includes/image_view_body.html' %}
                 <div id="form_data" class="col-sm-6">
                     <h5>Step 1 of 3</h5>
@@ -65,22 +65,22 @@
                     <form action="/process_banks_name" method="POST">
                         <div class="form-group">
                             <label style="margin-top:1em" for="forename">Forename(s)</label>
-                            <input class="form-control" type="text" id="forename" name="forename" value="{{forename}}">
+                            <input class="form-control defined" type="text" id="forename" name="forename" value="{{forename}}">
                         </div>
                         <div class="form-group">
                             <label for="surname">Surname</label>
-                            <input class="form-control" type="text" id="surname" name="surname" value="{{surname}}">
+                            <input class="form-control defined" type="text" id="surname" name="surname" value="{{surname}}">
                         </div>
-                        <input id="addname" onclick="nameClick(this)" class="btn pull-right" style="width:9em"
+                        <input id="addname" onclick="nameClick(this)" class="btn btn-primary pull-right"
                                type="button" value="Add alias name">
                         <div>
                             <div class="form-group">
                                 <label style="margin-top:3em" for="occupation">Occupation</label>
-                                <input class="form-control" type="text" id="occupation" name="occupation" value="{{occupation}}">
+                                <input class="form-control defined" type="text" id="occupation" name="occupation" value="{{occupation}}">
                             </div>
                         </div>
                         <div class="form-group">
-                            <input class="btn-lg pull-right continue-btn" id="continue" type="submit" value="Continue">
+                            <input class="btn-lg pull-right btn-primary" id="continue" type="submit" value="Continue">
                         </div>
                     </form>
                 </div>

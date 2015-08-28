@@ -107,6 +107,10 @@ def get_bankruptcy_details():
         response = requests.get(url)
 
         image_details = session['images']
+        if application_type == 'amend':
+            template = 'regn_amend.html'
+        else:
+            template = 'regn_cancel.html'
 
         if response.status_code == 404:
             error_msg = "Registration not found please re-enter"
@@ -120,8 +124,8 @@ def get_bankruptcy_details():
 
         else:
             application_json = response.json()
-            if application_json['status'] == 'cancelled':
-                error_msg = "Application cancelled please re-enter"
+            if application_json['status'] == 'cancelled' or application_json['status'] == 'superseded':
+                error_msg = "Application has been cancelled or amended - please re-enter"
                 if application_type == "amend" or application_type == "cancel":
                     template = 'regn_retrieve.html'
                 else:
@@ -130,16 +134,11 @@ def get_bankruptcy_details():
                 return render_template(template, application_type=application_type,
                                        error_msg=error_msg, images=image_details, current_page=0)
 
-
-            #  json missing court details at the moment, waiting for Ian to redesign the database to include them
-            #  TODO: Will hard code for now
-            application_json['court_name'] = "Liverpool"
-            application_json['court_number'] = "523 / 15"
-
         session['application_dict'] = application_json
+        addr_len = int(len((session['application_dict']['residence'])))
 
-        return render_template('regn_details.html', application_type=application_type, data=application_json,
-                               images=image_details, current_page=0)
+        return render_template(template, application_type=application_type, data=application_json,
+                               images=image_details, current_page=0, addr_len=addr_len)
 
     except Exception as error:
         logging.error(error)
@@ -154,6 +153,7 @@ def process_request():
     image_list = session['images']
     regn_no = session['regn_no']
     display_date = datetime.now().strftime('%d.%m.%Y')
+    addr_len = int(len(application_dict['residence']))
 
     if 'Amend' in request.form:
         template = 'regn_amend.html'
@@ -170,8 +170,12 @@ def process_request():
             application_dict = []
             for n in data['cancelled']:
                 application_dict.append(n)
+            try:
+                delete_from_worklist(session['worklist_id'])
+            except Exception as error:
+                logging.error(error)
+                return render_template('error.html', error_msg=error)
         else:
-            print("failed to cancel application on register", response.status_code)
             error = response.status_code
             logging.error(error)
             return render_template('error.html', error_msg=error)
@@ -179,7 +183,8 @@ def process_request():
         template = 'rejection.html'
 
     return render_template(template, application_type=application_type, data=application_dict,
-                           images=image_list, current_page=0, date=display_date)
+                           images=image_list, current_page=0, date=display_date, addr_len=addr_len)
+
 
 @app.route('/submit_amendment', methods=["POST"])
 def submit_amendment():
@@ -226,8 +231,10 @@ def show_name():
 
     image_list = session['images']
 
+    addr_len = int(len(application_dict['residence']))
+
     return render_template('regn_name.html', application_type=application_type, data=application_dict,
-                           images=image_list, current_page=0)
+                           images=image_list, current_page=0, addr_len=addr_len)
 
 
 @app.route('/update_name', methods=["POST"])
@@ -249,8 +256,10 @@ def update_name_details():
     application_dict['debtor_name'] = new_debtor_name
     application_dict['occupation'] = occupation
 
+    addr_len = int(len(application_dict['residence']))
+
     return render_template('regn_amend.html', application_type=application_type, data=application_dict,
-                           images=image_list, current_page=0)
+                           images=image_list, current_page=0, addr_len=addr_len)
 
 
 def delete_from_worklist(application_id):
@@ -258,31 +267,36 @@ def delete_from_worklist(application_id):
     url = app.config['CASEWORK_DB_URL'] + '/workitem/' + application_id
     response = requests.delete(url)
     if response.status_code != 204:
-        print(response.status_code)
-        raise RuntimeError('Failed to delete application ' + application_id + ' from the worklist. Error code:'
-                           + response.status_code)
+        error = 'Failed to delete application ' + application_id + ' from the worklist. Error code:'
+        + response.status_code
+        logging.error(error)
+        raise RuntimeError(error)
 
 
-
-@app.route('/amend_address/<int:addr>', methods=["GET"])
+@app.route('/amend_address/<addr>', methods=["GET"])
 def show_address(addr):
 
     application_type = session['application_type']
     application_dict = session['application_dict']
     image_list = session['images']
-    address = addr
+
+    if addr == 'new':
+        address = addr
+    else:
+        address = int(addr)
+
+    addr_len = int(len(application_dict['residence']))
 
     return render_template('regn_address.html', application_type=application_type, data=application_dict,
-                           images=image_list, current_page=0, addr=address)
+                           images=image_list, current_page=0, addr=address, addr_len=addr_len)
 
 
-@app.route('/update_address/<int:addr>', methods=["POST"])
+@app.route('/update_address/<addr>', methods=["POST"])
 def update_address_details(addr):
 
     application_type = session['application_type']
     application_dict = session['application_dict']
     image_list = session['images']
-    address_index = addr
 
     address = {'address_lines': []}
     if 'address1' in request.form and request.form['address1'] != '':
@@ -300,10 +314,110 @@ def update_address_details(addr):
 
     address['county'] = request.form['county']
     address['postcode'] = request.form['postcode']
-    application_dict['residence'][address_index] = address
+    if addr == 'new':
+        application_dict['residence'].append(address)
+    else:
+        application_dict['residence'][int(addr)] = address
+
+    addr_len = int(len(application_dict['residence']))
+
+    return render_template('regn_amend.html', application_type=application_type, data=application_dict,
+                           images=image_list, current_page=0, addr_len=addr_len)
+
+@app.route('/remove_address/<int:addr>', methods=["GET"])
+def remove_address(addr):
+
+    application_type = session['application_type']
+    application_dict = session['application_dict']
+    image_list = session['images']
+
+    del(application_dict['residence'][addr])
+    addr_len = int(len(application_dict['residence']))
+
+    return render_template('regn_amend.html', application_type=application_type, data=application_dict,
+                           images=image_list, current_page=0, addr_len=addr_len)
+
+
+@app.route('/amend_alias/<name_index>', methods=["GET"])
+def show_alias(name_index):
+
+    application_type = session['application_type']
+    application_dict = session['application_dict']
+    image_list = session['images']
+
+    if name_index != 'new':
+        name_index = int(name_index)
+
+    addr_len = int(len(application_dict['residence']))
+
+    return render_template('regn_alias.html', application_type=application_type, data=application_dict,
+                           images=image_list, current_page=0, name_index=name_index, addr_len=addr_len)
+
+@app.route('/remove_alias/<int:name>', methods=["GET"])
+def remove_alias(name):
+
+    application_type = session['application_type']
+    application_dict = session['application_dict']
+    image_list = session['images']
+    del(application_dict['debtor_alternative_name'][name])
 
     return render_template('regn_amend.html', application_type=application_type, data=application_dict,
                            images=image_list, current_page=0)
+
+
+@app.route('/update_alias/<name_index>', methods=["POST"])
+def update_alias(name_index):
+
+    application_type = session['application_type']
+    application_dict = session['application_dict']
+    image_list = session['images']
+
+    forenames = request.form['forenames'].strip()
+    surname = request.form['surname'].strip()
+
+    alias_name = {
+        'forenames': forenames.split(),
+        'surname': surname
+    }
+
+    if name_index == 'new':
+        application_dict['debtor_alternative_name'].append(alias_name)
+    else:
+        application_dict['debtor_alternative_name'][int(name_index)] = alias_name
+
+    addr_len = int(len(application_dict['residence']))
+
+    return render_template('regn_amend.html', application_type=application_type, data=application_dict,
+                           images=image_list, current_page=0, addr_len=addr_len)
+
+
+@app.route('/amend_court', methods=["GET"])
+def show_court():
+
+    application_type = session['application_type']
+    application_dict = session['application_dict']
+
+    image_list = session['images']
+    addr_len = int(len(application_dict['residence']))
+
+    return render_template('regn_court.html', application_type=application_type, data=application_dict,
+                           images=image_list, current_page=0, addr_len=addr_len)
+
+
+@app.route('/update_court', methods=["POST"])
+def update_court():
+
+    application_type = session['application_type']
+    application_dict = session['application_dict']
+    image_list = session['images']
+
+    application_dict['legal_body'] = request.form['court'].strip()
+    application_dict['legal_body_ref'] = request.form['ref'].strip()
+
+    addr_len = int(len(application_dict['residence']))
+
+    return render_template('regn_amend.html', application_type=application_type, data=application_dict,
+                           images=image_list, current_page=0, addr_len=addr_len)
 
 
 @app.route('/process_banks_name', methods=["POST"])
@@ -388,10 +502,10 @@ def process_court_details():
                 reg_list.append(n)
             requested_worklist = 'bank_regn'
             display_date = datetime.now().strftime('%d.%m.%Y')
+
             return render_template('confirmation.html', application=application, data=reg_list, date=display_date,
                                    application_type=requested_worklist)
         else:
-            print("failed with", response.status_code)
             error = response.status_code
             logging.error(error)
             return render_template('error.html', error_msg=error)

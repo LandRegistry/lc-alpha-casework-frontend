@@ -31,7 +31,7 @@
 <div id="main" class="container" style="margin-top:20px !important;">
     <div class="container">
         <div class="row">
-            <h2>Land Charges</h2>
+            <h3>Land Charges</h3>
             <div class="row col-sm-12">
                 <ul class="breadcrumb">
                     <li><a href="/">Home</a></li>
@@ -39,7 +39,7 @@
                 </ul>
             </div>
             <div class="row col-sm-12" style="margin-top:10px">
-                <h2>Bankruptcy Registration</h2><br/>
+                <h3>Bankruptcy Registration</h3><br/>
                 {% include 'includes/image_view_body.html' %}
                     <div id="form_data" class="col-sm-6">
                         <h5>Step 3 of 3</h5>
@@ -57,11 +57,11 @@
                             <br/>
                             <div class="form-group top-padding">
                                 <label for="court">Court name</label>
-                                <input class="form-control" type="text" id="court" name="court" value="{{court}}">
+                                <input class="form-control defined" type="text" id="court" name="court" value="{{court}}">
                             </div>
                             <div class="form-group top-padding">
                                 <label for="court_ref">Court number and year</label>
-                                <input class="form-control" type="text" id="court_ref" name="court_ref" value="{{court_ref}}">
+                                <input class="form-control defined" type="text" id="court_ref" name="court_ref" value="{{court_ref}}">
                             </div>
                             <div style="margin-top:3em">
                                 <input type="hidden" value="{{application}}" name="application"/>
