@@ -29,8 +29,8 @@ Then the user can return to the worklist
 
 #CR-US002 View original application(s) rejected
 Given I have selected to view a specific record on the cancellation application list the individual record is display
-When I am on the Application details screen
-When the application details become visible they must be the correct ones for the registration number detailed on the previous screen 
+When I must have a registration number value before the continue button can be clicked
+When I can click the continue button to go to the next screen
 When I can click the reject button the system will go next screen
 Then the next screen will be the rejection screen
 

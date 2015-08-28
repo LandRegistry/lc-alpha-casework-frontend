@@ -92,11 +92,12 @@ When(/^the cancellation application has been submitted the unique identifier is 
 end 
 
 When(/^I can click the reject button the system will go next screen$/) do 
-  pending # Write code here that turns the phrase above into concrete actions 
+  click_button('reject')
 end 
 
 Then(/^the next screen will be the rejection screen$/) do 
-  pending # Write code here that turns the phrase above into concrete actions 
+    page.has_content?('Application Rejected')
+    find(:id, 'return_to_worklist').click
 end 
 
 Given(/^the application has been cancelled$/) do 
