@@ -1,3 +1,11 @@
+Before do |scenario|
+  `vagrant ssh -c reset-data`
+end
+
+After do |scenario|
+    `vagrant ssh -c reset-data`
+end
+
 
 Given(/^I have selected to view a specific record on the cancellation application list the individual record is display$/) do
   puts('help1')
@@ -73,22 +81,23 @@ Given(/^the  confirmation screen is visible$/) do
 end 
 
 When(/^the cancellation application has been submitted the unique identifier is displayed to the user on the screen$/) do 
-  page.has_content?('Your application reference number is:')
-  page.has_content?('Registered on') 
+  page.has_content?('Application Complete')
+  page.has_content?('have been cancelled:')
   require 'Date'
   current_date = Date.today
   date_format = current_date.strftime('%d.%m.%Y')
-  registerdate = find(:id, 'registereddate').text
-  puts(registerdate)
-  expect(registerdate).to eq 'Registered on '+ date_format
+  canceldate = find(:id, 'canceldate').text
+  puts(canceldate)
+  expect(canceldate).to eq 'Cancelled on '+ date_format
 end 
 
 When(/^I can click the reject button the system will go next screen$/) do 
-  pending # Write code here that turns the phrase above into concrete actions 
+  click_button('reject')
 end 
 
 Then(/^the next screen will be the rejection screen$/) do 
-  pending # Write code here that turns the phrase above into concrete actions 
+    page.has_content?('Application Rejected')
+    find(:id, 'return_to_worklist').click
 end 
 
 Given(/^the application has been cancelled$/) do 

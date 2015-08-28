@@ -17,13 +17,13 @@ And I see the application totals
 Scenario: View amendments
 Given I have selected to view the main worklist
 When I have selected to view specific the application list "amend"
-Then I see the application list page with no waiting apps
+Then I see the amendments application list page
 And I see the application totals
 
 Scenario: View cancellations
 Given I have selected to view the main worklist
 When I have selected to view specific the application list "cancel"
-Then I see the application list page with no waiting apps
+Then I see the cancellations application list page
 And I see the application totals
 
 Scenario: View searches
