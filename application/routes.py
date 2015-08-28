@@ -231,10 +231,8 @@ def show_name():
 
     image_list = session['images']
 
-    addr_len = int(len(application_dict['residence']))
-
     return render_template('regn_name.html', application_type=application_type, data=application_dict,
-                           images=image_list, current_page=0, addr_len=addr_len)
+                           images=image_list, current_page=0)
 
 
 @app.route('/update_name', methods=["POST"])
@@ -256,10 +254,8 @@ def update_name_details():
     application_dict['debtor_name'] = new_debtor_name
     application_dict['occupation'] = occupation
 
-    addr_len = int(len(application_dict['residence']))
-
     return render_template('regn_amend.html', application_type=application_type, data=application_dict,
-                           images=image_list, current_page=0, addr_len=addr_len)
+                           images=image_list, current_page=0)
 
 
 def delete_from_worklist(application_id):
@@ -285,10 +281,8 @@ def show_address(addr):
     else:
         address = int(addr)
 
-    addr_len = int(len(application_dict['residence']))
-
     return render_template('regn_address.html', application_type=application_type, data=application_dict,
-                           images=image_list, current_page=0, addr=address, addr_len=addr_len)
+                           images=image_list, current_page=0, addr=address)
 
 
 @app.route('/update_address/<addr>', methods=["POST"])
@@ -319,10 +313,8 @@ def update_address_details(addr):
     else:
         application_dict['residence'][int(addr)] = address
 
-    addr_len = int(len(application_dict['residence']))
-
     return render_template('regn_amend.html', application_type=application_type, data=application_dict,
-                           images=image_list, current_page=0, addr_len=addr_len)
+                           images=image_list, current_page=0)
 
 @app.route('/remove_address/<int:addr>', methods=["GET"])
 def remove_address(addr):
@@ -332,10 +324,9 @@ def remove_address(addr):
     image_list = session['images']
 
     del(application_dict['residence'][addr])
-    addr_len = int(len(application_dict['residence']))
 
     return render_template('regn_amend.html', application_type=application_type, data=application_dict,
-                           images=image_list, current_page=0, addr_len=addr_len)
+                           images=image_list, current_page=0)
 
 
 @app.route('/amend_alias/<name_index>', methods=["GET"])
@@ -348,10 +339,8 @@ def show_alias(name_index):
     if name_index != 'new':
         name_index = int(name_index)
 
-    addr_len = int(len(application_dict['residence']))
-
     return render_template('regn_alias.html', application_type=application_type, data=application_dict,
-                           images=image_list, current_page=0, name_index=name_index, addr_len=addr_len)
+                           images=image_list, current_page=0, name_index=name_index)
 
 @app.route('/remove_alias/<int:name>', methods=["GET"])
 def remove_alias(name):
@@ -385,10 +374,8 @@ def update_alias(name_index):
     else:
         application_dict['debtor_alternative_name'][int(name_index)] = alias_name
 
-    addr_len = int(len(application_dict['residence']))
-
     return render_template('regn_amend.html', application_type=application_type, data=application_dict,
-                           images=image_list, current_page=0, addr_len=addr_len)
+                           images=image_list, current_page=0)
 
 
 @app.route('/amend_court', methods=["GET"])
@@ -398,10 +385,9 @@ def show_court():
     application_dict = session['application_dict']
 
     image_list = session['images']
-    addr_len = int(len(application_dict['residence']))
 
     return render_template('regn_court.html', application_type=application_type, data=application_dict,
-                           images=image_list, current_page=0, addr_len=addr_len)
+                           images=image_list, current_page=0)
 
 
 @app.route('/update_court', methods=["POST"])
@@ -414,10 +400,8 @@ def update_court():
     application_dict['legal_body'] = request.form['court'].strip()
     application_dict['legal_body_ref'] = request.form['ref'].strip()
 
-    addr_len = int(len(application_dict['residence']))
-
     return render_template('regn_amend.html', application_type=application_type, data=application_dict,
-                           images=image_list, current_page=0, addr_len=addr_len)
+                           images=image_list, current_page=0)
 
 
 @app.route('/process_banks_name', methods=["POST"])
