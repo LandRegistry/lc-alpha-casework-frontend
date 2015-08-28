@@ -107,7 +107,10 @@
                                                     {{address.county}}
                                                     {{address.postcode}}
                                         </td>
-                                            <td><a href="/remove_address/{{loop.index-1}}" type="button" class="btn btn-primary btn-sm pull-right"><i class="fa fa-trash-o fa-fw fa-lg"></i> Remove</a></td>
+                                            <td>{% if addr_len > 1 %}
+                                            <a href="/remove_address/{{loop.index-1}}" type="button" class="btn btn-primary btn-sm pull-right"><i class="fa fa-trash-o fa-fw fa-lg"></i> Remove</a>
+
+                                            {% endif %}</td>
                                             <td><a href="/amend_address/{{loop.index-1}}" class="btn btn-primary btn-sm pull-right"><i class="fa fa-pencil-square-o fa-fw fa-lg"></i> Amend</a></td></tr>
                                         {% endfor %}
                                         </tr>

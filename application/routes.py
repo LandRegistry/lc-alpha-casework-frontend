@@ -74,6 +74,7 @@ def get_application(application_type, appn_id):
         for image in image_data['images']:
             images.append(app.config["DOCUMENT_URL"] + image)
         session['images'] = images
+        session['document_id'] = document_id
 
         if application_type == "amend" or application_type == "cancel":
             template = 'regn_retrieve.html'
@@ -134,9 +135,10 @@ def get_bankruptcy_details():
                                        error_msg=error_msg, images=image_details, current_page=0)
 
         session['application_dict'] = application_json
+        addr_len = int(len((session['application_dict']['residence'])))
 
         return render_template(template, application_type=application_type, data=application_json,
-                               images=image_details, current_page=0)
+                               images=image_details, current_page=0, addr_len=addr_len)
 
     except Exception as error:
         logging.error(error)
@@ -151,6 +153,7 @@ def process_request():
     image_list = session['images']
     regn_no = session['regn_no']
     display_date = datetime.now().strftime('%d.%m.%Y')
+    addr_len = int(len(application_dict['residence']))
 
     if 'Amend' in request.form:
         template = 'regn_amend.html'
@@ -180,7 +183,7 @@ def process_request():
         template = 'rejection.html'
 
     return render_template(template, application_type=application_type, data=application_dict,
-                           images=image_list, current_page=0, date=display_date)
+                           images=image_list, current_page=0, date=display_date, addr_len=addr_len)
 
 
 @app.route('/submit_amendment', methods=["POST"])
@@ -228,8 +231,10 @@ def show_name():
 
     image_list = session['images']
 
+    addr_len = int(len(application_dict['residence']))
+
     return render_template('regn_name.html', application_type=application_type, data=application_dict,
-                           images=image_list, current_page=0)
+                           images=image_list, current_page=0, addr_len=addr_len)
 
 
 @app.route('/update_name', methods=["POST"])
@@ -251,8 +256,10 @@ def update_name_details():
     application_dict['debtor_name'] = new_debtor_name
     application_dict['occupation'] = occupation
 
+    addr_len = int(len(application_dict['residence']))
+
     return render_template('regn_amend.html', application_type=application_type, data=application_dict,
-                           images=image_list, current_page=0)
+                           images=image_list, current_page=0, addr_len=addr_len)
 
 
 def delete_from_worklist(application_id):
@@ -278,8 +285,10 @@ def show_address(addr):
     else:
         address = int(addr)
 
+    addr_len = int(len(application_dict['residence']))
+
     return render_template('regn_address.html', application_type=application_type, data=application_dict,
-                           images=image_list, current_page=0, addr=address)
+                           images=image_list, current_page=0, addr=address, addr_len=addr_len)
 
 
 @app.route('/update_address/<addr>', methods=["POST"])
@@ -310,8 +319,10 @@ def update_address_details(addr):
     else:
         application_dict['residence'][int(addr)] = address
 
+    addr_len = int(len(application_dict['residence']))
+
     return render_template('regn_amend.html', application_type=application_type, data=application_dict,
-                           images=image_list, current_page=0)
+                           images=image_list, current_page=0, addr_len=addr_len)
 
 @app.route('/remove_address/<int:addr>', methods=["GET"])
 def remove_address(addr):
@@ -319,12 +330,12 @@ def remove_address(addr):
     application_type = session['application_type']
     application_dict = session['application_dict']
     image_list = session['images']
-    print(application_dict)
+
     del(application_dict['residence'][addr])
-    print(application_dict)
+    addr_len = int(len(application_dict['residence']))
 
     return render_template('regn_amend.html', application_type=application_type, data=application_dict,
-                           images=image_list, current_page=0)
+                           images=image_list, current_page=0, addr_len=addr_len)
 
 
 @app.route('/amend_alias/<name_index>', methods=["GET"])
@@ -337,8 +348,10 @@ def show_alias(name_index):
     if name_index != 'new':
         name_index = int(name_index)
 
+    addr_len = int(len(application_dict['residence']))
+
     return render_template('regn_alias.html', application_type=application_type, data=application_dict,
-                           images=image_list, current_page=0, name_index=name_index)
+                           images=image_list, current_page=0, name_index=name_index, addr_len=addr_len)
 
 @app.route('/remove_alias/<int:name>', methods=["GET"])
 def remove_alias(name):
@@ -372,8 +385,10 @@ def update_alias(name_index):
     else:
         application_dict['debtor_alternative_name'][int(name_index)] = alias_name
 
+    addr_len = int(len(application_dict['residence']))
+
     return render_template('regn_amend.html', application_type=application_type, data=application_dict,
-                           images=image_list, current_page=0)
+                           images=image_list, current_page=0, addr_len=addr_len)
 
 
 @app.route('/amend_court', methods=["GET"])
@@ -383,9 +398,10 @@ def show_court():
     application_dict = session['application_dict']
 
     image_list = session['images']
+    addr_len = int(len(application_dict['residence']))
 
     return render_template('regn_court.html', application_type=application_type, data=application_dict,
-                           images=image_list, current_page=0)
+                           images=image_list, current_page=0, addr_len=addr_len)
 
 
 @app.route('/update_court', methods=["POST"])
@@ -398,8 +414,10 @@ def update_court():
     application_dict['legal_body'] = request.form['court'].strip()
     application_dict['legal_body_ref'] = request.form['ref'].strip()
 
+    addr_len = int(len(application_dict['residence']))
+
     return render_template('regn_amend.html', application_type=application_type, data=application_dict,
-                           images=image_list, current_page=0)
+                           images=image_list, current_page=0, addr_len=addr_len)
 
 
 @app.route('/process_banks_name', methods=["POST"])
@@ -471,7 +489,7 @@ def process_court_details():
         application["date"] = today
         application["residence_withheld"] = False
         application['date_of_birth'] = "1980-01-01"
-        application['document_id'] = session['document_id']
+        application["document_id"] = session['document_id']
 
         url = app.config['BANKRUPTCY_DATABASE_URL'] + '/registration'
         headers = {'Content-Type': 'application/json'}
@@ -519,15 +537,28 @@ def application_step_2():
     requested_worklist = 'bank_regn'
 
     if 'add_address' in request.form:
-        return render_template('address.html', application=json.dumps(application), images=[
-            "http://localhost:5014/document/9/image/1",
-            "http://localhost:5014/document/9/image/2",
-            "http://localhost:5014/document/9/image/3",
-        ], residences=application['residence'], requested_list=requested_worklist, current_page=0)
+        return render_template('address.html', application=json.dumps(application), images=session['images'],
+                               residences=application['residence'], requested_list=requested_worklist, current_page=0)
     else:
         return render_template('banks_order.html', application=json.dumps(application),
                                images=session['images'],
                                requested_list=requested_worklist, current_page=0)
+
+
+@app.route('/acknowledgement', methods=['GET'])
+def acknowledgement():
+    data = {
+        "type": "PAB",
+        "ref_no": 50001,
+        "date": "26/08/2015",
+        "details": [{
+                "name": "Bob Howard",
+                "particulars": "what goes here?"
+            }
+        ]
+    }
+
+    return render_template('K20.html', data=data)
 
 
 def get_totals():
