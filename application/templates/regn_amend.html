@@ -29,7 +29,7 @@
                 {% include 'includes/image_view_body.html' %}
                 <div id="form_data" class="col-sm-6">
                     <h5>Step 2 of 3</h5>
-                    <h4>Amend details</h4>
+                    <h4 style="display:inline">Amend details</h4><a class="pull-right" href="" data-toggle="modal" data-target="#deedModal"> View original image</a>
                     <div class="row">
                         <div class="col-md-12">
                             <h5>Debtor details</h5>
@@ -156,5 +156,22 @@
         </div>
     </div>
 </form>
+<!-- Modals -->
+<div class="modal fade" id="deedModal" tabindex="-1" role="dialog" aria-labelledby="deedModalLabel" >
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="deedModalLabel">Original Application</h4>
+            </div>
+            <div class="modal-body text-center">
+                <img src="/static/images/page1.jpg" alt="Scanned Deed" style="width:400px">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
 </body>
 </html>

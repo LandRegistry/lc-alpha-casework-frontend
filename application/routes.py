@@ -102,12 +102,12 @@ def get_bankruptcy_details():
         application_type = session['application_type']
         regn_no = request.form['reg_no']
         session['regn_no'] = regn_no
+        image_details = session['images']
 
         url = app.config['BANKRUPTCY_DATABASE_URL'] + '/registration/' + regn_no
 
         response = requests.get(url)
 
-        image_details = session['images']
         if application_type == 'amend':
             template = 'regn_amend.html'
         else:
@@ -125,6 +125,7 @@ def get_bankruptcy_details():
 
         else:
             application_json = response.json()
+            print(application_json)
             if application_json['status'] == 'cancelled' or application_json['status'] == 'superseded':
                 error_msg = "Application has been cancelled or amended - please re-enter"
                 if application_type == "amend" or application_type == "cancel":
@@ -135,11 +136,21 @@ def get_bankruptcy_details():
                 return render_template(template, application_type=application_type,
                                        error_msg=error_msg, images=image_details, current_page=0)
 
+            # TODO: Need to re-visit this when we have image data stored for the original application
+            # TODO: Link hard coded on regn_amend.html for now.
+
+            original_image_data = ""
+            if application_json['document_id'] is not None:
+                document_id = application_json['document_id']
+                doc_response = requests.get(app.config["DOCUMENT_URL"] + "/document/" + str(document_id))
+                original_image_data = doc_response.json()
+            else:
+                logging.info("No original document images found for registration " + regn_no)
+
         session['application_dict'] = application_json
-        addr_len = int(len((session['application_dict']['residence'])))
 
         return render_template(template, application_type=application_type, data=application_json,
-                               images=image_details, current_page=0, addr_len=addr_len)
+                               images=image_details, current_page=0, original_image_data=original_image_data)
 
     except Exception as error:
         logging.error(error)
@@ -154,7 +165,6 @@ def process_request():
     image_list = session['images']
     regn_no = session['regn_no']
     display_date = datetime.now().strftime('%d.%m.%Y')
-    addr_len = int(len(application_dict['residence']))
 
     if 'Amend' in request.form:
         template = 'regn_amend.html'
@@ -184,12 +194,11 @@ def process_request():
         template = 'rejection.html'
 
     return render_template(template, application_type=application_type, data=application_dict,
-                           images=image_list, current_page=0, date=display_date, addr_len=addr_len)
+                           images=image_list, current_page=0, date=display_date)
 
 
 @app.route('/submit_amendment', methods=["POST"])
 def submit_amendment():
-
 
     application_type = session['application_type']
     application_dict = session['application_dict']
@@ -271,6 +280,7 @@ def delete_from_worklist(application_id):
     if response.status_code != 204:
         error = 'Failed to delete application ' + application_id + ' from the worklist. Error code:' \
                 + str(response.status_code)
+
         logging.error(error)
         raise RuntimeError(error)
 
@@ -344,6 +354,7 @@ def update_address_details(addr):
     return render_template('regn_amend.html', application_type=application_type, data=application_dict,
                            images=image_list, current_page=0)
 
+
 @app.route('/remove_address/<int:addr>', methods=["GET"])
 def remove_address(addr):
 
@@ -369,6 +380,7 @@ def show_alias(name_index):
 
     return render_template('regn_alias.html', application_type=application_type, data=application_dict,
                            images=image_list, current_page=0, name_index=name_index)
+
 
 @app.route('/remove_alias/<int:name>', methods=["GET"])
 def remove_alias(name):
