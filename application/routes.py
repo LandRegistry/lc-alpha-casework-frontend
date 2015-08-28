@@ -14,7 +14,7 @@ def index():
         return render_template('totals.html', data=data)
     except Exception as error:
         logging.error(error)
-        return render_template('error.html', error_msg=error)
+        return render_template('error.html', error_msg=error), 500
 
 
 @app.route('/get_list', methods=["GET"])
@@ -55,7 +55,7 @@ def get_list():
 
     except Exception as error:
         logging.error(error)
-        return render_template('error.html', error_msg=error)
+        return render_template('error.html', error_msg=error), 500
 
 
 @app.route('/get_application/<application_type>/<appn_id>', methods=["GET"])
@@ -92,7 +92,7 @@ def get_application(application_type, appn_id):
 
     except Exception as error:
         logging.error(error)
-        return render_template('error.html', error_msg=error)
+        return render_template('error.html', error_msg=error), 500
 
 
 @app.route('/get_details', methods=["POST"])
@@ -154,7 +154,7 @@ def get_bankruptcy_details():
 
     except Exception as error:
         logging.error(error)
-        return render_template('error.html', error_msg=error)
+        return render_template('error.html', error_msg=error), 500
 
 
 @app.route('/process_request', methods=["POST"])
@@ -185,11 +185,11 @@ def process_request():
                 delete_from_worklist(session['worklist_id'])
             except Exception as error:
                 logging.error(error)
-                return render_template('error.html', error_msg=error)
+                return render_template('error.html', error_msg=error), 500
         else:
             error = response.status_code
             logging.error(error)
-            return render_template('error.html', error_msg=error)
+            return render_template('error.html', error_msg=error), 500
     else:
         template = 'rejection.html'
 
@@ -228,11 +228,11 @@ def submit_amendment():
             delete_from_worklist(session['worklist_id'])
         except Exception as error:
             logging.error(error)
-            return render_template('error.html', error_msg=error)
+            return render_template('error.html', error_msg=error), 500
     else:
         error = response.status_code
         logging.error(error)
-        return render_template('error.html', error_msg=error)
+        return render_template('error.html', error_msg=error), 500
 
     return render_template('confirmation.html', application_type=application_type, data=reg_list,
                            date=display_date)
@@ -495,7 +495,7 @@ def process_banks_name():
 
     except Exception as error:
         logging.error(error)
-        return render_template('error.html', error_msg=error)
+        return render_template('error.html', error_msg=error), 500
 
 
 @app.route('/court_details', methods=["POST"])
@@ -540,11 +540,11 @@ def process_court_details():
         else:
             error = response.status_code
             logging.error(error)
-            return render_template('error.html', error_msg=error)
+            return render_template('error.html', error_msg=error), 500
 
     except Exception as error:
         logging.error(error)
-        return render_template('error.html', error_msg=error)
+        return render_template('error.html', error_msg=error), 500
 
 
 @app.route('/address', methods=['POST'])
@@ -580,6 +580,7 @@ def application_step_2():
 
 @app.route('/notification', methods=['GET'])
 def notification():
+    print(session)
     application = session['application_dict']
     data = {
         "type": application['application_type'],

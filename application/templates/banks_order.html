@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8">
+    <meta charset="utf-8"/>
     <title>Land Charges</title>
     {% include 'includes/ext_references.html' %}
     {% include 'includes/image_view_head.html' %}
 
 </head>
 <body>
-<input type="hidden" name="requested_list" value="{{requested_list}}">
+<input type="hidden" name="requested_list" value="{{requested_list}}"/>
 {% if requested_list == 'pab'%}
 {% set page_title = 'PA Bankruptcy Registrations' %}
 {% elif requested_list == 'wob' %}
@@ -48,25 +48,25 @@
                             <div class="top-padding">
                             <label>Class of Charge</label>
                                 <div class="input-group col-sm-8">
-                                        <label for='PA(B)' class="input-group-addon"><input type="radio" id='PA(B)' name="nature" value="PA(B)"></label>
+                                        <label for='PA(B)' class="input-group-addon"><input type="radio" id='PA(B)' name="nature" value="PA(B)"/></label>
                                         <label for='PA(B)' class="form-control formbgclr">PAB</label>
-                                        <label for='WO(B)' class="input-group-addon"><input type="radio" id='WO(B)' name="nature" value="WO(B)"></label>
+                                        <label for='WO(B)' class="input-group-addon"><input type="radio" id='WO(B)' name="nature" value="WO(B)"/></label>
                                         <label for='WO(B)' class="form-control formbgclr">WOB</label>
                                 </div>
                             </div>
                             <br/>
                             <div class="form-group top-padding">
                                 <label for="court">Court name</label>
-                                <input class="form-control defined" type="text" id="court" name="court" value="{{court}}">
+                                <input class="form-control defined" type="text" id="court" name="court" value="{{court}}"/>
                             </div>
                             <div class="form-group top-padding">
                                 <label for="court_ref">Court number and year</label>
-                                <input class="form-control defined" type="text" id="court_ref" name="court_ref" value="{{court_ref}}">
+                                <input class="form-control defined" type="text" id="court_ref" name="court_ref" value="{{court_ref}}"/>
                             </div>
                             <div style="margin-top:3em">
                                 <input type="hidden" value="{{application}}" name="application"/>
                                 <input class="btn-lg pull-right btn-primary"
-                                       id="continue" type="submit" value="Submit">
+                                       id="continue" type="submit" value="Submit"/>
                             </div>
                         </form>
                     </div>
