@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8">
+    <meta charset="utf-8"/>
     <title>Land Charges</title>
     {% include 'includes/ext_references.html' %}
     {% include 'includes/image_view_head.html' %}
 
 </head>
+<body>
 <form action="/submit_amendment" method="POST">
 {% if application_type == 'amend'%}
 {% set page_title = 'Bankruptcy Amendment' %}
@@ -53,7 +54,7 @@
                                         </td>
                                         <td>{{data.occupation}}</td>
                                         <td></td>
-                                        <td><a href="/amend_name" class="btn btn-primary btn-sm pull-right"><i class="fa fa-pencil-square-o fa-fw fa-lg"></i> Amend</a></td></tr>
+                                        <td><a href="/amend_name" class="btn btn-primary btn-sm pull-right"><i class="fa fa-pencil-square-o fa-fw fa-lg"></i> Amend</a></td>
                                     </tr>
                                     </tbody>
                                 </table>
@@ -76,7 +77,7 @@
                                         {{name.surname}}
                                     </td>
                                         <td><a href="/remove_alias/{{loop.index-1}}" class="btn btn-primary btn-sm pull-right"><i class="fa fa-trash-o fa-fw fa-lg"></i>Remove</a></td>
-                                        <td><a href="/amend_alias/{{loop.index-1}}" class="btn btn-primary btn-sm pull-right"><i class="fa fa-pencil-square-o fa-fw fa-lg"></i> Amend</a></td></tr>
+                                        <td><a href="/amend_alias/{{loop.index-1}}" class="btn btn-primary btn-sm pull-right"><i class="fa fa-pencil-square-o fa-fw fa-lg"></i> Amend</a></td>
                                     </tr>
                                     {% endfor %}
                                     </tbody>
@@ -99,21 +100,22 @@
                                         </tr>
                                         </thead>
                                         <tbody>
-                                        {% for address in data.residence %}
-                                        <tr><td>
-                                                    {% for line in address.address_lines %}
-                                                    {{line}}
-                                                    {% endfor %}<br/>
-                                                    {{address.county}}
-                                                    {{address.postcode}}
-                                        </td>
-                                            <td>{% if data.residence|length > 1 %}
-                                            <a href="/remove_address/{{loop.index-1}}" type="button" class="btn btn-primary btn-sm pull-right"><i class="fa fa-trash-o fa-fw fa-lg"></i> Remove</a>
+                                            {% for address in data.residence %}
+                                            <tr><td>
+                                                        {% for line in address.address_lines %}
+                                                        {{line}}
+                                                        {% endfor %}<br/>
+                                                        {{address.county}}
+                                                        {{address.postcode}}
+                                            </td>
+                                                <td>{% if data.residence|length > 1 %}
+                                                <a href="/remove_address/{{loop.index-1}}" type="button" class="btn btn-primary btn-sm pull-right"><i class="fa fa-trash-o fa-fw fa-lg"></i> Remove</a>
 
-                                            {% endif %}</td>
-                                            <td><a href="/amend_address/{{loop.index-1}}" class="btn btn-primary btn-sm pull-right"><i class="fa fa-pencil-square-o fa-fw fa-lg"></i> Amend</a></td></tr>
-                                        {% endfor %}
-                                        </tr>
+                                                {% endif %}</td>
+                                                <td><a href="/amend_address/{{loop.index-1}}" class="btn btn-primary btn-sm pull-right"><i class="fa fa-pencil-square-o fa-fw fa-lg"></i> Amend</a></td>
+                                            </tr>
+                                            {% endfor %}
+
                                         </tbody>
                                     </table>
                                 </div>
@@ -139,7 +141,7 @@
                                             <td>
                                                 {{data.legal_body_ref}}
                                             </td>
-                                            <td><a href="/amend_court" class="btn btn-primary btn-sm pull-right"><i class="fa fa-pencil-square-o fa-fw fa-lg"></i> Amend</a></td></tr>
+                                            <td><a href="/amend_court" class="btn btn-primary btn-sm pull-right"><i class="fa fa-pencil-square-o fa-fw fa-lg"></i> Amend</a></td>
                                         </tr>
                                         </tbody>
                                     </table>
@@ -147,8 +149,8 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            <input class="btn-lg pull-right btn-primary" id="save_changes" type="submit" value="Submit">
-                            <input class="btn-lg pull-right btn-danger" style="margin-right:5px;" name="Reject" id="reject" type="submit" value="Reject">
+                            <input class="btn-lg pull-right btn-primary" id="save_changes" type="submit" value="Submit"/>
+                            <input class="btn-lg pull-right btn-danger" style="margin-right:5px;" name="Reject" id="reject" type="submit" value="Reject"/>
                         </div>
                         </div>
                 </div>
@@ -161,11 +163,11 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">X</span></button>
                 <h4 class="modal-title" id="deedModalLabel">Original Application</h4>
             </div>
             <div class="modal-body text-center">
-                <img src="/static/images/page1.jpg" alt="Scanned Deed" style="width:400px">
+                <img src="/static/images/page1.jpg" alt="Scanned Deed" style="width:400px"/>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>

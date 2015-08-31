@@ -9,9 +9,11 @@ import xml.etree.ElementTree as ET
 dir_ = os.path.dirname(__file__)
 total_response = open(os.path.join(dir_, 'data/totals.json'), 'r').read()
 application_response = open(os.path.join(dir_, 'data/application.json'), 'r').read()
+cancelled_response = open(os.path.join(dir_, 'data/application_cancelled.json'), 'r').read()
 
 registration = '{"new_registrations": [512344]}'
 multi_name_reg = '{"new_registrations": [512344, 512345]}'
+cancellation = '{"cancelled": ["50001"]}'
 
 application_dict = {
     'application_type': 'PA(B)',
@@ -21,8 +23,29 @@ application_dict = {
         'forenames': ['Bob'],
         'surname': 'Howard'
     },
+    'residence': [{
+        'address_lines': ["1 The Street", "Mockton"],
+        'county': 'Devon', 'postcode': "M00 000"
+    }],
     'document_id': '43'
 }
+
+
+class FakeDoubleDeleteResponse(requests.Response):
+    def __init__(self, content='', status_codes=[200, 204], response_file=''):
+        super(FakeDoubleDeleteResponse, self).__init__()
+        self._content = content
+        self._content_consumed = True
+        self.status_codes = status_codes
+        self.response_file = response_file
+        self.code_index = 0
+        self.status_code = self.status_codes[self.code_index]
+
+    def json(self, **kwargs):
+        data = json.loads(self.response_file)
+        self.code_index += 1
+        self.status_code = self.status_codes[self.code_index]
+        return data
 
 
 
@@ -153,9 +176,9 @@ class TestCaseworkFrontend:
         html = response.data.decode('utf-8')
         tree = ET.fromstring(html)
         title_node = tree.find('.//*[@id="form_data"]/h4')
-        address_node = tree.find('.//*[@id="address_area"]/div')
+        address_nodes = tree.findall('.//*[@id="address_area"]/div')
         assert title_node.text == "Debtor address"
-        assert "35 Haden Close" in address_node.text
+        assert "35 Haden Close" in address_nodes[1].text
 
     def test_residence(self):
         with self.app as c:
@@ -235,5 +258,109 @@ class TestCaseworkFrontend:
         assert response.status_code == 200
         assert title_node.text == "Form K22"
 
+    @mock.patch('requests.get', return_value=FakeResponse('stuff', 200, application_response))
+    def test_regn_retrieve(self, mock_get):
+        response = self.app.get('/get_application/cancel/17')
+        html = response.data.decode('utf-8')
+        tree = ET.fromstring(html)
+        title = tree.find('.//*[@id="class_data"]/h4')
+        image = tree.find('.//*[@id="thumbnails"]/img')
+        assert title.text == "Retrieve original details"
+        assert image.attrib['src'] == "http://localhost:5014/document/12/image/1"
 
+    @mock.patch('requests.get', return_value=FakeResponse('stuff', 200, application_response))
+    def test_get_banks_details(self, mock_get):
+        with self.app as c:
+            with c.session_transaction() as session:
+                session['application_type'] = "cancel"
+                session['images'] = ['/document/1/image/1']
 
+        response = self.app.post('/get_details', data={
+            "reg_no": "50001"
+        })
+        html = response.data.decode('utf-8')
+        tree = ET.fromstring(html)
+        assert tree.find('.//*[@id="form_data"]/h4').text == "Application details"
+        assert "Smith" in tree.find('.//*[@id="debtor"]/table/tbody/tr/td[1]').text
+
+    @mock.patch('requests.get', return_value=FakeResponse('stuff', 200, cancelled_response))
+    def test_get_banks_details_cancelled(self, mock_get):
+        with self.app as c:
+            with c.session_transaction() as session:
+                session['application_type'] = "cancel"
+                session['images'] = ['/document/1/image/1']
+
+        response = self.app.post('/get_details', data={
+            "reg_no": "50001"
+        })
+        html = response.data.decode('utf-8')
+        tree = ET.fromstring(html)
+        assert tree.find('.//*[@id="class_data"]/h4').text == "Retrieve original details"
+        assert tree.find('.//*[@id="class_data"]/p/strong').text == "Application has been cancelled or amended - please re-enter"
+
+    @mock.patch('requests.get', return_value=FakeResponse('stuff', 404))
+    def test_get_banks_details_not_found(self, mock_get):
+        with self.app as c:
+            with c.session_transaction() as session:
+                session['application_type'] = "cancel"
+                session['images'] = ['/document/1/image/1']
+
+        response = self.app.post('/get_details', data={
+            "reg_no": "50001"
+        })
+        html = response.data.decode('utf-8')
+        tree = ET.fromstring(html)
+
+        assert tree.find('.//*[@id="class_data"]/h4').text == "Retrieve original details"
+        assert tree.find('.//*[@id="class_data"]/p/strong').text == "Registration not found please re-enter"
+
+    @mock.patch('requests.delete', return_value=FakeDoubleDeleteResponse('stuff', [200, 204], cancellation))
+    def test_process_cancellation(self, mock_delete):
+        with self.app as c:
+            with c.session_transaction() as session:
+                session['application_dict'] = application_dict
+                session['application_type'] = "cancel"
+                session['images'] = ['/document/1/image/1']
+                session['regn_no'] = '50001'
+                session['document_id'] = '17'
+                session['worklist_id'] = '3'
+        response = self.app.post('/process_request', data={
+            'Continue': 'Continue'
+        })
+        html = response.data.decode('utf-8')
+        tree = ET.fromstring(html)
+        assert tree.find('.//*[@id="main"]/div/div[1]/div[3]/h3[1]').text == "50001"
+        assert tree.find('.//*[@id="main"]/div/div[1]/div[3]/h2').text == "The following application has been cancelled:"
+
+    def test_add_address_screen(self):
+        with self.app as c:
+            with c.session_transaction() as session:
+                session['application_dict'] = application_dict
+                session['application_type'] = "amend"
+                session['images'] = ['/document/1/image/1']
+        response = self.app.get('/amend_address/new')
+        html = response.data.decode('utf-8')
+        print(html)
+        tree = ET.fromstring(html)
+        assert tree.find('.//*[@id="form_data"]/h4').text == "Address details"
+        assert tree.find('.//*[@id="address1"]').attrib['value'] == ""
+
+    def test_update_address(self):
+        with self.app as c:
+            with c.session_transaction() as session:
+                session['application_dict'] = application_dict
+                session['application_type'] = "amend"
+                session['images'] = ['/document/1/image/1']
+        response = self.app.post('/update_address/new', data={
+            'address1': '22 New Street', 'address2': "Newtown", "county": "Newcounty",
+            'postcode': 'AA1 1AA'
+        })
+        html = response.data.decode('utf-8')
+        print(html)
+        tree = ET.fromstring(html)
+        addresses = tree.findall('.//*[@id="address"]/table/tbody/tr/td[1]')
+        for add in addresses:
+            print( add.text)
+        assert tree.find('.//*[@id="form_data"]/h4').text == "Amend details"
+        assert "1 The Street" in addresses[0].text
+        assert "22 New Street" in addresses[1].text
