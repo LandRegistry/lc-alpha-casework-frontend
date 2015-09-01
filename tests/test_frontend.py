@@ -27,7 +27,8 @@ application_dict = {
         'address_lines': ["1 The Street", "Mockton"],
         'county': 'Devon', 'postcode': "M00 000"
     }],
-    'document_id': '43'
+    'document_id': '43',
+    "debtor_alternative_name": [{"forename": ["Robert"], "surname": "Howard"}]
 }
 
 
@@ -440,6 +441,18 @@ class TestCaseworkFrontend:
         print(html)
         tree = ET.fromstring(html)
         assert tree.find('.//*[@id="form_data"]/h4').text == "Amend details"
+
+    def test_amend_alias(self):
+        with self.app as c:
+            with c.session_transaction() as session:
+                session['application_dict'] = application_dict
+                session['application_type'] = "amend"
+                session['images'] = ['/document/1/image/1']
+        response = self.app.get('/amend_alias/0')
+        html = response.data.decode('utf-8')
+        print(html)
+        tree = ET.fromstring(html)
+        assert tree.find('.//*[@id="form_data"]/h4').text == "Debtor alias name"
 
 
 
