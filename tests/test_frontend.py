@@ -270,6 +270,8 @@ class TestCaseworkFrontend:
 
     @mock.patch('requests.get', return_value=FakeResponse('stuff', 200, application_response))
     def test_get_banks_details(self, mock_get):
+
+        # Check cancel leg
         with self.app as c:
             with c.session_transaction() as session:
                 session['application_type'] = "cancel"
@@ -282,6 +284,22 @@ class TestCaseworkFrontend:
         tree = ET.fromstring(html)
         assert tree.find('.//*[@id="form_data"]/h4').text == "Application details"
         assert "Smith" in tree.find('.//*[@id="debtor"]/table/tbody/tr/td[1]').text
+
+        # Check amend leg
+        with self.app as c:
+            with c.session_transaction() as session:
+                session['application_type'] = "amend"
+                session['images'] = ['/document/1/image/1']
+
+        response = self.app.post('/get_details', data={
+            "reg_no": "50010"
+        })
+        html = response.data.decode('utf-8')
+        tree = ET.fromstring(html)
+        assert tree.find('.//*[@id="form_data"]/h4').text == "Amend details"
+        assert "Smith" in tree.find('.//*[@id="debtor"]/table/tbody/tr/td[1]').text
+
+
 
     @mock.patch('requests.get', return_value=FakeResponse('stuff', 200, cancelled_response))
     def test_get_banks_details_cancelled(self, mock_get):
@@ -313,6 +331,7 @@ class TestCaseworkFrontend:
 
         assert tree.find('.//*[@id="class_data"]/h4').text == "Retrieve original details"
         assert tree.find('.//*[@id="class_data"]/p/strong').text == "Registration not found please re-enter"
+
 
     @mock.patch('requests.delete', return_value=FakeDoubleDeleteResponse('stuff', [200, 204], cancellation))
     def test_process_cancellation(self, mock_delete):
