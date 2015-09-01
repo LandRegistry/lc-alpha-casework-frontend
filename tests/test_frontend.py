@@ -354,6 +354,58 @@ class TestCaseworkFrontend:
         assert tree.find('.//*[@id="main"]/div/div[1]/div[3]/h3[1]').text == "50001"
         assert tree.find('.//*[@id="main"]/div/div[1]/div[3]/h2').text == "The following application has been cancelled:"
 
+    @mock.patch('requests.delete', return_value=FakeDoubleDeleteResponse('stuff', [200, 500], cancellation))
+    def test_process_cancel_invalid_worklist_id(self, mock_delete):
+
+        with self.app as c:
+            with c.session_transaction() as session:
+                session['application_dict'] = application_dict
+                session['application_type'] = "cancel"
+                session['images'] = ['/document/1/image/1']
+                session['regn_no'] = '50001'
+                session['document_id'] = '17'
+                session['worklist_id'] = '3'
+        response = self.app.post('/process_request', data={
+            'Continue': 'Continue'
+        })
+        html = response.data.decode('utf-8')
+        tree = ET.fromstring(html)
+
+        assert "Error message" in tree.find('.//*[@id="error_msg"]').text
+
+    def test_process_request_no_valid_type(self):
+        with self.app as c:
+            with c.session_transaction() as session:
+                session['application_dict'] = application_dict
+                session['application_type'] = "cancel"
+                session['images'] = ['/document/1/image/1']
+                session['regn_no'] = '50001'
+                session['document_id'] = '17'
+                session['worklist_id'] = '3'
+        response = self.app.post('/process_request')
+
+        html = response.data.decode('utf-8')
+        print(html)
+        tree = ET.fromstring(html)
+        assert "Application Rejected" in tree.find('.//*[@id="message"]').text
+
+    @mock.patch('requests.delete', return_value=FakeResponse('stuff', 500, cancellation))
+    def test_process_cancellation_error(self, mock_delete):
+        with self.app as c:
+            with c.session_transaction() as session:
+                session['application_dict'] = application_dict
+                session['application_type'] = "cancel"
+                session['images'] = ['/document/1/image/1']
+                session['regn_no'] = '50001'
+                session['document_id'] = '17'
+                session['worklist_id'] = '3'
+        response = self.app.post('/process_request', data={
+            'Continue': 'Continue'
+        })
+        html = response.data.decode('utf-8')
+        tree = ET.fromstring(html)
+        assert "Error message" in tree.find('.//*[@id="error_msg"]').text
+
     def test_add_address_screen(self):
         with self.app as c:
             with c.session_transaction() as session:
@@ -386,6 +438,24 @@ class TestCaseworkFrontend:
         assert tree.find('.//*[@id="form_data"]/h4').text == "Amend details"
         assert "1 The Street" in addresses[0].text
         assert "22 New Street" in addresses[1].text
+
+    def test_process_amendment(self):
+        with self.app as c:
+            with c.session_transaction() as session:
+                session['application_dict'] = application_dict
+                session['application_type'] = "cancel"
+                session['images'] = ['/document/1/image/1']
+                session['regn_no'] = '50001'
+                session['document_id'] = '17'
+                session['worklist_id'] = '3'
+        response = self.app.post('/process_request', data={
+            'Amend': 'Amend'
+        })
+
+        html = response.data.decode('utf-8')
+        print(html)
+        tree = ET.fromstring(html)
+        assert "Amend details" in tree.find('.//*[@id="form_data"]/h4').text
 
     def test_amend_name_screen(self):
 
