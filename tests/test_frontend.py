@@ -15,6 +15,8 @@ registration = '{"new_registrations": [512344]}'
 multi_name_reg = '{"new_registrations": [512344, 512345]}'
 cancellation = '{"cancelled": ["50001"]}'
 
+amendment = '{"new_registrations": ["50027", "50028", "50029"]}'
+
 application_dict = {
     'application_type': 'PA(B)',
     'reg_nos': [50001],
@@ -383,3 +385,30 @@ class TestCaseworkFrontend:
         assert tree.find('.//*[@id="form_data"]/h4').text == "Amend details"
         assert "1 The Street" in addresses[0].text
         assert "22 New Street" in addresses[1].text
+
+    def test_amend_name_screen(self):
+        with self.app as c:
+            with c.session_transaction() as session:
+                session['application_dict'] = application_dict
+                session['application_type'] = "amend"
+                session['images'] = ['/document/1/image/1']
+        response = self.app.get('/amend_name')
+        html = response.data.decode('utf-8')
+        print(html)
+        tree = ET.fromstring(html)
+        assert tree.find('.//*[@id="form_data"]/h4').text == "Debtor details"
+
+    @mock.patch('requests.put', return_value=FakeResponse('stuff', 204, amendment))
+    @mock.patch('requests.delete', return_value=FakeResponse(status_code=204))
+    def test_submit_amendment(self, mock_put, mock_delete):
+        with self.app as c:
+            with c.session_transaction() as session:
+                session['application_dict'] = application_dict
+                session['application_type'] = "amend"
+                session['regn_no'] = '50001'
+                session['worklist_id'] = '3'
+        response = self.app.post('/submit_amendment')
+        html = response.data.decode('utf-8')
+        tree = ET.fromstring(html)
+        assert tree.find('.//*[@id="form_data"]/div[2]/table/tbody/tr/td[2]/h3').text == "Application complete"
+        assert tree.find('.//*[@id="main"]/div/div[1]/div[3]/h3[1]').text == "50027"
