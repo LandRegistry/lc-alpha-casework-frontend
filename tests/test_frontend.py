@@ -416,7 +416,7 @@ class TestCaseworkFrontend:
             assert tree.find('.//*[@id="address1"]').attrib['value'] == "1 The Street"
 
 
-    @mock.patch('requests.put', return_value=FakeResponse('stuff', 204, amendment))
+    @mock.patch('requests.put', return_value=FakeResponse('stuff', 200, amendment))
     @mock.patch('requests.delete', return_value=FakeResponse(status_code=204))
     def test_submit_amendment(self, mock_put, mock_delete):
 
@@ -427,11 +427,63 @@ class TestCaseworkFrontend:
                     session['regn_no'] = '50001'
                     session['worklist_id'] = '3'
             response = self.app.post('/submit_amendment')
+
             html = response.data.decode('utf-8')
+            print(html)
             tree = ET.fromstring(html)
-            assert tree.find('.//*[@id="form_data"]/div[2]/table/tbody/tr/td[2]/h3').text == "Application complete"
+
+            assert "Application Complete" in tree.find('.//*[@id="message"]').text
             assert tree.find('.//*[@id="main"]/div/div[1]/div[3]/h3[1]').text == "50027"
 
+    def test_submit_amend_rejection(self):
+
+        with self.app as c:
+            with c.session_transaction() as session:
+                session['application_dict'] = application_dict
+                session['application_type'] = "amend"
+                session['regn_no'] = '50001'
+                session['worklist_id'] = '3'
+        response = self.app.post('/submit_amendment', data={'Reject': 'Reject'})
+
+        html = response.data.decode('utf-8')
+        print(html)
+        tree = ET.fromstring(html)
+        assert "Application Rejected" in tree.find('.//*[@id="message"]').text
+
+
+    @mock.patch('requests.put', return_value=FakeResponse('stuff', 200, amendment))
+    @mock.patch('requests.delete', return_value=FakeResponse(status_code=500))
+    def test_submit_amend_invalid_worklist_id(self, mock_put, mock_delete):
+
+        with self.app as c:
+            with c.session_transaction() as session:
+                session['application_dict'] = application_dict
+                session['application_type'] = "amend"
+                session['regn_no'] = '50001'
+                session['worklist_id'] = '3'
+        response = self.app.post('/submit_amendment')
+        html = response.data.decode('utf-8')
+        tree = ET.fromstring(html)
+
+        assert "Error message" in tree.find('.//*[@id="error_msg"]').text
+
+
+    @mock.patch('requests.put', return_value=FakeResponse('stuff', 500, amendment))
+    @mock.patch('requests.delete', return_value=FakeResponse(status_code=204))
+    def test_submit_amendment_error(self, mock_put, mock_delete):
+
+        with self.app as c:
+            with c.session_transaction() as session:
+                session['application_dict'] = application_dict
+                session['application_type'] = "amend"
+                session['regn_no'] = '50001'
+                session['worklist_id'] = '3'
+        response = self.app.post('/submit_amendment')
+
+        html = response.data.decode('utf-8')
+        tree = ET.fromstring(html)
+
+        assert "Error message" in tree.find('.//*[@id="error_msg"]').text
 
     def test_update_amended_address(self):
         with self.app as c:
@@ -444,7 +496,6 @@ class TestCaseworkFrontend:
                 'address5': "Middle Place", 'address6': "Last address line", "county": "Newcounty", 'postcode': 'AA1 1AA'
             })
             html = response.data.decode('utf-8')
-            print(html)
             tree = ET.fromstring(html)
             addresses = tree.findall('.//*[@id="address"]/table/tbody/tr/td[1]')
             for add in addresses:
@@ -460,7 +511,6 @@ class TestCaseworkFrontend:
                 session['images'] = ['/document/1/image/1']
         response = self.app.post('/update_name', data=dict(forenames='John', occupation='', surname='Smith'))
         html = response.data.decode('utf-8')
-        print(html)
         tree = ET.fromstring(html)
         assert tree.find('.//*[@id="form_data"]/h4').text == "Amend details"
         assert "Smith" in tree.find('.//*[@id="debtor"]/table/tbody/tr/td[1]').text
@@ -473,7 +523,6 @@ class TestCaseworkFrontend:
                 session['images'] = ['/document/1/image/1']
         response = self.app.get('/remove_address/0')
         html = response.data.decode('utf-8')
-        print(html)
         tree = ET.fromstring(html)
         assert tree.find('.//*[@id="form_data"]/h4').text == "Amend details"
 
