@@ -556,6 +556,28 @@ class TestCaseworkFrontend:
         assert tree.find('.//*[@id="form_data"]/h4').text == "Amend details"
         assert "Plymouth County Court" in tree.find('.//*[@id="court"]/table/tbody/tr/td[1]').text
 
+    @mock.patch('requests.post', return_value=FakeResponse('stuff', 500, registration))
+    def test_registration_fail(self, mock_post):
+        with self.app as c:
+            with c.session_transaction() as session:
+                session['application_dict'] = application_dict
+                session['document_id'] = '17'
+                session['worklist_id'] = '3'
+        response = self.app.post('/court_details', data=test_data.process_court)
+        assert response.status_code == 500
+
+    @mock.patch('requests.post', return_value=FakeResponse('stuff', 200, registration))
+    @mock.patch('requests.delete', return_value=FakeResponse(status_code=500))
+    def test_delete_worklist_fail(self, mock_post, mock_delete):
+        with self.app as c:
+            with c.session_transaction() as session:
+                session['application_dict'] = application_dict
+                session['document_id'] = '17'
+                session['worklist_id'] = '3'
+        response = self.app.post('/court_details', data=test_data.process_court)
+        assert response.status_code == 500
+
+
     
 
 
