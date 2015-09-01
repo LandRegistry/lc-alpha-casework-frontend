@@ -382,7 +382,7 @@ class TestCaseworkFrontend:
         tree = ET.fromstring(html)
         addresses = tree.findall('.//*[@id="address"]/table/tbody/tr/td[1]')
         for add in addresses:
-            print( add.text)
+            print(add.text)
         assert tree.find('.//*[@id="form_data"]/h4').text == "Amend details"
         assert "1 The Street" in addresses[0].text
         assert "22 New Street" in addresses[1].text
@@ -489,5 +489,79 @@ class TestCaseworkFrontend:
         print(html)
         tree = ET.fromstring(html)
         assert tree.find('.//*[@id="form_data"]/h4').text == "Debtor alias name"
+
+    def test_remove_alias(self):
+        with self.app as c:
+            with c.session_transaction() as session:
+                session['application_dict'] = application_dict
+                session['application_type'] = "amend"
+                session['images'] = ['/document/1/image/1']
+        response = self.app.get('/remove_alias/0')
+        html = response.data.decode('utf-8')
+        print(html)
+        tree = ET.fromstring(html)
+        alias = tree.findall('.//*[@id="alias"]/table/tbody/tr/td[1]')
+        alias_len = len(alias)
+        assert tree.find('.//*[@id="form_data"]/h4').text == "Amend details"
+        assert alias_len == 0
+
+    def test_update_alias(self):
+        with self.app as c:
+            with c.session_transaction() as session:
+                session['application_dict'] = application_dict
+                session['application_type'] = "amend"
+                session['images'] = ['/document/1/image/1']
+        response = self.app.post('/update_alias/0', data=dict(forenames='John', occupation='', surname='Smith'))
+        html = response.data.decode('utf-8')
+        print(html)
+        tree = ET.fromstring(html)
+        assert tree.find('.//*[@id="form_data"]/h4').text == "Amend details"
+        assert "Smith" in tree.find('.//*[@id="alias"]/table/tbody/tr/td[1]').text
+
+    def test_add_alias(self):
+        with self.app as c:
+            with c.session_transaction() as session:
+                session['application_dict'] = application_dict
+                session['application_type'] = "amend"
+                session['images'] = ['/document/1/image/1']
+        response = self.app.post('/update_alias/new', data=dict(forenames='John', occupation='', surname='Smith'))
+        html = response.data.decode('utf-8')
+        print(html)
+        tree = ET.fromstring(html)
+        assert tree.find('.//*[@id="form_data"]/h4').text == "Amend details"
+        assert "Smith" in tree.find('.//*[@id="alias"]/table/tbody/tr[2]/td[1]').text
+
+    def test_amend_court(self):
+        with self.app as c:
+            with c.session_transaction() as session:
+                session['application_dict'] = application_dict
+                session['application_type'] = "amend"
+                session['images'] = ['/document/1/image/1']
+        response = self.app.get('/amend_court')
+        html = response.data.decode('utf-8')
+        print(html)
+        tree = ET.fromstring(html)
+        assert tree.find('.//*[@id="form_data"]/h4').text == "Court details"
+
+    def test_update_court(self):
+        with self.app as c:
+            with c.session_transaction() as session:
+                session['application_dict'] = application_dict
+                session['application_type'] = "amend"
+                session['images'] = ['/document/1/image/1']
+        response = self.app.post('/update_court', data=dict(court='Plymouth County Court', ref='20 of 2015'))
+        html = response.data.decode('utf-8')
+        print(html)
+        tree = ET.fromstring(html)
+        assert tree.find('.//*[@id="form_data"]/h4').text == "Amend details"
+        assert "Plymouth County Court" in tree.find('.//*[@id="court"]/table/tbody/tr/td[1]').text
+
+    
+
+
+
+
+
+
 
 
