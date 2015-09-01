@@ -234,6 +234,7 @@ def submit_amendment():
         logging.error(error)
         return render_template('error.html', error_msg=error), 500
 
+    print(reg_list)
     return render_template('confirmation.html', application_type=application_type, data=reg_list,
                            date=display_date)
 

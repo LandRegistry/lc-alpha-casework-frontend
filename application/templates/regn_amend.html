@@ -30,7 +30,7 @@
                 {% include 'includes/image_view_body.html' %}
                 <div id="form_data" class="col-sm-6">
                     <h5>Step 2 of 3</h5>
-                    <h4 style="display:inline">Amend details</h4><a class="pull-right" href="" data-toggle="modal" data-target="#deedModal"> View original image</a>
+                    <h4 style="display:inline">Amend details</h4><a id="view_image" class="pull-right" href="" data-toggle="modal" data-target="#deedModal"> View original image</a>
                     <div class="row">
                         <div class="col-md-12">
                             <h5>Debtor details</h5>
@@ -54,7 +54,7 @@
                                         </td>
                                         <td>{{data.occupation}}</td>
                                         <td></td>
-                                        <td><a href="/amend_name" class="btn btn-primary btn-sm pull-right"><i class="fa fa-pencil-square-o fa-fw fa-lg"></i> Amend</a></td>
+                                        <td><a id="amend_name" href="/amend_name" class="btn btn-primary btn-sm pull-right"><i class="fa fa-pencil-square-o fa-fw fa-lg"></i> Amend</a></td>
                                     </tr>
                                     </tbody>
                                 </table>
@@ -65,7 +65,7 @@
                                     <tr>
                                         <th width="80%">Alias Name</th>
                                         <th width="10%"></th>
-                                        <th width="10%"><a href="/amend_alias/new" class="btn btn-primary btn-sm pull-right"><i class="fa fa-plus-square-o fa-fw fa-lg"></i> Add</a></th>
+                                        <th width="10%"><a id="add_alias" href="/amend_alias/new" class="btn btn-primary btn-sm pull-right"><i class="fa fa-plus-square-o fa-fw fa-lg"></i> Add</a></th>
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -76,8 +76,8 @@
                                         {% endfor %}
                                         {{name.surname}}
                                     </td>
-                                        <td><a href="/remove_alias/{{loop.index-1}}" class="btn btn-primary btn-sm pull-right"><i class="fa fa-trash-o fa-fw fa-lg"></i>Remove</a></td>
-                                        <td><a href="/amend_alias/{{loop.index-1}}" class="btn btn-primary btn-sm pull-right"><i class="fa fa-pencil-square-o fa-fw fa-lg"></i> Amend</a></td>
+                                        <td><a id="remove_alias_{{loop.index-1}}" href="/remove_alias/{{loop.index-1}}" class="btn btn-primary btn-sm pull-right"><i class="fa fa-trash-o fa-fw fa-lg"></i>Remove</a></td>
+                                        <td><a id="amend_alias_{{loop.index-1}}" href="/amend_alias/{{loop.index-1}}" class="btn btn-primary btn-sm pull-right"><i class="fa fa-pencil-square-o fa-fw fa-lg"></i> Amend</a></td>
                                     </tr>
                                     {% endfor %}
                                     </tbody>
@@ -96,7 +96,7 @@
                                         <tr>
                                             <th width="80%">Address</th>
                                             <th width="10%"></th>
-                                            <th width="10%"><a href="/amend_address/new" class="btn btn-primary btn-sm pull-right"><i class="fa fa-plus-square-o fa-fw fa-lg"></i> Add</a></th>
+                                            <th width="10%"><a id="add_address" href="/amend_address/new" class="btn btn-primary btn-sm pull-right"><i class="fa fa-plus-square-o fa-fw fa-lg"></i> Add</a></th>
                                         </tr>
                                         </thead>
                                         <tbody>
@@ -109,10 +109,10 @@
                                                         {{address.postcode}}
                                             </td>
                                                 <td>{% if data.residence|length > 1 %}
-                                                <a href="/remove_address/{{loop.index-1}}" type="button" class="btn btn-primary btn-sm pull-right"><i class="fa fa-trash-o fa-fw fa-lg"></i> Remove</a>
+                                                <a id="remove_address_{{loop.index-1}}" href="/remove_address/{{loop.index-1}}" type="button" class="btn btn-primary btn-sm pull-right"><i class="fa fa-trash-o fa-fw fa-lg"></i> Remove</a>
 
                                                 {% endif %}</td>
-                                                <td><a href="/amend_address/{{loop.index-1}}" class="btn btn-primary btn-sm pull-right"><i class="fa fa-pencil-square-o fa-fw fa-lg"></i> Amend</a></td>
+                                                <td><a id="amend_address_{{loop.index-1}}" href="/amend_address/{{loop.index-1}}" class="btn btn-primary btn-sm pull-right"><i class="fa fa-pencil-square-o fa-fw fa-lg"></i> Amend</a></td>
                                             </tr>
                                             {% endfor %}
 
@@ -141,7 +141,7 @@
                                             <td>
                                                 {{data.legal_body_ref}}
                                             </td>
-                                            <td><a href="/amend_court" class="btn btn-primary btn-sm pull-right"><i class="fa fa-pencil-square-o fa-fw fa-lg"></i> Amend</a></td>
+                                            <td><a id="amend_court" href="/amend_court" class="btn btn-primary btn-sm pull-right"><i class="fa fa-pencil-square-o fa-fw fa-lg"></i> Amend</a></td>
                                         </tr>
                                         </tbody>
                                     </table>
