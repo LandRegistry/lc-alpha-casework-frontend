@@ -64,7 +64,9 @@ Given(/^I am on the Application details screen$/) do
 end 
 
 When(/^the application details become visible they must be the correct ones for the registration number detailed on the previous screen$/) do 
-  #database check
+  PostgreSQL.connect('landcharges')
+  result = PostgreSQL.query("SELECT a.surname FROM party_name a, register b WHERE b.registration_no=#{$regnote} AND b.debtor_reg_name_id = a.id")
+  page.has_content?(result.values[0][0])
 end 
 
 When(/^I can click the continue button the system will go next screen$/) do 
@@ -108,6 +110,9 @@ When(/^we check the bankruptcy database record there must be a indicator for can
   pending # Write code here that turns the phrase above into concrete actions 
 end 
 
-Then(/^the indicator must be Y for cancelled$/) do 
-  pending # Write code here that turns the phrase above into concrete actions 
+Then(/^the indicator must be Y for cancelled$/) do
+  PostgreSQL.connect('landcharges')
+  result = PostgreSQL.query("SELECT a.cancelled_by FROM register_details a, register b WHERE b.registration_no=#{$regnote} AND b.details_id = a.id")
+  print(result.values)
+  expect(result.values) > 0
 end 
