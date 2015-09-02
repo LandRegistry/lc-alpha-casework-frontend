@@ -7,135 +7,179 @@ After do |scenario|
 end
 
 Given(/^I have selected to view a specific record on the amendments application list the individual record is displayed$/) do
-  pending # Write code here that turns the phrase above into concrete actions 
+   $regnote = create_registration
+  visit('http://localhost:5010')
+  page.driver.browser.manage.window.maximize
+  visit( "http://localhost:5010/get_list?appn=amend" )
+    #find(:id,'amend_total').click
+    find(:xpath,'html/body/div[1]/div/div/div[3]/div/table/tbody/tr[1]/td[1]').click
+                 
 end 
 
 When(/^I am on the retrieve original documents  screen  the accompanying evidence is visible as thumbnails$/) do 
-  pending # Write code here that turns the phrase above into concrete actions 
+ page.should have_xpath('//*[@id="container0"]/img[1]')
+
 end 
 
 When(/^I click on an amendment form thumbnail the image is expanded to large image$/) do 
-  pending # Write code here that turns the phrase above into concrete actions 
+   find(:id, 'thumbnails').click
+  find(:xpath, '/html/body/form/div/div/div/div[2]/div[1]/div[2]/div/div/div/img[1]').click
 end 
 
 When(/^I am on a Large image of the amendment form I can zoom in$/) do 
-  pending # Write code here that turns the phrase above into concrete actions 
+   find(:xpath, '//*[@id="container0"]/img[2]').click 
+  #container0>div
+  #all('.zoomcontrols')[0].click
+ thing = find(:csspath, '#container0 > div:nth-child(2)')
+ expect(thing.text).to eq "2x Magnify"
 end 
 
 When(/^I am on a Large image of the amendment form I can zoom out$/) do 
-  pending # Write code here that turns the phrase above into concrete actions 
+  find(:xpath, '//*[@id="container0"]/img[3]').click
+   
+  #container0>div
+  #all('.zoomcontrols')[0].click
+  #container0 > div:nth-child(2)
+   
+ thing = find(:csspath, '#container0 > div:nth-child(2)')
+  expect(thing.text).to eq "1x Magnify"
 end 
 
 When(/^I must have a registration number before the continue button can be clicked$/) do 
-  pending # Write code here that turns the phrase above into concrete actions 
-end 
+   fill_in('reg_no', :with => $regnote)
+   sleep(10)
+end  
 
 Then(/^I can click the amendment screen continue button to go to the next screen$/) do 
-  pending # Write code here that turns the phrase above into concrete actions 
+  click_button('continue')
 end 
 
-Given(/^I am on the bankruptcy details screen$/) do 
-  pending # Write code here that turns the phrase above into concrete actions 
+Given(/^I am on the bankruptcy details screen$/) do #amend details screen
+  page.has_content?('Amend details')
 end 
 
 When(/^the application details become visible they must be the correct ones for the registration detailed on the previous screen$/) do 
-  pending # Write code here that turns the phrase above into concrete actions 
+ #database check
 end 
 
 When(/^I can click the amendment screen continue button the system will go next screen$/) do 
-  pending # Write code here that turns the phrase above into concrete actions 
+  #no action needed due to screen changes 
 end 
 
 Then(/^the next screen will be the amendment confirmation screen$/) do 
-  pending # Write code here that turns the phrase above into concrete actions 
+   #no action needed due to screen changes 
 end 
 
 When(/^I can click the reject button on the amendment screen the system will go next screen$/) do
-  pending # Write code here that turns the phrase above into concrete actions
+  click_button('reject')
 end
 
 Then(/^the next screen will be the amendment rejection screen$/) do
-  pending # Write code here that turns the phrase above into concrete actions
+  page.has_content?('Application Rejected')
+  find(:id, 'return_to_worklist').click
 end
 
 When(/^I can click the amend button the system will go next screen$/) do
-  pending # Write code here that turns the phrase above into concrete actions
+  page.has_content?('Date Received')
+
 end
 
-When(/^the next screen will be the amendments screen$/) do
-  pending # Write code here that turns the phrase above into concrete actions
+Given(/^I am on the bankruptcy details worklist screen with amendments still listed$/) do
+   $regnote2 = create_registration
+   find(:xpath,'html/body/div[1]/div/div/div[3]/div/table/tbody/tr[1]/td[1]').click
 end
 
-When(/^I am on the Amend Details screen I must be able to see all debtors details$/) do
-  pending # Write code here that turns the phrase above into concrete actions
+When(/^I must have a different registration number before the continue button can be clicked$/) do
+  fill_in('reg_no', :with => $regnote2)
+  click_button('continue')
+  
 end
 
-When(/^all addresses$/) do
-  pending # Write code here that turns the phrase above into concrete actions
-end
-
-When(/^court details$/) do
-  pending # Write code here that turns the phrase above into concrete actions
-end
-When(/^I click on the Add alias the debtor details amendment screen visible$/) do
-  pending # Write code here that turns the phrase above into concrete actions
-end
-
-When(/^I enter the new alias details I can then click the next button  to add additional debtors details$/) do
-  pending # Write code here that turns the phrase above into concrete actions
-end
-
-When(/^I enter additional alias details I can then click the continue button which returns me to the Amend details screen$/) do
-  pending # Write code here that turns the phrase above into concrete actions
-end
-
-When(/^I click on the Add address the Address details screen becomes visible$/) do
-  pending # Write code here that turns the phrase above into concrete actions
-end
-
-When(/^I enter the new address details I can click on the next button to add an additional address$/) do 
-  pending # Write code here that turns the phrase above into concrete actions 
+When(/^I am on the amend details screen I can click on the amend name button$/) do 
+  find(:id, 'amend_name').click
 end 
 
-When(/^I enter additional address details I can then click the continue button which returns me to the Amend details screen$/) do 
-  pending # Write code here that turns the phrase above into concrete actions 
-end 
-When(/^I click on an previously saved debtors details I am taken to the amend screen which displays all of the saved information$/) do 
-  pending # Write code here that turns the phrase above into concrete actions 
+When(/^the Debtor details screen is displayed I can overtype the details$/) do 
+  fill_in('forenames', :with => 'Nicola')
+  fill_in('surname', :with => 'Andrews')
 end 
 
-When(/^I overtype the debtor details I can then click on the continue button which returns me to the Amend details screen$/) do 
-  pending # Write code here that turns the phrase above into concrete actions 
+When(/^click the continue button the new details are stored$/) do 
+  click_button('continue')
 end 
 
-When(/^I click on an previously saved address details I am taken to the amend screen which displays all of the saved information$/) do 
-  pending # Write code here that turns the phrase above into concrete actions 
+When(/^I click the add button for alias name the debtor alias name screen is displayed$/) do 
+  find(:id, 'add_alias').click
 end 
 
-When(/^I overtype the address details I can then click on the continue button which returns me to the Amend details screen$/) do 
-  pending # Write code here that turns the phrase above into concrete actions 
+When(/^I enter the alias names$/) do 
+  fill_in('forenames', :with => 'Sue')
+  fill_in('surname', :with => 'Watchman')
 end 
 
-When(/^I click on an previously saved court details I am taken to the amend screen which displays all of the saved information$/) do 
-  pending # Write code here that turns the phrase above into concrete actions 
+When(/^I enter the additional alias names$/) do
+   fill_in('forenames', :with => 'Jack')
+  fill_in('surname', :with => 'Jones')
+end
+
+When(/^I select an alias name and click the remove button the name is removed from the screen$/) do
+  find(:id,'remove_alias_1').click
+end
+
+When(/^I click on the add button for address the address details screen is displayed$/) do 
+  find(:id, 'add_address').click
 end 
 
-When(/^I overtype the court details I can then click on the continue button which returns me to the Amend details screen$/) do 
-  pending # Write code here that turns the phrase above into concrete actions 
+When(/^I enter the address details$/) do 
+  fill_in('address1', :with => '1 long Street')
+  fill_in('address2', :with => 'Plymouth')
+  fill_in('county', :with => 'DEVON')
+  fill_in('postcode', :with => 'PL1 1AB')
+end
+
+When(/^I am on the amend details screen I can click on the amend address button$/) do 
+  find(:id,'amend_address_1').click 
 end 
+
+When(/^the address details screen is displayed I can overtype the details$/) do 
+  fill_in('address1', :with => '1 longer changed Street') 
+end 
+
+When(/^I select an address and click the remove button the address is removed from the screen$/) do
+  find(:id,'remove_address_1').click
+end
+
+When(/^I am on the amend details screen I can click on the amend court button$/) do 
+ find(:id, 'amend_court').click 
+end 
+
+When(/^the court details screen is displayed I can overtype the details$/) do 
+  fill_in('court', :with => 'Devon County Court')
+  fill_in('ref', :with =>'123 2015')
+  
+end 
+
 
 Then(/^I can click submit button to save all new information$/) do 
-  pending # Write code here that turns the phrase above into concrete actions 
+  find(:id, 'save_changes').click
 end 
 
 Given(/^the amendment confirmation screen is visible$/) do
-  pending # Write code here that turns the phrase above into concrete actions
+   page.has_content?('Application Complete')
+  page.has_content?('Your application reference numbers are:')
 end
 
 When(/^the amendments application has been submitted the unique identifier is displayed to the user on the screen$/) do
-  pending # Write code here that turns the phrase above into concrete actions
+
+  require 'Date'
+  current_date = Date.today
+  date_format = current_date.strftime('%d.%m.%Y')
+  registereddate = find(:id, 'registereddate').text
+  puts(registereddate)
+  expect(registereddate).to eq 'Registered on '+ date_format
 end
 
 Then(/^the user can return to the worklist from the amendment screens$/) do
-  pending # Write code here that turns the phrase above into concrete actions
+    page.has_content?('Application Complete')
+    find(:id, 'return_to_worklist').click
 end

@@ -29,26 +29,30 @@ When I can click the reject button on the amendment screen the system will go ne
 Then the next screen will be the amendment rejection screen
 
 #AM-US003	Amend Details
-Given I am on the bankruptcy details screen
-When the application details become visible they must be the correct ones for the registration detailed on the previous screen 
-When I can click the amend button the system will go next screen
-When the next screen will be the amendments screen
-When I am on the Amend Details screen I must be able to see all debtors details
-And all addresses
-And court details
-When I click on the Add alias the debtor details amendment screen visible
-When I enter the new alias details I can then click the next button  to add additional debtors details
-When I enter additional alias details I can then click the continue button which returns me to the Amend details screen 
-When I click on the Add address the Address details screen becomes visible
-When I enter the new address details I can click on the next button to add an additional address
-When I enter additional address details I can then click the continue button which returns me to the Amend details screen 
-When I click on an previously saved debtors details I am taken to the amend screen which displays all of the saved information
-When I overtype the debtor details I can then click on the continue button which returns me to the Amend details screen  
-When I click on an previously saved address details I am taken to the amend screen which displays all of the saved information
-When I overtype the address details I can then click on the continue button which returns me to the Amend details screen  
-When I click on an previously saved court details I am taken to the amend screen which displays all of the saved information
-When I overtype the court details I can then click on the continue button which returns me to the Amend details screen  
+Given I am on the bankruptcy details worklist screen with amendments still listed
+When I must have a different registration number before the continue button can be clicked
+When I am on the amend details screen I can click on the amend name button
+When the Debtor details screen is displayed I can overtype the details
+And click the continue button the new details are stored
+When I click the add button for alias name the debtor alias name screen is displayed
+When I enter the alias names 
+And click the continue button the new details are stored
+When I click the add button for alias name the debtor alias name screen is displayed
+When I enter the additional alias names 
+And click the continue button the new details are stored 
+When I select an alias name and click the remove button the name is removed from the screen
+When I click on the add button for address the address details screen is displayed
+When I enter the address details 
+And click the continue button the new details are stored
+When I am on the amend details screen I can click on the amend address button
+When the address details screen is displayed I can overtype the details
+And click the continue button the new details are stored
+When I select an address and click the remove button the address is removed from the screen
+When I am on the amend details screen I can click on the amend court button
+When the court details screen is displayed I can overtype the details
+And click the continue button the new details are stored
 Then I can click submit button to save all new information
+
 
 #AM-US005	Unique Identifier
 Given the amendment confirmation screen is visible	
