@@ -37,6 +37,6 @@ Then the next screen will be the rejection screen
 #CR-US006 Cancel Indicator
 Given the application has been cancelled 	
 When we check the bankruptcy database record there must be a indicator for cancelled	
-Then the indicator must be Y for cancelled
+Then the indicator must have a value for cancelled
 
 

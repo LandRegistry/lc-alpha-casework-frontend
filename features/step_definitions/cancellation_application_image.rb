@@ -102,17 +102,19 @@ Then(/^the next screen will be the rejection screen$/) do
     find(:id, 'return_to_worklist').click
 end 
 
-Given(/^the application has been cancelled$/) do 
-  pending # Write code here that turns the phrase above into concrete actions 
-end 
+Given(/^the application has been cancelled$/) do
+  step "I have selected to view a specific record on the cancellation application list the individual record is display"
+  step "I must have a registration number value before the continue button can be clicked"
+  step "I can click the continue button to go to the next screen"
+  step "I can click the continue button the system will go next screen"
+end
 
-When(/^we check the bankruptcy database record there must be a indicator for cancelled$/) do 
-  pending # Write code here that turns the phrase above into concrete actions 
-end 
+When(/^we check the bankruptcy database record there must be a indicator for cancelled$/) do
+#  pending # Write code here that turns the phrase above into concrete actions
+end
 
-Then(/^the indicator must be Y for cancelled$/) do
+Then(/^the indicator must have a value for cancelled$/) do
   PostgreSQL.connect('landcharges')
   result = PostgreSQL.query("SELECT a.cancelled_by FROM register_details a, register b WHERE b.registration_no=#{$regnote} AND b.details_id = a.id")
-  print(result.values)
-  expect(result.values) > 0
+  expect(result.values[0][0]).not_to be_empty
 end 
