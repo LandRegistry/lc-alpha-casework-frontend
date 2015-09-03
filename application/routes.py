@@ -16,6 +16,12 @@ def index():
         logging.error(error)
         return render_template('error.html', error_msg=error), 500
 
+@app.route('/start_rectification', methods=["GET"])
+def start_rectification():
+
+    session['application_type'] = "rectify"
+    return render_template('rect_retrieve.html')
+
 
 @app.route('/get_list', methods=["GET"])
 def get_list():
@@ -110,6 +116,8 @@ def get_bankruptcy_details():
 
         if application_type == 'amend':
             template = 'regn_amend.html'
+        elif application_type == 'rectify':
+            template = 'rect_amend.html'
         else:
             template = 'regn_cancel.html'
 
@@ -117,12 +125,13 @@ def get_bankruptcy_details():
             error_msg = "Registration not found please re-enter"
             if application_type == "amend" or application_type == "cancel":
                 template = 'regn_retrieve.html'
+            elif application_type == 'rectify':
+                template = 'rect_retrieve.html'
             else:
                 template = 'application.html'
 
             return render_template(template, application_type=application_type,
                                    error_msg=error_msg, images=image_details, current_page=0)
-
         else:
             application_json = response.json()
             print(application_json)
@@ -130,6 +139,8 @@ def get_bankruptcy_details():
                 error_msg = "Application has been cancelled or amended - please re-enter"
                 if application_type == "amend" or application_type == "cancel":
                     template = 'regn_retrieve.html'
+                elif application_type == 'rectify':
+                    template = 'rect_retrieve.html'
                 else:
                     template = 'application.html'
 
@@ -140,6 +151,7 @@ def get_bankruptcy_details():
             # TODO: Link hard coded on regn_amend.html for now.
 
             original_image_data = ""
+
             if application_json['document_id'] is not None:
                 document_id = application_json['document_id']
                 doc_response = requests.get(app.config["DOCUMENT_URL"] + "/document/" + str(document_id))
