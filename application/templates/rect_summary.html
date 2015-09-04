@@ -42,28 +42,61 @@
                     </ul>
                 </div>
                 <div id="form_data"  class="row col-sm-6" style="margin-top:10px">
-                    <div id="class_data">
-                        {% if error_msg|length > 0 %}
-                        <p class="error"><strong>{{error_msg}}</strong></p>
-                        {% endif %}
-                        <div class="form-group" >
-                            <label for="reg_no">Registration number</label>
-                            <input class="form-control defined" type="text" id="reg_no" name="reg_no" value="{{reg_no}}"/>
+                    <div class="row col-sm-12">
+                        <div class="col-sm-3">First name(s)</div>
+                        <div class="col-sm-9">John Thomas</div>
+                    </div>
+                    <div class="row col-sm-12">
+                        <div class="col-sm-3">Surname</div>
+                        <div class="col-sm-9">Smith</div>
+                    </div>
+                    <div class="row col-sm-12">
+                        <div class="col-sm-3">Occupation</div>
+                        <div class="col-sm-9">Plumber</div>
+                    </div>
+                    <div class="row col-sm-12">
+                        <div class="col-sm-3">Address(es)</div>
+                        <div class="col-sm-3">1 The Street<br/>
+                            Solihull<br/>
+                            Birmingham<br/>
+                            B54 5UY
                         </div>
-                        <div class="form-group">
-                            <input class="btn-lg pull-right btn-primary" id="continue" type="submit" value="Continue"/>
+                        <div class="col-sm-3">43 Test Avenue
+                            Birchington<br/>
+                            Kent<br/>
+                            CT6 9IU
+                        </div>
+                        <div class="col-sm-3">99 George Street
+                            Plymouth<br/>
+                            Devon<br/>
+                            PL1 7YR
+                        </div>
+                        <div class="row col-sm-12">
+                            <div class="col-sm-3">Court name</div>
+                            <div class="col-sm-9">Plymouth County Court</div>
+                        </div>
+                        <div class="row col-sm-12">
+                            <div class="col-sm-3">Court number</div>
+                            <div class="col-sm-9">523 / 15</div>
                         </div>
                     </div>
+                    <div class="row col-sm-12" >
+                        <div class="form-group col-sm-6" >
+                            <div class="row input-group">
+                                <label class="input-group-addon" >Is acknowledgement required?</label>
+                                <label for='yes' class="input-group-addon"><input type="radio" id='yes' name="ack" value="yes"/></label>
+                                <label for='yes' class="form-control formbgclr">Yes</label>
+                                <label for='no' class="input-group-addon"><input type="radio" id='no' name="nature" value="no"/></label>
+                                <label for='no' class="form-control formbgclr">No</label>
+                            </div>
+                        </div>
 
+                    </div>
+                    <input class="btn-lg pull-right btn-primary" id="submit" type="submit" value="Submit"/>
                 </div>
             </div>
         </div>
     </div>
 </form>
-<script>
-    jQuery( document ).ready(function() {
-        swap('{{current_page}}');
-    });
-</script>
 </body>
 </html>
