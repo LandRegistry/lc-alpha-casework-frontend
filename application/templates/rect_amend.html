@@ -6,8 +6,7 @@
     {% include 'includes/ext_references.html' %}
 
     <script>
-    var n = 0;
-    function nameClick(sender){
+    function nameClick(sender,n){
         jQuery('<div class="form-group"> \
                     <label class="col-sm-2" for="aliasforename">Alias first name(s)</label> \
                     <div class="col-sm-10"> \
@@ -26,24 +25,7 @@
     </script>
 
     <script>
-    var n = 0;
-    function myClick(sender){
-        jQuery('<div class="form-group"> \
-                    <label style="margin-top:1em" for="aliasforename">Alias Forename(s)</label> \
-                    <input class="form-control defined" id="aliasforename' +n+ '" name="aliasforename' +n+ '" value="{{aliasforename}}"> \
-                </div> \
-                <div class="form-group"> \
-                    <label for="aliassurname">Alias Surname</label> \
-                    <input class="form-control defined" id="aliassurname' +n+ '" name="aliassurname' +n+ '" value="{{aliassurname}}"> \
-                </div>').insertBefore("#addname");
-                n ++;
-        console.log(n);
-    };
-    </script>
-
-    <script>
-    var i = 0;
-    function addrClick(sender){
+    function addrClick(sender,i){
         jQuery('<div class="form-group"> \
                     <label class="col-sm-2" for="addaddr1">Additional address</label> \
                     <div class="col-sm-10"> \
@@ -81,23 +63,43 @@
 
 </head>
 <body>
-<input type="hidden" name="requested_list" value="{{requested_list}}"/>
-{% set page_title = 'Bankruptcy Rectifications' %}
-{% set trail = 'Bankruptcy Rectifications' %}
 <form action="/process_rectification" method="POST">
 <div id="main" class="container" style="margin-top:20px !important;">
     <div class="container">
         <div class="row">
-            <h3>Land Charges - {{page_title}}</h3>
-            <div class="row col-sm-12">
-                <ul class="breadcrumb">
-                    <li><a href="/">Home</a></li>
-                    <li><a href="/get_list?appn={{application_type}}">{{trail}}</a></li>
-                </ul>
+            <div class="navbar navbar-default navbar-fixed-top">
+                <div class="container">
+                    <div>
+                        <div class="navbar-header">
+                            <h3>Land Charges</h3>
+                        </div>
+                        <div class="collapse navbar-collapse" >
+                            <ul class="nav navbar-nav" style="margin-top:10px; margin-left:100px;">
+                                <li><a href="/">Work List</a></li>
+                                <li><a href="/" class="dropdown-toggle" data-toggle="dropdown">Tasks<b class="caret"></b></a>
+                                    <ul class="dropdown-menu" role="menu">
+                                        <li><a href="/start_rectification">Rectify</a></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="row col-sm-10" style="margin-top:10px; height:30em; overflow:scroll;">
-                <img src="/static/images/img40_1.jpeg" alt="" id="page1" style="width:100%"/>
-            </div>
+        </div>
+    </div>
+
+    <div class="container" style="margin-top: 80px;">
+        <h4>Bankruptcy Rectification</h4>
+        <div class="row col-sm-12">
+            <ul class="row breadcrumb" style="background-color: #ffffff;">
+                <li><a href="/start_rectification">Document request</a></li>
+                <li>Rectify</li>
+                <li>Summary and Save</li>
+            </ul>
+        </div>
+        <div class="row col-sm-10" style="margin-top:10px; height:30em; overflow:scroll;">
+            <img src="/static/images/img40_1.jpeg" alt="" id="page1" style="width:100%"/>
         </div>
         <div class="row col-sm-10" style="margin-top:1em;">
             <div class="panel panel-primary">
@@ -121,8 +123,26 @@
                                        value="{{data.debtor_name.surname}}"/>
                             </div>
                         </div>
+                        {% set count = 0 %}
+                        {% for name in data.debtor_alternative_name %}
+                        <div class="form-group">
+                            <label class="col-sm-2" for="aliasforename{{count}}">Alias first name(s)</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control defined" name="aliasforename{{count}}" id="aliasforename{{count}}"
+                                       value="{{ name.forenames|join(' ') }}"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2" for="aliassurname{{count}}">Alias surname</label>
+                            <div class="col-sm-10">
+                                <input type="text" name="aliassurname{{count}}" id="aliassurname{{count}}" class="form-control defined"
+                                       value="{{name.surname}}"/>
+                            </div>
+                        </div>
+                        {% set count = count + 1 %}
+                        {% endfor %}
                         <div class="form-group col-sm-12">
-                            <input id="addname" onclick="nameClick(this)" class="btn btn-primary pull-right"
+                            <input id="addname" onclick="nameClick(this,{{data.debtor_alternative_name|length}})" class="btn btn-primary pull-right"
                                    type="button" value="Add alias name">
                         </div>
                         <div class="form-group">
@@ -133,40 +153,45 @@
                             </div>
                         </div>
                         <div class="form-group">
+                            {% set count_addr = 0 %}
+                            {% for address in data.residence %}
                             <label class="col-sm-2" for="address1">Address</label>
-                            {% set address1 = data.residence[addr].address_lines[0] %}
-                            {% set address2 = data.residence[addr].address_lines[1] %}
-                            {% set address3 = data.residence[addr].address_lines[2] %}
-                            {% set county = data.residence[addr].county %}
-                            {% set postcode = data.residence[addr].postcode %}
+                            {{data.residence}}
+                            {% set address1 = data.residence[count].address_lines[0] %}
+                            {% set address2 = data.residence[count].address_lines[1] %}
+                            {% set address3 = data.residence[count].address_lines[2] %}
+                            {% set county = data.residence[count].county %}
+                            {% set postcode = data.residence[count].postcode %}
                             <div class="col-sm-10">
                                 <input type="text" class="form-control defined" name="address1" id="address1"
-                                       value="{{address1}}"/>
+                                       value="{{address.address1}}"/>
                             </div>
                             <label class="col-sm-2" for="address2"></label>
                             <div class="col-sm-10">
                                 <input type="text" class="form-control defined" name="address2" id="address2"
-                                       value="{{address2}}"/>
+                                       value="{{address.address2}}"/>
                             </div>
                             <label class="col-sm-2" for="address3"></label>
                             <div class="col-sm-10">
                                 <input type="text" class="form-control defined" name="address3" id="address3"
-                                       value="{{address3}}"/>
+                                       value="{{address.address3}}"/>
                             </div>
                             <label class="col-sm-2" for="county">County</label>
                             <div class="col-sm-10">
                                 <input type="text" class="form-control defined" name="county" id="county"
-                                       value="{{county}}"/>
+                                       value="{{address.county}}"/>
                             </div>
                             <label class="col-sm-2" for="postcode">Postcode</label>
                             <div class="col-sm-10">
                                 <input type="text" class="form-control defined" name="postcode" id="postcode"
-                                       value="{{postcode}}"/>
+                                       value="{{address.postcode}}"/>
                             </div>
+                            {% set count_addr = count_addr + 1 %}
+                            {% endfor %}
                         </div>
                         <br/>
                         <div class="col-sm-12">
-                            <input id="addaddr" onclick="addrClick(this)" class="btn btn-primary pull-right"
+                            <input id="addaddr" onclick="addrClick(this,data.residence|length)" class="btn btn-primary pull-right"
                                    type="button" value="Add Address">
                         </div>
                         <div class="form-group">
