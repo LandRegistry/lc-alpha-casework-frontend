@@ -108,7 +108,10 @@ def get_bankruptcy_details():
         application_type = session['application_type']
         regn_no = request.form['reg_no']
         session['regn_no'] = regn_no
-        image_details = session['images']
+        if application_type == 'rectify':
+            image_details = ''
+        else:
+            image_details = session['images']
 
         url = app.config['BANKRUPTCY_DATABASE_URL'] + '/registration/' + regn_no
 
@@ -134,7 +137,6 @@ def get_bankruptcy_details():
                                    error_msg=error_msg, images=image_details, current_page=0)
         else:
             application_json = response.json()
-            print(application_json)
             if application_json['status'] == 'cancelled' or application_json['status'] == 'superseded':
                 error_msg = "Application has been cancelled or amended - please re-enter"
                 if application_type == "amend" or application_type == "cancel":
@@ -246,7 +248,39 @@ def submit_amendment():
         logging.error(error)
         return render_template('error.html', error_msg=error), 500
 
-    print(reg_list)
+    return render_template('confirmation.html', application_type=application_type, data=reg_list,
+                           date=display_date)
+
+@app.route('/submit_rectification', methods=["POST"])
+def submit_rectification():
+
+    application_type = session['application_type']
+    application_dict = session['application_dict']
+    regn_no = session['regn_no']
+    display_date = datetime.now().strftime('%d.%m.%Y')
+
+    # these are needed at the moment for registration but are not captured on the form
+    application_dict["key_number"] = "2244095"
+    application_dict["application_ref"] = "customer reference"
+    today = datetime.now().strftime('%Y-%m-%d')
+    application_dict["date"] = today
+    application_dict["residence_withheld"] = False
+    application_dict['date_of_birth'] = "1980-01-01"
+
+    # TODO: once backend rectification code is in place
+    # url = app.config['BANKRUPTCY_DATABASE_URL'] + '/registration/' + regn_no
+    # headers = {'Content-Type': 'application/json'}
+    # response = requests.put(url, json.dumps(application_dict), headers=headers)
+    # if response.status_code == 200:
+    #     data = response.json()
+    reg_list = []
+    #     for n in data['new_registrations']:
+    #         reg_list.append(n)
+    # else:
+    #     error = response.status_code
+    #     logging.error(error)
+    #     return render_template('error.html', error_msg=error), 500
+
     return render_template('confirmation.html', application_type=application_type, data=reg_list,
                            date=display_date)
 
@@ -677,10 +711,7 @@ def process_rectification():
     application_dict['legal_body_ref'] = request.form['ref'].strip()
     session['application_dict'] = application_dict
 
-    print(application_dict)
-
-    # TODO: call confiramtion screen for now until summary page there
-    return render_template('confirmation.html', application_type=application_type, data=[],
+    return render_template('rect_summary.html', application_type=application_type, data=application_dict,
                            date='')
 
 

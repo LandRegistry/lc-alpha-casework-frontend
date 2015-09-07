@@ -6,7 +6,7 @@
     {% include 'includes/ext_references.html' %}
 </head>
 <body>
-<form action="/get_details" method="POST">
+<form action="/submit_rectification" method="POST">
     <div id="main" class="container" style="margin-top:20px !important;">
         <div class="container">
             <div class="row" >
@@ -32,7 +32,7 @@
             </div>
         </div>
         <div class="container" style="margin-top: 80px;">
-            <div >
+
                 <h4>Bankruptcy Rectification</h4>
                 <div class="row col-sm-12">
                     <ul class="row breadcrumb" style="background-color: #ffffff;">
@@ -41,62 +41,65 @@
                         <li>Summary and Save</li>
                     </ul>
                 </div>
-                <div id="form_data"  class="row col-sm-6" style="margin-top:10px">
+                <div id="form_data"  class="row col-sm-8" style="margin-top:10px">
                     <div class="row col-sm-12">
                         <div class="col-sm-3">First name(s)</div>
-                        <div class="col-sm-9">John Thomas</div>
+                        <div class="col-sm-9">{{ data.debtor_name.forenames|join(' ') }}</div>
                     </div>
                     <div class="row col-sm-12">
                         <div class="col-sm-3">Surname</div>
-                        <div class="col-sm-9">Smith</div>
+                        <div class="col-sm-9">{{data.debtor_name.surname}}</div>
                     </div>
+
+                    {% for name in data.debtor_alternative_name %}
                     <div class="row col-sm-12">
+                        <div class="col-sm-3">Alias name</div>
+                        <div class="col-sm-9">{{ name.forenames|join(' ') }} {{name.surname}}</div>
+                    </div>
+                    {% endfor %}
+                    <div class="row col-sm-12" style="margin-top:10px">
                         <div class="col-sm-3">Occupation</div>
-                        <div class="col-sm-9">Plumber</div>
+                        <div class="col-sm-9">{{data.occupation}}</div>
+                    </div>
+
+                    {% if data.residence|length > 0 and data.residence[0].address_lines|length > 0 %}
+                    <div class="row col-sm-12" style="margin-top:10px">
+                        <div class="col-sm-3">Address(es)</div>
+                        {% for address in data.residence %}
+                            <div class="col-sm-3">
+                                {% for line in address.address_lines %}
+                                {{line}}
+                                {% endfor %}<br/>
+                                {{address.county}}
+                                {{address.postcode}}
+                            </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                    <div class="row col-sm-12" style="margin-top:10px">
+                        <div class="col-sm-3">Court name</div>
+                        <div class="col-sm-9">{{data.legal_body}}</div>
                     </div>
                     <div class="row col-sm-12">
-                        <div class="col-sm-3">Address(es)</div>
-                        <div class="col-sm-3">1 The Street<br/>
-                            Solihull<br/>
-                            Birmingham<br/>
-                            B54 5UY
-                        </div>
-                        <div class="col-sm-3">43 Test Avenue
-                            Birchington<br/>
-                            Kent<br/>
-                            CT6 9IU
-                        </div>
-                        <div class="col-sm-3">99 George Street
-                            Plymouth<br/>
-                            Devon<br/>
-                            PL1 7YR
-                        </div>
-                        <div class="row col-sm-12">
-                            <div class="col-sm-3">Court name</div>
-                            <div class="col-sm-9">Plymouth County Court</div>
-                        </div>
-                        <div class="row col-sm-12">
-                            <div class="col-sm-3">Court number</div>
-                            <div class="col-sm-9">523 / 15</div>
-                        </div>
+                        <div class="col-sm-3">Court number</div>
+                        <div class="col-sm-9">{{data.legal_body_ref}}</div>
                     </div>
-                    <div class="row col-sm-12" >
-                        <div class="form-group col-sm-6" >
+                    <div class="row col-sm-12" style="margin-top:50px">
+                        <div class="form-group col-sm-8" >
                             <div class="row input-group">
                                 <label class="input-group-addon" >Is acknowledgement required?</label>
                                 <label for='yes' class="input-group-addon"><input type="radio" id='yes' name="ack" value="yes"/></label>
                                 <label for='yes' class="form-control formbgclr">Yes</label>
-                                <label for='no' class="input-group-addon"><input type="radio" id='no' name="nature" value="no"/></label>
+                                <label for='no' class="input-group-addon"><input type="radio" id='no' name="ack" checked value="no"/></label>
                                 <label for='no' class="form-control formbgclr">No</label>
                             </div>
                         </div>
-
+                        <input class="btn-lg pull-right btn-primary" id="submit" type="submit" value="Submit"/>
                     </div>
-                    <input class="btn-lg pull-right btn-primary" id="submit" type="submit" value="Submit"/>
+
                 </div>
             </div>
         </div>
-    </div>
-</form>
+    </form>
 </body>
 </html>
