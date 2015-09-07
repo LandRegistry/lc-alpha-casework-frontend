@@ -162,7 +162,7 @@ def get_bankruptcy_details():
         session['application_dict'] = application_json
 
         return render_template(template, application_type=application_type, data=application_json,
-                               images=image_details, current_page=0, original_image_data=original_image_data)
+                               images=image_details, current_page=0, original_image_data=original_image_data, addr=0)
 
     except Exception as error:
         logging.error(error)
@@ -589,6 +589,99 @@ def application_step_2():
         return render_template('banks_order.html', application=json.dumps(application),
                                images=session['images'],
                                requested_list=requested_worklist, current_page=0)
+
+@app.route('/process_rectification', methods=['POST'])
+def process_rectification():
+    application_type = session['application_type']
+
+    name = {"debtor_name": {"forenames": [], "surname": ""},
+            "occupation": "",
+            "debtor_alternative_name": [],
+            "residence": []
+            }
+    alt_name = {"forenames": [],
+                "surname": ""
+                }
+
+    forenames = request.form['forenames']
+    for i in forenames.split():
+        name['debtor_name']['forenames'].append(i)
+
+    name['debtor_name']['surname'] = request.form['surname']
+    name['occupation'] = request.form['occupation']
+
+    forename_var = "aliasforename"
+    surname_var = "aliassurname"
+    counter = 0
+    while True:
+        forename_counter = forename_var + str(counter)
+        surname_counter = surname_var + str(counter)
+        try:
+            alt_forenames = request.form[forename_counter]
+            alt_surname = request.form[surname_counter]
+        except:
+            break
+
+        for i in alt_forenames.split():
+            alt_name['forenames'].append(i)
+
+        alt_name['surname'] = alt_surname
+        if alt_forenames != '' and alt_surname != '':
+            name['debtor_alternative_name'].append(alt_name)
+
+        alt_name = {"forenames": [], "surname": ""}
+        counter += 1
+
+    application_dict = name
+
+    address = {'address_lines': []}
+    if 'address1' in request.form and request.form['address1'] != '':
+        address['address_lines'].append(request.form['address1'])
+    if 'address2' in request.form and request.form['address2'] != '':
+        address['address_lines'].append(request.form['address2'])
+    if 'address3' in request.form and request.form['address3'] != '':
+        address['address_lines'].append(request.form['address3'])
+
+    address['county'] = request.form['county']
+    address['postcode'] = request.form['postcode']
+    application_dict['residence'].append(address)
+
+    addr1_var = "addaddr1"
+    addr2_var = "addaddr2"
+    addr3_var = "addaddr3"
+    county_var = "county"
+    postcode_var = "postcode"
+    counter = 0
+    while True:
+        addr1_counter = addr1_var + str(counter)
+        addr2_counter = addr2_var + str(counter)
+        addr3_counter = addr3_var + str(counter)
+        county_counter = county_var + str(counter)
+        postcode_counter = postcode_var + str(counter)
+        address = {'address_lines': []}
+        if addr1_counter in request.form and request.form[addr1_counter] != '':
+            address['address_lines'].append(request.form[addr1_counter])
+        else:
+            break
+        if addr2_counter in request.form and request.form[addr2_counter] != '':
+            address['address_lines'].append(request.form[addr2_counter])
+        if addr3_counter in request.form and request.form[addr3_counter] != '':
+            address['address_lines'].append(request.form[addr3_counter])
+
+        address['county'] = request.form[county_counter]
+        address['postcode'] = request.form[postcode_counter]
+        application_dict['residence'].append(address)
+        counter += 1
+
+    application_dict['legal_body'] = request.form['court'].strip()
+    application_dict['legal_body_ref'] = request.form['ref'].strip()
+    session['application_dict'] = application_dict
+
+    print(application_dict)
+
+    # TODO: call confiramtion screen for now until summary page there
+    return render_template('confirmation.html', application_type=application_type, data=[],
+                           date='')
 
 
 @app.route('/notification', methods=['GET'])
