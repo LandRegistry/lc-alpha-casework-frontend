@@ -627,6 +627,8 @@ def application_step_2():
 @app.route('/process_rectification', methods=['POST'])
 def process_rectification():
     application_type = session['application_type']
+    print("received from page")
+    print(request.form)
 
     name = {"debtor_name": {"forenames": [], "surname": ""},
             "occupation": "",
