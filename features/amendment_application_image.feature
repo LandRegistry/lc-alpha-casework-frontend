@@ -59,7 +59,10 @@ Given the amendment confirmation screen is visible
 When the amendments application has been submitted the unique identifier is displayed to the user on the screen	
 Then the user can return to the worklist from the amendment screens
 
-
+#CR-US010 Amend Indicator
+Given the application has been amended 	
+When we check the bankruptcy database record there must be a indicator for amended	
+Then the indicator must have a value for amended
 
 
  
