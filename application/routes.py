@@ -232,8 +232,8 @@ def submit_amendment():
     application_dict["date"] = today
     application_dict["residence_withheld"] = False
     application_dict['date_of_birth'] = "1980-01-01"
-
-    url = app.config['BANKRUPTCY_DATABASE_URL'] + '/registration/' + regn_no
+    print(application_dict)
+    url = app.config['BANKRUPTCY_DATABASE_URL'] + '/registration/' + regn_no + '/' + 'amend'
     headers = {'Content-Type': 'application/json'}
     response = requests.put(url, json.dumps(application_dict), headers=headers)
     if response.status_code == 200:
@@ -270,19 +270,21 @@ def submit_rectification():
     application_dict["residence_withheld"] = False
     application_dict['date_of_birth'] = "1980-01-01"
 
+    print(application_dict)
+
     # TODO: once backend rectification code is in place
-    # url = app.config['BANKRUPTCY_DATABASE_URL'] + '/registration/' + regn_no
-    # headers = {'Content-Type': 'application/json'}
-    # response = requests.put(url, json.dumps(application_dict), headers=headers)
-    # if response.status_code == 200:
-    #     data = response.json()
-    reg_list = []
-    #     for n in data['new_registrations']:
-    #         reg_list.append(n)
-    # else:
-    #     error = response.status_code
-    #     logging.error(error)
-    #     return render_template('error.html', error_msg=error), 500
+    url = app.config['BANKRUPTCY_DATABASE_URL'] + '/registration/' + regn_no + '/' + 'rectify'
+    headers = {'Content-Type': 'application/json'}
+    response = requests.put(url, json.dumps(application_dict), headers=headers)
+    if response.status_code == 200:
+        data = response.json()
+        reg_list = []
+        for n in data['new_registrations']:
+            reg_list.append(n)
+    else:
+        error = response.status_code
+        logging.error(error)
+        return render_template('error.html', error_msg=error), 500
 
     return render_template('confirmation.html', application_type=application_type, data=reg_list,
                            date=display_date)
@@ -700,6 +702,7 @@ def process_rectification():
 
     application_dict['legal_body'] = request.form['court'].strip()
     application_dict['legal_body_ref'] = request.form['ref'].strip()
+    application_dict['application_type'] = application_type
     session['application_dict'] = application_dict
 
     return render_template('rect_summary.html', application_type=application_type, data=application_dict,
