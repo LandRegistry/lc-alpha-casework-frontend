@@ -8,9 +8,7 @@ end
 
 
 Given(/^I have selected to view a specific record on the cancellation application list the individual record is display$/) do
-  puts('help1')
   $regnote = create_registration
-  puts('help')
   visit('http://localhost:5010')
   page.driver.browser.manage.window.maximize
   visit( "http://localhost:5010/get_list?appn=cancel" )

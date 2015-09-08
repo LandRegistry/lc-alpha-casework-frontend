@@ -109,7 +109,8 @@ def get_bankruptcy_details():
         regn_no = request.form['reg_no']
         session['regn_no'] = regn_no
         if application_type == 'rectify':
-            image_details = ''
+            image_details = session['images']
+            # image_details = ''
         else:
             image_details = session['images']
 
@@ -668,21 +669,9 @@ def process_rectification():
 
     application_dict = name
 
-    address = {'address_lines': []}
-    if 'address1' in request.form and request.form['address1'] != '':
-        address['address_lines'].append(request.form['address1'])
-    if 'address2' in request.form and request.form['address2'] != '':
-        address['address_lines'].append(request.form['address2'])
-    if 'address3' in request.form and request.form['address3'] != '':
-        address['address_lines'].append(request.form['address3'])
-
-    address['county'] = request.form['county']
-    address['postcode'] = request.form['postcode']
-    application_dict['residence'].append(address)
-
-    addr1_var = "addaddr1"
-    addr2_var = "addaddr2"
-    addr3_var = "addaddr3"
+    addr1_var = "address1"
+    addr2_var = "address2"
+    addr3_var = "address3"
     county_var = "county"
     postcode_var = "postcode"
     counter = 0

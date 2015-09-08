@@ -183,3 +183,20 @@ Then(/^the user can return to the worklist from the amendment screens$/) do
     page.has_content?('Application Complete')
     find(:id, 'return_to_worklist').click
 end
+
+Given(/^the application has been amended$/) do
+  step "I am on the bankruptcy details worklist screen with amendments still listed"
+  step "I must have a different registration number before the continue button can be clicked"
+  step "I can click submit button to save all new information"
+  step "the user can return to the worklist from the amendment screens"
+end
+
+When(/^we check the bankruptcy database record there must be a indicator for amended$/) do
+  #pending # Write code here that turns the phrase above into concrete actions
+end
+
+Then(/^the indicator must have a value for amended$/) do
+  PostgreSQL.connect('landcharges')
+  result = PostgreSQL.query("SELECT a.cancelled_by FROM register_details a, register b WHERE b.registration_no=#{$regnote2} AND b.details_id = a.id")
+  expect(result.values[0][0]).not_to be_empty
+end
