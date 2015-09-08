@@ -741,7 +741,6 @@ class TestCaseworkFrontend:
         response = self.app.post('/court_details', data=test_data.process_court)
         assert response.status_code == 500
 
-
     def test_start_rectification(self):
 
         response = self.app.get('/start_rectification')
@@ -749,8 +748,16 @@ class TestCaseworkFrontend:
         tree = ET.fromstring(html)
         assert tree.find('.//*[@id="main"]/div[2]/div/h4').text == "Bankruptcy Rectification"
 
-
-    
+    def test_rectification_amend(self):
+        with self.app as c:
+            with c.session_transaction() as session:
+                session['application_type'] = "rectify"
+        response = self.app.post('/process_rectification', data=test_data.rectification)
+        html = response.data.decode('utf-8')
+        print(html)
+        tree = ET.fromstring(html)
+        assert tree.find('.//*[@id="form_data"]/div[1]/div[1]').text == "First name(s)"
+        assert "Advertising" in tree.find('.//*[@id="form_data"]/div[6]/div[2]').text
 
 
 
