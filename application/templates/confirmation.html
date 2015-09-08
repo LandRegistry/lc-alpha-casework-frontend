@@ -1,39 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8">
+    <meta charset="utf-8"/>
     <title>Land Charges</title>
     {% include 'includes/ext_references.html' %}
 </head>
 <body>
-<input type="hidden" name="requested_list" value="{{requested_list}}">
-{% if requested_list == 'pab'%}
-{% set page_title = 'PA Bankruptcy Registrations' %}
-{% elif requested_list == 'wob' %}
-{% set page_title = 'WO Bankruptcy Registrations' %}
-{% elif requested_list == 'bank_regn' %}
+<input type="hidden" name="requested_list" value="{{requested_list}}"/>
+{% if application_type == 'amend'%}
+{% set page_title = 'Bankruptcy Amendment' %}
+{% set trail = 'Amendments' %}
+{% elif application_type == 'cancel' %}
+{% set page_title = 'Bankruptcy Cancellation' %}
+{% set trail = 'Cancellations' %}
+{% elif application_type == 'bank_regn' %}
 {% set page_title = 'Bankruptcy Registrations' %}
-{% elif requested_list == 'lc_regn' %}
-{% set page_title = 'Land Charge Registrations' %}
-{% elif requested_list == 'amend' %}
-{% set page_title = 'Amendments' %}
-{% elif requested_list == 'cancel' %}
-{% set page_title = 'Cancellations' %}
-{% elif requested_list == 'prt_search' %}
-{% set page_title = 'Portal Searches' %}
-{% elif requested_list == 'search' %}
-{% set page_title = 'Searches' %}
-{% elif requested_list == 'oc' %}
-{% set page_title = 'Office Copies' %}
+{% set trail = 'Bankruptcy Registrations' %}
 {% endif %}
 <div id="main" class="container" style="margin-top:20px !important;">
     <div class="container">
         <div class="row">
-            <h2>Land Charges</h2>
+            <h3>Land Charges</h3>
             <div class="row col-sm-12">
                 <ul class="breadcrumb">
                     <li><a href="/">Home</a></li>
-                    <li><a href="/get_list?appn={{requested_list}}">{{page_title}}</a></li>
+                    <li><a href="/get_list?appn={{application_type}}">{{trail}}</a></li>
                 </ul>
             </div>
             <div class="row col-sm-12" style="margin-top:10em">
@@ -43,7 +34,7 @@
                         <table>
                             <tr>
                                 <td><i class="glyphicon glyphicon-ok-circle gi-5x gi-tick" aria-hidden="true"></i></td>
-                                <td><h3 style="padding-left:1em; padding-top:0.5em; font-size:3em; color: #ffffff">
+                                <td><h3 id="message" style="padding-left:1em; padding-top:0.5em; font-size:3em; color: #ffffff">
                                     Application Complete</h3></td>
                             </tr>
                         </table>
@@ -74,11 +65,16 @@
                     {% endfor %}
                     <br/>
                     <h3 id="registereddate">Registered on {{date}}</h3>
+                    <a href="/notification" target="new">View Notification</a>
                 {% endif %}
             </div>
         </div>
         <div>
-            <a class="btn-lg pull-right return-btn" href="/get_list?appn={{application_type}}">Return to Worklist</a>
+            {% if application_type == 'rectify' %}
+                <a id="return_to_worklist" class="btn-lg pull-right btn-primary" href="/">Return to Worklist</a>
+            {% else %}
+                <a id="return_to_worklist" class="btn-lg pull-right btn-primary" href="/get_list?appn={{application_type}}">Return to Worklist</a>
+            {% endif %}
         </div>
     </div>
 </div>

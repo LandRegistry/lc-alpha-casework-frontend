@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8"/>
+    <title>Form K22</title>
+    <style>
+        body {
+            text-align: center;
+            font-size: 10px;
+            font-face: serif;
+        }
+
+        h1 { font-size:24px; }
+        h2 { font-size:14px; }
+
+        p {
+            text-align: left;
+        }
+
+        #tr_icon {
+            position: fixed;
+            right: 0px;
+            top: 15px;
+        }
+
+        #icon_form {
+            font-size: 12px;
+            vertical-align: top;
+        }
+
+        #icon_k22 {
+            font-size: 28px;
+        }
+
+        .top_box {
+            border: 1px solid black;
+            position: absolute;
+            height: 30px;
+            width: 25%;
+            top: 0px;
+        }
+
+        #regn_date { right: 0px; }
+        #ref_no {
+            position: static;
+            margin: auto;
+        }
+
+        #top_boxes {
+            height: 30px;
+            width: 100%;
+            position: relative;
+        }
+
+        #main_box {
+            border: 1px solid black;
+            position: fixed;
+            left: 10px;
+            right: 10px;
+            bottom: 0px;
+            top: 170px;
+            min-height: 600px;
+        }
+        #sample {
+            color: lightgray;
+            position: fixed;
+            left: 0px;
+            right: 0px;
+            top: 190px;
+            font-size: 150px;
+            transform: rotateZ(45deg);
+            z-index: -1000;
+        }
+        .box {
+            border: 1px solid black;
+            position: fixed;
+        }
+        #owner {
+            height: 50px;
+            width: 230px;
+            left: 10px;
+            border-right: none;
+            border-top: none;
+        }
+        #particulars {
+            top: 200px;
+            left: 110px;
+            width: 130px;
+            border-top: none;
+            border-right: none;
+            border-bottom: none;
+            height: 50px;
+        }
+        #important {
+            height: 50px;
+            right: 10px;
+            left: 240px;
+            border-top: none;
+        }
+        #area {
+            position: fixed;
+            top: 260px;
+            font-size: 12px;
+        }
+
+        .detl_name{
+            margin-left: 10px;
+            margin-right: 30px;
+        }
+
+    </style>
+</head>
+<body>
+    <div id="sample">EXAMPLE</div>
+
+    <h1>LAND CHARGES ACT, 1972.</h1>
+    <h2>ACKNOWLEDGEMENT OF APPLICATION</h2>
+    <div id="tr_icon">
+        <span id="icon_form">Form</span>
+        <span id="icon_k22">K22</span>
+    </div>
+    <p>The Chief Land Registrar acknowledges receipt of the undermentioned application
+    to which effect has been given on the date and under the official reference number
+    shown below.</p>
+    <div id="top_boxes">
+        <div id="app_type" class="top_box">
+            TYPE OF APPLICATION<br/>
+            {{data.type}}
+        </div>
+        <div id="ref_no" class="top_box">
+            OFFICIAL REFERENCE NUMBER<br/>
+            {{data.reg_no}}
+        </div>
+        <div id="regn_date" class="top_box">
+            DATE OF REGISTRATION<br/>
+            {{data.date}}
+        </div>
+    </div>
+    <div id="main_box">
+        <div class="box" id="owner">NAME OF THE ESTATE OWNER/CHARGOR</div>
+        <div class="box" id="particulars">Particulars of the entry</div>
+        <div class="box" id="important"><b>IMPORTANT</b> PLEASE READ THE NOTES OVERLEAF</div>
+        <div id="area">
+            {% for detail in data.details %}
+                <div class="details">
+                    <span class="detl_name">{{detail.name}}</span>
+                    <span class="detl_part">{{detail.particulars}}</span>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+</html>

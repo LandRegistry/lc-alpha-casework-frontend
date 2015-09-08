@@ -4,7 +4,7 @@ import requests
 from datetime import datetime
 import logging
 import json
-
+from threading import Thread
 
 @app.route('/', methods=["GET"])
 def index():
@@ -14,7 +14,13 @@ def index():
         return render_template('totals.html', data=data)
     except Exception as error:
         logging.error(error)
-        return render_template('error.html', error_msg=error)
+        return render_template('error.html', error_msg=error), 500
+
+@app.route('/start_rectification', methods=["GET"])
+def start_rectification():
+
+    session['application_type'] = "rectify"
+    return render_template('rect_retrieve.html')
 
 
 @app.route('/get_list', methods=["GET"])
@@ -55,7 +61,7 @@ def get_list():
 
     except Exception as error:
         logging.error(error)
-        return render_template('error.html', error_msg=error)
+        return render_template('error.html', error_msg=error), 500
 
 
 @app.route('/get_application/<application_type>/<appn_id>', methods=["GET"])
@@ -74,6 +80,7 @@ def get_application(application_type, appn_id):
         for image in image_data['images']:
             images.append(app.config["DOCUMENT_URL"] + image)
         session['images'] = images
+        session['document_id'] = document_id
 
         if application_type == "amend" or application_type == "cancel":
             template = 'regn_retrieve.html'
@@ -81,6 +88,9 @@ def get_application(application_type, appn_id):
             template = 'application.html'
 
         session['application_type'] = application_type
+        session['worklist_id'] = appn_id
+        session['document_id'] = document_id
+        session['application_dict'] = application_json
 
         return render_template(template, application_type=application_type, data=application_json,
                                images=images,
@@ -88,7 +98,7 @@ def get_application(application_type, appn_id):
 
     except Exception as error:
         logging.error(error)
-        return render_template('error.html', error_msg=error)
+        return render_template('error.html', error_msg=error), 500
 
 
 @app.route('/get_details', methods=["POST"])
@@ -98,49 +108,68 @@ def get_bankruptcy_details():
         application_type = session['application_type']
         regn_no = request.form['reg_no']
         session['regn_no'] = regn_no
+        if application_type == 'rectify':
+            image_details = session['images']
+            # image_details = ''
+        else:
+            image_details = session['images']
 
         url = app.config['BANKRUPTCY_DATABASE_URL'] + '/registration/' + regn_no
 
         response = requests.get(url)
 
-        image_details = session['images']
+        if application_type == 'amend':
+            template = 'regn_amend.html'
+        elif application_type == 'rectify':
+            template = 'rect_amend.html'
+        else:
+            template = 'regn_cancel.html'
 
         if response.status_code == 404:
             error_msg = "Registration not found please re-enter"
             if application_type == "amend" or application_type == "cancel":
                 template = 'regn_retrieve.html'
+            elif application_type == 'rectify':
+                template = 'rect_retrieve.html'
             else:
                 template = 'application.html'
 
             return render_template(template, application_type=application_type,
                                    error_msg=error_msg, images=image_details, current_page=0)
-
         else:
             application_json = response.json()
-            if application_json['status'] == 'cancelled':
-                error_msg = "Application cancelled please re-enter"
+            if application_json['status'] == 'cancelled' or application_json['status'] == 'superseded':
+                error_msg = "Application has been cancelled or amended - please re-enter"
                 if application_type == "amend" or application_type == "cancel":
                     template = 'regn_retrieve.html'
+                elif application_type == 'rectify':
+                    template = 'rect_retrieve.html'
                 else:
                     template = 'application.html'
 
                 return render_template(template, application_type=application_type,
                                        error_msg=error_msg, images=image_details, current_page=0)
 
+            # TODO: Need to re-visit this when we have image data stored for the original application
+            # TODO: Link hard coded on regn_amend.html for now.
 
-            #  json missing court details at the moment, waiting for Ian to redesign the database to include them
-            #  Will hard code for now
-            application_json['court_name'] = "Liverpool"
-            application_json['court_number'] = "523 / 15"
+            original_image_data = ""
+
+            if application_json['document_id'] is not None:
+                document_id = application_json['document_id']
+                doc_response = requests.get(app.config["DOCUMENT_URL"] + "/document/" + str(document_id))
+                original_image_data = doc_response.json()
+            else:
+                logging.info("No original document images found for registration " + regn_no)
 
         session['application_dict'] = application_json
 
-        return render_template('regn_details.html', application_type=application_type, data=application_json,
-                               images=image_details, current_page=0)
+        return render_template(template, application_type=application_type, data=application_json,
+                               images=image_details, current_page=0, original_image_data=original_image_data, addr=0)
 
     except Exception as error:
         logging.error(error)
-        return render_template('error.html', error_msg=error)
+        return render_template('error.html', error_msg=error), 500
 
 
 @app.route('/process_request', methods=["POST"])
@@ -157,19 +186,25 @@ def process_request():
     elif 'Continue' in request.form:
         template = 'confirmation.html'
         url = app.config['BANKRUPTCY_DATABASE_URL'] + '/registration/' + regn_no
+        # TODO: pass empty dict for now, ian mentioned about doc id needed?
+        data = {}
         headers = {'Content-Type': 'application/json'}
-        response = requests.delete(url, headers=headers)
+        response = requests.delete(url, data=json.dumps(data), headers=headers)
         if response.status_code == 200:
             data = response.json()
             # although this is list it is called application_dict to reuse render template statement below
             application_dict = []
             for n in data['cancelled']:
                 application_dict.append(n)
+            try:
+                delete_from_worklist(session['worklist_id'])
+            except Exception as error:
+                logging.error(error)
+                return render_template('error.html', error_msg=error), 500
         else:
-            print("failed with", response.status_code)
             error = response.status_code
             logging.error(error)
-            return render_template('error.html', error_msg=error)
+            return render_template('error.html', error_msg=error), 500
     else:
         template = 'rejection.html'
 
@@ -177,11 +212,86 @@ def process_request():
                            images=image_list, current_page=0, date=display_date)
 
 
+@app.route('/submit_amendment', methods=["POST"])
+def submit_amendment():
+
+    application_type = session['application_type']
+    application_dict = session['application_dict']
+    regn_no = session['regn_no']
+    display_date = datetime.now().strftime('%d.%m.%Y')
+
+    if 'Reject' in request.form:
+        return render_template('rejection.html', application_type=application_type)
+
+    # these are needed at the moment for registration but are not captured on the form
+    application_dict["key_number"] = "2244095"
+    application_dict["application_ref"] = "customer reference"
+    today = datetime.now().strftime('%Y-%m-%d')
+    application_dict["date"] = today
+    application_dict["residence_withheld"] = False
+    application_dict['date_of_birth'] = "1980-01-01"
+
+    url = app.config['BANKRUPTCY_DATABASE_URL'] + '/registration/' + regn_no
+    headers = {'Content-Type': 'application/json'}
+    response = requests.put(url, json.dumps(application_dict), headers=headers)
+    if response.status_code == 200:
+        data = response.json()
+        reg_list = []
+        for n in data['new_registrations']:
+            reg_list.append(n)
+        try:
+            delete_from_worklist(session['worklist_id'])
+        except Exception as error:
+            logging.error(error)
+            return render_template('error.html', error_msg=error), 500
+    else:
+        error = response.status_code
+        logging.error(error)
+        return render_template('error.html', error_msg=error), 500
+
+    return render_template('confirmation.html', application_type=application_type, data=reg_list,
+                           date=display_date)
+
+@app.route('/submit_rectification', methods=["POST"])
+def submit_rectification():
+
+    application_type = session['application_type']
+    application_dict = session['application_dict']
+    regn_no = session['regn_no']
+    display_date = datetime.now().strftime('%d.%m.%Y')
+
+    # these are needed at the moment for registration but are not captured on the form
+    application_dict["key_number"] = "2244095"
+    application_dict["application_ref"] = "customer reference"
+    today = datetime.now().strftime('%Y-%m-%d')
+    application_dict["date"] = today
+    application_dict["residence_withheld"] = False
+    application_dict['date_of_birth'] = "1980-01-01"
+
+    # TODO: once backend rectification code is in place
+    # url = app.config['BANKRUPTCY_DATABASE_URL'] + '/registration/' + regn_no
+    # headers = {'Content-Type': 'application/json'}
+    # response = requests.put(url, json.dumps(application_dict), headers=headers)
+    # if response.status_code == 200:
+    #     data = response.json()
+    reg_list = []
+    #     for n in data['new_registrations']:
+    #         reg_list.append(n)
+    # else:
+    #     error = response.status_code
+    #     logging.error(error)
+    #     return render_template('error.html', error_msg=error), 500
+
+    return render_template('confirmation.html', application_type=application_type, data=reg_list,
+                           date=display_date)
+
+
 @app.route('/amend_name', methods=["GET"])
 def show_name():
 
     application_type = session['application_type']
     application_dict = session['application_dict']
+
     image_list = session['images']
 
     return render_template('regn_name.html', application_type=application_type, data=application_dict,
@@ -194,6 +304,189 @@ def update_name_details():
     application_type = session['application_type']
     application_dict = session['application_dict']
     image_list = session['images']
+
+    forenames = request.form['forenames'].strip()
+    surname = request.form['surname'].strip()
+    occupation = request.form['occupation'].strip()
+
+    new_debtor_name = {
+        'forenames': forenames.split(),
+        'surname': surname
+    }
+
+    application_dict['debtor_name'] = new_debtor_name
+    application_dict['occupation'] = occupation
+
+    return render_template('regn_amend.html', application_type=application_type, data=application_dict,
+                           images=image_list, current_page=0)
+
+
+# TODO: renamed as 'complete', move to back-end?
+def delete_from_worklist(application_id):
+    url = app.config['CASEWORK_DB_URL'] + '/workitem/' + application_id
+    response = requests.delete(url)
+    if response.status_code != 204:
+        error = 'Failed to delete application ' + application_id + ' from the worklist. Error code:' \
+                + str(response.status_code)
+
+        logging.error(error)
+        raise RuntimeError(error)
+
+
+# Commented out - it's quite slow...
+# def send_notification(application):
+#     logging.info('Sending notification')
+#     import subprocess
+#     from requests.utils import quote
+#     #print(session)
+#     #application = session['application_dict']
+#     name = quote(' '.join(application['debtor_name']['forenames']) + ' ' + application['debtor_name']['surname'])
+#     app_type = quote(application['application_type'])
+#     date = quote(application['date'])
+#     reg_no = quote(str(application['reg_nos'][0]))
+#     parts = quote('[Insert particulars here]')
+#     params = "type={}&date={}&reg_no={}&name={}&parts={}".format(
+#         app_type, date, reg_no, name, parts
+#     )
+#     url = "localhost:5010/acknowledgement?" + params
+#     subprocess.check_output(['wkhtmltopdf', 'http://' + url, '/tmp/' + reg_no + '.pdf'])
+#
+#     # localhost:5010/acknowledgement?type=PA(B)&reg_no=50001&date=26.12.2014&name=Bob%20Howard&parts=Stuff%20Goes%20Here
+#     print(application)
+
+
+@app.route('/amend_address/<addr>', methods=["GET"])
+def show_address(addr):
+
+    application_type = session['application_type']
+    application_dict = session['application_dict']
+    image_list = session['images']
+
+    if addr == 'new':
+        address = addr
+    else:
+        address = int(addr)
+
+    return render_template('regn_address.html', application_type=application_type, data=application_dict,
+                           images=image_list, current_page=0, addr=address)
+
+
+@app.route('/update_address/<addr>', methods=["POST"])
+def update_address_details(addr):
+
+    application_type = session['application_type']
+    application_dict = session['application_dict']
+    image_list = session['images']
+
+    address = {'address_lines': []}
+    if 'address1' in request.form and request.form['address1'] != '':
+        address['address_lines'].append(request.form['address1'])
+    if 'address2' in request.form and request.form['address2'] != '':
+        address['address_lines'].append(request.form['address2'])
+    if 'address3' in request.form and request.form['address3'] != '':
+        address['address_lines'].append(request.form['address3'])
+    if 'address4' in request.form and request.form['address4'] != '':
+        address['address_lines'].append(request.form['address4'])
+    if 'address5' in request.form and request.form['address5'] != '':
+        address['address_lines'].append(request.form['address5'])
+    if 'address6' in request.form and request.form['address6'] != '':
+        address['address_lines'].append(request.form['address6'])
+
+    address['county'] = request.form['county']
+    address['postcode'] = request.form['postcode']
+    if addr == 'new':
+        application_dict['residence'].append(address)
+    else:
+        application_dict['residence'][int(addr)] = address
+
+    return render_template('regn_amend.html', application_type=application_type, data=application_dict,
+                           images=image_list, current_page=0)
+
+
+@app.route('/remove_address/<int:addr>', methods=["GET"])
+def remove_address(addr):
+
+    application_type = session['application_type']
+    application_dict = session['application_dict']
+    image_list = session['images']
+
+    del(application_dict['residence'][addr])
+
+    return render_template('regn_amend.html', application_type=application_type, data=application_dict,
+                           images=image_list, current_page=0)
+
+
+@app.route('/amend_alias/<name_index>', methods=["GET"])
+def show_alias(name_index):
+
+    application_type = session['application_type']
+    application_dict = session['application_dict']
+    image_list = session['images']
+
+    if name_index != 'new':
+        name_index = int(name_index)
+
+    return render_template('regn_alias.html', application_type=application_type, data=application_dict,
+                           images=image_list, current_page=0, name_index=name_index)
+
+
+@app.route('/remove_alias/<int:name>', methods=["GET"])
+def remove_alias(name):
+
+    application_type = session['application_type']
+    application_dict = session['application_dict']
+    image_list = session['images']
+    del(application_dict['debtor_alternative_name'][name])
+
+    return render_template('regn_amend.html', application_type=application_type, data=application_dict,
+                           images=image_list, current_page=0)
+
+
+@app.route('/update_alias/<name_index>', methods=["POST"])
+def update_alias(name_index):
+
+    application_type = session['application_type']
+    application_dict = session['application_dict']
+    image_list = session['images']
+
+    forenames = request.form['forenames'].strip()
+    surname = request.form['surname'].strip()
+
+    alias_name = {
+        'forenames': forenames.split(),
+        'surname': surname
+    }
+
+    if name_index == 'new':
+        application_dict['debtor_alternative_name'].append(alias_name)
+    else:
+        application_dict['debtor_alternative_name'][int(name_index)] = alias_name
+
+    return render_template('regn_amend.html', application_type=application_type, data=application_dict,
+                           images=image_list, current_page=0)
+
+
+@app.route('/amend_court', methods=["GET"])
+def show_court():
+
+    application_type = session['application_type']
+    application_dict = session['application_dict']
+
+    image_list = session['images']
+
+    return render_template('regn_court.html', application_type=application_type, data=application_dict,
+                           images=image_list, current_page=0)
+
+
+@app.route('/update_court', methods=["POST"])
+def update_court():
+
+    application_type = session['application_type']
+    application_dict = session['application_dict']
+    image_list = session['images']
+
+    application_dict['legal_body'] = request.form['court'].strip()
+    application_dict['legal_body_ref'] = request.form['ref'].strip()
 
     return render_template('regn_amend.html', application_type=application_type, data=application_dict,
                            images=image_list, current_page=0)
@@ -243,23 +536,25 @@ def process_banks_name():
 
         requested_worklist = 'bank_regn'
         images = session['images']
+        session['application_dict'] = name
 
         return render_template('address.html', application=json.dumps(name), images=images,
-                               requested_list=requested_worklist, current_page=1)
+                               requested_list=requested_worklist, current_page=0)
 
     except Exception as error:
         logging.error(error)
-        return render_template('error.html', error_msg=error)
+        return render_template('error.html', error_msg=error), 500
 
 
 @app.route('/court_details', methods=["POST"])
 def process_court_details():
 
     try:
-        application = json.loads(request.form['application'])
+        # application = json.loads(request.form['application'])
+        application = session['application_dict']
         application["application_type"] = request.form['nature']
-        application["court_name"] = request.form['court']
-        application["court_ref"] = request.form['court_ref']
+        application["legal_body"] = request.form['court']
+        application["legal_body_ref"] = request.form['court_ref']
 
         # these are needed at the moment for registration but are not captured on the form
         application["key_number"] = "2244095"
@@ -268,6 +563,7 @@ def process_court_details():
         application["date"] = today
         application["residence_withheld"] = False
         application['date_of_birth'] = "1980-01-01"
+        application["document_id"] = session['document_id']
 
         url = app.config['BANKRUPTCY_DATABASE_URL'] + '/registration'
         headers = {'Content-Type': 'application/json'}
@@ -278,24 +574,31 @@ def process_court_details():
             reg_list = []
             for n in data['new_registrations']:
                 reg_list.append(n)
+            application['reg_nos'] = reg_list
             requested_worklist = 'bank_regn'
             display_date = datetime.now().strftime('%d.%m.%Y')
+            delete_from_worklist(session['worklist_id'])
+
+            # thread = Thread(target=send_notification, args=(session['application_dict'],))
+            # thread.start()
+            #send_notification(session['application_dict'])
+
             return render_template('confirmation.html', application=application, data=reg_list, date=display_date,
-                                   requested_list=requested_worklist)
+                                   application_type=requested_worklist)
         else:
-            print("failed with", response.status_code)
             error = response.status_code
             logging.error(error)
-            return render_template('error.html', error_msg=error)
+            return render_template('error.html', error_msg=error), 500
 
     except Exception as error:
         logging.error(error)
-        return render_template('error.html', error_msg=error)
+        return render_template('error.html', error_msg=error), 500
 
 
 @app.route('/address', methods=['POST'])
 def application_step_2():
-    application = json.loads(request.form['application'])
+    # application = json.loads(request.form['application'])
+    application = session['application_dict']
     if 'residence' not in application:
         application['residence'] = []
 
@@ -309,24 +612,129 @@ def application_step_2():
     if 'address3' in request.form and request.form['address3'] != '':
         address['address_lines'].append(request.form['address3'])
 
-    address['address_lines'].append(request.form['county'])
+    address['county'] = request.form['county']
     address['postcode'] = request.form['postcode']
     application['residence'].append(address)
     requested_worklist = 'bank_regn'
 
     if 'add_address' in request.form:
-        return render_template('address.html', application=json.dumps(application), images=[
-            "http://localhost:5014/document/9/image/1",
-            "http://localhost:5014/document/9/image/2",
-            "http://localhost:5014/document/9/image/3",
-        ], residences=application['residence'], requested_list=requested_worklist, current_page=0)
+        return render_template('address.html', application=json.dumps(application), images=session['images'],
+                               residences=application['residence'], requested_list=requested_worklist, current_page=0)
     else:
         return render_template('banks_order.html', application=json.dumps(application),
-                               images=[
-                                   "http://localhost:5014/document/9/image/1",
-                                   "http://localhost:5014/document/9/image/2",
-                                   "http://localhost:5014/document/9/image/3", ],
+                               images=session['images'],
                                requested_list=requested_worklist, current_page=0)
+
+@app.route('/process_rectification', methods=['POST'])
+def process_rectification():
+    application_type = session['application_type']
+
+    name = {"debtor_name": {"forenames": [], "surname": ""},
+            "occupation": "",
+            "debtor_alternative_name": [],
+            "residence": []
+            }
+    alt_name = {"forenames": [],
+                "surname": ""
+                }
+
+    forenames = request.form['forenames']
+    for i in forenames.split():
+        name['debtor_name']['forenames'].append(i)
+
+    name['debtor_name']['surname'] = request.form['surname']
+    name['occupation'] = request.form['occupation']
+
+    forename_var = "aliasforename"
+    surname_var = "aliassurname"
+    counter = 0
+    while True:
+        forename_counter = forename_var + str(counter)
+        surname_counter = surname_var + str(counter)
+        try:
+            alt_forenames = request.form[forename_counter]
+            alt_surname = request.form[surname_counter]
+        except:
+            break
+
+        for i in alt_forenames.split():
+            alt_name['forenames'].append(i)
+
+        alt_name['surname'] = alt_surname
+        if alt_forenames != '' and alt_surname != '':
+            name['debtor_alternative_name'].append(alt_name)
+
+        alt_name = {"forenames": [], "surname": ""}
+        counter += 1
+
+    application_dict = name
+
+    addr1_var = "address1"
+    addr2_var = "address2"
+    addr3_var = "address3"
+    county_var = "county"
+    postcode_var = "postcode"
+    counter = 0
+    while True:
+        addr1_counter = addr1_var + str(counter)
+        addr2_counter = addr2_var + str(counter)
+        addr3_counter = addr3_var + str(counter)
+        county_counter = county_var + str(counter)
+        postcode_counter = postcode_var + str(counter)
+        address = {'address_lines': []}
+        if addr1_counter in request.form and request.form[addr1_counter] != '':
+            address['address_lines'].append(request.form[addr1_counter])
+        else:
+            break
+        if addr2_counter in request.form and request.form[addr2_counter] != '':
+            address['address_lines'].append(request.form[addr2_counter])
+        if addr3_counter in request.form and request.form[addr3_counter] != '':
+            address['address_lines'].append(request.form[addr3_counter])
+
+        address['county'] = request.form[county_counter]
+        address['postcode'] = request.form[postcode_counter]
+        application_dict['residence'].append(address)
+        counter += 1
+
+    application_dict['legal_body'] = request.form['court'].strip()
+    application_dict['legal_body_ref'] = request.form['ref'].strip()
+    session['application_dict'] = application_dict
+
+    return render_template('rect_summary.html', application_type=application_type, data=application_dict,
+                           date='')
+
+
+@app.route('/notification', methods=['GET'])
+def notification():
+    print(session)
+    application = session['application_dict']
+    data = {
+        "type": application['application_type'],
+        "reg_no": application['reg_nos'][0],
+        "date": application['date'],
+        "details": [
+            {
+                "name": ' '.join(application['debtor_name']['forenames']) + ' ' + application['debtor_name']['surname'],
+                "particulars": 'TODO: what goes here?'
+            }
+        ]
+    }
+    return render_template('K22.html', data=data)
+
+# @app.route('/acknowledgement', methods=['GET'])
+# def acknowledgement():
+#     data = {
+#         "type": request.args.get('type'),
+#         "reg_no": request.args.get('reg_no'),
+#         "date": request.args.get('date'),
+#         "details": [
+#             {
+#                 "name": request.args.get('name'),
+#                 "particulars": request.args.get('parts')
+#             }
+#         ]
+#     }
+#     return render_template('K22.html', data=data)
 
 
 def get_totals():

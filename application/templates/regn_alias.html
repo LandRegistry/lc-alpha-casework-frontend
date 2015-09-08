@@ -8,7 +8,7 @@
 
 </head>
 <body>
-<form action="/update_name" method="POST">
+<form action="/update_alias/{{name_index}}" method="POST">
 {% if application_type == 'amend'%}
 {% set page_title = 'Bankruptcy Amendment' %}
 {% set trail = 'Amendments' %}
@@ -30,24 +30,24 @@
                 {% include 'includes/image_view_body.html' %}
                 <div id="form_data" class="col-sm-6">
                     <h5>Step 3 of 3</h5>
-                    <h4>Debtor details</h4>
+                    <h4>Debtor alias name</h4>
                         <div class="col-sm-12" style="margin:10px 0px">
                                 <div class="form-group">
+                                    {% if name_index !='new' %}
+                                    {% set alias_forenames = data.debtor_alternative_name[name_index].forenames|join(' ') %}
+                                    {% set alias_surname = data.debtor_alternative_name[name_index].surname %}
+                                    {% endif %}
                                     <label for="forenames">Forename(s)</label>
                                     <input type="text" class="form-control defined" name="forenames" id="forenames"
-                                            value="{{ data.debtor_name.forenames|join(' ') }}"/>
+                                            value="{{ alias_forenames }}"/>
                                 </div>
                                 <div class="form-group">
                                     <label for="surname">Surname</label>
-                                    <input type="text" name="surname" id="surname" class="form-control defined" value="{{data.debtor_name.surname}}"/>
-                                </div>
-                                <div class="form-group">
-                                    <label for="occupation">Occupation</label>
-                                    <input type="text" class="form-control defined" id="occupation" name="occupation" value="{{data.occupation}}"/>
+                                    <input type="text" name="surname" id="surname" class="form-control defined" value="{{ alias_surname}}"/>
                                 </div>
                         </div>
                         <div class="form-group">
-                            <input class="btn-lg pull-right btn-primary" id="continue" type="submit" value="Continue" />
+                            <input class="btn-lg pull-right btn-primary" id="continue" type="submit" value="Continue"/>
                         </div>
                         </div>
                 </div>

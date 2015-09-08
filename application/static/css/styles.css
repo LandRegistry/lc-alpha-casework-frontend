@@ -73,23 +73,25 @@ body {
 .type-label {
     vertical-align:middle;
     margin:-15px 0px 20px 0px;
-    padding:10px 0px 10px 0px;
+    padding:5px 0px 10px 0px;
     height:60px;
     background-color:#D5E8D4;
     border-radius:5px;
     color:#000000;
     position: relative;
+    font-size: 1.1em;
 }
 
 .type-label-sm {
     vertical-align:middle;
     margin:-8px 0px 20px 0px;
-    padding:5px 0px 5px 0px;
+    padding:2px 0px 5px 0px;
     height:50px;
     background-color:#D5E8D4;
     border-radius:5px;
     color:#000000;
     position: relative;
+    font-size: 1.1em;
 }
 
 .appn_table {
@@ -181,6 +183,7 @@ a.black:active{
     width:100%;
     border-radius:5px;
     padding-left:15px;
+    padding-right:15px;
     background: #4dc3ff;
     color:black;
 }
@@ -190,3 +193,10 @@ a.black:active{
     color:black;
     text-decoration:none;
 }
+
+.defined{
+    border:solid 2px #F5F5F5 !important;
+    border-bottom:0 !important;
+}
+
+
