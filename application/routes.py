@@ -110,7 +110,6 @@ def get_bankruptcy_details():
         session['regn_no'] = regn_no
         if application_type == 'rectify':
             image_details = session['images']
-            # image_details = ''
         else:
             image_details = session['images']
 
@@ -150,15 +149,18 @@ def get_bankruptcy_details():
                 return render_template(template, application_type=application_type,
                                        error_msg=error_msg, images=image_details, current_page=0)
 
-            # TODO: Need to re-visit this when we have image data stored for the original application
-            # TODO: Link hard coded on regn_amend.html for now.
-
             original_image_data = ""
 
             if application_json['document_id'] is not None:
                 document_id = application_json['document_id']
                 doc_response = requests.get(app.config["DOCUMENT_URL"] + "/document/" + str(document_id))
                 original_image_data = doc_response.json()
+                images = []
+                for image in original_image_data['images']:
+                    images.append(app.config["DOCUMENT_URL"] + image)
+                session['images'] = images
+                session['document_id'] = document_id
+
             else:
                 logging.info("No original document images found for registration " + regn_no)
 
