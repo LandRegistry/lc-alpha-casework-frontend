@@ -311,8 +311,8 @@ class TestCaseworkFrontend:
         })
         html = response.data.decode('utf-8')
         tree = ET.fromstring(html)
-        assert tree.find('.//*[@id="form_data"]/h4').text == "Amend details"
-        assert "Smith" in tree.find('.//*[@id="debtor"]/table/tbody/tr/td[1]').text
+        assert tree.find('.//*[@id="main"]/div[2]/h4').text == "Bankruptcy Rectification"
+        #assert "Anderson" in tree.find('.//*[@id="surname"]').value
 
 
     @mock.patch('requests.get', return_value=FakeResponse('stuff', 200, cancelled_response))
@@ -342,7 +342,7 @@ class TestCaseworkFrontend:
         })
         html = response.data.decode('utf-8')
         tree = ET.fromstring(html)
-        assert tree.find('.//*[@id="class_data"]/h4').text == "Retrieve original details"
+        assert tree.find('.//*[@id="main"]/div[2]/div/h4').text == "Bankruptcy Rectification"
         assert tree.find(
             './/*[@id="class_data"]/p/strong').text == "Application has been cancelled or amended - please re-enter"
 
