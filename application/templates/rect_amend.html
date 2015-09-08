@@ -12,13 +12,13 @@
         jQuery('<div class="form-group"> \
                     <label class="control-label col-sm-2" for="aliasforename">Alias first name(s)</label> \
                     <div class="col-sm-10"> \
-                        <input class="form-control defined" id="aliasforename' +n+ '" name="aliasforename' +n+ '" value="{{aliasforename}}"> \
+                        <input class="form-control defined" id="aliasforename' +n+ '" name="aliasforename' +n+ '" value="{{aliasforename}}" /> \
                     </div> \
                 </div> \
                 <div class="form-group"> \
                     <label class="control-label col-sm-2" for="aliassurname">Alias Surname</label> \
                     <div class="col-sm-10"> \
-                        <input class="form-control defined" id="aliassurname' +n+ '" name="aliassurname' +n+ '" value="{{aliassurname}}"> \
+                        <input class="form-control defined" id="aliassurname' +n+ '" name="aliassurname' +n+ '" value="{{aliassurname}}" /> \
                     </div> \
                 </div>').insertBefore("#addname");
                 n ++;
@@ -31,23 +31,23 @@
         jQuery('<div class="form-group"> \
                     <label class="control-label col-sm-2" for="address1' +i+ '">Additional address</label> \
                     <div class="col-sm-10"> \
-                        <input class="form-control defined" id="address1' +i+ '" name="address1' +i+ '" value="{{address1}}"> \
+                        <input class="form-control defined" id="address1' +i+ '" name="address1' +i+ '" value="{{address1}}" /> \
                     </div> \
                     <label class="control-label col-sm-2" for="address2' +i+ '"></label> \
                     <div class="col-sm-10"> \
-                        <input class="form-control defined" id="address2' +i+ '" name="address2' +i+ '" value="{{addresss2}}"> \
+                        <input class="form-control defined" id="address2' +i+ '" name="address2' +i+ '" value="{{addresss2}}" /> \
                     </div> \
                     <label class="control-label col-sm-2" for="address3' +i+ '"></label> \
                     <div class="col-sm-10"> \
-                        <input class="form-control defined" id="address3' +i+ '" name="address3' +i+ '" value="{{address3}}"> \
+                        <input class="form-control defined" id="address3' +i+ '" name="address3' +i+ '" value="{{address3}}" /> \
                     </div> \
                     <label class="control-label col-sm-2" for="county' +i+ '">County</label> \
                     <div class="col-sm-10"> \
-                        <input class="form-control defined" id="county' +i+ '" name="county' +i+ '" value="{{county}}"> \
+                        <input class="form-control defined" id="county' +i+ '" name="county' +i+ '" value="{{county}}" /> \
                     </div> \
                     <label class="control-label col-sm-2" for="postcode' +i+ '">Postcode</label> \
                     <div class="col-sm-10"> \
-                        <input class="form-control defined" id="postcode' +i+ '" name="postcode' +i+ '" value="{{postcode}}"> \
+                        <input class="form-control defined" id="postcode' +i+ '" name="postcode' +i+ '" value="{{postcode}}" /> \
                     </div> \
                 </div>').insertBefore("#addaddr");
                 i ++;
@@ -181,7 +181,7 @@
                         {% endfor %}
                         <div class="col-sm-12">
                             <input id="addaddr" onclick="addrClick(this,{{data.residence|length}})" class="btn btn-primary pull-right"
-                                   type="button" value="Add Address">
+                                   type="button" value="Add Address" />
                         </div>
                         <div class="form-group">
                             <label class="control-label col-sm-2" for="court">Court name</label>
