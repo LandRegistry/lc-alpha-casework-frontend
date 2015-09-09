@@ -135,9 +135,11 @@
                         </div>
                         {% set count = count + 1 %}
                         {% endfor %}
+                        {% set cnt = data.debtor_alternative_name|length %}
                         <div class="form-group col-sm-12">
-                            <input id="addname" onclick="nameClick(this,{{data.debtor_alternative_name|length}})" class="btn btn-primary pull-right"
-                                   type="button" value="Add alias name" />
+                            <input id="addname" onclick="nameClick(this,{{cnt}})" class="btn btn-primary pull-right"
+                                   type="button" value="Add alias name">
+                            {% set cnt = cnt + 1 %}
                         </div>
                         <div class="form-group">
                             <label class="control-label col-sm-2" for="occupation">Occupation</label>
