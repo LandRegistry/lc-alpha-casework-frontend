@@ -461,7 +461,6 @@ class TestCaseworkFrontend:
         response = self.app.post('/process_request')
 
         html = response.data.decode('utf-8')
-        print(html)
         tree = ET.fromstring(html)
         assert "Application Rejected" in tree.find('.//*[@id="message"]').text
 
@@ -491,7 +490,6 @@ class TestCaseworkFrontend:
                 
         response = self.app.get('/amend_address/new')
         html = response.data.decode('utf-8')
-        print(html)
         tree = ET.fromstring(html)
         assert tree.find('.//*[@id="form_data"]/h4').text == "Address details"
         assert tree.find('.//*[@id="address1"]').attrib['value'] == ""
@@ -509,7 +507,6 @@ class TestCaseworkFrontend:
             'postcode': 'AA1 1AA'
         })
         html = response.data.decode('utf-8')
-        print(html)
         tree = ET.fromstring(html)
         addresses = tree.findall('.//*[@id="address"]/table/tbody/tr/td[1]')
         for add in addresses:
@@ -534,7 +531,6 @@ class TestCaseworkFrontend:
         })
 
         html = response.data.decode('utf-8')
-        print(html)
         tree = ET.fromstring(html)
         assert "Amend details" in tree.find('.//*[@id="form_data"]/h4').text
 
@@ -548,7 +544,6 @@ class TestCaseworkFrontend:
 
         response = self.app.get('/amend_name')
         html = response.data.decode('utf-8')
-        print(html)
         tree = ET.fromstring(html)
         assert tree.find('.//*[@id="form_data"]/h4').text == "Debtor details"
 
@@ -562,7 +557,6 @@ class TestCaseworkFrontend:
 
             response = self.app.get('/amend_address/0')
             html = response.data.decode('utf-8')
-            print(html)
             tree = ET.fromstring(html)
             assert tree.find('.//*[@id="form_data"]/h4').text == "Address details"
             assert tree.find('.//*[@id="address1"]').attrib['value'] == "1 The Street"
@@ -581,7 +575,6 @@ class TestCaseworkFrontend:
         response = self.app.post('/submit_amendment')
 
         html = response.data.decode('utf-8')
-        print(html)
         tree = ET.fromstring(html)
 
         assert "Application Complete" in tree.find('.//*[@id="message"]').text
@@ -600,7 +593,6 @@ class TestCaseworkFrontend:
         response = self.app.post('/submit_rectification')
 
         html = response.data.decode('utf-8')
-        print(html)
         tree = ET.fromstring(html)
 
         assert "Application Complete" in tree.find('.//*[@id="message"]').text
@@ -635,7 +627,6 @@ class TestCaseworkFrontend:
         response = self.app.post('/submit_amendment', data={'Reject': 'Reject'})
 
         html = response.data.decode('utf-8')
-        print(html)
         tree = ET.fromstring(html)
         assert "Application Rejected" in tree.find('.//*[@id="message"]').text
 
@@ -731,7 +722,6 @@ class TestCaseworkFrontend:
                 session['images'] = ['/document/1/image/1']
         response = self.app.get('/amend_alias/0')
         html = response.data.decode('utf-8')
-        print(html)
         tree = ET.fromstring(html)
         assert tree.find('.//*[@id="form_data"]/h4').text == "Debtor alias name"
 
@@ -745,7 +735,6 @@ class TestCaseworkFrontend:
                 
         response = self.app.get('/remove_alias/0')
         html = response.data.decode('utf-8')
-        print(html)
         tree = ET.fromstring(html)
         alias = tree.findall('.//*[@id="alias"]/table/tbody/tr/td[1]')
         alias_len = len(alias)
@@ -762,7 +751,6 @@ class TestCaseworkFrontend:
                 
         response = self.app.post('/update_alias/0', data=dict(forenames='John', occupation='', surname='Smith'))
         html = response.data.decode('utf-8')
-        print(html)
         tree = ET.fromstring(html)
         assert tree.find('.//*[@id="form_data"]/h4').text == "Amend details"
         assert "Smith" in tree.find('.//*[@id="alias"]/table/tbody/tr/td[1]').text
@@ -777,7 +765,6 @@ class TestCaseworkFrontend:
                 
         response = self.app.post('/update_alias/new', data=dict(forenames='John', occupation='', surname='Smith'))
         html = response.data.decode('utf-8')
-        print(html)
         tree = ET.fromstring(html)
         assert tree.find('.//*[@id="form_data"]/h4').text == "Amend details"
         assert "Smith" in tree.find('.//*[@id="alias"]/table/tbody/tr[2]/td[1]').text
@@ -790,7 +777,6 @@ class TestCaseworkFrontend:
                 session['images'] = ['/document/1/image/1']
         response = self.app.get('/amend_court')
         html = response.data.decode('utf-8')
-        print(html)
         tree = ET.fromstring(html)
         assert tree.find('.//*[@id="form_data"]/h4').text == "Court details"
 
@@ -804,7 +790,6 @@ class TestCaseworkFrontend:
                 
         response = self.app.post('/update_court', data=dict(court='Plymouth County Court', ref='20 of 2015'))
         html = response.data.decode('utf-8')
-        print(html)
         tree = ET.fromstring(html)
         assert tree.find('.//*[@id="form_data"]/h4').text == "Amend details"
         assert "Plymouth County Court" in tree.find('.//*[@id="court"]/table/tbody/tr/td[1]').text
@@ -843,7 +828,6 @@ class TestCaseworkFrontend:
                 session['application_type'] = "rectify"
         response = self.app.post('/process_rectification', data=test_data.rectification)
         html = response.data.decode('utf-8')
-        print(html)
         tree = ET.fromstring(html)
         assert tree.find('.//*[@id="form_data"]/div[1]/div[1]').text == "First name(s)"
         assert "Advertising" in tree.find('.//*[@id="form_data"]/div[6]/div[2]').text

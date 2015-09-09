@@ -25,6 +25,11 @@
   "images": ["/document/12/image/1"],
   "status": "current",
   "residence":[
+    {
+     "county": "Essex",
+     "address_lines": ["10318 Bill Crossing", "Brakuston", "Leopoldshire"],
+     "postcode": "UN48 7XX"
+    }
 
   ],
   "investment_property":[
