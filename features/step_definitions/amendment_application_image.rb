@@ -1,13 +1,14 @@
-Before do |scenario|
-  `vagrant ssh -c reset-data`
-end
+#Before do |scenario|
+#  `vagrant ssh -c reset-data`
+#end
 
-After do |scenario|
-    `vagrant ssh -c reset-data`
-end
+#After do |scenario|
+#    `vagrant ssh -c reset-data`
+#end
 
 Given(/^I have selected to view a specific record on the amendments application list the individual record is displayed$/) do
-   $regnote = create_registration
+   #$regnote = create_registration
+   $regnote = '50011'
   visit('http://localhost:5010')
   page.driver.browser.manage.window.maximize
   visit( "http://localhost:5010/get_list?appn=amend" )
@@ -85,7 +86,8 @@ When(/^I can click the amend button the system will go next screen$/) do
 end
 
 Given(/^I am on the bankruptcy details worklist screen with amendments still listed$/) do
-   $regnote2 = create_registration
+   #$regnote2 = create_registration
+   $regnote2 = '50013'
    find(:xpath,'html/body/div[1]/div/div/div[3]/div/table/tbody/tr[1]/td[1]').click
 end
 
@@ -185,9 +187,14 @@ Then(/^the user can return to the worklist from the amendment screens$/) do
 end
 
 Given(/^the application has been amended$/) do
-  step "I am on the bankruptcy details worklist screen with amendments still listed"
-  step "I must have a different registration number before the continue button can be clicked"
-  step "I can click submit button to save all new information"
+   $regnote3 = '50010'
+   find(:xpath,'html/body/div[1]/div/div/div[3]/div/table/tbody/tr[1]/td[1]').click
+   fill_in('reg_no', :with => $regnote3)
+   click_button('continue')
+   find(:id, 'save_changes').click
+ # step "I am on the bankruptcy details worklist screen with amendments still listed"
+  #step "I must have a different registration number before the continue button can be clicked"
+  #step "I can click submit button to save all new information"
   step "the user can return to the worklist from the amendment screens"
 end
 

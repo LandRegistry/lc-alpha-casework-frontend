@@ -49,11 +49,11 @@ class PostgreSQL
 end
 
 Before do |scenario|
-  `vagrant ssh -c reset-data`
+  `vagrant ssh -c reset-data 2> /dev/null`
 end
 
 After do |scenario|
-    `vagrant ssh -c reset-data`
+    `vagrant ssh -c reset-data 2> /dev/null`
 end
 
 Given(/^I have selected to view the main worklist$/) do

@@ -160,6 +160,7 @@ def get_bankruptcy_details():
                     images.append(app.config["DOCUMENT_URL"] + image)
                 original_image_data = images
                 session['document_id'] = document_id
+                session['original_image_data'] = original_image_data
                 if application_type == 'rectify':
                     session['images'] = images
 
@@ -324,7 +325,7 @@ def update_name_details():
     application_dict['occupation'] = occupation
 
     return render_template('regn_amend.html', application_type=application_type, data=application_dict,
-                           images=image_list, current_page=0)
+                           images=image_list, current_page=0, original_image_data=session['original_image_data'])
 
 
 # TODO: renamed as 'complete', move to back-end?
@@ -406,7 +407,7 @@ def update_address_details(addr):
         application_dict['residence'][int(addr)] = address
 
     return render_template('regn_amend.html', application_type=application_type, data=application_dict,
-                           images=image_list, current_page=0)
+                           images=image_list, current_page=0,  original_image_data=session['original_image_data'])
 
 
 @app.route('/remove_address/<int:addr>', methods=["GET"])
@@ -419,7 +420,7 @@ def remove_address(addr):
     del(application_dict['residence'][addr])
 
     return render_template('regn_amend.html', application_type=application_type, data=application_dict,
-                           images=image_list, current_page=0)
+                           images=image_list, current_page=0,  original_image_data=session['original_image_data'])
 
 
 @app.route('/amend_alias/<name_index>', methods=["GET"])
@@ -445,7 +446,7 @@ def remove_alias(name):
     del(application_dict['debtor_alternative_name'][name])
 
     return render_template('regn_amend.html', application_type=application_type, data=application_dict,
-                           images=image_list, current_page=0)
+                           images=image_list, current_page=0,  original_image_data=session['original_image_data'])
 
 
 @app.route('/update_alias/<name_index>', methods=["POST"])
@@ -469,7 +470,7 @@ def update_alias(name_index):
         application_dict['debtor_alternative_name'][int(name_index)] = alias_name
 
     return render_template('regn_amend.html', application_type=application_type, data=application_dict,
-                           images=image_list, current_page=0)
+                           images=image_list, current_page=0,  original_image_data=session['original_image_data'])
 
 
 @app.route('/amend_court', methods=["GET"])
@@ -495,7 +496,7 @@ def update_court():
     application_dict['legal_body_ref'] = request.form['ref'].strip()
 
     return render_template('regn_amend.html', application_type=application_type, data=application_dict,
-                           images=image_list, current_page=0)
+                           images=image_list, current_page=0,  original_image_data=session['original_image_data'])
 
 
 @app.route('/process_banks_name', methods=["POST"])
