@@ -94,12 +94,12 @@ class TestCaseworkFrontend:
         assert response.status_code == 500
 
     @mock.patch('requests.get', return_value=FakeResponse('stuff', 200, application_response))
-    def test_get_appliction(self, mock_get):
+    def test_get_application(self, mock_get):
         response = self.app.get('/get_application/bank_regn/1')
         assert response.status_code == 200
 
     @mock.patch('requests.get', side_effect=Exception('Fail'))
-    def test_get_appliction_fail(self, mock_get):
+    def test_get_application_fail(self, mock_get):
         response = self.app.get('/get_application/bank_regn/1')
         assert response.status_code == 500
 
@@ -142,6 +142,7 @@ class TestCaseworkFrontend:
             with c.session_transaction() as session:
                 session['application_dict'] = application_dict
                 session['images'] = ['/document/1/image/1']
+                
         response = self.app.post('/address', data={
             'county': '', 'postcode': ''
         })
@@ -156,6 +157,7 @@ class TestCaseworkFrontend:
             with c.session_transaction() as session:
                 session['application_dict'] = application_dict
                 session['images'] = ['/document/1/image/1']
+                
         response = self.app.post('/address', data={
             "address1": '34 Haden Close', "address2": 'Little Horn',
             "county": 'North Shore', "postcode": 'AA1 1AA'
@@ -171,6 +173,7 @@ class TestCaseworkFrontend:
             with c.session_transaction() as session:
                 session['application_dict'] = application_dict
                 session['images'] = ['/document/1/image/1']
+                
         response = self.app.post('/address', data={
             "address1": '35 Haden Close', "address2": 'Little Horn', "address3": '',
             "county": 'North Shore', "postcode": 'AA1 1AA', "add_address": 'Add Address'
@@ -187,6 +190,7 @@ class TestCaseworkFrontend:
             with c.session_transaction() as session:
                 session['application_dict'] = application_dict
                 session['images'] = ['/document/1/image/1']
+                
         response = self.app.post('/address', data={
             "address1": '34 Haden Close', "address2": 'Little Horn', "address3": '',
             "county": 'North Shore', "postcode": 'AA1 1AA'
@@ -278,6 +282,8 @@ class TestCaseworkFrontend:
             with c.session_transaction() as session:
                 session['application_type'] = "cancel"
                 session['images'] = ['/document/1/image/1']
+                session['original_image_data'] = ['/document/1/image/1']
+                
 
         response = self.app.post('/get_details', data={
             "reg_no": "50001"
@@ -292,6 +298,7 @@ class TestCaseworkFrontend:
             with c.session_transaction() as session:
                 session['application_type'] = "amend"
                 session['images'] = ['/document/1/image/1']
+                session['original_image_data'] = ['/document/1/image/1']
 
         response = self.app.post('/get_details', data={
             "reg_no": "50010"
@@ -306,6 +313,7 @@ class TestCaseworkFrontend:
             with c.session_transaction() as session:
                 session['application_type'] = "rectify"
                 session['images'] = ['/document/1/image/1']
+                session['original_image_data'] = ['/document/1/image/1']
 
         response = self.app.post('/get_details', data={
             "reg_no": "50010"
@@ -313,7 +321,6 @@ class TestCaseworkFrontend:
         html = response.data.decode('utf-8')
         tree = ET.fromstring(html)
         assert tree.find('.//*[@id="main"]/div[2]/h4').text == "Bankruptcy Rectification"
-        #assert "Anderson" in tree.find('.//*[@id="surname"]').value
 
 
     @mock.patch('requests.get', return_value=FakeResponse('stuff', 200, cancelled_response))
@@ -322,6 +329,8 @@ class TestCaseworkFrontend:
             with c.session_transaction() as session:
                 session['application_type'] = "cancel"
                 session['images'] = ['/document/1/image/1']
+                session['original_image_data'] = ['/document/1/image/1']
+                
 
         response = self.app.post('/get_details', data={
             "reg_no": "50001"
@@ -337,6 +346,7 @@ class TestCaseworkFrontend:
             with c.session_transaction() as session:
                 session['application_type'] = "rectify"
                 session['images'] = ['/document/1/image/1']
+                session['original_image_data'] = ['/document/1/image/1']
 
         response = self.app.post('/get_details', data={
             "reg_no": "50001"
@@ -353,6 +363,7 @@ class TestCaseworkFrontend:
             with c.session_transaction() as session:
                 session['application_type'] = "cancel"
                 session['images'] = ['/document/1/image/1']
+                session['original_image_data'] = ['/document/1/image/1']
 
         response = self.app.post('/get_details', data={
             "reg_no": "50001"
@@ -368,6 +379,7 @@ class TestCaseworkFrontend:
             with c.session_transaction() as session:
                 session['application_type'] = "rectify"
                 session['images'] = ['/document/1/image/1']
+                session['original_image_data'] = ['/document/1/image/1']
 
         response = self.app.post('/get_details', data={
             "reg_no": "50001"
@@ -385,6 +397,7 @@ class TestCaseworkFrontend:
             with c.session_transaction() as session:
                 session['application_type'] = "cancel"
                 session['images'] = ['/document/1/image/1']
+                session['original_image_data'] = ['/document/1/image/1']
 
         response = self.app.post('/get_details', data={
             "reg_no": "50001"
@@ -406,6 +419,7 @@ class TestCaseworkFrontend:
                 session['regn_no'] = '50001'
                 session['document_id'] = '17'
                 session['worklist_id'] = '3'
+                session['original_image_data'] = ['/document/1/image/1']
         response = self.app.post('/process_request', data={
             'Continue': 'Continue'
         })
@@ -443,6 +457,7 @@ class TestCaseworkFrontend:
                 session['regn_no'] = '50001'
                 session['document_id'] = '17'
                 session['worklist_id'] = '3'
+                session['original_image_data'] = ['/document/1/image/1']
         response = self.app.post('/process_request')
 
         html = response.data.decode('utf-8')
@@ -473,6 +488,7 @@ class TestCaseworkFrontend:
                 session['application_dict'] = application_dict
                 session['application_type'] = "amend"
                 session['images'] = ['/document/1/image/1']
+                
         response = self.app.get('/amend_address/new')
         html = response.data.decode('utf-8')
         print(html)
@@ -486,6 +502,8 @@ class TestCaseworkFrontend:
                 session['application_dict'] = application_dict
                 session['application_type'] = "amend"
                 session['images'] = ['/document/1/image/1']
+                session['original_image_data'] = ['/document/1/image/1']
+                
         response = self.app.post('/update_address/new', data={
             'address1': '22 New Street', 'address2': "Newtown", "county": "Newcounty",
             'postcode': 'AA1 1AA'
@@ -509,6 +527,8 @@ class TestCaseworkFrontend:
                 session['regn_no'] = '50001'
                 session['document_id'] = '17'
                 session['worklist_id'] = '3'
+                session['original_image_data'] = ['/document/1/image/1']
+
         response = self.app.post('/process_request', data={
             'Amend': 'Amend'
         })
@@ -660,6 +680,8 @@ class TestCaseworkFrontend:
                 session['application_dict'] = application_dict
                 session['application_type'] = "amend"
                 session['images'] = ['/document/1/image/1']
+                session['original_image_data'] = ['/document/1/image/1']
+                
             response = self.app.post('/update_address/0', data={
                 'address1': '22 New Street', 'address2': "Newtown", 'address3': "Nr Old Town",
                 'address4': "Another Place",
@@ -680,6 +702,8 @@ class TestCaseworkFrontend:
                 session['application_dict'] = application_dict
                 session['application_type'] = "amend"
                 session['images'] = ['/document/1/image/1']
+                session['original_image_data'] = ['/document/1/image/1']
+                
         response = self.app.post('/update_name', data=dict(forenames='John', occupation='', surname='Smith'))
         html = response.data.decode('utf-8')
         tree = ET.fromstring(html)
@@ -692,6 +716,8 @@ class TestCaseworkFrontend:
                 session['application_dict'] = application_dict
                 session['application_type'] = "amend"
                 session['images'] = ['/document/1/image/1']
+                session['original_image_data'] = ['/document/1/image/1']
+                
         response = self.app.get('/remove_address/0')
         html = response.data.decode('utf-8')
         tree = ET.fromstring(html)
@@ -715,6 +741,8 @@ class TestCaseworkFrontend:
                 session['application_dict'] = application_dict
                 session['application_type'] = "amend"
                 session['images'] = ['/document/1/image/1']
+                session['original_image_data'] = ['/document/1/image/1']
+                
         response = self.app.get('/remove_alias/0')
         html = response.data.decode('utf-8')
         print(html)
@@ -730,6 +758,8 @@ class TestCaseworkFrontend:
                 session['application_dict'] = application_dict
                 session['application_type'] = "amend"
                 session['images'] = ['/document/1/image/1']
+                session['original_image_data'] = ['/document/1/image/1']
+                
         response = self.app.post('/update_alias/0', data=dict(forenames='John', occupation='', surname='Smith'))
         html = response.data.decode('utf-8')
         print(html)
@@ -743,6 +773,8 @@ class TestCaseworkFrontend:
                 session['application_dict'] = application_dict
                 session['application_type'] = "amend"
                 session['images'] = ['/document/1/image/1']
+                session['original_image_data'] = ['/document/1/image/1']
+                
         response = self.app.post('/update_alias/new', data=dict(forenames='John', occupation='', surname='Smith'))
         html = response.data.decode('utf-8')
         print(html)
@@ -768,6 +800,8 @@ class TestCaseworkFrontend:
                 session['application_dict'] = application_dict
                 session['application_type'] = "amend"
                 session['images'] = ['/document/1/image/1']
+                session['original_image_data'] = ['/document/1/image/1']
+                
         response = self.app.post('/update_court', data=dict(court='Plymouth County Court', ref='20 of 2015'))
         html = response.data.decode('utf-8')
         print(html)

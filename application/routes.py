@@ -214,7 +214,8 @@ def process_request():
         template = 'rejection.html'
 
     return render_template(template, application_type=application_type, data=application_dict,
-                           images=image_list, current_page=0, date=display_date)
+                           images=image_list, current_page=0, date=display_date,
+                           original_image_data=session['original_image_data'])
 
 
 @app.route('/submit_amendment', methods=["POST"])
