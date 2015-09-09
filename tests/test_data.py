@@ -32,3 +32,10 @@ multi_name = dict(nature='PA(B)', court='Plymouth', court_ref='1 of 2015',
                               '"residence": [{"address_lines": ["34 Main Street", "plymouth", "Devon"], '
                               '"postcode": "PL8 8EE"}], "debtor_alternative_name": [{"forename": ["Jonathon"], '
                               '"surname": "Smithy"}')
+
+rectification = dict(forenames='Don', surname='Draper', occupation='Advertising', aliasforename0='Donald',
+                     aliassurname0='Draper', aliasforename1='Richard', aliassurname1='Whitman', aliasforename2='Dick',
+                     aliassurname2='Draper', address10='34 Main Street', address20='Fake area', address30='Fake Town',
+                     county0='Fakeshire', postcode0='FF1 1FF', address11='22 Main Street', address21='Fake Place',
+                     address31='Fake City', county1='West Fakeshire', postcode1='FF1 2FF', court='Fake County Court',
+                     ref='1 of 1990')

@@ -16,6 +16,7 @@ multi_name_reg = '{"new_registrations": [512344, 512345]}'
 cancellation = '{"cancelled": ["50001"]}'
 
 amendment = '{"new_registrations": ["50027", "50028", "50029"]}'
+rectify = '{"new_registrations": ["50018"]}'
 
 application_dict = {
     'application_type': 'PA(B)',
@@ -378,6 +379,23 @@ class TestCaseworkFrontend:
         assert tree.find('.//*[@id="class_data"]/p/strong').text == "Registration not found please re-enter"
 
 
+    @mock.patch('requests.get', side_effect=Exception('Fail'))
+    def test_get_details_exception(self, mock_get):
+        with self.app as c:
+            with c.session_transaction() as session:
+                session['application_type'] = "cancel"
+                session['images'] = ['/document/1/image/1']
+
+        response = self.app.post('/get_details', data={
+            "reg_no": "50001"
+        })
+
+        html = response.data.decode('utf-8')
+        tree = ET.fromstring(html)
+
+        assert "Error message" in tree.find('.//*[@id="error_msg"]').text
+
+
     @mock.patch('requests.delete', return_value=FakeDoubleDeleteResponse('stuff', [200, 204], cancellation))
     def test_process_cancellation(self, mock_delete):
         with self.app as c:
@@ -548,6 +566,43 @@ class TestCaseworkFrontend:
 
         assert "Application Complete" in tree.find('.//*[@id="message"]').text
         assert tree.find('.//*[@id="main"]/div/div[1]/div[3]/h3[1]').text == "50027"
+
+
+    @mock.patch('requests.put', return_value=FakeResponse('stuff', 200, rectify))
+    def test_submit_rectification(self, mock_put):
+
+        with self.app as c:
+            with c.session_transaction() as session:
+                session['application_dict'] = application_dict
+                session['application_type'] = "rectify"
+                session['regn_no'] = '50018'
+                session['worklist_id'] = '3'
+        response = self.app.post('/submit_rectification')
+
+        html = response.data.decode('utf-8')
+        print(html)
+        tree = ET.fromstring(html)
+
+        assert "Application Complete" in tree.find('.//*[@id="message"]').text
+        assert tree.find('.//*[@id="main"]/div/div[1]/div[3]/h3[1]').text == "50018"
+
+    @mock.patch('requests.put', return_value=FakeResponse('stuff', 500))
+    def test_submit_rectification_error(self, mock_put):
+        with self.app as c:
+            with c.session_transaction() as session:
+                session['application_dict'] = application_dict
+                session['application_type'] = "rectify"
+                session['regn_no'] = '50018'
+                session['worklist_id'] = '3'
+
+        response = self.app.post('/submit_rectification')
+
+        html = response.data.decode('utf-8')
+        tree = ET.fromstring(html)
+
+        assert "Error message" in tree.find('.//*[@id="error_msg"]').text
+
+
 
     def test_submit_amend_rejection(self):
 
@@ -741,7 +796,6 @@ class TestCaseworkFrontend:
         response = self.app.post('/court_details', data=test_data.process_court)
         assert response.status_code == 500
 
-
     def test_start_rectification(self):
 
         response = self.app.get('/start_rectification')
@@ -749,8 +803,16 @@ class TestCaseworkFrontend:
         tree = ET.fromstring(html)
         assert tree.find('.//*[@id="main"]/div[2]/div/h4').text == "Bankruptcy Rectification"
 
-
-    
+    def test_rectification_amend(self):
+        with self.app as c:
+            with c.session_transaction() as session:
+                session['application_type'] = "rectify"
+        response = self.app.post('/process_rectification', data=test_data.rectification)
+        html = response.data.decode('utf-8')
+        print(html)
+        tree = ET.fromstring(html)
+        assert tree.find('.//*[@id="form_data"]/div[1]/div[1]').text == "First name(s)"
+        assert "Advertising" in tree.find('.//*[@id="form_data"]/div[6]/div[2]').text
 
 
 

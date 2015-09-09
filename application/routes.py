@@ -109,7 +109,7 @@ def get_bankruptcy_details():
         regn_no = request.form['reg_no']
         session['regn_no'] = regn_no
         if application_type == 'rectify':
-            image_details = session['images']
+            image_details = ''
         else:
             image_details = session['images']
 
@@ -641,6 +641,7 @@ def process_rectification():
     alt_name = {"forenames": [],
                 "surname": ""
                 }
+    print(request.form)
 
     forenames = request.form['forenames']
     for i in forenames.split():
@@ -704,6 +705,7 @@ def process_rectification():
     application_dict['legal_body_ref'] = request.form['ref'].strip()
     application_dict['application_type'] = application_type
     session['application_dict'] = application_dict
+    print(session['application_dict'])
 
     return render_template('rect_summary.html', application_type=application_type, data=application_dict,
                            date='')
