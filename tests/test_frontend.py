@@ -832,6 +832,17 @@ class TestCaseworkFrontend:
         assert tree.find('.//*[@id="form_data"]/div[1]/div[1]').text == "First name(s)"
         assert "Advertising" in tree.find('.//*[@id="form_data"]/div[6]/div[2]').text
 
+    def test_rectification_amend_no_address(self):
+        with self.app as c:
+            with c.session_transaction() as session:
+                session['application_type'] = "rectify"
+        response = self.app.post('/process_rectification', data=test_data.rect_no_addr)
+        html = response.data.decode('utf-8')
+        tree = ET.fromstring(html)
+        assert tree.find('.//*[@id="form_data"]/div[1]/div[1]').text == "First name(s)"
+        assert "Advertising" in tree.find('.//*[@id="form_data"]/div[6]/div[2]').text
+        assert "Address(es)" not in tree.find('.//*[@id="form_data"]').text
+
 
 
 

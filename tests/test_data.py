@@ -39,3 +39,7 @@ rectification = dict(forenames='Don', surname='Draper', occupation='Advertising'
                      county0='Fakeshire', postcode0='FF1 1FF', address11='22 Main Street', address21='Fake Place',
                      address31='Fake City', county1='West Fakeshire', postcode1='FF1 2FF', court='Fake County Court',
                      ref='1 of 1990')
+
+rect_no_addr = dict(forenames='Don', surname='Draper', occupation='Advertising', aliasforename0='Donald',
+                    aliassurname0='Draper', aliasforename1='Richard', aliassurname1='Whitman', aliasforename2='Dick',
+                    aliassurname2='Draper', court='Fake County Court', ref='1 of 1990')
