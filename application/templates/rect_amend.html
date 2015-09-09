@@ -83,13 +83,13 @@
         </div>
 
             <div id="full_image" class="row col-sm-10" style="width:80%; height:300px; overflow: scroll;">
-                <img id="main_image" src="{{images[0]}}"/>
+                <img id="main_image" src="{{original_image_data[0]}}"/>
             </div>
         <!--div class="row col-sm-10" id="imageContainer" style="margin-top:10px; height:30em; width:80%; overflow: scroll;">
             <img src="{{images[0]}}" alt="" id="page1" style="width:100%"/>
         </div-->
         <div id="thumbnails" class="col-sm-2">
-            {% for image in images %}
+            {% for image in original_image_data %}
             <div class="col-sm-12">
                 <img class="thumbnail{% if loop.index == 1 %} active{% endif %}" src="{{image}}" alt="" id="thumbnail_{{loop.index}}" onclick="swap(this);"/>
             </div>

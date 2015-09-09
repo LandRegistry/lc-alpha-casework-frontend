@@ -109,7 +109,7 @@ def get_bankruptcy_details():
         regn_no = request.form['reg_no']
         session['regn_no'] = regn_no
         if application_type == 'rectify':
-            image_details = ''
+            image_details = ['']
         else:
             image_details = session['images']
 
@@ -158,8 +158,10 @@ def get_bankruptcy_details():
                 images = []
                 for image in original_image_data['images']:
                     images.append(app.config["DOCUMENT_URL"] + image)
-                session['images'] = images
+                original_image_data = images
                 session['document_id'] = document_id
+                if application_type == 'rectify':
+                    session['images'] = images
 
             else:
                 logging.info("No original document images found for registration " + regn_no)
