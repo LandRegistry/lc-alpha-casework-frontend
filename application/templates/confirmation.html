@@ -27,22 +27,21 @@
                     <li><a href="/get_list?appn={{application_type}}">{{trail}}</a></li>
                 </ul>
             </div>
-            <div class="row col-sm-12" style="margin-top:10em">
-                <div id="form_data" class="col-sm-12">
+            <div class="row col-sm-12" style="margin-top:50px">
                     <div class="col-sm-2"></div>
-                    <div class="box">
-                        <table>
-                            <tr>
-                                <td><i class="glyphicon glyphicon-ok-circle gi-5x gi-tick" aria-hidden="true"></i></td>
-                                <td><h3 id="message" style="padding-left:1em; padding-top:0.5em; font-size:3em; color: #ffffff">
-                                    Application Complete</h3></td>
-                            </tr>
-                        </table>
+                    <div class="col-sm-8 box text-center" style="display:table; table-layout:fixed">
+
+                            <div class="col-sm-3" style="display:table-cell; vertical-align:middle; float:none;">
+                               <i class="glyphicon glyphicon-ok-circle gi-5x gi-tick" style="float:right" aria-hidden="true" ></i>
+                            </div>
+                            <div class="col-sm-8" style="display:table-cell; vertical-align:middle; float:none;">
+                                <h3 id="message" style="margin-left:20px; font-size:3em; color: #ffffff; float:left">
+                                    Application Complete</h3>
+                            </div><div class="col-sm-1"></div>
                     </div>
                     <div class="col-sm-2"></div>
-                </div>
             </div>
-            <div style="margin-top: 23em; text-align: center">
+            <div class="row col-sm-12 text-center" style="margin-top:10px">
                 {% if application_type == 'cancel' %}
                     {% if data|length <= 1 %}
                     <h2>The following application has been cancelled:</h2>
@@ -68,6 +67,7 @@
                     <a href="/notification" target="new">View Notification</a>
                 {% endif %}
             </div>
+
         </div>
         <div>
             {% if application_type == 'rectify' %}
