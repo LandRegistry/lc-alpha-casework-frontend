@@ -1,14 +1,15 @@
-Before do |scenario|
-  `vagrant ssh -c reset-data`
-end
+#Before do |scenario|
+#  `vagrant ssh -c reset-data`
+#end
 
-After do |scenario|
-    `vagrant ssh -c reset-data`
-end
+#After do |scenario|
+#    `vagrant ssh -c reset-data`
+#end
 
 
 Given(/^I have selected to view a specific record on the cancellation application list the individual record is display$/) do
   $regnote = create_registration
+  #$regnote = '50010'
   visit('http://localhost:5010')
   page.driver.browser.manage.window.maximize
   visit( "http://localhost:5010/get_list?appn=cancel" )

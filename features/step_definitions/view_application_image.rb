@@ -1,10 +1,10 @@
-Before do |scenario|
-  `vagrant ssh -c reset-data`
-end
+#Before do |scenario|
+#  `vagrant ssh -c reset-data`
+#end
 
-After do |scenario|
-    `vagrant ssh -c reset-data`
-end
+#After do |scenario|
+#    `vagrant ssh -c reset-data`
+#end
 
 Given(/^I am on the view application screen$/) do
   visit('http://localhost:5010')

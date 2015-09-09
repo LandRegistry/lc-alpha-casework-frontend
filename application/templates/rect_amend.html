@@ -8,7 +8,11 @@
 
 
     <script>
-    function nameClick(sender,n){
+    no_of_name = {{data.debtor_alternative_name|length}}-1;
+
+    function nameClick(sender){
+        no_of_name++;
+        n = no_of_name;
         jQuery('<div class="form-group"> \
                     <label class="control-label col-sm-2" for="aliasforename">Alias first name(s)</label> \
                     <div class="col-sm-10"> \
@@ -21,13 +25,20 @@
                         <input class="form-control defined" id="aliassurname' +n+ '" name="aliassurname' +n+ '" value="{{aliassurname}}" /> \
                     </div> \
                 </div>').insertBefore("#addname");
-                n ++;
         console.log(n);
     };
     </script>
 
     <script>
-    function addrClick(sender,i){
+    if ( {{data.residence[0].address_lines|length}} == 0 ) {
+        no_of_addr = -1;
+    } else {
+        no_of_addr = {{data.residence|length}}-1;
+    }
+
+    function addrClick(sender){
+        no_of_addr++;
+        i = no_of_addr;
         jQuery('<div class="form-group"> \
                     <label class="control-label col-sm-2" for="address1' +i+ '">Additional address</label> \
                     <div class="col-sm-10"> \
@@ -50,7 +61,7 @@
                         <input class="form-control defined" id="postcode' +i+ '" name="postcode' +i+ '" value="{{postcode}}" /> \
                     </div> \
                 </div>').insertBefore("#addaddr");
-                i ++;
+
         console.log(i);
     };
     </script>
@@ -82,12 +93,9 @@
             </ul>
         </div>
 
-            <div id="full_image" class="row col-sm-10" style="width:80%; height:300px; overflow: scroll;">
-                <img id="main_image" src="{{original_image_data[0]}}"/>
-            </div>
-        <!--div class="row col-sm-10" id="imageContainer" style="margin-top:10px; height:30em; width:80%; overflow: scroll;">
-            <img src="{{images[0]}}" alt="" id="page1" style="width:100%"/>
-        </div-->
+        <div id="full_image" class="row col-sm-10" style="width:80%; height:300px; overflow: scroll;">
+            <img id="main_image" src="{{original_image_data[0]}}"/>
+        </div>
         <div id="thumbnails" class="col-sm-2">
             {% for image in original_image_data %}
             <div class="col-sm-12">
@@ -135,11 +143,9 @@
                         </div>
                         {% set count = count + 1 %}
                         {% endfor %}
-                        {% set cnt = data.debtor_alternative_name|length %}
                         <div class="form-group col-sm-12">
-                            <input id="addname" onclick="nameClick(this,{{cnt}})" class="btn btn-primary pull-right"
-                                   type="button" value="Add alias name" />
-                            {% set cnt = cnt + 1 %}
+                            <input id="addname" onclick="nameClick(this)" class="btn btn-primary pull-right"
+                                   type="button" value="Add alias name">
                         </div>
                         <div class="form-group">
                             <label class="control-label col-sm-2" for="occupation">Occupation</label>
@@ -149,6 +155,7 @@
                             </div>
                         </div>
                         {% set count_addr = 0 %}
+                        {% if data.residence|length > 0 and data.residence[0].address_lines|length > 0 %}
                         {% for address in data.residence %}
                         <div style="margin-top:20px;">
                             <div class="form-group">
@@ -181,8 +188,9 @@
                         </div>
                         {% set count_addr = count_addr + 1 %}
                         {% endfor %}
+                        {% endif %}
                         <div class="col-sm-12">
-                            <input id="addaddr" onclick="addrClick(this,{{data.residence|length}})" class="btn btn-primary pull-right"
+                            <input id="addaddr" onclick="addrClick(this)" class="btn btn-primary pull-right"
                                    type="button" value="Add Address" />
                         </div>
                         <div class="form-group">
