@@ -23,8 +23,6 @@ When there is more that one alias name
 When I add an address the new datails are visible
 Then all amended details will need to be updated to reflect the stored changes
 
-
-
 #RC-US003 View summary
 Given I am on the Rectify screen
 When I can the new details on the screen
@@ -38,9 +36,17 @@ When I click on the Submit button
 Then the application complete screen is displayed with the original unique identifier displayed
 
 #RC-US005 Request acknowledgement
-Given I am on the Rectify screen
+Given I am on the Application complete screen
 When the rectification to the application has been submitted the amended unique identifier is displayed to the user on the screen
 Then the user can return to the worklist
+
+Given an acknowledgement has not been requested
+When I am on the Application complete screen
+Then there is not link to view notification
+
+Given an acknowledgement has been requested
+When I click on the view notification link
+Then the image on an acknowledgement is displayed
 
 
 
