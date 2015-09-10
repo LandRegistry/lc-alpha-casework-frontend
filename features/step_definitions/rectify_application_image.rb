@@ -72,9 +72,7 @@ When(/^I click on the No for acknowledgement required checkbox is highlighted$/)
 end 
 
 When(/^I click on the Yes for acknowledgement required checkbox is highlighted$/) do 
-  find_field("No").checked?
-  find_field("Yes").checked?
-  puts('hello')
+  choose('Yes')
 end 
 
 When(/^I click on the Submit button$/) do 
@@ -88,9 +86,9 @@ Then(/^the application complete screen is displayed with the original unique ide
   registereddate = find(:id, 'registereddate').text
   puts(registereddate)
   expect(registereddate).to eq 'Registered on '+ date_format
-  page.has_content?('ref')
+  expect(page).to have_content('Your application reference')
 end 
 
 When(/^the rectification to the application has been submitted the amended unique identifier is displayed to the user on the screen$/) do 
-  #find(:id, 'return_to_worklist').click 
+  expect(page).to have_content($regnote) 
 end 
