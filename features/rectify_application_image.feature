@@ -16,16 +16,21 @@ Then click on the continue button the screen displayed will shown the correct ap
 #RC-US002 View Details
 Given I am on the Rectify screen
 When I click on the different thumbnails the editable details are displayed below
-When I am on a Large image of the amendment form I can zoom in
-When I am on a Large image of the amendment form I can zoom out
+#When I am on a original large image of the amendment form I can zoom in
+#When I am on a original large image of the amendment form I can zoom out
 When I can overtype any detail that needs to be amended
 When there is more that one alias name
-Then all alias details will need to be updated to reflect the stored changes
+When I add an address the new datails are visible
+Then all amended details will need to be updated to reflect the stored changes
+
+
 
 #RC-US003 View summary
 Given I am on the Rectify screen
-When I overtype the original details
-Then I can see both the original and the new details on the same screen
+When I can the new details on the screen
+When I click on the Yes for acknowledgement required checkbox is highlighted
+When I click on the No for acknowledgement required checkbox is highlighted
+Then I click on the Yes for acknowledgement required checkbox is highlighted
 
 #RC-US004 Submit
 Given I am on the Rectify screen

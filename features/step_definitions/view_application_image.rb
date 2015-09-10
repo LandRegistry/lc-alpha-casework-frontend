@@ -1,11 +1,3 @@
-#Before do |scenario|
-#  `vagrant ssh -c reset-data`
-#end
-
-#After do |scenario|
-#    `vagrant ssh -c reset-data`
-#end
-
 Given(/^I am on the view application screen$/) do
   visit('http://localhost:5010')
   page.driver.browser.manage.window.maximize
@@ -18,7 +10,7 @@ When(/^I have selected to view specific the application list$/) do
 end 
 
 When(/^the image of the application is displayed I can click on all available pages$/) do 
-   find(:xpath, '//*[@id="thumbnails"]/img').click
+   find(:xpath, '//*[@id="thumbnails"]/img[2]').click
 end 
 
 When(/^I click on a page the image it is visible$/) do
@@ -50,7 +42,7 @@ sleep(1)
 end
 
 Given(/^I am on the debtors name and details screen$/) do
-  page.has_content?('Debtor name and details')
+  expect(page).to have_content('Debtor name and details')
   puts('screen shows')
 end
 
@@ -85,7 +77,7 @@ Then(/^I click the continue button and the debtors address screen is displayed$/
 end
 
 Given(/^I am on the debtors address screen$/) do
-  page.has_content?('Debtor address')
+  expect(page).to have_content('Debtor address')
 end
 
 When(/^I supply the address details in the address fields they remain visible$/) do
@@ -114,7 +106,7 @@ Then(/^I click the continue button and the case information screen is displayed$
 end
 
 Given(/^I am on the case information screen$/) do
-  page.has_content?('Case information')
+  expect(page).to have_content('Case information')
 end
 
 When(/^I first see the class of charge neither PAB or WOB are checked$/) do
@@ -146,13 +138,13 @@ Then(/^I click the submit button and the application complete screen is displaye
 end 
 
 Given(/^the Application complete screen is visible$/) do
-  page.has_content?('Applciation Complete')
+  expect(page).to have_content('Application Complete')
   
 end
 
 When(/^the Application has been submitted the unique identifier is displayed to the user on the screen$/) do
-  page.has_content?('Your application reference number is:')
-  page.has_content?('Registered on')
+  expect(page).to have_content('Your application reference number')
+  expect(page).to have_content('Registered on')
 end
 
 When(/^the Application has been submitted the date is displayed to the user on the screen$/) do
@@ -168,5 +160,5 @@ end
 
 Then(/^the user can return to the worklist$/) do
   click_link('Return to Worklist')
-  sleep(10)
+  sleep(1)
 end

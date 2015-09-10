@@ -1,13 +1,6 @@
-Before do |scenario|
-  `vagrant ssh -c reset-data`
-end
-
-After do |scenario|
-    `vagrant ssh -c reset-data`
-end
-
 Given(/^I am on the Bankruptcy Rectification document request screen$/) do
-  $regnote = create_registration
+ # $regnote = create_registration
+  $regnote = '50013'
   visit('http://localhost:5010')
   page.driver.browser.manage.window.maximize
   find(:id, 'Tasks').click
@@ -24,41 +17,78 @@ Then(/^click on the continue button the screen displayed will shown the correct 
 end
 
 Given(/^I am on the Rectify screen$/) do
-  #page.has_content?('Bankruptcy Rectification')
+  page.has_content?('Bankruptcy Rectification')
 end
 
 When(/^I click on the different thumbnails the editable details are displayed below$/) do
-  pending # Write code here that turns the phrase above into concrete actions
+  find(:id, 'thumbnail_1').click
+  find(:xpath, 'html/body/form/div/div[2]/div[2]').click
+end
+
+
+When(/^I am on a original large image of the amendment form I can zoom in$/) do
+                   
+  find(:xpath, '//*[@id="container0"]/img[2]').click 
+  thing = find(:csspath, '#container0 > div:nth-child(2)')
+  expect(thing.text).to eq "2x Magnify"
+end
+
+When(/^I am on a original large image of the amendment form I can zoom out$/) do
+  find(:xpath, '//*[@id="container0"]/img[3]').click
+  thing = find(:csspath, '#container0 > div:nth-child(2)')
+  expect(thing.text).to eq "1x Magnify"
 end
 
 When(/^I can overtype any detail that needs to be amended$/) do 
-  pending # Write code here that turns the phrase above into concrete actions 
+  fill_in('forenames', :with => 'Jack')
+  fill_in('surname', :with => 'Jones')
 end 
 
 When(/^there is more that one alias name$/) do 
-  pending # Write code here that turns the phrase above into concrete actions 
+  click_button('addname')
+  fill_in('aliasforename1', :with => 'Jeremy')
+  fill_in('aliassurname1', :with => 'Fisher')
 end 
 
-Then(/^all alias details will need to be updated to reflect the stored changes$/) do 
-  pending # Write code here that turns the phrase above into concrete actions 
+When(/^I add an address the new datails are visible$/) do
+  click_button('addaddr')
+  fill_in('address11', :with =>'1 long Street')
+  fill_in('address21', :with =>'Plymouth')
+  fill_in('county1', :with => 'Devon')
+  fill_in('postcode1', :with => 'PL1 1BG')
+  fill_in('court', :with => 'Devon County Court')
+end
+
+Then(/^all amended details will need to be updated to reflect the stored changes$/) do
+  click_button('save_changes')
+end
+
+When(/^I can the new details on the screen$/) do
+  page.has_content?('Is acknowledgement required?') 
+end
+
+When(/^I click on the No for acknowledgement required checkbox is highlighted$/) do 
+  choose('No')
 end 
 
-When(/^I overtype the original details$/) do 
-  pending # Write code here that turns the phrase above into concrete actions 
-end 
-
-Then(/^I can see both the original and the new details on the same screen$/) do 
-  pending # Write code here that turns the phrase above into concrete actions 
+When(/^I click on the Yes for acknowledgement required checkbox is highlighted$/) do 
+  choose('Yes')
 end 
 
 When(/^I click on the Submit button$/) do 
-  pending # Write code here that turns the phrase above into concrete actions 
+  click_button('submit') 
 end 
 
 Then(/^the application complete screen is displayed with the original unique identifier displayed$/) do 
-  pending # Write code here that turns the phrase above into concrete actions 
+  require 'Date'
+  current_date = Date.today
+  date_format = current_date.strftime('%d.%m.%Y')
+  registereddate = find(:id, 'registereddate').text
+  puts(registereddate)
+  expect(registereddate).to eq 'Registered on '+ date_format
+  expect(page).to have_content('Your application reference')
 end 
 
 When(/^the rectification to the application has been submitted the amended unique identifier is displayed to the user on the screen$/) do 
-  pending # Write code here that turns the phrase above into concrete actions 
+  expect(page).to have_content($regnote) 
 end 
