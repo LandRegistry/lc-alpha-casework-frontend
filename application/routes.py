@@ -343,8 +343,8 @@ def delete_from_worklist(application_id):
 #     logging.info('Sending notification')
 #     import subprocess
 #     from requests.utils import quote
-#     #print(session)
-#     #application = session['application_dict']
+#     print(session)
+#     application = session['application_dict']
 #     name = quote(' '.join(application['debtor_name']['forenames']) + ' ' + application['debtor_name']['surname'])
 #     app_type = quote(application['application_type'])
 #     date = quote(application['date'])
@@ -356,7 +356,7 @@ def delete_from_worklist(application_id):
 #     url = "localhost:5010/acknowledgement?" + params
 #     subprocess.check_output(['wkhtmltopdf', 'http://' + url, '/tmp/' + reg_no + '.pdf'])
 #
-#     # localhost:5010/acknowledgement?type=PA(B)&reg_no=50001&date=26.12.2014&name=Bob%20Howard&parts=Stuff%20Goes%20Here
+#     localhost:5010/acknowledgement?type=PA(B)&reg_no=50001&date=26.12.2014&name=Bob%20Howard&parts=Stuff%20Goes%20Here
 #     print(application)
 
 
@@ -586,7 +586,7 @@ def process_court_details():
 
             # thread = Thread(target=send_notification, args=(session['application_dict'],))
             # thread.start()
-            #send_notification(session['application_dict'])
+            # send_notification(session['application_dict'])
 
             return render_template('confirmation.html', application=application, data=reg_list, date=display_date,
                                    application_type=requested_worklist)
@@ -632,7 +632,9 @@ def application_step_2():
 
 @app.route('/process_rectification', methods=['POST'])
 def process_rectification():
+    # application_type will be type of application being performed e.g. 'amend'
     application_type = session['application_type']
+    # appn_type will be type of bankruptcy being processed i.e. PAB or WOB
     appn_type = session['application_dict']['application_type']
     doc_id = session['document_id']
 
