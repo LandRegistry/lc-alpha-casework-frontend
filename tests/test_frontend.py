@@ -254,6 +254,7 @@ class TestCaseworkFrontend:
         with self.app as c:
             with c.session_transaction() as session:
                 session['application_dict'] = application_dict
+                session['regn_no'] = [50010]
         response = self.app.get('/notification')
 
         html = response.data.decode('utf-8')
@@ -590,9 +591,11 @@ class TestCaseworkFrontend:
                 session['application_type'] = "rectify"
                 session['regn_no'] = '50018'
                 session['worklist_id'] = '3'
+                session['document_id'] = '43'
         response = self.app.post('/submit_rectification')
 
         html = response.data.decode('utf-8')
+        print(html)
         tree = ET.fromstring(html)
 
         assert "Application Complete" in tree.find('.//*[@id="message"]').text
@@ -610,6 +613,7 @@ class TestCaseworkFrontend:
         response = self.app.post('/submit_rectification')
 
         html = response.data.decode('utf-8')
+        print(html)
         tree = ET.fromstring(html)
 
         assert "Error message" in tree.find('.//*[@id="error_msg"]').text
@@ -826,6 +830,8 @@ class TestCaseworkFrontend:
         with self.app as c:
             with c.session_transaction() as session:
                 session['application_type'] = "rectify"
+                session['application_dict'] = application_dict
+                session['document_id'] = '43'
         response = self.app.post('/process_rectification', data=test_data.rectification)
         html = response.data.decode('utf-8')
         tree = ET.fromstring(html)
@@ -836,6 +842,8 @@ class TestCaseworkFrontend:
         with self.app as c:
             with c.session_transaction() as session:
                 session['application_type'] = "rectify"
+                session['application_dict'] = application_dict
+                session['document_id'] = '43'
         response = self.app.post('/process_rectification', data=test_data.rect_no_addr)
         html = response.data.decode('utf-8')
         tree = ET.fromstring(html)
