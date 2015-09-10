@@ -1,11 +1,3 @@
-Before do |scenario|
-  `vagrant ssh -c reset-data`
-end
-
-After do |scenario|
-    `vagrant ssh -c reset-data`
-end
-
 Given(/^I am on the Bankruptcy Rectification document request screen$/) do
  # $regnote = create_registration
   $regnote = '50013'

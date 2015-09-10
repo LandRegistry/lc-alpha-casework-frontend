@@ -1,12 +1,3 @@
-#Before do |scenario|
-#  `vagrant ssh -c reset-data`
-#end
-
-#After do |scenario|
-#    `vagrant ssh -c reset-data`
-#end
-
-
 Given(/^I have selected to view a specific record on the cancellation application list the individual record is display$/) do
   $regnote = create_registration
   #$regnote = '50010'
@@ -58,14 +49,14 @@ Then(/^I can click the continue button to go to the next screen$/) do
 end 
 
 Given(/^I am on the Application details screen$/) do 
- sleep(10)
-  page.has_content?('Application details')
+ sleep(1)
+  expect(page).to have_content('Application details')
 end 
 
 When(/^the application details become visible they must be the correct ones for the registration number detailed on the previous screen$/) do 
   PostgreSQL.connect('landcharges')
   result = PostgreSQL.query("SELECT a.surname FROM party_name a, register b WHERE b.registration_no=#{$regnote} AND b.debtor_reg_name_id = a.id")
-  page.has_content?(result.values[0][0])
+  expect(page).to have_content(result.values[0][0])
 end 
 
 When(/^I can click the continue button the system will go next screen$/) do 
@@ -73,24 +64,21 @@ When(/^I can click the continue button the system will go next screen$/) do
 end 
 
 Then(/^the next screen will be the confirmation screen$/) do
-  page.has_content?('Application Complete')
-  
+  expect(page).to have_content('Application Complete')
 end
 
-Given(/^the  confirmation screen is visible$/) do 
-  #not needed just a place marker
+Given(/^the  confirmation screen is visible$/) do
 end 
 
 When(/^the cancellation application has been submitted the unique identifier is displayed to the user on the screen$/) do 
-  page.has_content?('Application Complete')
-  page.has_content?('have been cancelled:')
+  expect(page).to have_content('Application Complete')
+  expect(page).to have_content('been cancelled:')
   require 'Date'
-  current_date = Date.today
-  date_format = current_date.strftime('%d.%m.%Y')
-  # canceldate = find(:id, 'canceldate').text
+  date_format = Date.today.strftime('%d.%m.%Y')
+  canceldate = find(:id, 'canceldate').text
   # puts(canceldate)
-  # expect(canceldate).to eq 'Cancelled on '+ date_format
-  page.has_content?('Cancelled on '+ date_format)
+  expect(canceldate).to eq 'Cancelled on '+ date_format
+  # page.has_content?('Cancelled on '+ date_format)
 end 
 
 When(/^I can click the reject button the system will go next screen$/) do 
@@ -98,7 +86,7 @@ When(/^I can click the reject button the system will go next screen$/) do
 end 
 
 Then(/^the next screen will be the rejection screen$/) do 
-    page.has_content?('Application Rejected')
+    expect(page).to have_content('Application Rejected')
     find(:id, 'return_to_worklist').click
 end 
 
