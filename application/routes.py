@@ -236,7 +236,6 @@ def submit_amendment():
     application_dict["date"] = today
     application_dict["residence_withheld"] = False
     application_dict['date_of_birth'] = "1980-01-01"
-    print(application_dict)
     url = app.config['BANKRUPTCY_DATABASE_URL'] + '/registration/' + regn_no + '/' + 'amend'
     headers = {'Content-Type': 'application/json'}
     response = requests.put(url, json.dumps(application_dict), headers=headers)
@@ -274,10 +273,8 @@ def submit_rectification():
     application_dict["residence_withheld"] = False
     application_dict['date_of_birth'] = "1980-01-01"
 
-    print(application_dict)
-
     # TODO: once backend rectification code is in place
-    url = app.config['BANKRUPTCY_DATABASE_URL'] + '/registration/' + regn_no + '/' + 'rectify'
+    url = app.config['BANKRUPTCY_DATABASE_URL'] + '/registration/' + regn_no + '/' + 'amend'
     headers = {'Content-Type': 'application/json'}
     response = requests.put(url, json.dumps(application_dict), headers=headers)
     if response.status_code == 200:
@@ -291,7 +288,7 @@ def submit_rectification():
         return render_template('error.html', error_msg=error), 500
 
     return render_template('confirmation.html', application_type=application_type, data=reg_list,
-                           date=display_date)
+                           date=display_date, acknowledgement=request.form['ack'])
 
 
 @app.route('/amend_name', methods=["GET"])
@@ -636,6 +633,8 @@ def application_step_2():
 @app.route('/process_rectification', methods=['POST'])
 def process_rectification():
     application_type = session['application_type']
+    appn_type = session['application_dict']['application_type']
+    doc_id = session['document_id']
 
     name = {"debtor_name": {"forenames": [], "surname": ""},
             "occupation": "",
@@ -706,7 +705,8 @@ def process_rectification():
 
     application_dict['legal_body'] = request.form['court'].strip()
     application_dict['legal_body_ref'] = request.form['ref'].strip()
-    application_dict['application_type'] = application_type
+    application_dict['application_type'] = appn_type
+    application_dict['document_id'] = doc_id
     session['application_dict'] = application_dict
 
     return render_template('rect_summary.html', application_type=application_type, data=application_dict,
@@ -715,11 +715,11 @@ def process_rectification():
 
 @app.route('/notification', methods=['GET'])
 def notification():
-    print(session)
+
     application = session['application_dict']
     data = {
         "type": application['application_type'],
-        "reg_no": application['reg_nos'][0],
+        "reg_no": session['regn_no'],
         "date": application['date'],
         "details": [
             {

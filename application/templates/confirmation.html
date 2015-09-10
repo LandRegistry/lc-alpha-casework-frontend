@@ -64,7 +64,9 @@
                     {% endfor %}
                     <br/>
                     <h3 id="registereddate">Registered on {{date}}</h3>
-                    <a href="/notification" target="new">View Notification</a>
+                    {% if acknowledgement != 'no' %}
+                    <a href="/notification" id="notification" target="new">View Notification</a>
+                    {% endif %}
                 {% endif %}
             </div>
 
