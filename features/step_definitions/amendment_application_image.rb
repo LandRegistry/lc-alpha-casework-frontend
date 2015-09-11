@@ -15,9 +15,10 @@ When(/^I am on the retrieve original documents  screen  the accompanying evidenc
 end 
 
 When(/^I click on an amendment form thumbnail the image is expanded to large image$/) do 
-   find(:id, 'thumbnails').click
-  find(:xpath, '/html/body/form/div/div/div/div[2]/div[1]/div[2]/div/div/div/img[1]').click
+	find(:id, 'thumbnails').click
+	#find(:xpath, '/html/body/form/div/div/div/div[2]/div[1]/div[2]/div/div/div/img[1]').click
 end 
+
 
 When(/^I am on a Large image of the amendment form I can zoom in$/) do 
    find(:xpath, '//*[@id="container0"]/img[2]').click 
