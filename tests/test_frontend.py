@@ -592,10 +592,8 @@ class TestCaseworkFrontend:
                 session['regn_no'] = '50018'
                 session['worklist_id'] = '3'
                 session['document_id'] = '43'
-        response = self.app.post('/submit_rectification')
-
+        response = self.app.post('/submit_rectification', data={'ack': False})
         html = response.data.decode('utf-8')
-        print(html)
         tree = ET.fromstring(html)
 
         assert "Application Complete" in tree.find('.//*[@id="message"]').text
