@@ -6,6 +6,7 @@ import logging
 import json
 from threading import Thread
 
+
 @app.route('/', methods=["GET"])
 def index():
 
@@ -15,6 +16,7 @@ def index():
     except Exception as error:
         logging.error(error)
         return render_template('error.html', error_msg=error), 500
+
 
 @app.route('/start_rectification', methods=["GET"])
 def start_rectification():
@@ -82,10 +84,7 @@ def get_application(application_type, appn_id, appn_type):
         session['images'] = images
         session['document_id'] = document_id
 
-        if application_type == "amend" or application_type == "cancel":
-            template = 'regn_retrieve.html'
-        else:
-            template = 'application.html'
+        template = page_required(application_type)
 
         session['application_type'] = application_type
         session['worklist_id'] = appn_id
@@ -258,6 +257,7 @@ def submit_amendment():
 
     return render_template('confirmation.html', application_type=application_type, data=reg_list,
                            date=display_date)
+
 
 @app.route('/submit_rectification', methods=["POST"])
 def submit_rectification():
@@ -530,7 +530,7 @@ def process_banks_name():
             try:
                 alt_forenames = request.form[forename_counter]
                 alt_surname = request.form[surname_counter]
-            except:
+            except KeyError:
                 break
 
             for i in alt_forenames.split():
@@ -638,6 +638,7 @@ def application_step_2():
                                requested_list=requested_worklist, current_page=0,
                                appn_type=session['application_dict']['application_type'])
 
+
 @app.route('/process_rectification', methods=['POST'])
 def process_rectification():
     # application_type will be type of application being performed e.g. 'amend'
@@ -671,7 +672,7 @@ def process_rectification():
         try:
             alt_forenames = request.form[forename_counter]
             alt_surname = request.form[surname_counter]
-        except:
+        except KeyError:
             break
 
         for i in alt_forenames.split():
@@ -721,6 +722,48 @@ def process_rectification():
 
     return render_template('rect_summary.html', application_type=application_type, data=application_dict,
                            date='')
+
+
+@app.route('/process_search', methods=['POST'])
+def process_search():
+
+    search_names = []
+    names = {"forenames": "", "surname": ""}
+
+    forename_var = "forenames"
+    surname_var = "surname"
+    counter = 0
+    while True:
+        forename_counter = forename_var + str(counter)
+        surname_counter = surname_var + str(counter)
+        if (forename_counter in request.form and surname_counter in request.form) \
+                and (request.form[forename_counter] != '' and request.form[surname_counter] != ''):
+            if forename_counter in request.form and request.form[forename_counter] != '':
+                forenames = request.form[forename_counter].strip()
+                surname = request.form[surname_counter].strip()
+                names['forenames'] = forenames.upper()
+                names['surname'] = surname.upper()
+        else:
+            break
+
+        search_names.append(names)
+        names = {"forenames": "", "surname": ""}
+        counter += 1
+
+    search_results = {}
+    for name in search_names:
+        full_name = name['forenames'] + ' ' + name['surname']
+        url = app.config['BANKRUPTCY_DATABASE_URL'] + '/search'
+        headers = {'Content-Type': 'application/json'}
+        response = requests.post(url, data=json.dumps(name), headers=headers)
+        if response.status_code == 200:
+            data = response.json()
+            search_results[full_name] = data
+            print("the search results are", search_results)
+        else:
+            print('failed for :', name, response.status_code)
+
+    return render_template('confirmation.html')
 
 
 @app.route('/notification', methods=['GET'])
@@ -798,3 +841,16 @@ def get_totals():
         'search': search,
         'oc': oc
     }
+
+
+def page_required(appn_type):
+    html_page = {
+        "amend": "regn_retrieve.html",
+        "cancel": "regn_retrieve.html",
+        "bank_regn": "application.html",
+        "search": "search_capture.html",
+        "oc": "regn_retrieve.html",
+        "lc": "application.html"
+    }
+
+    return html_page.get(appn_type)
