@@ -64,8 +64,8 @@ def get_list():
         return render_template('error.html', error_msg=error), 500
 
 
-@app.route('/get_application/<application_type>/<appn_id>', methods=["GET"])
-def get_application(application_type, appn_id):
+@app.route('/get_application/<application_type>/<appn_id>/<appn_type>', methods=["GET"])
+def get_application(application_type, appn_id, appn_type):
 
     try:
         url = app.config['CASEWORK_DB_URL'] + '/search/' + appn_id
@@ -91,9 +91,11 @@ def get_application(application_type, appn_id):
         session['worklist_id'] = appn_id
         session['document_id'] = document_id
         session['application_dict'] = application_json
+        session['application_dict']['application_type'] = appn_type
+        application = session['application_dict']
 
         return render_template(template, application_type=application_type, data=application_json,
-                               images=images,
+                               images=images, application=application,
                                current_page=0)
 
     except Exception as error:
@@ -229,7 +231,7 @@ def submit_amendment():
     if 'Reject' in request.form:
         return render_template('rejection.html', application_type=application_type)
 
-    # these are needed at the moment for registration but are not captured on the form
+    # TODO: these are needed at the moment for registration but are not captured on the form
     application_dict["key_number"] = "2244095"
     application_dict["application_ref"] = "customer reference"
     today = datetime.now().strftime('%Y-%m-%d')
@@ -501,6 +503,8 @@ def update_court():
 def process_banks_name():
 
     try:
+        appn_type = session['application_dict']['application_type']
+        doc_id = session['document_id']
         name = {"debtor_name": {"forenames": [], "surname": ""},
                 "occupation": "",
                 "debtor_alternative_name": [],
@@ -542,8 +546,11 @@ def process_banks_name():
         requested_worklist = 'bank_regn'
         images = session['images']
         session['application_dict'] = name
+        session['application_dict']['application_type'] = appn_type
+        session['application_dict']['document_id'] = doc_id
+        application = session['application_dict']
 
-        return render_template('address.html', application=json.dumps(name), images=images,
+        return render_template('address.html', application=application, images=images,
                                requested_list=requested_worklist, current_page=0)
 
     except Exception as error:
@@ -628,7 +635,8 @@ def application_step_2():
     else:
         return render_template('banks_order.html', application=json.dumps(application),
                                images=session['images'],
-                               requested_list=requested_worklist, current_page=0)
+                               requested_list=requested_worklist, current_page=0,
+                               appn_type=session['application_dict']['application_type'])
 
 @app.route('/process_rectification', methods=['POST'])
 def process_rectification():

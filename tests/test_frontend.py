@@ -95,12 +95,12 @@ class TestCaseworkFrontend:
 
     @mock.patch('requests.get', return_value=FakeResponse('stuff', 200, application_response))
     def test_get_application(self, mock_get):
-        response = self.app.get('/get_application/bank_regn/1')
+        response = self.app.get('/get_application/bank_regn/1/PA(B)')
         assert response.status_code == 200
 
     @mock.patch('requests.get', side_effect=Exception('Fail'))
     def test_get_application_fail(self, mock_get):
-        response = self.app.get('/get_application/bank_regn/1')
+        response = self.app.get('/get_application/bank_regn/1/PA(B)')
         assert response.status_code == 500
 
     def test_process_name(self):
@@ -108,6 +108,7 @@ class TestCaseworkFrontend:
             with c.session_transaction() as session:
                 session['application_dict'] = application_dict
                 session['images'] = ['/document/1/image/1']
+                session['document_id'] = '43'
         response = self.app.post('/process_banks_name', data=dict(forename='John', occupation='', surname='Smith'))
         html = response.data.decode('utf-8')
         tree = ET.fromstring(html)
@@ -121,6 +122,7 @@ class TestCaseworkFrontend:
             with c.session_transaction() as session:
                 session['application_dict'] = application_dict
                 session['images'] = ['/document/1/image/1']
+                session['document_id'] = '43'
         response = self.app.post('/process_banks_name',
                                  data=dict(forename='John James', occupation='', surname='Smith',
                                            aliasforename0="Joan Jean", aliassurname0="Smyth",
@@ -147,6 +149,7 @@ class TestCaseworkFrontend:
             'county': '', 'postcode': ''
         })
         html = response.data.decode('utf-8')
+        print(html)
         tree = ET.fromstring(html)
         node = tree.find('.//*[@id="form_data"]/form/div[2]/label')
         assert node.text == "Court name"
@@ -267,8 +270,9 @@ class TestCaseworkFrontend:
 
     @mock.patch('requests.get', return_value=FakeResponse('stuff', 200, application_response))
     def test_regn_retrieve(self, mock_get):
-        response = self.app.get('/get_application/cancel/17')
+        response = self.app.get('/get_application/cancel/17/PAB')
         html = response.data.decode('utf-8')
+        print(html)
         tree = ET.fromstring(html)
         title = tree.find('.//*[@id="class_data"]/h4')
         image = tree.find('.//*[@id="thumbnails"]/img')

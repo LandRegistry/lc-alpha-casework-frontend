@@ -48,10 +48,17 @@
                             <div class="top-padding">
                             <label>Class of Charge</label>
                                 <div class="input-group col-sm-8">
-                                        <label for='PA(B)' class="input-group-addon"><input type="radio" id='PA(B)' name="nature" value="PA(B)"/></label>
+                                        {% if appn_type == 'PA(B)' %}
+                                        <label for='PA(B)' class="input-group-addon"><input type="radio" checked = "checked" id='PA(B)' name="nature" value="PA(B)"/></label>
                                         <label for='PA(B)' class="form-control formbgclr">PAB</label>
                                         <label for='WO(B)' class="input-group-addon"><input type="radio" id='WO(B)' name="nature" value="WO(B)"/></label>
                                         <label for='WO(B)' class="form-control formbgclr">WOB</label>
+                                        {% else %}
+                                        <label for='PA(B)' class="input-group-addon"><input type="radio" id='PA(B)' name="nature" value="PA(B)"/></label>
+                                        <label for='PA(B)' class="form-control formbgclr">PAB</label>
+                                        <label for='WO(B)' class="input-group-addon"><input type="radio" id='WO(B)' checked="checked" name="nature" value="WO(B)"/></label>
+                                        <label for='WO(B)' class="form-control formbgclr">WOB</label>
+                                        {% endif %}
                                 </div>
                             </div>
                             <br/>
