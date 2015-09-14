@@ -113,7 +113,7 @@ Then (/^I see the application totals$/) do
 end
 
 When(/^I select a pab application$/) do
-    visit( "http://localhost:5010/get_application/bank_regn/37" )
+    visit( "http://localhost:5010/get_application/bank_regn/37/PA(B)" )
 end
 
 Then (/^I see the application details page$/) do
