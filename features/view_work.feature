@@ -29,11 +29,11 @@ And I see the application totals
 Scenario: View searches
 Given I have selected to view the main worklist
 When I have selected to view specific the application list "search"
-Then I see the application list page with no waiting apps
+Then I see the searches application list page
 And I see the application totals
 
 Scenario: View office copies
 Given I have selected to view the main worklist
 When I have selected to view specific the application list "oc"
-Then I see the application list page with no waiting apps
+Then I see the OC application list page
 And I see the application totals
