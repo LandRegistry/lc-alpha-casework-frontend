@@ -99,6 +99,18 @@ Then (/^I see the cancellations application list page$/) do
     page.should have_css('div#canc_total', :text => '2')
 end
 
+Then (/^I see the searches application list page$/) do
+    page.should have_content("Searches")
+    page.should have_content("21 August 2015")
+    page.should have_css('div#search_total', :text => '3')
+end
+
+Then (/^I see the OC application list page$/) do
+    page.should have_content("Office Copies")
+    page.should have_content("21 August 2015")
+    page.should have_css('div#oc_total', :text => '3')
+end
+
 Then (/^I see the application list page with no waiting apps$/) do
     page.should have_content("There are no waiting applications")
 end
