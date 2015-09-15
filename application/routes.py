@@ -728,37 +728,33 @@ def process_rectification():
 def process_search():
 
     search_names = []
-    names = {"forenames": "", "surname": ""}
 
-    forename_var = "forenames"
-    surname_var = "surname"
+    name = {"full_name": " ", "forename": " ", "surname": " "}
+    name_var = "fullname"
     counter = 0
     while True:
-        forename_counter = forename_var + str(counter)
-        surname_counter = surname_var + str(counter)
-        if (forename_counter in request.form and surname_counter in request.form) \
-                and (request.form[forename_counter] != '' and request.form[surname_counter] != ''):
-            if forename_counter in request.form and request.form[forename_counter] != '':
-                forenames = request.form[forename_counter].strip()
-                surname = request.form[surname_counter].strip()
-                names['forenames'] = forenames.upper()
-                names['surname'] = surname.upper()
+        name_counter = name_var + str(counter)
+        if name_counter in request.form and request.form[name_counter] != '':
+            name['full_name'] = request.form[name_counter].strip().upper()
         else:
             break
 
-        search_names.append(names)
-        names = {"forenames": "", "surname": ""}
+        search_names.append(name)
+        name = {"full_name": " ", "forename": " ", "surname": " "}
         counter += 1
 
     search_results = {}
-    for name in search_names:
-        full_name = name['forenames'] + ' ' + name['surname']
+    for names in search_names:
+        if names['full_name'] == " ":
+            fullname = names['forenames'] + ' ' + names['surname']
+        else:
+            fullname = names['full_name']
         url = app.config['BANKRUPTCY_DATABASE_URL'] + '/search'
         headers = {'Content-Type': 'application/json'}
-        response = requests.post(url, data=json.dumps(name), headers=headers)
+        response = requests.post(url, data=json.dumps(names), headers=headers)
         if response.status_code == 200:
             data = response.json()
-            search_results[full_name] = data
+            search_results[fullname] = data
             print("the search results are", search_results)
         else:
             print('failed for :', name, response.status_code)
