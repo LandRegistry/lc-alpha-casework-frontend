@@ -724,8 +724,8 @@ def process_rectification():
                            date='')
 
 
-@app.route('/process_search', methods=['POST'])
-def process_search():
+@app.route('/process_search/<search_type>', methods=['POST'])
+def process_search(search_type):
 
     search_names = []
 
@@ -743,15 +743,38 @@ def process_search():
         name = {"full_name": " ", "forename": " ", "surname": " "}
         counter += 1
 
+    data = {}
+    search = search_type
+    data['search_type'] = search
+    if search_type == 'full':
+        # my_counties = {"counties": ['all']}
+        my_counties = {"counties": ['Devon', 'Cornwall', 'Dorset', 'Lancashire']}
+        my_counties['counties'] = [element.upper() for element in my_counties['counties']]
+        print(my_counties)
+        data['counties'] = my_counties['counties']
+        # county_search['counties'] = map(str.strip, request.form['counties'])
+        # county_search['counties'] = [element.upper() for element in county_search['counties']]
+        data['year_from'] = request.form['year_from']
+        data['year_to'] = request.form['year_to']
+        print(data)
+
+    print(search_names)
     search_results = {}
     for names in search_names:
         if names['full_name'] == " ":
             fullname = names['forenames'] + ' ' + names['surname']
         else:
             fullname = names['full_name']
+
+        print(names)
+        data["forename"] = ''
+        data["forename"] = names['forenames']
+        data["surname"] = names['surname']
+        data["full_name"] = names['full_name']
+        print('data is', data)
         url = app.config['BANKRUPTCY_DATABASE_URL'] + '/search'
         headers = {'Content-Type': 'application/json'}
-        response = requests.post(url, data=json.dumps(names), headers=headers)
+        response = requests.post(url, data=json.dumps(data), headers=headers)
         if response.status_code == 200:
             data = response.json()
             search_results[fullname] = data
