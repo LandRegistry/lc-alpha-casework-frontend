@@ -1,13 +1,6 @@
-Before do |scenario|
-  `vagrant ssh -c reset-data`
-end
-
-After do |scenario|
-    `vagrant ssh -c reset-data`
-end
-
 Given(/^I have selected to view a specific record on the amendments application list the individual record is displayed$/) do
-   $regnote = create_registration
+   #$regnote = create_registration
+   $regnote = '50011'
   visit('http://localhost:5010')
   page.driver.browser.manage.window.maximize
   visit( "http://localhost:5010/get_list?appn=amend" )
@@ -22,9 +15,10 @@ When(/^I am on the retrieve original documents  screen  the accompanying evidenc
 end 
 
 When(/^I click on an amendment form thumbnail the image is expanded to large image$/) do 
-   find(:id, 'thumbnails').click
-  find(:xpath, '/html/body/form/div/div/div/div[2]/div[1]/div[2]/div/div/div/img[1]').click
+	find(:id, 'thumbnails').click
+	#find(:xpath, '/html/body/form/div/div/div/div[2]/div[1]/div[2]/div/div/div/img[1]').click
 end 
+
 
 When(/^I am on a Large image of the amendment form I can zoom in$/) do 
    find(:xpath, '//*[@id="container0"]/img[2]').click 
@@ -47,7 +41,7 @@ end
 
 When(/^I must have a registration number before the continue button can be clicked$/) do 
    fill_in('reg_no', :with => $regnote)
-   sleep(10)
+   sleep(1)
 end  
 
 Then(/^I can click the amendment screen continue button to go to the next screen$/) do 
@@ -55,7 +49,7 @@ Then(/^I can click the amendment screen continue button to go to the next screen
 end 
 
 Given(/^I am on the bankruptcy details screen$/) do #amend details screen
-  page.has_content?('Amend details')
+  expect(page).to have_content('Amend details')
 end 
 
 When(/^the application details become visible they must be the correct ones for the registration detailed on the previous screen$/) do 
@@ -75,17 +69,18 @@ When(/^I can click the reject button on the amendment screen the system will go 
 end
 
 Then(/^the next screen will be the amendment rejection screen$/) do
-  page.has_content?('Application Rejected')
+  expect(page).to have_content('Application Rejected')
   find(:id, 'return_to_worklist').click
 end
 
 When(/^I can click the amend button the system will go next screen$/) do
-  page.has_content?('Date Received')
+  expect(page).to have_content('Date Received')
 
 end
 
 Given(/^I am on the bankruptcy details worklist screen with amendments still listed$/) do
-   $regnote2 = create_registration
+   #$regnote2 = create_registration
+   $regnote2 = '50013'
    find(:xpath,'html/body/div[1]/div/div/div[3]/div/table/tbody/tr[1]/td[1]').click
 end
 
@@ -165,29 +160,31 @@ Then(/^I can click submit button to save all new information$/) do
 end 
 
 Given(/^the amendment confirmation screen is visible$/) do
-   page.has_content?('Application Complete')
-  page.has_content?('Your application reference numbers are:')
+   expect(page).to have_content('Application Complete')
+   expect(page).to have_content('Your application reference')
 end
 
 When(/^the amendments application has been submitted the unique identifier is displayed to the user on the screen$/) do
-
-  require 'Date'
-  current_date = Date.today
-  date_format = current_date.strftime('%d.%m.%Y')
+  date_format = Date.today.strftime('%d.%m.%Y')
   registereddate = find(:id, 'registereddate').text
   puts(registereddate)
   expect(registereddate).to eq 'Registered on '+ date_format
 end
 
 Then(/^the user can return to the worklist from the amendment screens$/) do
-    page.has_content?('Application Complete')
+    expect(page).to have_content('Application Complete')
     find(:id, 'return_to_worklist').click
 end
 
 Given(/^the application has been amended$/) do
-  step "I am on the bankruptcy details worklist screen with amendments still listed"
-  step "I must have a different registration number before the continue button can be clicked"
-  step "I can click submit button to save all new information"
+   $regnote3 = '50010'
+   find(:xpath,'html/body/div[1]/div/div/div[3]/div/table/tbody/tr[1]/td[1]').click
+   fill_in('reg_no', :with => $regnote3)
+   click_button('continue')
+   find(:id, 'save_changes').click
+ # step "I am on the bankruptcy details worklist screen with amendments still listed"
+  #step "I must have a different registration number before the continue button can be clicked"
+  #step "I can click submit button to save all new information"
   step "the user can return to the worklist from the amendment screens"
 end
 

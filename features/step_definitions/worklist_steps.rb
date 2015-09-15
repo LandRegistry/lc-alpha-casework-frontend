@@ -49,11 +49,11 @@ class PostgreSQL
 end
 
 Before do |scenario|
-  `vagrant ssh -c reset-data`
+  `vagrant ssh -c reset-data 2> /dev/null`
 end
 
 After do |scenario|
-    `vagrant ssh -c reset-data`
+    `vagrant ssh -c reset-data 2> /dev/null`
 end
 
 Given(/^I have selected to view the main worklist$/) do
@@ -99,6 +99,18 @@ Then (/^I see the cancellations application list page$/) do
     page.should have_css('div#canc_total', :text => '2')
 end
 
+Then (/^I see the searches application list page$/) do
+    page.should have_content("Searches")
+    page.should have_content("21 August 2015")
+    page.should have_css('div#search_total', :text => '3')
+end
+
+Then (/^I see the OC application list page$/) do
+    page.should have_content("Office Copies")
+    page.should have_content("21 August 2015")
+    page.should have_css('div#oc_total', :text => '3')
+end
+
 Then (/^I see the application list page with no waiting apps$/) do
     page.should have_content("There are no waiting applications")
 end
@@ -113,7 +125,7 @@ Then (/^I see the application totals$/) do
 end
 
 When(/^I select a pab application$/) do
-    visit( "http://localhost:5010/get_application/bank_regn/37" )
+    visit( "http://localhost:5010/get_application/bank_regn/37/PA(B)" )
 end
 
 Then (/^I see the application details page$/) do
