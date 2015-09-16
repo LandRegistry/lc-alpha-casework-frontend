@@ -27,9 +27,9 @@ application_dict = {
         'surname': 'Howard'
     },
     'residence': [{
-                      'address_lines': ["1 The Street", "Mockton"],
-                      'county': 'Devon', 'postcode': "M00 000"
-                  }],
+        'address_lines': ["1 The Street", "Mockton"],
+        'county': 'Devon', 'postcode': "M00 000"
+    }],
     'document_id': '43',
     "debtor_alternative_name": [{"forename": ["Robert"], "surname": "Howard"}]
 }
@@ -70,18 +70,15 @@ class TestCaseworkFrontend:
         app.secret_key = 'djkghfkgfgd'
         self.app = app.test_client()
 
-
     @mock.patch('requests.get', return_value=FakeResponse('stuff', 200, total_response))
     def test_get_totals(self, mock_get):
         response = self.app.get('/')
         assert response.status_code == 200
 
-
     @mock.patch('requests.get', side_effect=Exception('Fail'))
     def test_get_totals_fail(self, mock_connect):
         response = self.app.get('/')
         assert response.status_code == 500
-
 
     @mock.patch('requests.get', return_value=FakeResponse('stuff', 200, total_response))
     def test_get_list(self, mock_get):
@@ -144,7 +141,7 @@ class TestCaseworkFrontend:
             with c.session_transaction() as session:
                 session['application_dict'] = application_dict
                 session['images'] = ['/document/1/image/1']
-                
+
         response = self.app.post('/address', data={
             'county': '', 'postcode': ''
         })
@@ -160,7 +157,7 @@ class TestCaseworkFrontend:
             with c.session_transaction() as session:
                 session['application_dict'] = application_dict
                 session['images'] = ['/document/1/image/1']
-                
+
         response = self.app.post('/address', data={
             "address1": '34 Haden Close', "address2": 'Little Horn',
             "county": 'North Shore', "postcode": 'AA1 1AA'
@@ -176,7 +173,7 @@ class TestCaseworkFrontend:
             with c.session_transaction() as session:
                 session['application_dict'] = application_dict
                 session['images'] = ['/document/1/image/1']
-                
+
         response = self.app.post('/address', data={
             "address1": '35 Haden Close', "address2": 'Little Horn', "address3": '',
             "county": 'North Shore', "postcode": 'AA1 1AA', "add_address": 'Add Address'
@@ -193,7 +190,7 @@ class TestCaseworkFrontend:
             with c.session_transaction() as session:
                 session['application_dict'] = application_dict
                 session['images'] = ['/document/1/image/1']
-                
+
         response = self.app.post('/address', data={
             "address1": '34 Haden Close', "address2": 'Little Horn', "address3": '',
             "county": 'North Shore', "postcode": 'AA1 1AA'
@@ -288,7 +285,6 @@ class TestCaseworkFrontend:
                 session['application_type'] = "cancel"
                 session['images'] = ['/document/1/image/1']
                 session['original_image_data'] = ['/document/1/image/1']
-                
 
         response = self.app.post('/get_details', data={
             "reg_no": "50001"
@@ -327,7 +323,6 @@ class TestCaseworkFrontend:
         tree = ET.fromstring(html)
         assert tree.find('.//*[@id="main"]/div[2]/h4').text == "Bankruptcy Rectification"
 
-
     @mock.patch('requests.get', return_value=FakeResponse('stuff', 200, cancelled_response))
     def test_get_banks_details_cancelled(self, mock_get):
         with self.app as c:
@@ -335,7 +330,6 @@ class TestCaseworkFrontend:
                 session['application_type'] = "cancel"
                 session['images'] = ['/document/1/image/1']
                 session['original_image_data'] = ['/document/1/image/1']
-                
 
         response = self.app.post('/get_details', data={
             "reg_no": "50001"
@@ -395,7 +389,6 @@ class TestCaseworkFrontend:
         assert tree.find('.//*[@id="main"]/div[2]/div/h4').text == "Bankruptcy Rectification"
         assert tree.find('.//*[@id="class_data"]/p/strong').text == "Registration not found please re-enter"
 
-
     @mock.patch('requests.get', side_effect=Exception('Fail'))
     def test_get_details_exception(self, mock_get):
         with self.app as c:
@@ -412,7 +405,6 @@ class TestCaseworkFrontend:
         tree = ET.fromstring(html)
 
         assert "Error message" in tree.find('.//*[@id="error_msg"]').text
-
 
     @mock.patch('requests.delete', return_value=FakeDoubleDeleteResponse('stuff', [200, 204], cancellation))
     def test_process_cancellation(self, mock_delete):
@@ -492,7 +484,7 @@ class TestCaseworkFrontend:
                 session['application_dict'] = application_dict
                 session['application_type'] = "amend"
                 session['images'] = ['/document/1/image/1']
-                
+
         response = self.app.get('/amend_address/new')
         html = response.data.decode('utf-8')
         tree = ET.fromstring(html)
@@ -506,7 +498,7 @@ class TestCaseworkFrontend:
                 session['application_type'] = "amend"
                 session['images'] = ['/document/1/image/1']
                 session['original_image_data'] = ['/document/1/image/1']
-                
+
         response = self.app.post('/update_address/new', data={
             'address1': '22 New Street', 'address2': "Newtown", "county": "Newcounty",
             'postcode': 'AA1 1AA'
@@ -566,7 +558,6 @@ class TestCaseworkFrontend:
             assert tree.find('.//*[@id="form_data"]/h4').text == "Address details"
             assert tree.find('.//*[@id="address1"]').attrib['value'] == "1 The Street"
 
-
     @mock.patch('requests.put', return_value=FakeResponse('stuff', 200, amendment))
     @mock.patch('requests.delete', return_value=FakeResponse(status_code=204))
     def test_submit_amendment(self, mock_put, mock_delete):
@@ -584,7 +575,6 @@ class TestCaseworkFrontend:
 
         assert "Application Complete" in tree.find('.//*[@id="message"]').text
         assert tree.find('.//*[@id="main"]/div/div[1]/div[3]/h3[1]').text == "50027"
-
 
     @mock.patch('requests.put', return_value=FakeResponse('stuff', 200, rectify))
     def test_submit_rectification(self, mock_put):
@@ -620,8 +610,6 @@ class TestCaseworkFrontend:
 
         assert "Error message" in tree.find('.//*[@id="error_msg"]').text
 
-
-
     def test_submit_amend_rejection(self):
 
         with self.app as c:
@@ -635,7 +623,6 @@ class TestCaseworkFrontend:
         html = response.data.decode('utf-8')
         tree = ET.fromstring(html)
         assert "Application Rejected" in tree.find('.//*[@id="message"]').text
-
 
     @mock.patch('requests.put', return_value=FakeResponse('stuff', 200, amendment))
     @mock.patch('requests.delete', return_value=FakeResponse(status_code=500))
@@ -652,7 +639,6 @@ class TestCaseworkFrontend:
         tree = ET.fromstring(html)
 
         assert "Error message" in tree.find('.//*[@id="error_msg"]').text
-
 
     @mock.patch('requests.put', return_value=FakeResponse('stuff', 500, amendment))
     @mock.patch('requests.delete', return_value=FakeResponse(status_code=204))
@@ -678,7 +664,7 @@ class TestCaseworkFrontend:
                 session['application_type'] = "amend"
                 session['images'] = ['/document/1/image/1']
                 session['original_image_data'] = ['/document/1/image/1']
-                
+
             response = self.app.post('/update_address/0', data={
                 'address1': '22 New Street', 'address2': "Newtown", 'address3': "Nr Old Town",
                 'address4': "Another Place",
@@ -700,7 +686,7 @@ class TestCaseworkFrontend:
                 session['application_type'] = "amend"
                 session['images'] = ['/document/1/image/1']
                 session['original_image_data'] = ['/document/1/image/1']
-                
+
         response = self.app.post('/update_name', data=dict(forenames='John', occupation='', surname='Smith'))
         html = response.data.decode('utf-8')
         tree = ET.fromstring(html)
@@ -714,7 +700,7 @@ class TestCaseworkFrontend:
                 session['application_type'] = "amend"
                 session['images'] = ['/document/1/image/1']
                 session['original_image_data'] = ['/document/1/image/1']
-                
+
         response = self.app.get('/remove_address/0')
         html = response.data.decode('utf-8')
         tree = ET.fromstring(html)
@@ -738,7 +724,7 @@ class TestCaseworkFrontend:
                 session['application_type'] = "amend"
                 session['images'] = ['/document/1/image/1']
                 session['original_image_data'] = ['/document/1/image/1']
-                
+
         response = self.app.get('/remove_alias/0')
         html = response.data.decode('utf-8')
         tree = ET.fromstring(html)
@@ -754,7 +740,7 @@ class TestCaseworkFrontend:
                 session['application_type'] = "amend"
                 session['images'] = ['/document/1/image/1']
                 session['original_image_data'] = ['/document/1/image/1']
-                
+
         response = self.app.post('/update_alias/0', data=dict(forenames='John', occupation='', surname='Smith'))
         html = response.data.decode('utf-8')
         tree = ET.fromstring(html)
@@ -768,7 +754,7 @@ class TestCaseworkFrontend:
                 session['application_type'] = "amend"
                 session['images'] = ['/document/1/image/1']
                 session['original_image_data'] = ['/document/1/image/1']
-                
+
         response = self.app.post('/update_alias/new', data=dict(forenames='John', occupation='', surname='Smith'))
         html = response.data.decode('utf-8')
         tree = ET.fromstring(html)
@@ -793,7 +779,7 @@ class TestCaseworkFrontend:
                 session['application_type'] = "amend"
                 session['images'] = ['/document/1/image/1']
                 session['original_image_data'] = ['/document/1/image/1']
-                
+
         response = self.app.post('/update_court', data=dict(court='Plymouth County Court', ref='20 of 2015'))
         html = response.data.decode('utf-8')
         tree = ET.fromstring(html)
@@ -852,11 +838,3 @@ class TestCaseworkFrontend:
         assert tree.find('.//*[@id="form_data"]/div[1]/div[1]').text == "First name(s)"
         assert "Advertising" in tree.find('.//*[@id="form_data"]/div[6]/div[2]').text
         assert "Address(es)" not in tree.find('.//*[@id="form_data"]').text
-
-
-
-
-
-
-
-
