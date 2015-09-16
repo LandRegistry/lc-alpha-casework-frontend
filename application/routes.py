@@ -1,15 +1,13 @@
 from application import app
-from flask import request, Response, render_template, session
+from flask import request, render_template, session
 import requests
 from datetime import datetime
 import logging
 import json
-from threading import Thread
 
 
 @app.route('/', methods=["GET"])
 def index():
-
     try:
         data = get_totals()
         return render_template('totals.html', data=data)
@@ -20,28 +18,21 @@ def index():
 
 @app.route('/start_rectification', methods=["GET"])
 def start_rectification():
-
     session['application_type'] = "rectify"
     return render_template('rect_retrieve.html')
 
 
 @app.route('/get_list', methods=["GET"])
 def get_list():
-
     try:
         requested_worklist = request.args.get('appn')
-
         url = app.config['CASEWORK_DB_URL'] + '/work_list/' + requested_worklist
-
         response = requests.get(url)
-
         work_list_json = response.json()
-
         appn_list = []
 
         if len(work_list_json) > 0:
             for appn in work_list_json:
-
                 # reformat result to include separate date and time received strings
                 date = datetime.strptime(appn['date_received'], "%Y-%m-%d %H:%M:%S")
 
@@ -68,7 +59,6 @@ def get_list():
 
 @app.route('/get_application/<application_type>/<appn_id>/<appn_type>', methods=["GET"])
 def get_application(application_type, appn_id, appn_type):
-
     try:
         url = app.config['CASEWORK_DB_URL'] + '/search/' + appn_id
 
@@ -104,7 +94,6 @@ def get_application(application_type, appn_id, appn_type):
 
 @app.route('/get_details', methods=["POST"])
 def get_bankruptcy_details():
-
     try:
         application_type = session['application_type']
         regn_no = request.form['reg_no']
@@ -180,7 +169,6 @@ def get_bankruptcy_details():
 
 @app.route('/process_request', methods=["POST"])
 def process_request():
-
     application_type = session['application_type']
     application_dict = session['application_dict']
     image_list = session['images']
@@ -221,7 +209,6 @@ def process_request():
 
 @app.route('/submit_amendment', methods=["POST"])
 def submit_amendment():
-
     application_type = session['application_type']
     application_dict = session['application_dict']
     regn_no = session['regn_no']
@@ -261,7 +248,6 @@ def submit_amendment():
 
 @app.route('/submit_rectification', methods=["POST"])
 def submit_rectification():
-
     application_type = session['application_type']
     application_dict = session['application_dict']
     regn_no = session['regn_no']
@@ -295,7 +281,6 @@ def submit_rectification():
 
 @app.route('/amend_name', methods=["GET"])
 def show_name():
-
     application_type = session['application_type']
     application_dict = session['application_dict']
 
@@ -307,7 +292,6 @@ def show_name():
 
 @app.route('/update_name', methods=["POST"])
 def update_name_details():
-
     application_type = session['application_type']
     application_dict = session['application_dict']
     image_list = session['images']
@@ -364,7 +348,6 @@ def delete_from_worklist(application_id):
 
 @app.route('/amend_address/<addr>', methods=["GET"])
 def show_address(addr):
-
     application_type = session['application_type']
     application_dict = session['application_dict']
     image_list = session['images']
@@ -380,7 +363,6 @@ def show_address(addr):
 
 @app.route('/update_address/<addr>', methods=["POST"])
 def update_address_details(addr):
-
     application_type = session['application_type']
     application_dict = session['application_dict']
     image_list = session['images']
@@ -407,25 +389,23 @@ def update_address_details(addr):
         application_dict['residence'][int(addr)] = address
 
     return render_template('regn_amend.html', application_type=application_type, data=application_dict,
-                           images=image_list, current_page=0,  original_image_data=session['original_image_data'])
+                           images=image_list, current_page=0, original_image_data=session['original_image_data'])
 
 
 @app.route('/remove_address/<int:addr>', methods=["GET"])
 def remove_address(addr):
-
     application_type = session['application_type']
     application_dict = session['application_dict']
     image_list = session['images']
 
-    del(application_dict['residence'][addr])
+    del (application_dict['residence'][addr])
 
     return render_template('regn_amend.html', application_type=application_type, data=application_dict,
-                           images=image_list, current_page=0,  original_image_data=session['original_image_data'])
+                           images=image_list, current_page=0, original_image_data=session['original_image_data'])
 
 
 @app.route('/amend_alias/<name_index>', methods=["GET"])
 def show_alias(name_index):
-
     application_type = session['application_type']
     application_dict = session['application_dict']
     image_list = session['images']
@@ -439,19 +419,17 @@ def show_alias(name_index):
 
 @app.route('/remove_alias/<int:name>', methods=["GET"])
 def remove_alias(name):
-
     application_type = session['application_type']
     application_dict = session['application_dict']
     image_list = session['images']
-    del(application_dict['debtor_alternative_name'][name])
+    del (application_dict['debtor_alternative_name'][name])
 
     return render_template('regn_amend.html', application_type=application_type, data=application_dict,
-                           images=image_list, current_page=0,  original_image_data=session['original_image_data'])
+                           images=image_list, current_page=0, original_image_data=session['original_image_data'])
 
 
 @app.route('/update_alias/<name_index>', methods=["POST"])
 def update_alias(name_index):
-
     application_type = session['application_type']
     application_dict = session['application_dict']
     image_list = session['images']
@@ -470,12 +448,11 @@ def update_alias(name_index):
         application_dict['debtor_alternative_name'][int(name_index)] = alias_name
 
     return render_template('regn_amend.html', application_type=application_type, data=application_dict,
-                           images=image_list, current_page=0,  original_image_data=session['original_image_data'])
+                           images=image_list, current_page=0, original_image_data=session['original_image_data'])
 
 
 @app.route('/amend_court', methods=["GET"])
 def show_court():
-
     application_type = session['application_type']
     application_dict = session['application_dict']
 
@@ -487,7 +464,6 @@ def show_court():
 
 @app.route('/update_court', methods=["POST"])
 def update_court():
-
     application_type = session['application_type']
     application_dict = session['application_dict']
     image_list = session['images']
@@ -496,12 +472,11 @@ def update_court():
     application_dict['legal_body_ref'] = request.form['ref'].strip()
 
     return render_template('regn_amend.html', application_type=application_type, data=application_dict,
-                           images=image_list, current_page=0,  original_image_data=session['original_image_data'])
+                           images=image_list, current_page=0, original_image_data=session['original_image_data'])
 
 
 @app.route('/process_banks_name', methods=["POST"])
 def process_banks_name():
-
     try:
         appn_type = session['application_dict']['application_type']
         doc_id = session['document_id']
@@ -560,7 +535,6 @@ def process_banks_name():
 
 @app.route('/court_details', methods=["POST"])
 def process_court_details():
-
     try:
         # application = json.loads(request.form['application'])
         application = session['application_dict']
@@ -726,7 +700,6 @@ def process_rectification():
 
 @app.route('/process_search', methods=['POST'])
 def process_search():
-
     search_names = []
 
     name = {"full_name": " ", "forename": " ", "surname": " "}
@@ -764,7 +737,6 @@ def process_search():
 
 @app.route('/notification', methods=['GET'])
 def notification():
-
     application = session['application_dict']
     data = {
         "type": application['application_type'],
@@ -778,6 +750,7 @@ def notification():
         ]
     }
     return render_template('K22.html', data=data)
+
 
 # @app.route('/acknowledgement', methods=['GET'])
 # def acknowledgement():
@@ -796,9 +769,8 @@ def notification():
 
 
 def get_totals():
-
     # initialise all counters to 0
-    pabs, wobs, banks, lcreg, amend, canc, portal, search, oc = (0,)*9
+    pabs, wobs, banks, lcreg, amend, canc, portal, search, oc = (0,) * 9
 
     url = app.config['CASEWORK_DB_URL'] + '/work_list/all?'
     response = requests.get(url)
