@@ -743,20 +743,23 @@ def process_search(search_type):
         name = {"full_name": " ", "forename": " ", "surname": " "}
         counter += 1
 
-    data = {}
+    search_data = {}
     search = search_type
-    data['search_type'] = search
+    search_data['search_type'] = search
     if search_type == 'full':
         # my_counties = {"counties": ['all']}
         my_counties = {"counties": ['Devon', 'Cornwall', 'Dorset', 'Lancashire']}
         my_counties['counties'] = [element.upper() for element in my_counties['counties']]
-        print(my_counties)
-        data['counties'] = my_counties['counties']
+        # TODO: kept this code in but commented out as might need similar later
+        # counties_var = "('" + "', '".join((str(n) for n in my_counties['counties'])) + "')"
+
+        # search_data['counties'] = counties_var
+        search_data['counties'] = my_counties['counties']
         # county_search['counties'] = map(str.strip, request.form['counties'])
         # county_search['counties'] = [element.upper() for element in county_search['counties']]
-        data['year_from'] = request.form['year_from']
-        data['year_to'] = request.form['year_to']
-        print(data)
+        search_data['year_from'] = request.form['year_from']
+        search_data['year_to'] = request.form['year_to']
+        print(search_data)
 
     print(search_names)
     search_results = {}
@@ -766,15 +769,18 @@ def process_search(search_type):
         else:
             fullname = names['full_name']
 
-        print(names)
-        data["forename"] = ''
-        data["forename"] = names['forenames']
-        data["surname"] = names['surname']
-        data["full_name"] = names['full_name']
-        print('data is', data)
+        print(names['full_name'])
+        print("data before:", search_data)
+        if names['full_name'] == '':
+            search_data["forename"] = names['forenames']
+            search_data["surname"] = names['surname']
+        else:
+            search_data["full_name"] = names['full_name']
+
+        print('data is', search_data)
         url = app.config['BANKRUPTCY_DATABASE_URL'] + '/search'
         headers = {'Content-Type': 'application/json'}
-        response = requests.post(url, data=json.dumps(data), headers=headers)
+        response = requests.post(url, data=json.dumps(search_data), headers=headers)
         if response.status_code == 200:
             data = response.json()
             search_results[fullname] = data
