@@ -8,7 +8,9 @@
 
 </head>
 <body>
-<form action="/process_search" method="POST">
+{% set search_type = 'full' %}
+{% set counties = ['Devon', 'Cornwall'] %}
+<form action="/process_search/{{search_type}}" method="POST">
 {% set page_title = 'Search' %}
 {% set trail = 'Search' %}
 <div id="main" class="container" style="margin-top:20px !important;">
@@ -53,6 +55,18 @@
                             <div class="form-group" >
                                 <label for="fullname5">Full Name</label>
                                 <input class="form-control defined" type="text" id="fullname5" name="fullname5" value="{{fullname5}}"/>
+                            </div>
+                            <div class="form-group" >
+                                <label for="counties">counties</label>
+                                <input class="form-control defined" type="text" id="counties" name="counties" value="{{counties}}"/>
+                            </div>
+                            <div class="form-group" >
+                                <label for="year_from">year from</label>
+                                <input class="form-control defined" type="text" id="year_from" name="year_from" value="{{year_from}}"/>
+                            </div>
+                            <div class="form-group" >
+                                <label for="year_to">year to</label>
+                                <input class="form-control defined" type="text" id="year_to" name="year_to" value="{{year_to}}"/>
                             </div>
                             <div class="form-group">
                                 <input class="btn-lg pull-right btn-primary" id="continue" type="submit" value="Continue"/>

@@ -698,8 +698,10 @@ def process_rectification():
                            date='')
 
 
-@app.route('/process_search', methods=['POST'])
-def process_search():
+@app.route('/process_search/<search_type>', methods=['POST'])
+def process_search(search_type):
+
+    # TODO: add validation here for name and search period
     search_names = []
 
     name = {"full_name": " ", "forename": " ", "surname": " "}
@@ -716,15 +718,61 @@ def process_search():
         name = {"full_name": " ", "forename": " ", "surname": " "}
         counter += 1
 
+    search_data = {}
+    search = search_type
+    search_data['search_type'] = search
+    search_period = []
+    if search_type == 'full':
+        # TODO: next 4 lines to be removed when front-end hooked up
+        # my_counties = {"counties": ['all']}
+        my_counties = {"counties": ['Devon ', ' Cornwall', 'Dorset', 'Lancashire']}
+        my_counties['counties'] = list(map(str.strip, my_counties['counties']))
+        my_counties['counties'] = [element.upper() for element in my_counties['counties']]
+
+        # TODO: kept this code in but commented out as might need similar later
+        # counties_var = "('" + "', '".join((str(n) for n in my_counties['counties'])) + "')"
+
+        # TODO: remove the line below when front-end there and uncomment the 3 lines below
+        search_data['counties'] = my_counties['counties']
+        # county_search['counties'] = map(str.strip, request.form['counties'])
+        # county_search['counties'] = list(map(str.strip, county_search['counties']))
+        # county_search['counties'] = [element.upper() for element in county_search['counties']]
+        search = {"year_from": " ", "year_to": " "}
+        yr_from_var = "year_from"
+        yr_to_var = "year_to"
+        counter = 0
+        yr_from_counter = yr_from_var + str(counter)
+        yr_to_counter = yr_to_var + str(counter)
+        while yr_from_counter in request.form:
+            search['year_from'] = request.form[yr_from_counter]
+            search['year_to'] = request.form[yr_to_counter]
+            search_period.append(search)
+            search = {"year_from": " ", "year_to": " "}
+            counter += 1
+            yr_from_counter = yr_from_var + str(counter)
+            yr_to_counter = yr_to_var + str(counter)
+
     search_results = {}
+    counter = 0
     for names in search_names:
         if names['full_name'] == " ":
             fullname = names['forenames'] + ' ' + names['surname']
+            search_data["forename"] = names['forenames']
+            search_data["surname"] = names['surname']
         else:
             fullname = names['full_name']
+            search_data["full_name"] = names['full_name']
+
+        if search_type == 'full':
+            search_data['year_from'] = search_period[counter]['year_from']
+            search_data['year_to'] = search_period[counter]['year_to']
+        counter += 1
+
+        print("search data is", search_data)
+
         url = app.config['BANKRUPTCY_DATABASE_URL'] + '/search'
         headers = {'Content-Type': 'application/json'}
-        response = requests.post(url, data=json.dumps(names), headers=headers)
+        response = requests.post(url, data=json.dumps(search_data), headers=headers)
         if response.status_code == 200:
             data = response.json()
             search_results[fullname] = data
