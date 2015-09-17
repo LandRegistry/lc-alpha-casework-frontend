@@ -3,71 +3,94 @@
 <head>
     <meta charset="utf-8"/>
     <title>Land Charges</title>
-    {% include 'includes/ext_references.html' %}
+    {% include 'includes/search_ext_references.html' %}
     {% include 'includes/image_view_head.html' %}
+<script>
+    function getCustomerDetails(this){
 
+    }
+
+</script>
 </head>
 <body>
 <form action="/process_search" method="POST">
-{% set page_title = 'Search' %}
-{% set trail = 'Search' %}
-<div id="main" class="container" style="margin-top:20px !important;">
-    <div class="container">
-        <div class="row">
-            <h3>Land Charges - {{page_title}}</h3>
-            <div class="row col-sm-12">
-                <ul class="breadcrumb">
-                    <li><a href="/">Home</a></li>
-                    <li><a href="/get_list?appn={{application_type}}">{{trail}}</a></li>
-                </ul>
-            </div>
-            <div class="row col-sm-12" style="margin-top:10px">
-                {% include 'includes/image_view_body.html' %}
+    <div id="main" class="container" style="margin-top:20px !important;">
+        <div class="container">
+            <div class="row">
+                <div class="row col-sm-12" style="background-color:#912B88">
+                    <h2 ><a style="color:#ffffff" href="/">Land Charges</a></h2>
+                </div>
+                <div class=" col-sm-12">
+                    <h3>Bankruptcy Search</h3>
+                </div>
+                <div class="row col-sm-12" style="margin-top:10px">
+                    {% include 'includes/image_view_body.html' %}
                     <div id="form_data" class="col-sm-6">
-                        <h5>Step 1 of 3</h5>
-                        <div id="class_data">
-                            <h4>Enter Search details</h4><br/>
-                            {% if error_msg|length > 0 %}
-                                <p class="error"><strong>{{error_msg}}</strong></p>
-                            {% endif %}
-                            <div class="form-group" >
-                                <label for="fullname0">Full Name</label>
-                                <input class="form-control defined" type="text" id="fullname0" name="fullname0" value="{{fullname0}}"/>
+
+                        <ul class="nav nav-tabs" style="margin-right:5px; border-bottom:0px;">
+                            <li class="active"><a data-toggle="tab" href="#name">Name Details</a></li>
+                            <li><a data-toggle="tab" href="#customer">Customer Details</a></li>
+                        </ul>
+
+                        <div class="tab-content" style="border:1px solid black; border-top:7px solid #912B88; border-top-left-radius:5px; border-top-right-radius:5px;">
+                            <div id="name" class="tab-pane fade in active" style="padding:20px">
+                                <h4>Complete the debtor's names to be searched:</h4><br/>
+                                <div class="form-group" >
+                                    <label for="fullname0">Full Name</label>
+                                    <input class="form-control" type="text" id="fullname0" name="fullname0" value="{{fullname0}}"/>
+                                </div>
+                                <div class="form-group" >
+                                    <label for="fullname1">Full Name</label>
+                                    <input class="form-control" type="text" id="fullname1" name="fullname1" value="{{fullname1}}"/>
+                                </div>
+                                <div class="form-group" >
+                                    <label for="fullname2">Full Name</label>
+                                    <input class="form-control" type="text" id="fullname2" name="fullname2" value="{{fullname2}}"/>
+                                </div>
+                                <div class="form-group" >
+                                    <label for="fullname3">Full Name</label>
+                                    <input class="form-control" type="text" id="fullname3" name="fullname3" value="{{fullname3}}"/>
+                                </div>
+                                <div class="form-group" >
+                                    <label for="fullname4">Full Name</label>
+                                    <input class="form-control" type="text" id="fullname4" name="fullname4" value="{{fullname4}}"/>
+                                </div>
+                                <div class="form-group" >
+                                    <label for="fullname5">Full Name</label>
+                                    <input class="form-control" type="text" id="fullname5" name="fullname5" value="{{fullname5}}"/>
+                                </div>
                             </div>
-                            <div class="form-group" >
-                                <label for="fullname1">Full Name</label>
-                                <input class="form-control defined" type="text" id="fullname1" name="fullname1" value="{{fullname1}}"/>
-                            </div>
-                            <div class="form-group" >
-                                <label for="fullname2">Full Name</label>
-                                <input class="form-control defined" type="text" id="fullname2" name="fullname2" value="{{fullname2}}"/>
-                            </div>
-                            <div class="form-group" >
-                                <label for="fullname3">Full Name</label>
-                                <input class="form-control defined" type="text" id="fullname3" name="fullname3" value="{{fullname3}}"/>
-                            </div>
-                            <div class="form-group" >
-                                <label for="fullname4">Full Name</label>
-                                <input class="form-control defined" type="text" id="fullname4" name="fullname4" value="{{fullname4}}"/>
-                            </div>
-                            <div class="form-group" >
-                                <label for="fullname5">Full Name</label>
-                                <input class="form-control defined" type="text" id="fullname5" name="fullname5" value="{{fullname5}}"/>
-                            </div>
-                            <div class="form-group">
-                                <input class="btn-lg pull-right btn-primary" id="continue" type="submit" value="Continue"/>
+                            <div id="customer" class="tab-pane fade" style="padding:20px">
+                                <h4>Complete the customer details:</h4><br/>
+                                <div class="form-group row col-sm-12">
+                                    <div class="row col-sm-7">
+                                        <label for="key_no">Key Number</label>
+                                        <input class="form-control" type="text" id="key_no" name="key_no" value="{{key_no}}"/>
+                                    </div>
+                                </div>
+                                <div class="form-group" >
+                                    <label for="customer_name">Customer Name</label>
+                                    <input class="form-control" type="text" id="customer_name" name="customer_name" value="{{customer_name}}"/>
+                                </div>
+                                <div class="form-group" >
+                                    <label for="customer_address">Customer Address</label>
+                                    <p style="color:#b3b3b3; font-size:0.9em">This information must be provided. If the information shown is incorrect, please overkey.</p>
+                                    <textarea class="form-control" rows="8" id="customer_address" name="customer_address" value="{{customer_address}}"></textarea>
+                                </div>
+                                <div class="form-group" >
+                                    <label for="customer_ref">Customer Reference</label>
+                                    <input class="form-control" type="text" id="customer_ref" name="customer_ref" value="{{customer_ref}}"/>
+                                </div>
                             </div>
                         </div>
+                        <div class="form-group" style="margin-top:20px">
+                            <input class="btn btn-lg pull-right" style="background-color:#00823B; color:#ffffff;" id="search" type="submit" value="Complete Search"/>
+                        </div>
                     </div>
+                </div>
             </div>
         </div>
     </div>
-</div>
 </form>
-<script>
-    jQuery( document ).ready(function() {
-        swap('{{current_page}}');
-    });
-</script>
 </body>
 </html>

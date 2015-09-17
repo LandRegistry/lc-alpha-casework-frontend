@@ -37,7 +37,7 @@
         .thumbnail:hover{
             cursor:pointer
         }
-        .active {
+        .active_thumbnail {
             border:1px solid #0000ff;
         }
 
@@ -60,8 +60,8 @@
     </style>
     <script>
         function imgClick(sender, index) {
-            jQuery(".thumbnail").removeClass('active');
-            sender.classList.add("active");
+            jQuery(".thumbnail").removeClass('active_thumbnail');
+            sender.classList.add("active_thumbnail");
             jQuery("#imageContainer").animate({
                 left: (-index * 100) + '%'  //500) + 'px'
             });
