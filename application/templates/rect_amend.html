@@ -69,12 +69,12 @@
     <script>
         function swap(new_image){
             document.getElementById("main_image").src=new_image.src;
-            if ( jQuery('#thumbnail_1').hasClass('active') ) {
-                jQuery('#thumbnail_1').removeClass('active');
-             }  else if ( jQuery('#thumbnail_2').hasClass('active') ) {
-                jQuery('#thumbnail_2').removeClass('active');
+            if ( jQuery('#thumbnail_1').hasClass('active_thumbnail') ) {
+                jQuery('#thumbnail_1').removeClass('active_thumbnail');
+             }  else if ( jQuery('#thumbnail_2').hasClass('active_thumbnail') ) {
+                jQuery('#thumbnail_2').removeClass('active_thumbnail');
              }
-             jQuery('#'+ new_image.id).addClass('active');
+             jQuery('#'+ new_image.id).addClass('active_thumbnail');
      };
     </script>
 
@@ -99,7 +99,7 @@
         <div id="thumbnails" class="col-sm-2">
             {% for image in original_image_data %}
             <div class="col-sm-12">
-                <img class="thumbnail{% if loop.index == 1 %} active{% endif %}" src="{{image}}" alt="" id="thumbnail_{{loop.index}}" onclick="swap(this);"/>
+                <img class="thumbnail{% if loop.index == 1 %} active_thumbnail{% endif %}" src="{{image}}" alt="" id="thumbnail_{{loop.index}}" onclick="swap(this);"/>
             </div>
             {% endfor %}
         </div>

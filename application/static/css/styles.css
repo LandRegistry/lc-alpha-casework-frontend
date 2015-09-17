@@ -198,3 +198,37 @@ a.black:active{
 }
 
 
+// OVERWRITE Bootstrap nav-tabs color
+
+.nav-tabs {
+  border-bottom: 0px;
+}
+.nav-tabs > li {
+  float: left;
+}
+.nav-tabs > li > a {
+  margin-left: 7px;
+  color:#000000;
+  border-radius: 4px 4px 0 0;
+  border: 1px solid #912B88;
+  border-bottom:0px;
+}
+.nav-tabs > li > a:hover {
+  border-color: #eee #eee #ddd;
+}
+.nav-tabs > li.active > a,
+.nav-tabs > li.active > a:hover,
+.nav-tabs > li.active > a:focus {
+  color: #fff;
+  cursor: default;
+  background-color: #912B88;
+  border: 1px solid #912B88;
+  border-bottom-color: transparent;
+}
+
+//  end of nav tabs style
+
+a.nostyle {
+    color:#ffffff;
+
+}
