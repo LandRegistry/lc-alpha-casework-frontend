@@ -757,7 +757,7 @@ def process_search(search_type):
         # TODO: kept this code in but commented out as might need similar later
         # counties_var = "('" + "', '".join((str(n) for n in my_counties['counties'])) + "')"
 
-        # TODO: remove the line below when front-end there and uncomment the 3 lines below
+        # TODO: remove the line below when front-end there
         # search_data['counties'] = my_counties['counties']
         county_search = request.form['counties']
         county_search['counties'] = list(map(str.strip, county_search['counties']))
@@ -803,10 +803,17 @@ def process_search(search_type):
             data = response.json()
             search_results[fullname] = data
             print("the search results are", search_results)
+            session['search_result'] = search_results
         else:
-            print('failed for :', name, response.status_code)
+            print('No results for:', names, response.status_code)
+            # TODO: need to add no result to search result form
 
-    return render_template('confirmation.html')
+    return render_template('confirmation.html', application_type=application_type)
+
+@app.route('/search_result', methods=['GET'])
+def search_result():
+    data = session['search_result']
+    return render_template('search_result.html', data=data)
 
 
 @app.route('/notification', methods=['GET'])
