@@ -6,7 +6,26 @@
     {% include 'includes/search_ext_references.html' %}
     {% include 'includes/image_view_head.html' %}
 <script>
-    function getCustomerDetails(this){
+    function getCustomerDetails(obj){
+
+        if (obj.value.length > 7) {
+            alert('Key number must not exceed a length of 7 characters');
+        } else if (obj.value.length == 7) {
+            jQuery.ajax( {
+                url: 'http://localhost:5007/keyholder/' + obj.value,
+                type: 'GET',
+                data: {},
+                success: function( data ) {
+                    // callback called when the data is returned. data will be a JS plain-object
+                    
+
+
+                },
+                error: function( xhr, textStatus, errorThrown ) {
+                    // callback called in bad circumstances
+                }
+            } );
+        }
 
     }
 
@@ -65,7 +84,7 @@
                                 <div class="form-group row col-sm-12">
                                     <div class="row col-sm-7">
                                         <label for="key_no">Key Number</label>
-                                        <input class="form-control" type="text" id="key_no" name="key_no" value="{{key_no}}"/>
+                                        <input class="form-control" type="text" id="key_no" name="key_no" onkeyup="getCustomerDetails(this);" value="{{key_no}}"/>
                                     </div>
                                 </div>
                                 <div class="form-group" >
