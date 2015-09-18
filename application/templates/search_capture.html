@@ -38,10 +38,35 @@
 
     }
 
+    function validateForm (){
+
+        nameOk = false;
+        // Check existence of a name
+        for (i = 0; i < 6; i++){
+            if (jQuery('#fullname'+i).val() != "") {
+                nameOk = true;
+                break;
+            }
+        }
+
+        if (!nameOk){
+         // output error message
+         return false;
+        } else {
+            // check other fields
+
+        }
+
+        // if we got this far the form validation has succeeded
+        return true;
+    }
+
+
+
 </script>
 </head>
 <body>
-<form action="/process_search/banks" method="POST">
+<form action="/process_search/banks" onsubmit="return validateForm()" method="POST">
     <div id="main" class="container" style="margin-top:20px !important;">
         <div class="container">
             <div class="row">
@@ -116,7 +141,7 @@
                             </div>
                         </div>
                         <div class="form-group" style="margin-top:20px">
-                            <input class="btn btn-lg pull-right" style="background-color:#00823B; color:#ffffff;" id="search" type="submit" value="Complete Search"/>
+                            <input class="btn btn-lg pull-right" style="background-color:#00823B; color:#ffffff;" id="search" type="submit"  value="Complete Search"/>
                         </div>
                     </div>
                 </div>

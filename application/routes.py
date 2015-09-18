@@ -701,7 +701,32 @@ def process_rectification():
 @app.route('/process_search/<search_type>', methods=['POST'])
 def process_search(search_type):
 
-    # TODO: add validation here for name and search period
+    application_type = session['application_type']
+    application = session['application_dict']
+    images = session['images']
+
+    if search_type == 'banks':
+        if ('fullname0' not in request.form or request.form['fullname0'] == '')\
+                or ('customer_address' not in request.form or request.form['customer_address'] == '')\
+                or ('customer_name' not in request.form or request.form['customer_name'] == '') \
+                or ('customer_ref' not in request.form or request.form['customer_ref'] == ''):
+            error_msg = 'ERROR - please ensure name to be searched and customer details are present'
+            print(error_msg)
+
+            return render_template('search_capture.html', application_type=application_type, images=images,
+                                   application=application, error_msg=error_msg, current_page=0)
+    else:
+        if ('fullname0' not in request.form or request.form['fullname0'] == '')\
+                or ('year_from' not in request.form or request.form['year_from0'] == '')\
+                or ('year_to' not in request.form or request.form['year_to0'] == '') \
+                or ('customer_address' not in request.form or request.form['customer_address'] == '') \
+                or ('customer_name' not in request.form or request.form['customer_name'] == '') \
+                or ('customer_ref' not in request.form or request.form['customer_ref'] == ''):
+            error_msg = 'ERROR - please ensure name to be searched, search period and customer details are present'
+
+            return render_template('search_capture.html', application_type=application_type, images=images,
+                                   application=application, error_msg=error_msg, current_page=0)
+
     search_names = []
 
     name = {"full_name": " ", "forename": " ", "surname": " "}
@@ -725,18 +750,19 @@ def process_search(search_type):
     if search_type == 'full':
         # TODO: next 4 lines to be removed when front-end hooked up
         # my_counties = {"counties": ['all']}
-        my_counties = {"counties": ['Devon ', ' Cornwall', 'Dorset', 'Lancashire']}
-        my_counties['counties'] = list(map(str.strip, my_counties['counties']))
-        my_counties['counties'] = [element.upper() for element in my_counties['counties']]
+        # my_counties = {"counties": ['Devon ', ' Cornwall', 'Dorset', 'Lancashire']}
+        # my_counties['counties'] = list(map(str.strip, my_counties['counties']))
+        # my_counties['counties'] = [element.upper() for element in my_counties['counties']]
 
         # TODO: kept this code in but commented out as might need similar later
         # counties_var = "('" + "', '".join((str(n) for n in my_counties['counties'])) + "')"
 
-        # TODO: remove the line below when front-end there and uncomment the 3 lines below
-        search_data['counties'] = my_counties['counties']
-        # county_search['counties'] = map(str.strip, request.form['counties'])
-        # county_search['counties'] = list(map(str.strip, county_search['counties']))
-        # county_search['counties'] = [element.upper() for element in county_search['counties']]
+        # TODO: remove the line below when front-end there
+        # search_data['counties'] = my_counties['counties']
+        county_search = request.form['counties']
+        county_search['counties'] = list(map(str.strip, county_search['counties']))
+        county_search['counties'] = [element.upper() for element in county_search['counties']]
+        search_data['counties'] = county_search['counties']
         search = {"year_from": " ", "year_to": " "}
         yr_from_var = "year_from"
         yr_to_var = "year_to"
@@ -777,10 +803,17 @@ def process_search(search_type):
             data = response.json()
             search_results[fullname] = data
             print("the search results are", search_results)
+            session['search_result'] = search_results
         else:
-            print('failed for :', name, response.status_code)
+            print('No results for:', names, response.status_code)
+            # TODO: need to add no result to search result form
 
-    return render_template('confirmation.html')
+    return render_template('confirmation.html', application_type=application_type)
+
+@app.route('/search_result', methods=['GET'])
+def search_result():
+    data = session['search_result']
+    return render_template('search_result.html', data=data)
 
 
 @app.route('/notification', methods=['GET'])
