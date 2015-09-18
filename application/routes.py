@@ -708,8 +708,7 @@ def process_search(search_type):
     if search_type == 'banks':
         if ('fullname0' not in request.form or request.form['fullname0'] == '')\
                 or ('customer_address' not in request.form or request.form['customer_address'] == '')\
-                or ('customer_name' not in request.form or request.form['customer_name'] == '') \
-                or ('customer_ref' not in request.form or request.form['customer_ref'] == ''):
+                or ('customer_name' not in request.form or request.form['customer_name'] == ''):
             error_msg = 'ERROR - please ensure name to be searched and customer details are present'
             print(error_msg)
 
@@ -720,8 +719,7 @@ def process_search(search_type):
                 or ('year_from' not in request.form or request.form['year_from0'] == '')\
                 or ('year_to' not in request.form or request.form['year_to0'] == '') \
                 or ('customer_address' not in request.form or request.form['customer_address'] == '') \
-                or ('customer_name' not in request.form or request.form['customer_name'] == '') \
-                or ('customer_ref' not in request.form or request.form['customer_ref'] == ''):
+                or ('customer_name' not in request.form or request.form['customer_name'] == ''):
             error_msg = 'ERROR - please ensure name to be searched, search period and customer details are present'
 
             return render_template('search_capture.html', application_type=application_type, images=images,
@@ -778,15 +776,12 @@ def process_search(search_type):
             yr_from_counter = yr_from_var + str(counter)
             yr_to_counter = yr_to_var + str(counter)
 
-    search_results = {}
     counter = 0
     for names in search_names:
         if names['full_name'] == " ":
-            fullname = names['forenames'] + ' ' + names['surname']
             search_data["forename"] = names['forenames']
             search_data["surname"] = names['surname']
         else:
-            fullname = names['full_name']
             search_data["full_name"] = names['full_name']
 
         if search_type == 'full':
@@ -794,26 +789,28 @@ def process_search(search_type):
             search_data['year_to'] = search_period[counter]['year_to']
         counter += 1
 
-        print("search data is", search_data)
+        session['search_data'] = search_data
 
         url = app.config['BANKRUPTCY_DATABASE_URL'] + '/search'
         headers = {'Content-Type': 'application/json'}
         response = requests.post(url, data=json.dumps(search_data), headers=headers)
+
         if response.status_code == 200:
-            data = response.json()
-            search_results[fullname] = data
-            print("the search results are", search_results)
-            session['search_result'] = search_results
+            search_response = response.json()
+            session['search_result'] = {
+                "search_result": search_response
+            }
+        elif response.status_code == 404:
+            session['search_result'] = {"search_result": []}
         else:
-            print('No results for:', names, response.status_code)
-            # TODO: need to add no result to search result form
+            print('Further investigation required, unable to provide result for: ', names, response.status_code)
 
     return render_template('confirmation.html', application_type=application_type)
 
 @app.route('/search_result', methods=['GET'])
 def search_result():
-    data = session['search_result']
-    return render_template('search_result.html', data=data)
+
+    return render_template('search_result.html', result=session['search_result'], search_data=session['search_data'])
 
 
 @app.route('/notification', methods=['GET'])
