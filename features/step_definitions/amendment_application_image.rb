@@ -2,7 +2,7 @@ Given(/^I have selected to view a specific record on the amendments application 
    #$regnote = create_registration
    $regnote = '50011'
   visit('http://localhost:5010')
-  page.driver.browser.manage.window.maximize
+  #page.driver.browser.manage.window.maximize
   visit( "http://localhost:5010/get_list?appn=amend" )
     #find(:id,'amend_total').click
     find(:xpath,'html/body/div[1]/div/div/div[3]/div/table/tbody/tr[1]/td[1]').click
@@ -21,7 +21,7 @@ end
 
 
 When(/^I am on a Large image of the amendment form I can zoom in$/) do 
-   find(:xpath, '//*[@id="container0"]/img[2]').click 
+   find(:xpath, '//*[@id="container0"]/img[2]').trigger('click')
   #container0>div
   #all('.zoomcontrols')[0].click
  thing = find(:csspath, '#container0 > div:nth-child(2)')
@@ -29,7 +29,7 @@ When(/^I am on a Large image of the amendment form I can zoom in$/) do
 end 
 
 When(/^I am on a Large image of the amendment form I can zoom out$/) do 
-  find(:xpath, '//*[@id="container0"]/img[3]').click
+  find(:xpath, '//*[@id="container0"]/img[3]').trigger('click')
    
   #container0>div
   #all('.zoomcontrols')[0].click

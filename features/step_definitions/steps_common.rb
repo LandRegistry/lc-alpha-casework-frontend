@@ -7,7 +7,53 @@ require 'net/http'
 require 'json'
 require 'pg'
 
-Capybara.default_driver = :selenium
+def is_dev_or_demo?
+    if ENV.has_key?('ENVIRONMENT') && ENV['ENVIRONMENT'] == 'INTEGRATION'
+        false
+    else
+        true
+    end
+    false
+end
+
+def prepare_data
+    if is_dev_or_demo?
+        `vagrant ssh -c reset-data 2> /dev/null`
+    else
+        reset_data
+    end
+end
+
+if is_dev_or_demo?
+    Capybara.default_driver = :selenium
+else
+    Capybara.default_driver = :poltergeist
+    Capybara.javascript_driver = :poltergeist
+    require 'capybara/poltergeist'
+    Capybara.register_driver :poltergeist do |app|
+        Capybara::Poltergeist::Driver.new(
+            app,
+            inspector: true,
+            timeout: 240,
+            js_errors: false,
+            window_size: [1600,1200],
+            phantomjs_options: [
+                '--ignore-ssl-errors=yes',
+                '--local-to-remote-url-access=yes'
+            ]
+        )
+    end
+end
+
+
+
+Before do |scenario|
+    prepare_data
+end
+
+After do |scenario|
+    prepare_data
+end
 
 
 
