@@ -19,8 +19,12 @@ end
 
 When(/^I am on a Large image I can zoom in$/) do 
    sleep(1)
-                 
-  find(:xpath, '//*[@id="container0"]/img[2]').trigger('click')
+   if is_gui?
+       find(:xpath, '//*[@id="container0"]/img[2]').click
+   else
+       find(:xpath, '//*[@id="container0"]/img[2]').trigger('click')
+   end
+
   #container0>div
   #all('.zoomcontrols')[0].click
  thing = find(:csspath, '#container0 > div:nth-child(2)')
@@ -28,8 +32,11 @@ When(/^I am on a Large image I can zoom in$/) do
 end 
 
 When(/^I am on a Large image I can zoom out$/) do 
-
-  find(:xpath, '//*[@id="container0"]/img[3]').trigger('click')
+   if is_gui?
+       find(:xpath, '//*[@id="container0"]/img[3]').click
+   else
+       find(:xpath, '//*[@id="container0"]/img[3]').trigger('click')
+   end
    
   #container0>div
   #all('.zoomcontrols')[0].click
