@@ -48,14 +48,6 @@ class PostgreSQL
 
 end
 
-Before do |scenario|
-  `vagrant ssh -c reset-data 2> /dev/null`
-end
-
-After do |scenario|
-    `vagrant ssh -c reset-data 2> /dev/null`
-end
-
 Given(/^I have selected to view the main worklist$/) do
   visit( 'http://localhost:5010')
 end
@@ -133,7 +125,7 @@ Then (/^I see the application details page$/) do
 end
 
 Then (/^I close browser$/) do
-    page.driver.browser.close
+    close_browser
 end
 
 Then (/^I open a new browser instance$/) do
