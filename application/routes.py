@@ -73,8 +73,11 @@ def get_application(application_type, appn_id, appn_type):
             images.append(app.config["DOCUMENT_URL"] + image)
         session['images'] = images
         session['document_id'] = document_id
-
-        template = page_required(application_type)
+        template = ''
+        if appn_type == "Full Search":
+            template = page_required("full_search")
+        else:
+            template = page_required(application_type)
 
         session['application_type'] = application_type
         session['worklist_id'] = appn_id
@@ -885,6 +888,7 @@ def page_required(appn_type):
         "cancel": "regn_retrieve.html",
         "bank_regn": "application.html",
         "search": "search_capture.html",
+        "full_search": "search_full_capture.html",
         "oc": "regn_retrieve.html",
         "lc": "application.html"
     }
