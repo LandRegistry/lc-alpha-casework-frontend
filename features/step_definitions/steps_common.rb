@@ -7,11 +7,10 @@ require 'net/http'
 require 'json'
 require 'pg'
 require 'date'
-
-
+require_relative '../support/utility'
 
 def prepare_data
-    if is_dev_or_demo?
+    if is_gui?
         `vagrant ssh -c reset-data 2> /dev/null`
     else
         reset_data
@@ -19,18 +18,18 @@ def prepare_data
 end
 
 def maximise_browser
-    if is_dev_or_demo?
+    if is_gui?
         page.driver.browser.manage.window.maximize
     end
 end
 
 def close_browser
-    if is_dev_or_demo?
+    if is_gui?
         page.driver.browser.close
     end
 end
 
-if is_dev_or_demo?
+if is_gui?
     Capybara.default_driver = :selenium
 else
     Capybara.default_driver = :poltergeist

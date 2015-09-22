@@ -14,7 +14,7 @@ end
 
 
 def execute(clear, setup)
-    if is_dev_or_demo?
+    if File.directory?("/vagrant/apps")
         folders = Dir["/vagrant/apps/*"]
     else
         folders = Dir["/opt/landregistry/applications/*/source"]
