@@ -2,7 +2,7 @@ Given(/^I have selected to view a specific record on the cancellation applicatio
   $regnote = create_registration
   #$regnote = '50010'
   visit('http://localhost:5010')
-  page.driver.browser.manage.window.maximize
+  maximise_browser
   visit( "http://localhost:5010/get_list?appn=cancel" )
     find(:xpath,'/html/body/div/div/div/div[3]/div/table/tbody/tr[1]/td[1]/a').click
                 
@@ -18,9 +18,9 @@ When(/^I click on a thumbnail the image is expanded to large image$/) do
 end 
 
 When(/^I am on a Large image I can zoom in$/) do 
-sleep(1)
+   sleep(1)
                  
-  find(:xpath, '//*[@id="container0"]/img[2]').click 
+  find(:xpath, '//*[@id="container0"]/img[2]').trigger('click')
   #container0>div
   #all('.zoomcontrols')[0].click
  thing = find(:csspath, '#container0 > div:nth-child(2)')
@@ -29,7 +29,7 @@ end
 
 When(/^I am on a Large image I can zoom out$/) do 
 
-  find(:xpath, '//*[@id="container0"]/img[3]').click
+  find(:xpath, '//*[@id="container0"]/img[3]').trigger('click')
    
   #container0>div
   #all('.zoomcontrols')[0].click
@@ -73,7 +73,6 @@ end
 When(/^the cancellation application has been submitted the unique identifier is displayed to the user on the screen$/) do 
   expect(page).to have_content('Application Complete')
   expect(page).to have_content('been cancelled:')
-  require 'Date'
   date_format = Date.today.strftime('%d.%m.%Y')
   canceldate = find(:id, 'canceldate').text
   # puts(canceldate)

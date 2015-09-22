@@ -1,63 +1,97 @@
 #!/usr/bin/env ruby
+require 'json'
+require 'pg'
+require_relative 'utility'
 
+
+def connect(database)
+    PGconn.connect( 'localhost', 5432,  '', '', database, 'landcharges', 'lcalpha')
+end
+
+def disconnect(connection)
+    connection.close
+end
+
+
+def execute(clear, setup)
+    if is_dev_or_demo?
+        folders = Dir["/vagrant/apps/*"]
+    else
+        folders = Dir["/opt/landregistry/applications/*/source"]
+    end
+
+    folders.each do |folder|
+        if File.directory?("#{folder}/data") && File.exists?("#{folder}/data/data.json")
+            puts "Processing #{folder}"
+            info = JSON.parse(File.read("#{folder}/data/data.json"))
+
+            db_name = info['name']
+            tables = info['tables']
+
+            conn = connect(db_name)
+            if clear
+                puts("  clear")
+                tables.each do |table|
+                    conn.exec("DELETE FROM #{table}")
+                end
+
+                if File.exists?("#{folder}/data/clear.rb")
+                    `ruby "#{folder}/data/clear.rb" #{folder}`
+                end
+            end
+
+            if setup
+                puts("  setup")
+                tables.reverse.each do |table|
+                    # Credit: http://www.kadrmasconcepts.com/blog/2013/12/15/copy-millions-of-rows-to-postgresql-with-rails/
+                    conn.exec("COPY #{table} FROM STDIN DELIMITER '|' CSV")
+                    file = File.open("#{folder}/data/#{table}.txt", "r")
+                    while !file.eof?
+                        conn.put_copy_data(file.readline)
+                    end
+                    conn.put_copy_end
+
+                    while res = conn.get_result
+                        unless res.error_message == ""
+                            puts res.error_message
+                        end
+                    end
+                end
+
+                if File.exists?("#{folder}/data/setup.rb")
+                    `ruby "#{folder}/data/setup.rb" #{folder}`
+                end
+            end
+            disconnect(conn)
+
+        end
+    end
+end
+
+def clear_data
+    execute(true, false)
+end
+
+def setup_data
+    execute(false, true)
+end
 
 def reset_data
-    databases = [
-        {
-            'name' => 'working',
-            'app' => 'casework-working',
-            'tables' => ['pending_application']
-        },
-        {
-            'name' => 'db2',
-            'app' => 'legacy-db',
-            'tables' => ['lc_mock', 'keyholders']
-        },
-        {
-            'name' => 'docstore',
-            'app' => 'document-api',
-            'tables' => ['documents']
-        },
-        {
-            'name' => 'landcharges',
-            'app' => 'bankruptcy-registration',
-            'tables' => ['party_address', 'address', 'address_detail', 'party_trading', 'party_name_rel', 'party',
-                         'migration_status', 'register', 'register_details', 'audit_log', 'search_details', 'request',
-                         'ins_bankruptcy_request', 'party_name']
-        }
-    ]
-
-    databases.each do |db|
-        db_name = db['name']
-        db['tables'].each do |table|
-            `psql -d #{db_name} -c "DELETE FROM #{table};"`
-        end
-    end
-
-    `rm ~/*.jpeg`
-
-    databases.each do |database|
-        database['tables'].reverse.each do |table|
-            data_file = "/vagrant/apps/#{database['app']}/data/#{table}.txt"
-            command = "\\COPY #{table} FROM #{data_file} DELIMITER '|' CSV"
-            `psql -d #{database['name']} -c "#{command};"`
-        end
-
-        database['tables'].reverse.each do |table|
-            if table != "lc_mock"
-                command = "SELECT setval('#{table}_id_seq', (SELECT MAX(id) FROM #{table})+1);"
-                `psql -d #{database['name']} -c "#{command};"`
-            end
-        end
-    end
-
-    ['img30_1.jpeg', 'img32_1.jpeg', 'img34_1.jpeg', 'img36_1.jpeg', 'img38_1.jpeg',
-    'img31_1.jpeg', 'img33_1.jpeg', 'img35_1.jpeg', 'img37_1.jpeg', 'img39_1.jpeg', 'img40_1.jpeg',
-    'img41_1.jpeg', 'img41_2.jpeg', 'img42_1.jpeg', 'img43_1.jpeg', 'img44_1.jpeg', 'img45_1.jpeg'].each do |image|
-        `cp /vagrant/apps/document-api/data/#{image} ~/#{image}`
-    end
+    execute(true, true)
 end
 
 if __FILE__ == $0
-    reset_data
+    clear = false
+    setup = false
+    if ARGV.length == 0
+        clear = true
+        setup = true
+    else
+        clear = ARGV.include?('clear')
+        setup = ARGV.include?('setup')
+    end
+    execute(clear, setup)
 end
+
+
+

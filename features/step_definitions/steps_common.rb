@@ -6,21 +6,27 @@ require 'capybara/cucumber'
 require 'net/http'
 require 'json'
 require 'pg'
+require 'date'
 
-def is_dev_or_demo?
-    if ENV.has_key?('ENVIRONMENT') && ENV['ENVIRONMENT'] == 'INTEGRATION'
-        false
-    else
-        true
-    end
-    false
-end
+
 
 def prepare_data
     if is_dev_or_demo?
         `vagrant ssh -c reset-data 2> /dev/null`
     else
         reset_data
+    end
+end
+
+def maximise_browser
+    if is_dev_or_demo?
+        page.driver.browser.manage.window.maximize
+    end
+end
+
+def close_browser
+    if is_dev_or_demo?
+        page.driver.browser.close
     end
 end
 

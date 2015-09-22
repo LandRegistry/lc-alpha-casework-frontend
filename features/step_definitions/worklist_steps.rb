@@ -125,7 +125,7 @@ Then (/^I see the application details page$/) do
 end
 
 Then (/^I close browser$/) do
-    page.driver.browser.close
+    close_browser
 end
 
 Then (/^I open a new browser instance$/) do

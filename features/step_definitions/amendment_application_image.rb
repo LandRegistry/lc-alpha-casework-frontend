@@ -2,7 +2,7 @@ Given(/^I have selected to view a specific record on the amendments application 
    #$regnote = create_registration
    $regnote = '50011'
   visit('http://localhost:5010')
-  #page.driver.browser.manage.window.maximize
+  maximise_browser
   visit( "http://localhost:5010/get_list?appn=amend" )
     #find(:id,'amend_total').click
     find(:xpath,'html/body/div[1]/div/div/div[3]/div/table/tbody/tr[1]/td[1]').click

@@ -1,6 +1,6 @@
 Given(/^I am on the view application screen$/) do
   visit('http://localhost:5010')
-  page.driver.browser.manage.window.maximize
+  maximise_browser
 end 
 
 When(/^I have selected to view specific the application list$/) do 
@@ -17,11 +17,11 @@ When(/^I click on a page the image it is visible$/) do
   find(:xpath, "html/body/div[1]/div/div/div[2]/div[1]/div[1]/img[1]").click 
   #page.has_src("http://localhost:5010/static/images/page1.jpg")
 end
-#container0 > div:nth-child(5)
+
 When(/^I am on a page I can zoom in$/) do
   sleep(1)
 
-  find(:xpath, '//*[@id="container0"]/img[2]').click 
+  find(:xpath, '//*[@id="container0"]/img[2]').trigger('click')
   #container0>div
   #all('.zoomcontrols')[0].click
  thing = find(:csspath, '#container0 > div:nth-child(2)')
@@ -31,7 +31,7 @@ end
 Then(/^I am on a page I can zoom out$/) do
 sleep(1)
 
-  find(:xpath, '//*[@id="container0"]/img[3]').click
+  find(:xpath, '//*[@id="container0"]/img[3]').trigger('click')
    
   #container0>div
   #all('.zoomcontrols')[0].click
@@ -148,7 +148,6 @@ When(/^the Application has been submitted the unique identifier is displayed to 
 end
 
 When(/^the Application has been submitted the date is displayed to the user on the screen$/) do
-  require 'Date'
   current_date = Date.today
   date_format = current_date.strftime('%d.%m.%Y')
   puts(current_date)

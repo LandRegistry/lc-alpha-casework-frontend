@@ -2,7 +2,7 @@ Given(/^I am on the Bankruptcy Rectification document request screen$/) do
  # $regnote = create_registration
   $regnote = '50013'
   visit('http://localhost:5010')
-  page.driver.browser.manage.window.maximize
+  maximise_browser
   find(:id, 'Tasks').click
   find(:id, 'Rectify').click
 end
@@ -84,8 +84,7 @@ Given(/^I am on the Application complete screen$/) do
   expect(page).to have_content('Application Complete')
 end
 
-Then(/^the application complete screen is displayed with the original unique identifier displayed$/) do 
-  require 'Date'
+Then(/^the application complete screen is displayed with the original unique identifier displayed$/) do
   current_date = Date.today
   date_format = current_date.strftime('%d.%m.%Y')
   registereddate = find(:id, 'registereddate').text
