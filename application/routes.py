@@ -703,7 +703,7 @@ def process_rectification():
 
 @app.route('/process_search/<search_type>', methods=['POST'])
 def process_search(search_type):
-
+    logging.info('From the top')
     application_type = session['application_type']
     application = session['application_dict']
     images = session['images']
@@ -713,7 +713,7 @@ def process_search(search_type):
                 or ('customer_address' not in request.form or request.form['customer_address'] == '')\
                 or ('customer_name' not in request.form or request.form['customer_name'] == ''):
             error_msg = 'ERROR - please ensure name to be searched and customer details are present'
-            print(error_msg)
+            logging.error(error_msg)
 
             return render_template('search_capture.html', application_type=application_type, images=images,
                                    application=application, error_msg=error_msg, current_page=0)
@@ -724,96 +724,86 @@ def process_search(search_type):
                 or ('customer_address' not in request.form or request.form['customer_address'] == '') \
                 or ('customer_name' not in request.form or request.form['customer_name'] == ''):
             error_msg = 'ERROR - please ensure name to be searched, search period and customer details are present'
+            logging.error(error_msg)
 
             return render_template('search_capture.html', application_type=application_type, images=images,
                                    application=application, error_msg=error_msg, current_page=0)
 
-    search_names = []
+    logging.debug('Create object')
 
-    name = {"full_name": " ", "forename": " ", "surname": " "}
-    name_var = "fullname"
+    if 'counties' in request.form:
+        counties = [element.strip().upper() for element in request.form['counties']]
+    else:
+        counties = ['ALL']
+
+    paramaters = {
+        'counties': counties,
+        'search_type': "bankruptcy" if search_type == 'banks' else 'full',
+        'search_items': []
+    }
+
+    logging.debug('Mad loop')
+
     counter = 0
     while True:
-        name_counter = name_var + str(counter)
-        if name_counter in request.form and request.form[name_counter] != '':
-            name['full_name'] = request.form[name_counter].strip().upper()
-        else:
+        logging.debug('Tick %d', counter)
+        name_field = 'fullname{}'.format(counter)
+        if name_field not in request.form:
             break
 
-        search_names.append(name)
-        name = {"full_name": " ", "forename": " ", "surname": " "}
-        counter += 1
-
-    search_data = {}
-    search = search_type
-    search_data['search_type'] = search
-    search_period = []
-    if search_type == 'full':
-        # TODO: next 4 lines to be removed when front-end hooked up
-        # my_counties = {"counties": ['all']}
-        # my_counties = {"counties": ['Devon ', ' Cornwall', 'Dorset', 'Lancashire']}
-        # my_counties['counties'] = list(map(str.strip, my_counties['counties']))
-        # my_counties['counties'] = [element.upper() for element in my_counties['counties']]
-
-        # TODO: kept this code in but commented out as might need similar later
-        # counties_var = "('" + "', '".join((str(n) for n in my_counties['counties'])) + "')"
-
-        # TODO: remove the line below when front-end there
-        # search_data['counties'] = my_counties['counties']
-        county_search = request.form['counties']
-        county_search['counties'] = list(map(str.strip, county_search['counties']))
-        county_search['counties'] = [element.upper() for element in county_search['counties']]
-        search_data['counties'] = county_search['counties']
-        search = {"year_from": " ", "year_to": " "}
-        yr_from_var = "year_from"
-        yr_to_var = "year_to"
-        counter = 0
-        yr_from_counter = yr_from_var + str(counter)
-        yr_to_counter = yr_to_var + str(counter)
-        while yr_from_counter in request.form:
-            search['year_from'] = request.form[yr_from_counter]
-            search['year_to'] = request.form[yr_to_counter]
-            search_period.append(search)
-            search = {"year_from": " ", "year_to": " "}
-            counter += 1
-            yr_from_counter = yr_from_var + str(counter)
-            yr_to_counter = yr_to_var + str(counter)
-
-    counter = 0
-    for names in search_names:
-        if names['full_name'] == " ":
-            search_data["forename"] = names['forenames']
-            search_data["surname"] = names['surname']
-        else:
-            search_data["full_name"] = names['full_name']
-
-        if search_type == 'full':
-            search_data['year_from'] = search_period[counter]['year_from']
-            search_data['year_to'] = search_period[counter]['year_to']
-        counter += 1
-
-        session['search_data'] = search_data
-
-        url = app.config['BANKRUPTCY_DATABASE_URL'] + '/search'
-        headers = {'Content-Type': 'application/json'}
-        response = requests.post(url, data=json.dumps(search_data), headers=headers)
-
-        if response.status_code == 200:
-            search_response = response.json()
-            session['search_result'] = {
-                "search_result": search_response
+        logging.debug(request.form)
+        if request.form[name_field] != '':
+            logging.debug('1.5')
+            search_item = {
+                'name': request.form[name_field]
             }
-        elif response.status_code == 404:
-            session['search_result'] = {"search_result": []}
-        else:
-            print('Further investigation required, unable to provide result for: ', names, response.status_code)
+
+            logging.debug('2')
+            if search_type == 'full':
+                logging.info('Getting year stuff')
+                search_item['year_to'] = request.form['year_to%d'.format(counter)]
+                search_item['year_from'] = request.form['year_from%d'.format(counter)]
+
+            logging.debug('3')
+            paramaters['search_items'].append(search_item)
+        logging.debug('4')
+        counter += 1
+
+    customer = {
+        'key_number': request.form['key_no'],
+        'name': request.form['customer_name'],
+        'address': request.form['customer_address'],
+        'reference': request.form['customer_ref']
+    }
+
+    search_data = {
+        'customer': customer,
+        'document_id': application['document_id'],
+        'parameters': paramaters
+    }
+    session['search_data'] = search_data
+    url = app.config['BANKRUPTCY_DATABASE_URL'] + '/search'
+    headers = {'Content-Type': 'application/json'}
+    response = requests.post(url, data=json.dumps(search_data), headers=headers)
+
+    if response.status_code == 200:
+        search_response = response.json()
+        session['search_result'] = search_response
+    elif response.status_code == 404:
+        session['search_result'] = []
+    else:
+        logging.error('Unexpected return code: %d', response.status_code)
+        return render_template('error.html')
 
     return render_template('confirmation.html', application_type=application_type)
 
+
 @app.route('/search_result', methods=['GET'])
 def search_result():
-
-    return render_template('search_result.html', result=session['search_result'], search_data=session['search_data'])
+    print(session['search_result'])
+    print('---------')
+    print(session['search_data'])
+    return render_template('search_result.html', results=session['search_result'], search_data=session['search_data'])
 
 
 @app.route('/notification', methods=['GET'])
