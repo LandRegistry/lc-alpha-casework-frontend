@@ -93,18 +93,18 @@
                                 <h4>Complete the debtor's names to be searched:</h4><br/>
                                 {% for i in range(6) %}
                                 <div class="form-group">
-                                    <label for="fullname{{loop.index}}" >Full Name</label>
-                                    <input class="form-control" type="text" id="fullname{{loop.index}}" name="fullname{{loop.index}}" value="{{fullname}}"/>
+                                    <label for="fullname{{loop.index-1}}" >Full Name</label>
+                                    <input class="form-control" type="text" id="fullname{{loop.index-1}}" name="fullname{{loop.index-1}}" value="{{fullname}}"/>
 
                                 </div>
                                 <div class="form-group" style="margin-left:-60px">
-                                    <label class="control-label col-sm-3" for="year_from{{loop.index}}">Search from</label>
+                                    <label class="control-label col-sm-3" for="year_from{{loop.index-1}}">Search from</label>
                                     <div class="col-sm-3">
-                                        <input class="form-control" type="text" id="year_from{{loop.index}}" name="year_from{{loop.index}}" value="{{years.year_from}}"/>
+                                        <input class="form-control" type="text" id="year_from{{loop.index-1}}" name="year_from{{loop.index-1}}" value="{{years.year_from}}"/>
                                     </div>
-                                    <label class="control-label col-sm-3" for="year_to{{loop.index}}">Search to</label>
+                                    <label class="control-label col-sm-3" for="year_to{{loop.index-1}}">Search to</label>
                                     <div class="col-sm-3">
-                                        <input class="form-control" type="text" id="year_to{{loop.index}}" name="year_to{{loop.index}}" value="{{years.year_to}}"/>
+                                        <input class="form-control" type="text" id="year_to{{loop.index-1}}" name="year_to{{loop.index-1}}" value="{{years.year_to}}"/>
                                     </div>
                                 </div>
                                 {% endfor %}
@@ -120,14 +120,14 @@
                                         <a class="btn btn-sm pull-left" href="#" style="background-color:#55BFE0; color:#ffffff;" onclick="addArea();" id="add_area" >Add Area </a>
                                     </div>
                                 </div>
-                                <div class="form-group" >
+                                <div class="form-group" style="padding:17px">
                                     <label for="area_list">List of Areas to Search</label>
                                     <textarea class="form-control" rows="8" id="area_list" name="area_list" value="{{area_list}}"></textarea>
                                 </div>
                             </div>
                             <div id="customer" class="tab-pane fade" style="padding:20px">
                                 <h4>Complete the customer details:</h4><br/>
-                                <div class="form-group row col-sm-12" >
+                                <div class="form-group row col-sm-12">
                                     <div class="row col-sm-6">
                                         <label for="key_no">Key Number</label>
                                         <input class="form-control" type="text" id="key_no" name="key_no" onkeyup="getCustomerDetails(this);" onblur="getCustomerDetails(this);" value="{{key_no}}"/>
@@ -136,6 +136,7 @@
                                         <span id="error_msg"></span>
                                     </div>
                                 </div>
+                                <div style="padding:17px">
                                 <div class="form-group" >
                                     <label for="customer_name">Customer Name</label>
                                     <input class="form-control" type="text" id="customer_name" name="customer_name" value="{{customer_name}}"/>
@@ -148,6 +149,7 @@
                                 <div class="form-group" >
                                     <label for="customer_ref">Customer Reference</label>
                                     <input class="form-control" type="text" id="customer_ref" name="customer_ref" value="{{customer_ref}}"/>
+                                </div>
                                 </div>
                             </div>
                         </div>
