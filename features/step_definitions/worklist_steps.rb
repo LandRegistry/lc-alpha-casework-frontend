@@ -73,41 +73,41 @@ Then(/^I see the totals refresh$/) do
     page.should have_css("div#banks_total", :text => '22')
 end
 
-Then (/^I see the bankruptcy application list page$/) do
+Then(/^I see the bankruptcy application list page$/) do
     page.should have_content("Bankruptcy Registrations")
     page.should have_content("21 August 2015")
     page.should have_css('div#banks_total', :text => '21')
 end
 
-Then (/^I see the amendments application list page$/) do
+Then(/^I see the amendments application list page$/) do
     page.should have_content("Amendments")
     page.should have_content("21 August 2015")
     page.should have_css('div#amend_total', :text => '2')
 end
 
-Then (/^I see the cancellations application list page$/) do
+Then(/^I see the cancellations application list page$/) do
     page.should have_content("Cancellations")
     page.should have_content("21 August 2015")
     page.should have_css('div#canc_total', :text => '2')
 end
 
-Then (/^I see the searches application list page$/) do
+Then(/^I see the searches application list page$/) do
     page.should have_content("Searches")
     page.should have_content("21 August 2015")
     page.should have_css('div#search_total', :text => '3')
 end
 
-Then (/^I see the OC application list page$/) do
+Then(/^I see the OC application list page$/) do
     page.should have_content("Office Copies")
     page.should have_content("21 August 2015")
     page.should have_css('div#oc_total', :text => '3')
 end
 
-Then (/^I see the application list page with no waiting apps$/) do
+Then(/^I see the application list page with no waiting apps$/) do
     page.should have_content("There are no waiting applications")
 end
 
-Then (/^I see the application totals$/) do
+Then(/^I see the application totals$/) do
     page.should have_css("div#banks_total")
     page.should have_css("div#lcreg_total")
     page.should have_css("div#amend_total")
@@ -120,15 +120,15 @@ When(/^I select a pab application$/) do
     visit( "http://localhost:5010/get_application/bank_regn/37/PA(B)" )
 end
 
-Then (/^I see the application details page$/) do
+Then(/^I see the application details page$/) do
     page.should have_content("Debtor name and details")
 end
 
-Then (/^I close browser$/) do
+Then(/^I close browser$/) do
     close_browser
 end
 
-Then (/^I open a new browser instance$/) do
+Then(/^I open a new browser instance$/) do
     Capybara.send(:session_pool).delete_if { |key, value| key =~ /selenium/i }
 end
 
