@@ -6,8 +6,59 @@ require 'capybara/cucumber'
 require 'net/http'
 require 'json'
 require 'pg'
+require 'date'
+require_relative '../support/utility'
 
-Capybara.default_driver = :selenium
+def prepare_data
+    if is_gui?
+        `vagrant ssh -c reset-data 2> /dev/null`
+    else
+        reset_data
+    end
+end
+
+def maximise_browser
+    if is_gui?
+        page.driver.browser.manage.window.maximize
+    end
+end
+
+def close_browser
+    if is_gui?
+        page.driver.browser.close
+    end
+end
+
+if is_gui?
+    Capybara.default_driver = :selenium
+else
+    Capybara.default_driver = :poltergeist
+    Capybara.javascript_driver = :poltergeist
+    require 'capybara/poltergeist'
+    Capybara.register_driver :poltergeist do |app|
+        Capybara::Poltergeist::Driver.new(
+            app,
+            inspector: true,
+            timeout: 240,
+            js_errors: false,
+            window_size: [1600,1200],
+            phantomjs_options: [
+                '--ignore-ssl-errors=yes',
+                '--local-to-remote-url-access=yes'
+            ]
+        )
+    end
+end
+
+
+
+Before do |scenario|
+    prepare_data
+end
+
+After do |scenario|
+    prepare_data
+end
 
 
 
