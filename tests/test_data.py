@@ -43,3 +43,16 @@ rectification = dict(forenames='Don', surname='Draper', occupation='Advertising'
 rect_no_addr = dict(forenames='Don', surname='Draper', occupation='Advertising', aliasforename0='Donald',
                     aliassurname0='Draper', aliasforename1='Richard', aliassurname1='Whitman', aliasforename2='Dick',
                     aliassurname2='Draper', court='Fake County Court', ref='1 of 1990')
+
+full_search = dict(fullname0='Cooper Bogan', year_from0='1925', year_to0='2015', counties='["Lancashire"]',
+                   key_no='1234567', customer_name='full search test plc',
+                   customer_address='34 new street, new town, devon, pl1 1aa', customer_ref='full search test ref')
+
+full_search_all_counties = dict(fullname0='Cooper Bogan', year_from0='1925', year_to0='2015',
+                                key_no='1234567', customer_name='full search test plc',
+                                customer_address='34 new street, new town, devon, pl1 1aa',
+                                customer_ref='full search test ref')
+
+banks_search = dict(fullname0='Cooper Bogan', fullname1='Terrence Jones',
+                    key_no='1234567', customer_name='full search test plc',
+                    customer_address='34 new street, new town, devon, pl1 1aa', customer_ref='full search test ref')

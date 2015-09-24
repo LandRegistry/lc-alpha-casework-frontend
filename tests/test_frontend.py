@@ -17,6 +17,12 @@ cancellation = '{"cancelled": ["50001"]}'
 
 amendment = '{"new_registrations": ["50027", "50028", "50029"]}'
 rectify = '{"new_registrations": ["50018"]}'
+search = '[{"registration_no": 50008, "registration_date": "2013-01-21", "application_type": "WO(B)"}]'
+search_data = '{"parameters": {"counties": ["ALL"], "search_items": [{"name": "cooper bogan", "year_to": 2015, ' \
+              '"year_from": 1925}], "search_type": "full"}, "customer": {"reference": "ref", ' \
+              '"name": "A & B LEGAL GROUP LTD,SOL LEGAL DEPT", "key_number": "1234567", ' \
+              '"address": "4749 DUBUQUE TRACE\r\nJAYSONFURT\r\nSOUTH VINCENZA\r\nNORTHAMPTONSHIRE\r\nFC13 4WX"}, ' \
+              '"document_id": 49}'
 
 application_dict = {
     'application_type': 'PA(B)',
@@ -152,7 +158,7 @@ class TestCaseworkFrontend:
         assert node.text == "Court name"
         assert response.status_code == 200
 
-    def test_addresss_2_lines(self):
+    def test_address_2_lines(self):
         with self.app as c:
             with c.session_transaction() as session:
                 session['application_dict'] = application_dict
@@ -838,3 +844,68 @@ class TestCaseworkFrontend:
         assert tree.find('.//*[@id="form_data"]/div[1]/div[1]').text == "First name(s)"
         assert "Advertising" in tree.find('.//*[@id="form_data"]/div[6]/div[2]').text
         assert "Address(es)" not in tree.find('.//*[@id="form_data"]').text
+
+    @mock.patch('requests.post', return_value=FakeResponse('stuff', 200, search))
+    def test_search_full(self, mock_post):
+        with self.app as c:
+            with c.session_transaction() as session:
+                session['application_type'] = "full search"
+                session['application_dict'] = application_dict
+        response = self.app.post('/process_search/full', data=test_data.full_search)
+        html = response.data.decode('utf-8')
+        tree = ET.fromstring(html)
+        assert "Application Complete" in tree.find('.//*[@id="message"]').text
+
+    @mock.patch('requests.post', return_value=FakeResponse('stuff', 200, search))
+    def test_search_full_all_counties(self, mock_post):
+        with self.app as c:
+            with c.session_transaction() as session:
+                session['application_type'] = "full search"
+                session['application_dict'] = application_dict
+        response = self.app.post('/process_search/full', data=test_data.full_search_all_counties)
+        html = response.data.decode('utf-8')
+        tree = ET.fromstring(html)
+        assert "Application Complete" in tree.find('.//*[@id="message"]').text
+
+    @mock.patch('requests.post', return_value=FakeResponse('stuff', 404, search))
+    def test_search_no_result(self, mock_post):
+        with self.app as c:
+            with c.session_transaction() as session:
+                session['application_type'] = "full search"
+                session['application_dict'] = application_dict
+        response = self.app.post('/process_search/full', data=test_data.full_search)
+        html = response.data.decode('utf-8')
+        tree = ET.fromstring(html)
+        assert "Application Complete" in tree.find('.//*[@id="message"]').text
+
+    @mock.patch('requests.post', return_value=FakeResponse('stuff', 500, search))
+    def test_search_fail(self, mock_post):
+        with self.app as c:
+            with c.session_transaction() as session:
+                session['application_type'] = "full search"
+                session['application_dict'] = application_dict
+        response = self.app.post('/process_search/full', data=test_data.full_search)
+        html = response.data.decode('utf-8')
+        tree = ET.fromstring(html)
+        assert "Error message" in tree.find('.//*[@id="error_msg"]').text
+
+    @mock.patch('requests.post', return_value=FakeResponse('stuff', 200, search))
+    def test_search_banks(self, mock_post):
+        with self.app as c:
+            with c.session_transaction() as session:
+                session['application_type'] = "search"
+                session['application_dict'] = application_dict
+        response = self.app.post('/process_search/banks', data=test_data.banks_search)
+        html = response.data.decode('utf-8')
+        tree = ET.fromstring(html)
+        assert "Application Complete" in tree.find('.//*[@id="message"]').text
+
+    def test_search_result(self):
+        with self.app as c:
+            with c.session_transaction() as session:
+                session['search_result'] = search
+                session['search_data'] = search_data
+        response = self.app.get('/search_result')
+        html = response.data.decode('utf-8')
+        tree = ET.fromstring(html)
+        assert "Search results found" in tree.find('.//*[@id="main"]/div/div[3]/h5').text
