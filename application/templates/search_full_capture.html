@@ -48,11 +48,12 @@
             }
         }
         if (!nameOk){
-         // output error message
+         alert('You must enter at least one name');
          return false;
-        } else {
-            // check other fields
-
+        }
+        if ( jQuery('#customer_name').val() == "" || jQuery('#customer_address').val() == ""){
+            alert('You must enter the customers details');
+            return false;
         }
         // if we got this far the form validation has succeeded
         return true;
@@ -60,7 +61,12 @@
 
     function addArea(){
         if (jQuery('#search_area').val() != "") {
-            full_address = jQuery('#area_list').val() + '\r\n'+ jQuery('#search_area').val();
+            if jQuery('#area_list').val() == "" {
+                full_address = jQuery('#search_area').val();
+            } else {
+                full_address = jQuery('#area_list').val() + '\r\n'+ jQuery('#search_area').val();
+            }
+
             jQuery('#area_list').val(full_address);
             clear_area();
         }
@@ -115,7 +121,15 @@
                             </div>
                             <div id="area" class="tab-pane fade" style="padding:20px">
                                 <h4>What areas do you wish to search?</h4><br/>
-                                <div class="form-group row col-sm-12" >
+                                <div class="form-group row col-sm-12">
+
+                                    <div class="input-group col-sm-6">
+                                        <div class="input-group-addon"><input type="checkbox" name="all_counties" id="all_counties" ></div>
+                                        <label class="form-control"  for="all_counties">All Counties</label>
+                                    </div>
+                                </div>
+                                <div class="row col-sm-12" >
+
                                     <div class="row col-sm-9">
                                         <label for="search_area">Search Area</label>
                                         <input class="form-control" type="text" id="search_area" name="area" onclick="clear_area();"/>
