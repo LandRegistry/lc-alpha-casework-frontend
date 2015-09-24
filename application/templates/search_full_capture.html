@@ -62,9 +62,13 @@
         if (jQuery('#search_area').val() != "") {
             full_address = jQuery('#area_list').val() + '\r\n'+ jQuery('#search_area').val();
             jQuery('#area_list').val(full_address);
-        area_list
+            clear_area();
         }
 
+    }
+
+    function clear_area(){
+        jQuery('#search_area').val('')
     }
 
 </script>
@@ -114,7 +118,7 @@
                                 <div class="form-group row col-sm-12" >
                                     <div class="row col-sm-9">
                                         <label for="search_area">Search Area</label>
-                                        <input class="form-control" type="text" id="search_area" >
+                                        <input class="form-control" type="text" id="search_area" name="area" onclick="clear_area();"/>
                                     </div>
                                     <div class="row col-sm-3" style="margin-left:5px; padding-top:25px;">
                                         <a class="btn btn-sm pull-left" href="#" style="background-color:#55BFE0; color:#ffffff;" onclick="addArea();" id="add_area" >Add Area </a>
@@ -163,14 +167,20 @@
     </div>
 </form>
 <script>
-    var counties = [ "Bedfordshire","Berkshire","Bristol","Buckinghamshire","Cambridgeshire","Cheshire","City of London","Cornwall","Cumbria","Derbyshire","Devon","Dorset","County Durham","East Riding of Yorkshire","East Sussex","Essex","Gloucestershire","Greater London","Greater Manchester","Hampshire","Herefordshire","Hertfordshire","Isle of Wight","Kent","Lancashire","Leicestershire","Lincolnshire","Merseyside","Norfolk","North Yorkshire","Northamptonshire","Northumberland","Nottinghamshire","Oxfordshire","Rutland","Shropshire","Somerset","South Yorkshire","Staffordshire","Suffolk","Surrey","Tyne and Wear","Warwickshire","West Midlands","West Sussex","West Yorkshire","Wiltshire","Worcestershire" ];
-    jQuery( "#search_area" ).autocomplete({
-      source: function( request, response ) {
-              var matcher = new RegExp( "^" + jQuery.ui.autocomplete.escapeRegex( request.term ), "i" );
-              response( jQuery.grep( counties, function( item ){
-                  return matcher.test( item );
-              }) );
-          }
+    jQuery.ajax({
+        url: 'http://localhost:5004/counties',
+        type: 'GET',
+        counties: {},
+        success: function( counties ) {
+            jQuery( "#search_area" ).autocomplete({
+              source: function( request, response ) {
+                var matcher = new RegExp( "^" + jQuery.ui.autocomplete.escapeRegex( request.term ), "i" );
+                response( jQuery.grep( counties, function( item ){
+                      return matcher.test( item );
+                    }) );
+                }
+            });
+        }
     });
 
 </script>
