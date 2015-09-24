@@ -73,7 +73,6 @@ def get_application(application_type, appn_id, appn_type):
             images.append(app.config["DOCUMENT_URL"] + image)
         session['images'] = images
         session['document_id'] = document_id
-        template = ''
         if appn_type == "Full Search":
             template = page_required("full_search")
         else:
@@ -86,8 +85,12 @@ def get_application(application_type, appn_id, appn_type):
         session['application_dict']['application_type'] = appn_type
         application = session['application_dict']
 
+        years = {"year_from": "1925",
+                 "year_to": datetime.now().strftime('%Y')
+                 }
+
         return render_template(template, application_type=application_type, data=application_json,
-                               images=images, application=application,
+                               images=images, application=application, years=years,
                                current_page=0)
 
     except Exception as error:
@@ -706,8 +709,9 @@ def process_search(search_type):
     logging.info('From the top')
     application_type = session['application_type']
     application = session['application_dict']
-    images = session['images']
+    # images = session['images']
 
+    """
     if search_type == 'banks':
         if ('fullname0' not in request.form or request.form['fullname0'] == '')\
                 or ('customer_address' not in request.form or request.form['customer_address'] == '')\
@@ -728,7 +732,7 @@ def process_search(search_type):
 
             return render_template('search_capture.html', application_type=application_type, images=images,
                                    application=application, error_msg=error_msg, current_page=0)
-
+    """
     logging.debug('Create object')
 
     if 'counties' in request.form:
@@ -761,8 +765,8 @@ def process_search(search_type):
             logging.debug('2')
             if search_type == 'full':
                 logging.info('Getting year stuff')
-                search_item['year_to'] = request.form['year_to%d'.format(counter)]
-                search_item['year_from'] = request.form['year_from%d'.format(counter)]
+                search_item['year_to'] = int(request.form['year_to{}'.format(counter)])
+                search_item['year_from'] = int(request.form['year_from{}'.format(counter)])
 
             logging.debug('3')
             paramaters['search_items'].append(search_item)
