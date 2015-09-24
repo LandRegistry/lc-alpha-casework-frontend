@@ -709,7 +709,7 @@ def process_search(search_type):
     logging.info('From the top')
     application_type = session['application_type']
     application = session['application_dict']
-    images = session['images']
+    # images = session['images']
 
     """
     if search_type == 'banks':
@@ -748,12 +748,10 @@ def process_search(search_type):
 
     logging.debug('Mad loop')
 
-    print(request.form)
     counter = 0
     while True:
         logging.debug('Tick %d', counter)
         name_field = 'fullname{}'.format(counter)
-        print(name_field)
         if name_field not in request.form:
             break
 
@@ -767,9 +765,8 @@ def process_search(search_type):
             logging.debug('2')
             if search_type == 'full':
                 logging.info('Getting year stuff')
-                search_item['year_to'] = request.form['year_to%d'.format(counter)]
-                search_item['year_from'] = request.form['year_from%d'.format(counter)]
-                print(search_item['year_from'], search_item['year_to'])
+                search_item['year_to'] = int(request.form['year_to{}'.format(counter)])
+                search_item['year_from'] = int(request.form['year_from{}'.format(counter)])
 
             logging.debug('3')
             paramaters['search_items'].append(search_item)
