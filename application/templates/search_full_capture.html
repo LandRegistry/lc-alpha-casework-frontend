@@ -61,7 +61,7 @@
 
     function addArea(){
         if (jQuery('#search_area').val() != "") {
-            if jQuery('#area_list').val() == "" {
+            if (jQuery('#area_list').val() == "") {
                 full_address = jQuery('#search_area').val();
             } else {
                 full_address = jQuery('#area_list').val() + '\r\n'+ jQuery('#search_area').val();
