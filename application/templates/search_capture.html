@@ -39,7 +39,6 @@
     }
 
     function validateForm (){
-
         nameOk = false;
         // Check existence of a name
         for (i = 0; i < 6; i++){
@@ -48,15 +47,14 @@
                 break;
             }
         }
-
         if (!nameOk){
-         // output error message
+         alert('You must enter at least one name');
          return false;
-        } else {
-            // check other fields
-
         }
-
+        if ( jQuery('#customer_name').val() == "" || jQuery('#customer_address').val() == ""){
+            alert('You must enter the customers details');
+            return false;
+        }
         // if we got this far the form validation has succeeded
         return true;
     }
