@@ -143,7 +143,7 @@
                                 <tbody>
                                 {% for n in worklist %}
                                 <tr>
-                                    <td><a href="/get_application/{{requested_list}}/{{n['appn_id']}}/{{n['application_type']}}">{{n['date_received']}}</a></td>
+                                    <td><a href="/get_application/{{requested_list}}/{{n['appn_id']}}/{{n['application_type']|replace(' ', '%20')}}">{{n['date_received']}}</a></td>
                                     <td>{{n['time_received']}}</td>
                                     <td>{{n['application_type']}}</td>
                                 </tr>

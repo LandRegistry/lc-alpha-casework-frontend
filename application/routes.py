@@ -713,10 +713,9 @@ def process_search(search_type):
     if 'all_counties' in request.form:
         counties = []
     elif 'area_list' in request.form and request.form['area_list'] != '':
-        counties = [element.strip().upper() for element in request.form['area_list']]
+        counties = request.form['area_list'].upper().strip('\r\n').split()
     else:
         counties = []
-
     parameters = {
         'counties': counties,
         'search_type': "bankruptcy" if search_type == 'banks' else 'full',
