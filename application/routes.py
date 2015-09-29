@@ -6,14 +6,16 @@ import logging
 import json
 
 
+@app.errorhandler(Exception)
+def error_handler(err):
+    logging.error(err)
+    return render_template('error.html', error_msg=str(err)), 500
+
+
 @app.route('/', methods=["GET"])
 def index():
-    try:
-        data = get_totals()
-        return render_template('totals.html', data=data)
-    except Exception as error:
-        logging.error(error)
-        return render_template('error.html', error_msg=error), 500
+    data = get_totals()
+    return render_template('totals.html', data=data)
 
 
 @app.route('/start_rectification', methods=["GET"])
@@ -24,104 +26,106 @@ def start_rectification():
 
 @app.route('/get_list', methods=["GET"])
 def get_list():
-    try:
-        requested_worklist = request.args.get('appn')
-        url = app.config['CASEWORK_DB_URL'] + '/work_list/' + requested_worklist
-        response = requests.get(url)
-        work_list_json = response.json()
-        appn_list = []
+    requested_worklist = request.args.get('appn')
+    url = app.config['CASEWORK_DB_URL'] + '/work_list/' + requested_worklist
+    response = requests.get(url)
+    work_list_json = response.json()
+    appn_list = []
 
-        if len(work_list_json) > 0:
-            for appn in work_list_json:
-                # reformat result to include separate date and time received strings
-                date = datetime.strptime(appn['date_received'], "%Y-%m-%d %H:%M:%S")
+    if len(work_list_json) > 0:
+        for appn in work_list_json:
+            # reformat result to include separate date and time received strings
+            date = datetime.strptime(appn['date_received'], "%Y-%m-%d %H:%M:%S")
 
-                application = {
-                    "appn_id": appn['appn_id'],
-                    "received_tmstmp": appn['date_received'],
-                    "date_received": "{:%d %B %Y}".format(date),
-                    "time_received": "{:%H:%M}".format(date),
-                    "application_type": appn['application_type'],
-                    "status": appn['status'],
-                    "work_type": appn['work_type'],
-                    "assigned_to": appn['assigned_to'],
-                }
-                appn_list.append(application)
+            application = {
+                "appn_id": appn['appn_id'],
+                "received_tmstmp": appn['date_received'],
+                "date_received": "{:%d %B %Y}".format(date),
+                "time_received": "{:%H:%M}".format(date),
+                "application_type": appn['application_type'],
+                "status": appn['status'],
+                "work_type": appn['work_type'],
+                "assigned_to": appn['assigned_to'],
+            }
+            appn_list.append(application)
 
-        totals = get_totals()
+    totals = get_totals()
 
-        return render_template('sub_list.html', worklist=appn_list, requested_list=requested_worklist, data=totals)
-
-    except Exception as error:
-        logging.error(error)
-        return render_template('error.html', error_msg=error), 500
+    return render_template('sub_list.html', worklist=appn_list, requested_list=requested_worklist, data=totals)
 
 
 @app.route('/get_application/<application_type>/<appn_id>/<appn_type>', methods=["GET"])
 def get_application(application_type, appn_id, appn_type):
-    try:
-        url = app.config['CASEWORK_DB_URL'] + '/search/' + appn_id
+    url = app.config['CASEWORK_DB_URL'] + '/search/' + appn_id
 
-        response = requests.get(url)
-        application_json = response.json()
-        document_id = application_json['document_id']
-        doc_response = requests.get(app.config["DOCUMENT_URL"] + "/document/" + str(document_id))
-        image_data = doc_response.json()
+    response = requests.get(url)
+    application_json = response.json()
+    document_id = application_json['document_id']
+    doc_response = requests.get(app.config["DOCUMENT_URL"] + "/document/" + str(document_id))
+    image_data = doc_response.json()
 
-        images = []
-        for image in image_data['images']:
-            images.append(app.config["DOCUMENT_URL"] + image)
-        session['images'] = images
-        session['document_id'] = document_id
-        if appn_type == "Full Search":
-            template = page_required("full_search")
-        else:
-            template = page_required(application_type)
+    images = []
+    for image in image_data['images']:
+        images.append(app.config["DOCUMENT_URL"] + image)
+    session['images'] = images
+    session['document_id'] = document_id
+    if appn_type == "Full Search":
+        template = page_required("full_search")
+    else:
+        template = page_required(application_type)
 
-        session['application_type'] = application_type
-        session['worklist_id'] = appn_id
-        session['document_id'] = document_id
-        session['application_dict'] = application_json
-        session['application_dict']['application_type'] = appn_type
-        application = session['application_dict']
+    session['application_type'] = application_type
+    session['worklist_id'] = appn_id
+    session['document_id'] = document_id
+    session['application_dict'] = application_json
+    session['application_dict']['application_type'] = appn_type
+    application = session['application_dict']
 
-        years = {"year_from": "1925",
-                 "year_to": datetime.now().strftime('%Y')
-                 }
+    years = {"year_from": "1925",
+             "year_to": datetime.now().strftime('%Y')
+             }
 
-        return render_template(template, application_type=application_type, data=application_json,
-                               images=images, application=application, years=years,
-                               current_page=0)
-
-    except Exception as error:
-        logging.error(error)
-        return render_template('error.html', error_msg=error), 500
+    return render_template(template, application_type=application_type, data=application_json,
+                           images=images, application=application, years=years,
+                           current_page=0)
 
 
 @app.route('/get_details', methods=["POST"])
 def get_bankruptcy_details():
-    try:
-        application_type = session['application_type']
-        regn_no = request.form['reg_no']
-        session['regn_no'] = regn_no
-        if application_type == 'rectify':
-            image_details = ['']
-        else:
-            image_details = session['images']
+    application_type = session['application_type']
+    regn_no = request.form['reg_no']
+    session['regn_no'] = regn_no
+    if application_type == 'rectify':
+        image_details = ['']
+    else:
+        image_details = session['images']
 
-        url = app.config['BANKRUPTCY_DATABASE_URL'] + '/registration/' + regn_no
+    url = app.config['BANKRUPTCY_DATABASE_URL'] + '/registration/' + regn_no
 
-        response = requests.get(url)
+    response = requests.get(url)
 
-        if application_type == 'amend':
-            template = 'regn_amend.html'
+    if application_type == 'amend':
+        template = 'regn_amend.html'
+    elif application_type == 'rectify':
+        template = 'rect_amend.html'
+    else:
+        template = 'regn_cancel.html'
+
+    if response.status_code == 404:
+        error_msg = "Registration not found please re-enter"
+        if application_type == "amend" or application_type == "cancel":
+            template = 'regn_retrieve.html'
         elif application_type == 'rectify':
-            template = 'rect_amend.html'
+            template = 'rect_retrieve.html'
         else:
-            template = 'regn_cancel.html'
+            template = 'application.html'
 
-        if response.status_code == 404:
-            error_msg = "Registration not found please re-enter"
+        return render_template(template, application_type=application_type,
+                               error_msg=error_msg, images=image_details, current_page=0)
+    else:
+        application_json = response.json()
+        if application_json['status'] == 'cancelled' or application_json['status'] == 'superseded':
+            error_msg = "Application has been cancelled or amended - please re-enter"
             if application_type == "amend" or application_type == "cancel":
                 template = 'regn_retrieve.html'
             elif application_type == 'rectify':
@@ -131,46 +135,29 @@ def get_bankruptcy_details():
 
             return render_template(template, application_type=application_type,
                                    error_msg=error_msg, images=image_details, current_page=0)
+
+        original_image_data = ""
+
+        if application_json['document_id'] is not None:
+            document_id = application_json['document_id']
+            doc_response = requests.get(app.config["DOCUMENT_URL"] + "/document/" + str(document_id))
+            original_image_data = doc_response.json()
+            images = []
+            for image in original_image_data['images']:
+                images.append(app.config["DOCUMENT_URL"] + image)
+            original_image_data = images
+            session['document_id'] = document_id
+            session['original_image_data'] = original_image_data
+            if application_type == 'rectify':
+                session['images'] = images
+
         else:
-            application_json = response.json()
-            if application_json['status'] == 'cancelled' or application_json['status'] == 'superseded':
-                error_msg = "Application has been cancelled or amended - please re-enter"
-                if application_type == "amend" or application_type == "cancel":
-                    template = 'regn_retrieve.html'
-                elif application_type == 'rectify':
-                    template = 'rect_retrieve.html'
-                else:
-                    template = 'application.html'
+            logging.info("No original document images found for registration " + regn_no)
 
-                return render_template(template, application_type=application_type,
-                                       error_msg=error_msg, images=image_details, current_page=0)
+    session['application_dict'] = application_json
 
-            original_image_data = ""
-
-            if application_json['document_id'] is not None:
-                document_id = application_json['document_id']
-                doc_response = requests.get(app.config["DOCUMENT_URL"] + "/document/" + str(document_id))
-                original_image_data = doc_response.json()
-                images = []
-                for image in original_image_data['images']:
-                    images.append(app.config["DOCUMENT_URL"] + image)
-                original_image_data = images
-                session['document_id'] = document_id
-                session['original_image_data'] = original_image_data
-                if application_type == 'rectify':
-                    session['images'] = images
-
-            else:
-                logging.info("No original document images found for registration " + regn_no)
-
-        session['application_dict'] = application_json
-
-        return render_template(template, application_type=application_type, data=application_json,
-                               images=image_details, current_page=0, original_image_data=original_image_data, addr=0)
-
-    except Exception as error:
-        logging.error(error)
-        return render_template('error.html', error_msg=error), 500
+    return render_template(template, application_type=application_type, data=application_json,
+                           images=image_details, current_page=0, original_image_data=original_image_data, addr=0)
 
 
 @app.route('/process_request', methods=["POST"])
@@ -194,17 +181,14 @@ def process_request():
             data = response.json()
             # although this is list it is called application_dict to reuse render template statement below
             application_dict = []
-            for n in data['cancelled']:
-                application_dict.append(n)
-            try:
-                delete_from_worklist(session['worklist_id'])
-            except Exception as error:
-                logging.error(error)
-                return render_template('error.html', error_msg=error), 500
+            for item in data['cancelled']:
+                application_dict.append(item)
+            delete_from_worklist(session['worklist_id'])
+
         else:
-            error = response.status_code
-            logging.error(error)
-            return render_template('error.html', error_msg=error), 500
+            err = response.status_code
+            logging.error(err)
+            return render_template('error.html', error_msg=err), 500
     else:
         template = 'rejection.html'
 
@@ -236,17 +220,14 @@ def submit_amendment():
     if response.status_code == 200:
         data = response.json()
         reg_list = []
-        for n in data['new_registrations']:
-            reg_list.append(n)
-        try:
-            delete_from_worklist(session['worklist_id'])
-        except Exception as error:
-            logging.error(error)
-            return render_template('error.html', error_msg=error), 500
+        for item in data['new_registrations']:
+            reg_list.append(item)
+
+        delete_from_worklist(session['worklist_id'])
     else:
-        error = response.status_code
-        logging.error(error)
-        return render_template('error.html', error_msg=error), 500
+        err = response.status_code
+        logging.error(err)
+        return render_template('error.html', error_msg=err), 500
 
     return render_template('confirmation.html', application_type=application_type, data=reg_list,
                            date=display_date)
@@ -274,12 +255,12 @@ def submit_rectification():
     if response.status_code == 200:
         data = response.json()
         reg_list = []
-        for n in data['new_registrations']:
-            reg_list.append(n)
+        for item in data['new_registrations']:
+            reg_list.append(item)
     else:
-        error = response.status_code
-        logging.error(error)
-        return render_template('error.html', error_msg=error), 500
+        err = response.status_code
+        logging.error(err)
+        return render_template('error.html', error_msg=err), 500
 
     return render_template('confirmation.html', application_type=application_type, data=reg_list,
                            date=display_date, acknowledgement=request.form['ack'])
@@ -323,11 +304,11 @@ def delete_from_worklist(application_id):
     url = app.config['CASEWORK_DB_URL'] + '/workitem/' + application_id
     response = requests.delete(url)
     if response.status_code != 204:
-        error = 'Failed to delete application ' + application_id + ' from the worklist. Error code:' \
-                + str(response.status_code)
+        err = 'Failed to delete application ' + application_id + ' from the worklist. Error code:' \
+              + str(response.status_code)
 
-        logging.error(error)
-        raise RuntimeError(error)
+        logging.error(err)
+        raise RuntimeError(err)
 
 
 # Commented out - it's quite slow...
@@ -404,7 +385,7 @@ def remove_address(addr):
     application_dict = session['application_dict']
     image_list = session['images']
 
-    del (application_dict['residence'][addr])
+    del application_dict['residence'][addr]
 
     return render_template('regn_amend.html', application_type=application_type, data=application_dict,
                            images=image_list, current_page=0, original_image_data=session['original_image_data'])
@@ -428,7 +409,7 @@ def remove_alias(name):
     application_type = session['application_type']
     application_dict = session['application_dict']
     image_list = session['images']
-    del (application_dict['debtor_alternative_name'][name])
+    del application_dict['debtor_alternative_name'][name]
 
     return render_template('regn_amend.html', application_type=application_type, data=application_dict,
                            images=image_list, current_page=0, original_image_data=session['original_image_data'])
@@ -483,106 +464,96 @@ def update_court():
 
 @app.route('/process_banks_name', methods=["POST"])
 def process_banks_name():
-    try:
-        appn_type = session['application_dict']['application_type']
-        doc_id = session['document_id']
-        name = {"debtor_name": {"forenames": [], "surname": ""},
-                "occupation": "",
-                "debtor_alternative_name": [],
-                "residence": []
+    appn_type = session['application_dict']['application_type']
+    doc_id = session['document_id']
+    name = {"debtor_name": {"forenames": [], "surname": ""},
+            "occupation": "",
+            "debtor_alternative_name": [],
+            "residence": []
+            }
+    alt_name = {"forenames": [],
+                "surname": ""
                 }
-        alt_name = {"forenames": [],
-                    "surname": ""
-                    }
 
-        forenames = request.form['forename']
-        for i in forenames.split():
-            name['debtor_name']['forenames'].append(i)
+    forenames = request.form['forename']
+    for i in forenames.split():
+        name['debtor_name']['forenames'].append(i)
 
-        name['debtor_name']['surname'] = request.form['surname']
-        name['occupation'] = request.form['occupation']
+    name['debtor_name']['surname'] = request.form['surname']
+    name['occupation'] = request.form['occupation']
 
-        forename_var = "aliasforename"
-        surname_var = "aliassurname"
-        counter = 0
-        while True:
-            forename_counter = forename_var + str(counter)
-            surname_counter = surname_var + str(counter)
-            try:
-                alt_forenames = request.form[forename_counter]
-                alt_surname = request.form[surname_counter]
-            except KeyError:
-                break
+    forename_var = "aliasforename"
+    surname_var = "aliassurname"
+    counter = 0
+    while True:
+        forename_counter = forename_var + str(counter)
+        surname_counter = surname_var + str(counter)
+        try:
+            alt_forenames = request.form[forename_counter]
+            alt_surname = request.form[surname_counter]
+        except KeyError:
+            break
 
-            for i in alt_forenames.split():
-                alt_name['forenames'].append(i)
+        for i in alt_forenames.split():
+            alt_name['forenames'].append(i)
 
-            alt_name['surname'] = alt_surname
-            if alt_forenames != '' and alt_surname != '':
-                name['debtor_alternative_name'].append(alt_name)
+        alt_name['surname'] = alt_surname
+        if alt_forenames != '' and alt_surname != '':
+            name['debtor_alternative_name'].append(alt_name)
 
-            alt_name = {"forenames": [], "surname": ""}
-            counter += 1
+        alt_name = {"forenames": [], "surname": ""}
+        counter += 1
 
-        requested_worklist = 'bank_regn'
-        images = session['images']
-        session['application_dict'] = name
-        session['application_dict']['application_type'] = appn_type
-        session['application_dict']['document_id'] = doc_id
-        application = session['application_dict']
+    requested_worklist = 'bank_regn'
+    images = session['images']
+    session['application_dict'] = name
+    session['application_dict']['application_type'] = appn_type
+    session['application_dict']['document_id'] = doc_id
+    application = session['application_dict']
 
-        return render_template('address.html', application=application, images=images,
-                               requested_list=requested_worklist, current_page=0)
-
-    except Exception as error:
-        logging.error(error)
-        return render_template('error.html', error_msg=error), 500
+    return render_template('address.html', application=application, images=images,
+                           requested_list=requested_worklist, current_page=0)
 
 
 @app.route('/court_details', methods=["POST"])
 def process_court_details():
-    try:
-        # application = json.loads(request.form['application'])
-        application = session['application_dict']
-        application["application_type"] = request.form['nature']
-        application["legal_body"] = request.form['court']
-        application["legal_body_ref"] = request.form['court_ref']
+    # application = json.loads(request.form['application'])
+    application = session['application_dict']
+    application["application_type"] = request.form['nature']
+    application["legal_body"] = request.form['court']
+    application["legal_body_ref"] = request.form['court_ref']
 
-        # these are needed at the moment for registration but are not captured on the form
-        application["key_number"] = "2244095"
-        application["application_ref"] = "customer reference"
-        today = datetime.now().strftime('%Y-%m-%d')
-        application["date"] = today
-        application["residence_withheld"] = False
-        application['date_of_birth'] = "1980-01-01"
-        application["document_id"] = session['document_id']
+    # these are needed at the moment for registration but are not captured on the form
+    application["key_number"] = "2244095"
+    application["application_ref"] = "customer reference"
+    today = datetime.now().strftime('%Y-%m-%d')
+    application["date"] = today
+    application["residence_withheld"] = False
+    application['date_of_birth'] = "1980-01-01"
+    application["document_id"] = session['document_id']
 
-        url = app.config['BANKRUPTCY_DATABASE_URL'] + '/registration'
-        headers = {'Content-Type': 'application/json'}
-        response = requests.post(url, data=json.dumps(application), headers=headers)
+    url = app.config['BANKRUPTCY_DATABASE_URL'] + '/registration'
+    headers = {'Content-Type': 'application/json'}
+    response = requests.post(url, data=json.dumps(application), headers=headers)
 
-        if response.status_code == 200:
-            data = response.json()
-            reg_list = []
-            for n in data['new_registrations']:
-                reg_list.append(n)
-            application['reg_nos'] = reg_list
-            requested_worklist = 'bank_regn'
-            display_date = datetime.now().strftime('%d.%m.%Y')
-            delete_from_worklist(session['worklist_id'])
+    if response.status_code == 200:
+        data = response.json()
+        reg_list = []
+        for item in data['new_registrations']:
+            reg_list.append(item)
+        application['reg_nos'] = reg_list
+        requested_worklist = 'bank_regn'
+        display_date = datetime.now().strftime('%d.%m.%Y')
+        delete_from_worklist(session['worklist_id'])
 
-            # thread = Thread(target=send_notification, args=(session['application_dict'],))
-            # thread.start()
-            # send_notification(session['application_dict'])
+        # thread = Thread(target=send_notification, args=(session['application_dict'],))
+        # thread.start()
+        # send_notification(session['application_dict'])
 
-            return render_template('confirmation.html', application=application, data=reg_list, date=display_date,
-                                   application_type=requested_worklist)
-        else:
-            error = response.status_code
-            logging.error(error)
-            return render_template('error.html', error_msg=error), 500
-
-    except Exception as error:
+        return render_template('confirmation.html', application=application, data=reg_list, date=display_date,
+                               application_type=requested_worklist)
+    else:
+        error = response.status_code
         logging.error(error)
         return render_template('error.html', error_msg=error), 500
 
@@ -711,28 +682,27 @@ def process_search(search_type):
     application = session['application_dict']
     # images = session['images']
 
-    """
-    if search_type == 'banks':
-        if ('fullname0' not in request.form or request.form['fullname0'] == '')\
-                or ('customer_address' not in request.form or request.form['customer_address'] == '')\
-                or ('customer_name' not in request.form or request.form['customer_name'] == ''):
-            error_msg = 'ERROR - please ensure name to be searched and customer details are present'
-            logging.error(error_msg)
+    # if search_type == 'banks':
+    #     if ('fullname0' not in request.form or request.form['fullname0'] == '')\
+    #             or ('customer_address' not in request.form or request.form['customer_address'] == '')\
+    #             or ('customer_name' not in request.form or request.form['customer_name'] == ''):
+    #         error_msg = 'ERROR - please ensure name to be searched and customer details are present'
+    #         logging.error(error_msg)
+    #
+    #         return render_template('search_capture.html', application_type=application_type, images=images,
+    #                                application=application, error_msg=error_msg, current_page=0)
+    # else:
+    #     if ('fullname0' not in request.form or request.form['fullname0'] == '')\
+    #             or ('year_from' not in request.form or request.form['year_from0'] == '')\
+    #             or ('year_to' not in request.form or request.form['year_to0'] == '') \
+    #             or ('customer_address' not in request.form or request.form['customer_address'] == '') \
+    #             or ('customer_name' not in request.form or request.form['customer_name'] == ''):
+    #         error_msg = 'ERROR - please ensure name to be searched, search period and customer details are present'
+    #         logging.error(error_msg)
+    #
+    #         return render_template('search_capture.html', application_type=application_type, images=images,
+    #                                application=application, error_msg=error_msg, current_page=0)
 
-            return render_template('search_capture.html', application_type=application_type, images=images,
-                                   application=application, error_msg=error_msg, current_page=0)
-    else:
-        if ('fullname0' not in request.form or request.form['fullname0'] == '')\
-                or ('year_from' not in request.form or request.form['year_from0'] == '')\
-                or ('year_to' not in request.form or request.form['year_to0'] == '') \
-                or ('customer_address' not in request.form or request.form['customer_address'] == '') \
-                or ('customer_name' not in request.form or request.form['customer_name'] == ''):
-            error_msg = 'ERROR - please ensure name to be searched, search period and customer details are present'
-            logging.error(error_msg)
-
-            return render_template('search_capture.html', application_type=application_type, images=images,
-                                   application=application, error_msg=error_msg, current_page=0)
-    """
     logging.debug('Create object')
 
     if 'counties' in request.form:
@@ -845,11 +815,10 @@ def notification():
 
 def get_totals():
     # initialise all counters to 0
-    pabs, wobs, banks, lcreg, amend, canc, portal, search, oc = (0,) * 9
+    pabs, wobs, banks, lcreg, amend, canc, portal, search, ocp = (0,) * 9
 
     url = app.config['CASEWORK_DB_URL'] + '/work_list/all?'
     response = requests.get(url)
-
     if response.status_code == 200:
         full_list = response.json()
 
@@ -871,7 +840,7 @@ def get_totals():
             elif item['work_type'] == "search":
                 search += 1
             elif item['work_type'] == "oc":
-                oc += 1
+                ocp += 1
 
     return {
         'pabs': pabs,
@@ -882,7 +851,7 @@ def get_totals():
         'canc': canc,
         'portal': portal,
         'search': search,
-        'oc': oc
+        'oc': ocp
     }
 
 
