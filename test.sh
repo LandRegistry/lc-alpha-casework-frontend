@@ -11,6 +11,6 @@ else
     if [[ $cov -lt 80 ]]; then
         echo "Coverage < 80%"
     else
-        echo "Coverate OK!"
+        echo "Coverage OK!"
     fi
 fi
