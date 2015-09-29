@@ -680,67 +680,35 @@ def process_search(search_type):
     logging.info('From the top')
     application_type = session['application_type']
     application = session['application_dict']
-    # images = session['images']
 
-    # if search_type == 'banks':
-    #     if ('fullname0' not in request.form or request.form['fullname0'] == '')\
-    #             or ('customer_address' not in request.form or request.form['customer_address'] == '')\
-    #             or ('customer_name' not in request.form or request.form['customer_name'] == ''):
-    #         error_msg = 'ERROR - please ensure name to be searched and customer details are present'
-    #         logging.error(error_msg)
-    #
-    #         return render_template('search_capture.html', application_type=application_type, images=images,
-    #                                application=application, error_msg=error_msg, current_page=0)
-    # else:
-    #     if ('fullname0' not in request.form or request.form['fullname0'] == '')\
-    #             or ('year_from' not in request.form or request.form['year_from0'] == '')\
-    #             or ('year_to' not in request.form or request.form['year_to0'] == '') \
-    #             or ('customer_address' not in request.form or request.form['customer_address'] == '') \
-    #             or ('customer_name' not in request.form or request.form['customer_name'] == ''):
-    #         error_msg = 'ERROR - please ensure name to be searched, search period and customer details are present'
-    #         logging.error(error_msg)
-    #
-    #         return render_template('search_capture.html', application_type=application_type, images=images,
-    #                                application=application, error_msg=error_msg, current_page=0)
-
-    logging.debug('Create object')
-
-    if 'counties' in request.form:
-        counties = [element.strip().upper() for element in request.form['counties']]
+    if 'all_counties' in request.form:
+        counties = []
+    elif 'area_list' in request.form and request.form['area_list'] != '':
+        counties = request.form['area_list'].upper().strip('\r\n').split()
     else:
-        counties = ['ALL']
-
-    paramaters = {
+        counties = []
+    parameters = {
         'counties': counties,
         'search_type': "bankruptcy" if search_type == 'banks' else 'full',
         'search_items': []
     }
 
-    logging.debug('Mad loop')
-
     counter = 0
     while True:
-        logging.debug('Tick %d', counter)
         name_field = 'fullname{}'.format(counter)
         if name_field not in request.form:
             break
 
-        logging.debug(request.form)
         if request.form[name_field] != '':
-            logging.debug('1.5')
             search_item = {
                 'name': request.form[name_field]
             }
 
-            logging.debug('2')
             if search_type == 'full':
                 logging.info('Getting year stuff')
                 search_item['year_to'] = int(request.form['year_to{}'.format(counter)])
                 search_item['year_from'] = int(request.form['year_from{}'.format(counter)])
-
-            logging.debug('3')
-            paramaters['search_items'].append(search_item)
-        logging.debug('4')
+            parameters['search_items'].append(search_item)
         counter += 1
 
     customer = {
@@ -753,7 +721,7 @@ def process_search(search_type):
     search_data = {
         'customer': customer,
         'document_id': application['document_id'],
-        'parameters': paramaters
+        'parameters': parameters
     }
     session['search_data'] = search_data
     url = app.config['BANKRUPTCY_DATABASE_URL'] + '/search'
@@ -763,8 +731,10 @@ def process_search(search_type):
     if response.status_code == 200:
         search_response = response.json()
         session['search_result'] = search_response
+        delete_from_worklist(session['worklist_id'])
     elif response.status_code == 404:
         session['search_result'] = []
+        delete_from_worklist(session['worklist_id'])
     else:
         logging.error('Unexpected return code: %d', response.status_code)
         return render_template('error.html')

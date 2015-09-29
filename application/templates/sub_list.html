@@ -137,15 +137,15 @@
                                 <tr>
                                     <th class="col-sm-3 active" >Date Received</th>
                                     <th class="col-sm-2 active" >Time</th>
-                                    <th id="app_type" class="col-sm-7 active" >Application Type</th>
+                                    <th class="col-sm-7 active" >Application Type</th>
                                 </tr>
                                 </thead>
                                 <tbody>
                                 {% for n in worklist %}
                                 <tr>
-                                    <td><a href="/get_application/{{requested_list}}/{{n['appn_id']}}/{{n['application_type']}}">{{n['date_received']}}</a></td>
+                                    <td><a href="/get_application/{{requested_list}}/{{n['appn_id']}}/{{n['application_type']|replace(' ', '%20')}}">{{n['date_received']}}</a></td>
                                     <td>{{n['time_received']}}</td>
-                                    <td>{{n['application_type']}}</td>
+                                    <td id="app_type{{loop.index}}">{{n['application_type']}}</td>
                                 </tr>
                                 {% endfor %}
                                 </tbody>
