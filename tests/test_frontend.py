@@ -9,6 +9,7 @@ import xml.etree.ElementTree as ET
 dir_ = os.path.dirname(__file__)
 total_response = open(os.path.join(dir_, 'data/totals.json'), 'r').read()
 application_response = open(os.path.join(dir_, 'data/application.json'), 'r').read()
+application_response_no_images = open(os.path.join(dir_, 'data/application_no_images.json'), 'r').read()
 cancelled_response = open(os.path.join(dir_, 'data/application_cancelled.json'), 'r').read()
 
 registration = '{"new_registrations": [512344]}'
@@ -40,6 +41,17 @@ application_dict = {
     "debtor_alternative_name": [{"forename": ["Robert"], "surname": "Howard"}]
 }
 
+application_dict_no_residence = {
+    'application_type': 'PA(B)',
+    'reg_nos': [50001],
+    'date': '2015-08-28',
+    'debtor_name': {
+        'forenames': ['Bob'],
+        'surname': 'Howard'
+    },
+    'document_id': '43',
+    "debtor_alternative_name": [{"forename": ["Robert"], "surname": "Howard"}]
+}
 
 class FakeDoubleDeleteResponse(requests.Response):
     def __init__(self, content='', status_codes=[200, 204], response_file=''):
@@ -100,6 +112,8 @@ class TestCaseworkFrontend:
     def test_get_application(self, mock_get):
         response = self.app.get('/get_application/bank_regn/1/PA(B)')
         assert response.status_code == 200
+        response = self.app.get('/get_application/search/45/Full Search')
+        assert response.status_code == 200
 
     @mock.patch('requests.get', side_effect=Exception('Fail'))
     def test_get_application_fail(self, mock_get):
@@ -145,7 +159,7 @@ class TestCaseworkFrontend:
     def test_residence_empty(self):
         with self.app as c:
             with c.session_transaction() as session:
-                session['application_dict'] = application_dict
+                session['application_dict'] = application_dict_no_residence
                 session['images'] = ['/document/1/image/1']
 
         response = self.app.post('/address', data={
@@ -166,6 +180,22 @@ class TestCaseworkFrontend:
 
         response = self.app.post('/address', data={
             "address1": '34 Haden Close', "address2": 'Little Horn',
+            "county": 'North Shore', "postcode": 'AA1 1AA'
+        })
+        html = response.data.decode('utf-8')
+        tree = ET.fromstring(html)
+        node = tree.find('.//*[@id="form_data"]/form/div[2]/label')
+        assert node.text == "Court name"
+        assert response.status_code == 200
+
+    def test_address_3_lines(self):
+        with self.app as c:
+            with c.session_transaction() as session:
+                session['application_dict'] = application_dict
+                session['images'] = ['/document/1/image/1']
+
+        response = self.app.post('/address', data={
+            "address1": '34 Haden Close', "address2": 'Little Horn', "address3": 'Little Horn',
             "county": 'North Shore', "postcode": 'AA1 1AA'
         })
         html = response.data.decode('utf-8')
@@ -328,6 +358,19 @@ class TestCaseworkFrontend:
         html = response.data.decode('utf-8')
         tree = ET.fromstring(html)
         assert tree.find('.//*[@id="main"]/div[2]/h4').text == "Bankruptcy Rectification"
+
+    @mock.patch('requests.get', return_value=FakeResponse('stuff', 200, application_response_no_images))
+    def test_get_banks_details_no_images(self, mock_get):
+
+        with self.app as c:
+            with c.session_transaction() as session:
+                session['application_type'] = "cancel"
+                session['images'] = ['/document/1/image/1']
+                session['original_image_data'] = ['/document/1/image/1']
+
+        response = self.app.post('/get_details', data={
+            "reg_no": "50001"
+        })
 
     @mock.patch('requests.get', return_value=FakeResponse('stuff', 200, cancelled_response))
     def test_get_banks_details_cancelled(self, mock_get):

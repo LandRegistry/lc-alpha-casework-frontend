@@ -117,8 +117,6 @@ def get_bankruptcy_details():
             template = 'regn_retrieve.html'
         elif application_type == 'rectify':
             template = 'rect_retrieve.html'
-        else:
-            template = 'application.html'
 
         return render_template(template, application_type=application_type,
                                error_msg=error_msg, images=image_details, current_page=0)
@@ -130,8 +128,6 @@ def get_bankruptcy_details():
                 template = 'regn_retrieve.html'
             elif application_type == 'rectify':
                 template = 'rect_retrieve.html'
-            else:
-                template = 'application.html'
 
             return render_template(template, application_type=application_type,
                                    error_msg=error_msg, images=image_details, current_page=0)
@@ -150,9 +146,6 @@ def get_bankruptcy_details():
             session['original_image_data'] = original_image_data
             if application_type == 'rectify':
                 session['images'] = images
-
-        else:
-            logging.info("No original document images found for registration " + regn_no)
 
     session['application_dict'] = application_json
 

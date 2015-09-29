@@ -1,0 +1,37 @@
+{
+  "occupation":"",
+  "debtor_name":{
+    "forenames":[
+      "Fred"
+    ],
+    "surname":"Smith"
+  },
+  "application_type":"PA(B)",
+  "gender":"male",
+  "application_ref":"1222",
+  "date":"2004-08-02",
+  "key_number":"152765",
+  "trading_name":"",
+  "debtor_alternative_name":[
+    {
+      "forenames":[
+        ""
+      ],
+      "surname":""
+    }
+  ],
+  "residence_withheld":true,
+  "status": "current",
+  "residence":[
+    {
+     "county": "Essex",
+     "address_lines": ["10318 Bill Crossing", "Brakuston", "Leopoldshire"],
+     "postcode": "UN48 7XX"
+    }
+
+  ],
+  "investment_property":[
+
+  ],
+  "date_of_birth":"1991-10-10"
+}
