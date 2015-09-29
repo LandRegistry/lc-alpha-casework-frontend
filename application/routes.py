@@ -760,8 +760,10 @@ def process_search(search_type):
     if response.status_code == 200:
         search_response = response.json()
         session['search_result'] = search_response
+        delete_from_worklist(session['worklist_id'])
     elif response.status_code == 404:
         session['search_result'] = []
+        delete_from_worklist(session['worklist_id'])
     else:
         logging.error('Unexpected return code: %d', response.status_code)
         return render_template('error.html')

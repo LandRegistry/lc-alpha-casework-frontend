@@ -10,22 +10,35 @@
     <div class="container">
         <div class="row col-md-12" style="margin-bottom:30px">
             <h3>
-                {% if search_data.search_type == 'banks' %}
-                    Bankruptcy Search Result
-                {% else %}
+                {% if search_data.parameters.search_type == 'full' %}
                     Full Search Result
+                {% else %}
+                    Bankruptcy Search Result
                 {% endif %}
             </h3>
         </div>
         <div class="row col-md-12" style="margin-bottom:20px">
             <h5> Search data </h5>
-            <p>{{search_data.full_name}}</p>
+            {% for item in search_data.parameters.search_items %}
+            <div class="row col-md-12" style="margin-bottom:10px">
+                <div class="row col-md-2" >
+                    {{item.name}}
+                </div>
+                {% if search_data.parameters.search_type == 'full' %}
+                    <div class="row col-md-2" >From: {{item.year_from}}</div>
+                    <div class="row col-md-2" >To: {{item.year_to}}</div>
+                    <div class="row col-md-6"></div>
+                {% endif %}
+            </div>
+            {% endfor %}
         </div>
         <div class="row col-md-12">
             {% if results|length > 0 %}
             <h5> Search results found </h5>
             {% for result in results %}
-            <p>{{loop.index}}) {{result.application_type}} Registration: {{result.registration_no}} dated {{result.registration_date}}</p>
+                <div class="row col-md-12" style="margin-bottom:10px">
+                    {{loop.index}}) {{result.application_type}} Registration: {{result.registration_no}} dated {{result.registration_date}}
+                </div>
             {% endfor %}
             {% else %}
                 <h5> No results found </h5>
