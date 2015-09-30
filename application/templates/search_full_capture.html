@@ -16,7 +16,7 @@
             jQuery('#error_msg').html("Key number must not exceed a length of 7 characters");
         } else if (obj.value.length == 7) {
             jQuery.ajax( {
-                url: 'http://localhost:5007/keyholder/' + obj.value,
+                url: 'http://lrq00103187:5007/keyholder/' + obj.value,
                 type: 'GET',
                 data: {},
                 success: function( data ) {
@@ -182,7 +182,7 @@
 </form>
 <script>
     jQuery.ajax({
-        url: 'http://localhost:5004/counties',
+        url: 'http://lrq00103187:5004/counties',
         type: 'GET',
         counties: {},
         success: function( counties ) {
