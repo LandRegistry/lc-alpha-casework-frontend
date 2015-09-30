@@ -53,6 +53,7 @@ application_dict_no_residence = {
     "debtor_alternative_name": [{"forename": ["Robert"], "surname": "Howard"}]
 }
 
+
 class FakeDoubleDeleteResponse(requests.Response):
     def __init__(self, content='', status_codes=[200, 204], response_file=''):
         super(FakeDoubleDeleteResponse, self).__init__()
