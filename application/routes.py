@@ -67,18 +67,18 @@ def get_application(application_type, appn_id, appn_type):
     images = []
     for image in image_data['images']:
         images.append(app.config["DOCUMENT_URL"] + image)
-    session['images'] = images
-    session['document_id'] = document_id
+
     if appn_type == "Full Search":
         template = page_required("full_search")
     else:
         template = page_required(application_type)
 
-    session['application_type'] = application_type
-    session['worklist_id'] = appn_id
-    session['document_id'] = document_id
-    session['application_dict'] = application_json
-    session['application_dict']['application_type'] = appn_type
+    application_json['application_type'] = appn_type
+
+    set_session_variables({'images': images, 'document_id': document_id,
+                           'application_type': application_type, 'worklist_id': appn_id,
+                           'application_dict': application_json})
+
     application = session['application_dict']
 
     years = {"year_from": "1925",
@@ -95,57 +95,52 @@ def get_bankruptcy_details():
     application_type = session['application_type']
     regn_no = request.form['reg_no']
     session['regn_no'] = regn_no
+
+    image_details = ['']
+
     if application_type == 'rectify':
-        image_details = ['']
+        template = 'rect_amend.html'
+    elif application_type == 'amend':
+        template = 'regn_amend.html'
+        image_details = session['images']
     else:
+        template = 'regn_cancel.html'
         image_details = session['images']
 
     url = app.config['BANKRUPTCY_DATABASE_URL'] + '/registration/' + regn_no
 
     response = requests.get(url)
 
-    if application_type == 'amend':
-        template = 'regn_amend.html'
-    elif application_type == 'rectify':
-        template = 'rect_amend.html'
-    else:
-        template = 'regn_cancel.html'
+    error_msg = None
+
+    application_json = response.json()
 
     if response.status_code == 404:
         error_msg = "Registration not found please re-enter"
-        if application_type == "amend" or application_type == "cancel":
-            template = 'regn_retrieve.html'
-        elif application_type == 'rectify':
+    elif application_json['status'] == 'cancelled' or application_json['status'] == 'superseded':
+        error_msg = "Application has been cancelled or amended - please re-enter"
+
+    if error_msg is not None:
+        template = 'regn_retrieve.html'
+        if application_type == 'rectify':
             template = 'rect_retrieve.html'
 
         return render_template(template, application_type=application_type,
                                error_msg=error_msg, images=image_details, current_page=0)
-    else:
-        application_json = response.json()
-        if application_json['status'] == 'cancelled' or application_json['status'] == 'superseded':
-            error_msg = "Application has been cancelled or amended - please re-enter"
-            if application_type == "amend" or application_type == "cancel":
-                template = 'regn_retrieve.html'
-            elif application_type == 'rectify':
-                template = 'rect_retrieve.html'
 
-            return render_template(template, application_type=application_type,
-                                   error_msg=error_msg, images=image_details, current_page=0)
+    original_image_data = ""
 
-        original_image_data = ""
-
-        if application_json['document_id'] is not None:
-            document_id = application_json['document_id']
-            doc_response = requests.get(app.config["DOCUMENT_URL"] + "/document/" + str(document_id))
-            original_image_data = doc_response.json()
-            images = []
-            for image in original_image_data['images']:
-                images.append(app.config["DOCUMENT_URL"] + image)
-            original_image_data = images
-            session['document_id'] = document_id
-            session['original_image_data'] = original_image_data
-            if application_type == 'rectify':
-                session['images'] = images
+    if application_json['document_id'] is not None:
+        document_id = application_json['document_id']
+        doc_response = requests.get(app.config["DOCUMENT_URL"] + "/document/" + str(document_id))
+        original_image_data = doc_response.json()
+        images = []
+        for image in original_image_data['images']:
+            images.append(app.config["DOCUMENT_URL"] + image)
+        original_image_data = images
+        set_session_variables({'document_id': document_id, 'original_image_data': original_image_data})
+        if application_type == 'rectify':
+            session['images'] = images
 
     session['application_dict'] = application_json
 
@@ -207,7 +202,7 @@ def submit_amendment():
     application_dict["date"] = today
     application_dict["residence_withheld"] = False
     application_dict['date_of_birth'] = "1980-01-01"
-    url = app.config['BANKRUPTCY_DATABASE_URL'] + '/registration/' + regn_no + '/' + 'amend'
+    url = app.config['BANKRUPTCY_DATABASE_URL'] + '/registration/' + regn_no
     headers = {'Content-Type': 'application/json'}
     response = requests.put(url, json.dumps(application_dict), headers=headers)
     if response.status_code == 200:
@@ -242,7 +237,7 @@ def submit_rectification():
     application_dict['date_of_birth'] = "1980-01-01"
 
     # TODO: once backend rectification code is in place
-    url = app.config['BANKRUPTCY_DATABASE_URL'] + '/registration/' + regn_no + '/' + 'amend'
+    url = app.config['BANKRUPTCY_DATABASE_URL'] + '/registration/' + regn_no
     headers = {'Content-Type': 'application/json'}
     response = requests.put(url, json.dumps(application_dict), headers=headers)
     if response.status_code == 200:
@@ -468,8 +463,7 @@ def process_banks_name():
                 "surname": ""
                 }
 
-    forenames = request.form['forename']
-    for i in forenames.split():
+    for i in request.form['forename'].split():
         name['debtor_name']['forenames'].append(i)
 
     name['debtor_name']['surname'] = request.form['surname']
@@ -499,9 +493,9 @@ def process_banks_name():
 
     requested_worklist = 'bank_regn'
     images = session['images']
-    session['application_dict'] = name
-    session['application_dict']['application_type'] = appn_type
-    session['application_dict']['document_id'] = doc_id
+    name['application_type'] = appn_type
+    name['document_id'] = doc_id
+    set_session_variables({'application_dict': name})
     application = session['application_dict']
 
     return render_template('address.html', application=application, images=images,
@@ -585,11 +579,8 @@ def application_step_2():
 
 @app.route('/process_rectification', methods=['POST'])
 def process_rectification():
-    # application_type will be type of application being performed e.g. 'amend'
-    application_type = session['application_type']
     # appn_type will be type of bankruptcy being processed i.e. PAB or WOB
     appn_type = session['application_dict']['application_type']
-    doc_id = session['document_id']
 
     name = {"debtor_name": {"forenames": [], "surname": ""},
             "occupation": "",
@@ -600,22 +591,17 @@ def process_rectification():
                 "surname": ""
                 }
 
-    forenames = request.form['forenames']
-    for i in forenames.split():
+    for i in request.form['forenames'].split():
         name['debtor_name']['forenames'].append(i)
 
     name['debtor_name']['surname'] = request.form['surname']
     name['occupation'] = request.form['occupation']
 
-    forename_var = "aliasforename"
-    surname_var = "aliassurname"
     counter = 0
     while True:
-        forename_counter = forename_var + str(counter)
-        surname_counter = surname_var + str(counter)
         try:
-            alt_forenames = request.form[forename_counter]
-            alt_surname = request.form[surname_counter]
+            alt_forenames = request.form["aliasforename" + str(counter)]
+            alt_surname = request.form["aliassurname" + str(counter)]
         except KeyError:
             break
 
@@ -631,18 +617,13 @@ def process_rectification():
 
     application_dict = name
 
-    addr1_var = "address1"
-    addr2_var = "address2"
-    addr3_var = "address3"
-    county_var = "county"
-    postcode_var = "postcode"
     counter = 0
     while True:
-        addr1_counter = addr1_var + str(counter)
-        addr2_counter = addr2_var + str(counter)
-        addr3_counter = addr3_var + str(counter)
-        county_counter = county_var + str(counter)
-        postcode_counter = postcode_var + str(counter)
+        addr1_counter = "address1" + str(counter)
+        addr2_counter = "address2" + str(counter)
+        addr3_counter = "address3" + str(counter)
+        county_counter = "county" + str(counter)
+        postcode_counter = "postcode" + str(counter)
         address = {'address_lines': []}
         if addr1_counter in request.form and request.form[addr1_counter] != '':
             address['address_lines'].append(request.form[addr1_counter])
@@ -661,10 +642,10 @@ def process_rectification():
     application_dict['legal_body'] = request.form['court'].strip()
     application_dict['legal_body_ref'] = request.form['ref'].strip()
     application_dict['application_type'] = appn_type
-    application_dict['document_id'] = doc_id
+    application_dict['document_id'] = session['document_id']
     session['application_dict'] = application_dict
 
-    return render_template('rect_summary.html', application_type=application_type, data=application_dict,
+    return render_template('rect_summary.html', application_type=session['application_type'], data=application_dict,
                            date='')
 
 
@@ -723,7 +704,8 @@ def process_search(search_type):
 
     if response.status_code == 200:
         search_response = response.json()
-        session['search_result'] = search_response
+        # session['search_result'] = search_response
+        set_session_variables({'search_result': search_response})
         delete_from_worklist(session['worklist_id'])
     elif response.status_code == 404:
         session['search_result'] = []
@@ -830,3 +812,9 @@ def page_required(appn_type):
     }
 
     return html_page.get(appn_type)
+
+
+def set_session_variables(variable_dict):
+    for key in variable_dict:
+        print(key)
+        session[key] = variable_dict[key]
