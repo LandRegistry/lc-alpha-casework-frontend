@@ -1,5 +1,5 @@
 from application import app
-from flask import request, render_template, session
+from flask import Response, request, render_template, session
 import requests
 from datetime import datetime
 import logging
@@ -761,7 +761,6 @@ def notification():
 def get_totals():
     # initialise all counters to 0
     pabs, wobs, banks, lcreg, amend, canc, portal, search, ocp = (0,) * 9
-
     url = app.config['CASEWORK_DB_URL'] + '/work_list/all?'
     response = requests.get(url)
     if response.status_code == 200:
@@ -800,6 +799,12 @@ def get_totals():
     }
 
 
+@app.route('/totals', methods=['GET'])
+def totals():
+    data = get_totals()
+    return Response(json.dumps(data), status=200, mimetype='application/json')
+
+
 def page_required(appn_type):
     html_page = {
         "amend": "regn_retrieve.html",
@@ -816,5 +821,4 @@ def page_required(appn_type):
 
 def set_session_variables(variable_dict):
     for key in variable_dict:
-        print(key)
         session[key] = variable_dict[key]
