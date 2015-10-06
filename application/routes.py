@@ -113,12 +113,12 @@ def get_bankruptcy_details():
 
     error_msg = None
 
-    application_json = response.json()
-
     if response.status_code == 404:
         error_msg = "Registration not found please re-enter"
-    elif application_json['status'] == 'cancelled' or application_json['status'] == 'superseded':
-        error_msg = "Application has been cancelled or amended - please re-enter"
+    else:
+        application_json = response.json()
+        if application_json['status'] == 'cancelled' or application_json['status'] == 'superseded':
+            error_msg = "Application has been cancelled or amended - please re-enter"
 
     if error_msg is not None:
         template = 'regn_retrieve.html'
