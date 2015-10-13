@@ -75,6 +75,7 @@ def get_application(application_type, appn_id, appn_type):
 
     application_json['application_type'] = appn_type
 
+    session.clear()
     set_session_variables({'images': images, 'document_id': document_id,
                            'application_type': application_type, 'worklist_id': appn_id,
                            'application_dict': application_json})
