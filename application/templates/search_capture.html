@@ -6,6 +6,8 @@
     {% include 'includes/search_ext_references.html' %}
     {% include 'includes/image_view_head.html' %}
 <script>
+    HOST = window.location.protocol + "//" + window.location.hostname;
+
     function getCustomerDetails(obj){
 
         jQuery('#customer_name').val("");
@@ -14,8 +16,10 @@
         if (obj.value.length > 7) {
             jQuery('#error_msg').html("Key number must not exceed a length of 7 characters");
         } else if (obj.value.length == 7) {
+
             jQuery.ajax( {
-                url: 'http://localhost:5007/keyholder/' + obj.value,
+                url: HOST + ':5007/keyholder/' + obj.value,
+
                 type: 'GET',
                 data: {},
                 success: function( data ) {

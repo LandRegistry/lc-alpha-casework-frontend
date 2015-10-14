@@ -6,10 +6,31 @@
     {% include 'includes/ext_references.html' %}
 
     <script>
+        HOST = window.location.protocol + "//" + window.location.hostname;
+
         $(document).ready(function() {
             $("#refresh").hide();
-            setInterval("location.reload(true)", 30000);
+            setInterval("getTotals()", 30000);
         });
+
+        function getTotals(){
+
+                jQuery.ajax( {
+                    url: HOST + ':5010/totals',
+                    type: 'GET',
+                    data: {},
+                    success: function( data ) {
+                        // alert(JSON.stringify(data));
+                        jQuery('#banks_total').html(data.banks);
+                        jQuery('#lcreg_total').html(data.lcreg);
+                        jQuery('#amend_total').html(data.amend);
+                        jQuery('#canc_total').html(data.canc);
+                        jQuery('#search_total').html(data.search);
+                        jQuery('#oc_total').html(data.oc);
+                    }
+                } );
+
+        }
     </script>
 </head>
 <body>

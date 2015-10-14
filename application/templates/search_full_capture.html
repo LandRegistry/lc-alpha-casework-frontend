@@ -8,6 +8,8 @@
     <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
     <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
     <script>
+    HOST = window.location.protocol + "//" + window.location.hostname;
+
     function getCustomerDetails(obj){
         jQuery('#customer_name').val("");
         jQuery('#customer_address').val("");
@@ -16,7 +18,9 @@
             jQuery('#error_msg').html("Key number must not exceed a length of 7 characters");
         } else if (obj.value.length == 7) {
             jQuery.ajax( {
-                url: 'http://localhost:5007/keyholder/' + obj.value,
+
+                url: HOST + ':5007/keyholder/' + obj.value,
+
                 type: 'GET',
                 data: {},
                 success: function( data ) {
@@ -182,7 +186,11 @@
 </form>
 <script>
     jQuery.ajax({
+<<<<<<< HEAD
         url: 'http://localhost:5004/counties',
+=======
+        url: HOST + ':5004/counties',
+>>>>>>> c3fe3fac57328c7529c3cb12998fe18e7e69d696
         type: 'GET',
         counties: {},
         success: function( counties ) {
