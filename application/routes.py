@@ -15,7 +15,10 @@ def error_handler(err):
 @app.route('/', methods=["GET"])
 def index():
     data = get_totals()
-    return render_template('totals.html', data=data)
+    if app.config['DEMONSTRATION_VIEW']:
+        return render_template('totals_demo.html', data=data)
+    else:
+        return render_template('totals.html', data=data)
 
 
 @app.route('/start_rectification', methods=["GET"])
