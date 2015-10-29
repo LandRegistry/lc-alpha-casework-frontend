@@ -10,7 +10,7 @@ class DevelopmentConfig(object):
     CASEWORK_DB_URL = "http://localhost:5006"
     BANKRUPTCY_DATABASE_URL = "http://localhost:5004"
     DOCUMENT_URL = "http://localhost:5014"
-    DEMONSTRATION_VIEW = True
+    DEMONSTRATION_VIEW = False
 
 
 class PreviewConfig(Config):
