@@ -21,12 +21,9 @@
                     data: {},
                     success: function( data ) {
                         // alert(JSON.stringify(data));
-                        jQuery('#banks_total').html(data.banks);
-                        jQuery('#lcreg_total').html(data.lcreg);
                         jQuery('#amend_total').html(data.amend);
                         jQuery('#canc_total').html(data.canc);
                         jQuery('#search_total').html(data.search);
-                        jQuery('#oc_total').html(data.oc);
                     }
                 } );
 
@@ -41,19 +38,6 @@
             <div class="col-sm-12" style="margin-top:60px">
                 <div class="col-sm-2"></div>
                     <div class="col-sm-2 text-center">
-                        <a class="black" href="/get_list?appn=bank_regn">
-                            <div class="circle circle-border circle-solid">
-                                <div class="circle-inner">
-                                    <div id="banks_total" class="score-text">
-                                        {{data['banks']}}
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="type-label ">Bankruptcy<br>Registrations</div>
-                        </a>
-                    </div>
-                <div class="col-sm-1"></div>
-                    <div class="col-sm-2 text-center">
                         <a class="black" href="/get_list?appn=amend">
                             <div class="circle circle-border circle-solid">
                                 <div class="circle-inner">
@@ -62,12 +46,12 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="type-label">Amendments</div>
+                            <div class="type-label ">Amendments</div>
                         </a>
                     </div>
                 <div class="col-sm-1"></div>
                     <div class="col-sm-2 text-center">
-                        <a class="black" href="/get_list?appn=cancel">
+                        <a class="black" href="/get_list?appn=amend">
                             <div class="circle circle-border circle-solid">
                                 <div class="circle-inner">
                                     <div id="canc_total" class="score-text">
@@ -75,7 +59,20 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="type-label">Cancellations</div>
+                            <div class="type-label">Cancellation</div>
+                        </a>
+                    </div>
+                <div class="col-sm-1"></div>
+                    <div class="col-sm-2 text-center">
+                        <a class="black" href="/get_list?appn=cancel">
+                            <div class="circle circle-border circle-solid">
+                                <div class="circle-inner">
+                                    <div id="search_total" class="score-text">
+                                        {{data['search']}}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="type-label">Searches</div>
                         </a>
                     </div>
             </div>
