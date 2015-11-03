@@ -809,6 +809,36 @@ def totals():
     return Response(json.dumps(data), status=200, mimetype='application/json')
 
 
+@app.route('/complex_name', methods=['GET'])
+def complex_name():
+    logging.info('Entering complex name')
+    application_type = session['application_type']
+    application = session['application_dict']
+
+    return render_template('complex_name_reg.html', images=session['images'], application=application,
+                           application_type=application_type, current_page=0)
+
+@app.route('/complex_retrieve', methods=['POST'])
+def complex_name_retrieve():
+    logging.info('Entering complex name retrieval')
+    complex_search = {"name": request.form['complex_name']}
+
+    url = app.config['LEGACY_URL'] + '/complex_names/search'
+    headers = {'Content-Type': 'application/json'}
+    response = requests.post(url, data=json.dumps(complex_search), headers=headers)
+
+    if response.status_code == 200:
+        data = response.json()
+        print(data)
+
+        return render_template('complex_name_select.html', images=session['images'], application=session['application_type'],
+                               application_type=session['application_type'], current_page=0, complex=data)
+    else:
+        error = response.status_code
+        logging.error(error)
+        return render_template('error.html', error_msg=error), 500
+
+
 def page_required(appn_type):
     html_page = {
         "amend": "regn_retrieve.html",

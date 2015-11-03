@@ -5,24 +5,12 @@
     <title>Land Charges</title>
     {% include 'includes/ext_references.html' %}
     {% include 'includes/image_view_head.html' %}
-
-
+    <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
     <script>
-    var n = 0;
-    function nameClick(sender){
-        jQuery('<div class="form-group"> \
-                    <label style="margin-top:1em" for="aliasforename">Alias Forename(s)</label> \
-                    <input class="form-control defined" id="aliasforename' +n+ '" name="aliasforename' +n+ '" value="{{aliasforename}}"> \
-                </div> \
-                <div class="form-group"> \
-                    <label for="aliassurname">Alias Surname</label> \
-                    <input class="form-control defined" id="aliassurname' +n+ '" name="aliassurname' +n+ '" value="{{aliassurname}}"> \
-                </div>').insertBefore("#addname");
-                n ++;
-        console.log(n);
-    };
-    </script>
+    HOST = window.location.protocol + "//" + window.location.hostname;
 
+    </script>
 </head>
 <body>
 <input type="hidden" name="application_type" value="{{application_type}}">
@@ -61,28 +49,14 @@
                 <div id="form_data" class="col-sm-6">
                     <h5>Step 1 of 3</h5>
                     <h4>Debtor name and details</h4>
-                    <div>
-                        <a href="/complex_name"><p>Enter a Complex Name</p></a>
-                    </div>
                     <form action="/process_banks_name" method="POST">
                         <div class="form-group">
-                            <label style="margin-top:1em" for="forename">Forename(s)</label>
-                            <input class="form-control defined" type="text" id="forename" name="forename" value="{{forename}}">
+
+                            <label style="margin-top:1em" for="complex_name">Complex Name</label>
+                            <input class="form-control defined" type="text" id="complex_name" name="complex_name", value="{{complex_name}}">
                         </div>
                         <div class="form-group">
-                            <label for="surname">Surname</label>
-                            <input class="form-control defined" type="text" id="surname" name="surname" value="{{surname}}">
-                        </div>
-                        <input id="addname" onclick="nameClick(this)" class="btn btn-primary pull-right"
-                               type="button" value="Add alias name">
-                        <div>
-                            <div class="form-group">
-                                <label style="margin-top:3em" for="occupation">Occupation</label>
-                                <input class="form-control defined" type="text" id="occupation" name="occupation" value="{{occupation}}">
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <input class="btn-lg pull-right btn-primary" id="continue" type="submit" value="Continue">
+                            <input class="btn-lg pull-right btn-primary" id="continue" type="submit" value="Search Name">
                         </div>
                     </form>
                 </div>
@@ -90,5 +64,6 @@
         </div>
     </div>
 </div>
+
 </body>
 </html>
