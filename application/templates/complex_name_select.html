@@ -1,16 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8">
+    <meta charset="utf-8"/>
     <title>Land Charges</title>
     {% include 'includes/ext_references.html' %}
     {% include 'includes/image_view_head.html' %}
-    <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
-    <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
-
 </head>
 <body>
-<input type="hidden" name="application_type" value="{{application_type}}">
+<input type="hidden" name="application_type" value="{{application_type}}"/>
 {% if application_type == 'pab'%}
 {% set page_title = 'PA Bankruptcy Registrations' %}
 {% elif application_type == 'wob' %}
@@ -60,28 +57,28 @@
                                 </thead>
                                 <tbody id="complex_tbody">
                                 {% for row in complex %}
-                                    <tr id="tab_row" onclick="myFunction(this,'{{row.name}}','{{row.number}}')">
+                                    <tr onclick="myFunction(this,'{{row.name}}','{{row.number}}')">
                                         <th>{{row.name}}</th>
                                         <th>{{row.number}}</th>
-                                        <th><input type='radio' name ='comp_selected' /></th>
+                                        <th><input type='radio' name ='comp_selected'/></th>
                                     </tr>
                                 {% endfor %}
                                 </tbody>
                             </table>
-                            <input class="form-control defined" type="hidden" id="comp_name" name="comp_name", value="{{comp_name}}">
-                            <input class="form-control defined" type="hidden" id="comp_number" name="comp_number", value="{{comp_number}}">
+                            <input class="form-control defined" type="hidden" id="comp_name" name="comp_name" value="{{comp_name}}"/>
+                            <input class="form-control defined" type="hidden" id="comp_number" name="comp_number" value="{{comp_number}}"/>
                             {% else %}
                             <div class="form-group">
                                 <h5>No complex number exists. Please create one and enter the details below:</h5>
                                 <label style="margin-top:1em" for="complex_name">Complex Name</label>
-                                <input class="form-control defined" type="text" id="complex_name" name="complex_name", value="{{orig_name}}">
+                                <input class="form-control defined" type="text" id="complex_name" name="complex_name" value="{{orig_name}}"/>
                                 <label style="margin-top:1em" for="complex_number">Complex Number</label>
-                                <input class="form-control defined" type="text" id="complex_number" name="complex_number", value="{{complex_number}}">
+                                <input class="form-control defined" type="text" id="complex_number" name="complex_number" value="{{complex_number}}"/>
                             </div>
                             {% endif %}
                         </div>
                         <div class="form-group">
-                            <input class="btn-lg pull-right btn-primary" id="continue" type="submit" value="Continue">
+                            <input class="btn-lg pull-right btn-primary" id="continue" type="submit" value="Continue"/>
                         </div>
                     </form>
                 </div>

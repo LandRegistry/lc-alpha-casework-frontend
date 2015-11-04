@@ -15,6 +15,7 @@ cancelled_response = open(os.path.join(dir_, 'data/application_cancelled.json'),
 registration = '{"new_registrations": [512344]}'
 multi_name_reg = '{"new_registrations": [512344, 512345]}'
 cancellation = '{"cancelled": ["50001"]}'
+complex_name = '[{"number": "1000167", "name": "KING STARK OF THE NORTH"}]'
 
 amendment = '{"new_registrations": ["50027", "50028", "50029"]}'
 rectify = '{"new_registrations": ["50018"]}'
@@ -161,6 +162,76 @@ class TestCaseworkFrontend:
     def test_process_name_fail(self):
         response = self.app.post('/process_banks_name', data='John')
         assert ('error' in response.data.decode())
+
+    @mock.patch('requests.post', return_value=FakeResponse('stuff', 200, complex_name))
+    def test_complex_retrieve(self, mock_post):
+        with self.app as c:
+            with c.session_transaction() as session:
+                session['application_dict'] = application_dict
+                session['images'] = ['/document/1/image/1']
+                session['document_id'] = '43'
+                session['application_type'] = 'PA(B)'
+        response = self.app.post('/complex_retrieve', data=dict(complex_name='King Stark'))
+        html = response.data.decode('utf-8')
+        tree = ET.fromstring(html)
+        table_node = tree.find('.//*[@id="complex_table"]/thead/tr/th[1]')
+        assert table_node.text == "Name"
+
+    @mock.patch('requests.post', return_value=FakeResponse('stuff', 400, complex_name))
+    def test_complex_retrieve_fail(self, mock_post):
+        with self.app as c:
+            with c.session_transaction() as session:
+                session['application_dict'] = application_dict
+                session['images'] = ['/document/1/image/1']
+                session['document_id'] = '43'
+                session['application_type'] = 'PA(B)'
+        response = self.app.post('/complex_retrieve', data=dict(complex_name='King Stark'))
+        html = response.data.decode('utf-8')
+        tree = ET.fromstring(html)
+        assert "Error message" in tree.find('.//*[@id="error_msg"]').text
+
+    def test_process_complex_name(self):
+        with self.app as c:
+            with c.session_transaction() as session:
+                session['application_dict'] = application_dict
+                session['images'] = ['/document/1/image/1']
+                session['document_id'] = '43'
+        response = self.app.post('/process_banks_name', data=dict(comp_name='King Stark of the North',
+                                                                  comp_number='100167'))
+        html = response.data.decode('utf-8')
+        tree = ET.fromstring(html)
+        title_node = tree.find('.//*[@id="form_data"]/h4')
+        address_node = tree.find('.//*[@id="address_area"]')
+        assert title_node.text == "Debtor address"
+        assert address_node.text.strip() == ""
+
+    def test_process_complex_name_new(self):
+        with self.app as c:
+            with c.session_transaction() as session:
+                session['application_dict'] = application_dict
+                session['images'] = ['/document/1/image/1']
+                session['document_id'] = '43'
+        response = self.app.post('/process_banks_name', data=dict(complex_name='King Stark of the North',
+                                                                  complex_number='100167'))
+        html = response.data.decode('utf-8')
+        tree = ET.fromstring(html)
+        title_node = tree.find('.//*[@id="form_data"]/h4')
+        address_node = tree.find('.//*[@id="address_area"]')
+        assert title_node.text == "Debtor address"
+        assert address_node.text.strip() == ""
+
+    def test_complex_name(self):
+        with self.app as c:
+            with c.session_transaction() as session:
+                session['application_dict'] = application_dict
+                session['images'] = ['/document/1/image/1']
+                session['document_id'] = '43'
+                session['application_type'] = 'PA(B)'
+        response = self.app.get('/complex_name')
+        html = response.data.decode('utf-8')
+        tree = ET.fromstring(html)
+        comp_node = tree.find('.//*[@id="form_data"]/form/div[1]/label')
+        assert comp_node.text == "Complex Name"
 
     def test_residence_empty(self):
         with self.app as c:
