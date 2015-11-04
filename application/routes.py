@@ -676,19 +676,42 @@ def process_search(search_type):
     counter = 0
     while True:
         name_field = 'fullname{}'.format(counter)
+
         if name_field not in request.form:
             break
 
         if request.form[name_field] != '':
-            search_item = {
-                'name': request.form[name_field]
-            }
+            if 'comp{}'.format(counter) in request.form:
+                # Complex name so call legacy db api to get complex names and numbers
+                url = app.config['LEGACY_URL'] + '/complex_names/search'
+                headers = {'Content-Type': 'application/json'}
+                complex_name = {
+                    'name': request.form[name_field]
+                }
+                response = requests.post(url, data=json.dumps(complex_name), headers=headers)
+                data = response.json()
 
-            if search_type == 'full':
-                logging.info('Getting year stuff')
-                search_item['year_to'] = int(request.form['year_to{}'.format(counter)])
-                search_item['year_from'] = int(request.form['year_from{}'.format(counter)])
-            parameters['search_items'].append(search_item)
+                for item in data:
+                    search_item = {
+                        'name': item['name'],
+                        'complex_no': item['number']
+                    }
+                    if search_type == 'full':
+                        logging.info('Getting year stuff')
+                        search_item['year_to'] = int(request.form['year_to{}'.format(counter)])
+                        search_item['year_from'] = int(request.form['year_from{}'.format(counter)])
+                    parameters['search_items'].append(search_item)
+            else:
+                # Normal name entered
+                search_item = {
+                    'name': request.form[name_field]
+                }
+
+                if search_type == 'full':
+                    logging.info('Getting year stuff')
+                    search_item['year_to'] = int(request.form['year_to{}'.format(counter)])
+                    search_item['year_from'] = int(request.form['year_from{}'.format(counter)])
+                parameters['search_items'].append(search_item)
         counter += 1
 
     customer = {
@@ -703,6 +726,7 @@ def process_search(search_type):
         'document_id': application['document_id'],
         'parameters': parameters
     }
+
     session['search_data'] = search_data
     url = app.config['BANKRUPTCY_DATABASE_URL'] + '/search'
     headers = {'Content-Type': 'application/json'}
