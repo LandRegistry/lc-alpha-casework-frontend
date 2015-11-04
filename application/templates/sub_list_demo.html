@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Land Charges</title>
+    {% include 'includes/ext_references.html' %}
+    <style>
+        #results td:hover {
+        cursor: pointer;
+        }
+    </style>
+    <script>
+        HOST = window.location.protocol + "//" + window.location.hostname;
+
+        function getTotals(){
+                jQuery.ajax( {
+                    url: HOST + ':5010/totals',
+                    type: 'GET',
+                    data: {},
+                    success: function( data ) {
+                        // alert(JSON.stringify(data));
+                        jQuery('#amend_total').html(data.amend);
+                        jQuery('#canc_total').html(data.canc);
+                        jQuery('#search_total').html(data.search);
+                    }
+                } );
+        }
+    </script>
+</head>
+<body>
+<input type="hidden" name="requested_list" value="{{requested_list}}">
+{% if requested_list == 'pab'%}
+    {% set page_title = 'PA Bankruptcy Registrations' %}
+{% elif requested_list == 'wob' %}
+    {% set page_title = 'WO Bankruptcy Registrations' %}
+{% elif requested_list == 'bank_regn' %}
+{% set page_title = 'Bankruptcy Registrations' %}
+{% elif requested_list == 'lc_regn' %}
+    {% set page_title = 'Land Charge Registrations' %}
+{% elif requested_list == 'amend' %}
+    {% set page_title = 'Amendments' %}
+{% elif requested_list == 'cancel' %}
+    {% set page_title = 'Cancellations' %}
+{% elif requested_list == 'prt_search' %}
+    {% set page_title = 'Portal Searches' %}
+{% elif requested_list == 'search' %}
+    {% set page_title = 'Searches' %}
+{% elif requested_list == 'oc' %}
+    {% set page_title = 'Office Copies' %}
+{% endif %}
+<div id="main" class="container">
+    {% include 'includes/lc_menu.html' %}
+    <div class="container">
+        <div class="row" >
+            <div class="row col-sm-12">
+                <ul class="breadcrumb">
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/get_list?appn={{requested_list}}">{{page_title}}</a></li>
+                </ul>
+                <a id="refresh" class="refresh-link" href="/get_list?appn={{requested_list}}">Refresh page</a>
+
+            </div>
+            <div class="row col-sm-12" style="margin-top:30px">
+
+
+                <div class="col-sm-12 col-sm-offset-3">
+                    <!--<div class="col-sm-3"></div>-->
+
+                    <div class="col-sm-2 text-center">
+                        <a class="black" href="/get_list?appn=amend">
+                            <div class="circle circle-border circle-solid">
+                                <div class="circle-inner">
+                                    <div id="amend_total" class="score-text sm">
+                                        {{data['amend']}}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="type-label-sm">Amendments</div>
+                        </a>
+                    </div>
+                    <div class="col-sm-2 text-center">
+                        <a class="black" href="/get_list?appn=cancel">
+                            <div class="circle circle-border circle-solid">
+                                <div class="circle-inner">
+                                    <div id="canc_total" class="score-text sm">
+                                        {{data['canc']}}
+                                    </div>
+                                </div>
+                            </div>
+                        <div class="type-label-sm">Cancellations</div>
+                        </a>
+                    </div>
+                    <div class="col-sm-2 text-center">
+                        <a class="black" href="/get_list?appn=search">
+                            <div class="circle circle-border circle-solid">
+                                <div class="circle-inner">
+                                    <div id="search_total" class="score-text sm">
+                                        {{data['search']}}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="type-label-sm">Searches</div>
+                        </a>
+                    </div>
+                </div>
+
+                <!--
+                <div class="col-sm-6">
+                    <div class="col-sm-3 text-center">
+                        <a class="black" href="/get_list?appn=cancel">
+                            <div class="circle circle-border circle-solid">
+                                <div class="circle-inner">
+                                    <div id="canc_total" class="score-text sm">
+                                        {{data['canc']}}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="type-label-sm">Cancellations</div>
+                        </a>
+                    </div>
+                    <div class="col-sm-3 text-center">
+                        <a class="black" href="/get_list?appn=search">
+                            <div class="circle circle-border circle-solid">
+                                <div class="circle-inner">
+                                    <div id="search_total" class="score-text sm">
+                                        {{data['search']}}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="type-label-sm">Searches</div>
+                        </a>
+                    </div>
+                    <div class="col-sm-3 text-center">
+                        <a class="black" href="/get_list?appn=oc">
+                            <div class="circle circle-border circle-solid">
+                                <div class="circle-inner">
+                                    <div id="oc_total" class="score-text sm">
+                                        {{data['oc']}}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="type-label-sm">Office Copies</div>
+                        </a>
+                    </div>
+                </div>-->
+            </div>
+
+
+                {% if worklist|length > 0 %}
+                    <div class="row col-sm-12" style="margin-top:10px">
+                         <h3>{{page_title}}</h3><br/>
+                        <div class="table-responsive">
+                            <table id="results" class="table table-hover" style="border: solid #CCCCCC 1px;">
+                                <thead>
+                                <tr>
+                                    <th class="col-sm-3 active" >Date Received</th>
+                                    <th class="col-sm-2 active" >Time</th>
+                                    <th class="col-sm-7 active" >Application Type</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for n in worklist %}
+                                <tr>
+                                    <td><a href="/get_application/{{requested_list}}/{{n['appn_id']}}/{{n['application_type']|replace(' ', '%20')}}">{{n['date_received']}}</a></td>
+                                    <td>{{n['time_received']}}</td>
+                                    <td id="app_type{{loop.index}}">{{n['application_type']}}</td>
+                                </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                {% endif %}
+                {% if worklist|length == 0 and worklist|length == 0 %}
+                    <div class="row col-sm-12" style="margin-top:10px">
+                        <h2>{{page_title}}</h2><br/>
+                        <p>There are no waiting applications</p>
+                    </div>
+                {% endif %}
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function() {
+        $("#refresh").hide();
+        setInterval("getTotals()", 30000);
+
+        $('#results tr').click(function() {
+            var href = $(this).find("a").attr("href");
+            if(href) {
+                window.location = href;
+            }
+    });
+});
+
+</script>
+</body>
+</html>
