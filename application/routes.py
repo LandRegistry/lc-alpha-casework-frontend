@@ -53,8 +53,10 @@ def get_list():
             appn_list.append(application)
 
     totals = get_totals()
-
-    return render_template('sub_list.html', worklist=appn_list, requested_list=requested_worklist, data=totals)
+    if app.config['DEMONSTRATION_VIEW']:
+        return render_template('sub_list_demo.html', worklist=appn_list, requested_list=requested_worklist, data=totals)
+    else:
+        return render_template('sub_list.html', worklist=appn_list, requested_list=requested_worklist, data=totals)
 
 
 @app.route('/get_application/<application_type>/<appn_id>/<appn_type>', methods=["GET"])
