@@ -6,6 +6,21 @@
     {% include 'includes/ext_references.html' %}
     {% include 'includes/image_view_head.html' %}
 </head>
+<script>
+    function validateForm (){
+        numberOk = false;
+        // Check existence of a number
+        if (jQuery('#complex_number').val() != "") {
+            numberOk = true;
+        }
+        if (!numberOk){
+         alert('You must enter a valid complex number');
+         return false;
+        }
+        // if we got this far the form validation has succeeded
+        return true;
+    }
+</script>
 <body>
 <input type="hidden" name="application_type" value="{{application_type}}"/>
 {% if application_type == 'pab'%}
@@ -43,7 +58,7 @@
                 <div id="form_data" class="col-sm-6">
                     <h5>Step 1 of 3</h5>
                     <h4>Debtor name and details</h4>
-                    <form action="/process_banks_name" method="POST">
+                    <form action="/process_banks_name" onsubmit="return validateForm()" method="POST">
                         <div class="form-group">
                             {% if complex|length > 0 %}
                             <h6>Please select the complex name/number from the list and press continue</h6>
