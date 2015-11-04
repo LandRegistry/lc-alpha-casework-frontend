@@ -732,7 +732,6 @@ def process_search(search_type):
 
     if response.status_code == 200:
         search_response = response.json()
-        # session['search_result'] = search_response
         set_session_variables({'search_result': search_response})
         delete_from_worklist(session['worklist_id'])
     elif response.status_code == 404:
