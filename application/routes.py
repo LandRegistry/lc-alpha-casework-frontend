@@ -458,42 +458,51 @@ def update_court():
 def process_banks_name():
     appn_type = session['application_dict']['application_type']
     doc_id = session['document_id']
+
     name = {"debtor_name": {"forenames": [], "surname": ""},
             "occupation": "",
             "debtor_alternative_name": [],
-            "residence": []
+            "residence": [],
             }
-    alt_name = {"forenames": [],
-                "surname": ""
-                }
 
-    for i in request.form['forename'].split():
-        name['debtor_name']['forenames'].append(i)
+    if 'comp_number' in request.form:
+        comp_name = {"name": request.form['comp_name'], "number": int(request.form['comp_number'])}
+        name['complex'] = comp_name
+    elif 'complex_number' in request.form:
+        comp_name = {"name": request.form['complex_name'], "number": int(request.form['complex_number'])}
+        name['complex'] = comp_name
+    else:
+        alt_name = {"forenames": [],
+                    "surname": ""
+                    }
 
-    name['debtor_name']['surname'] = request.form['surname']
-    name['occupation'] = request.form['occupation']
+        for i in request.form['forename'].split():
+            name['debtor_name']['forenames'].append(i)
 
-    forename_var = "aliasforename"
-    surname_var = "aliassurname"
-    counter = 0
-    while True:
-        forename_counter = forename_var + str(counter)
-        surname_counter = surname_var + str(counter)
-        try:
-            alt_forenames = request.form[forename_counter]
-            alt_surname = request.form[surname_counter]
-        except KeyError:
-            break
+        name['debtor_name']['surname'] = request.form['surname']
+        name['occupation'] = request.form['occupation']
 
-        for i in alt_forenames.split():
-            alt_name['forenames'].append(i)
+        forename_var = "aliasforename"
+        surname_var = "aliassurname"
+        counter = 0
+        while True:
+            forename_counter = forename_var + str(counter)
+            surname_counter = surname_var + str(counter)
+            try:
+                alt_forenames = request.form[forename_counter]
+                alt_surname = request.form[surname_counter]
+            except KeyError:
+                break
 
-        alt_name['surname'] = alt_surname
-        if alt_forenames != '' and alt_surname != '':
-            name['debtor_alternative_name'].append(alt_name)
+            for i in alt_forenames.split():
+                alt_name['forenames'].append(i)
 
-        alt_name = {"forenames": [], "surname": ""}
-        counter += 1
+            alt_name['surname'] = alt_surname
+            if alt_forenames != '' and alt_surname != '':
+                name['debtor_alternative_name'].append(alt_name)
+
+            alt_name = {"forenames": [], "surname": ""}
+            counter += 1
 
     requested_worklist = 'bank_regn'
     images = session['images']
@@ -851,12 +860,13 @@ def complex_name_retrieve():
     headers = {'Content-Type': 'application/json'}
     response = requests.post(url, data=json.dumps(complex_search), headers=headers)
 
-    if response.status_code == 200:
+    if response.status_code == 200 or response.status_code == 404:
         data = response.json()
         print(data)
 
-        return render_template('complex_name_select.html', images=session['images'], application=session['application_type'],
-                               application_type=session['application_type'], current_page=0, complex=data)
+        return render_template('complex_name_select.html', images=session['images'],
+                               application=session['application_type'], application_type=session['application_type'],
+                               current_page=0, complex=data, orig_name=complex_search['name'])
     else:
         error = response.status_code
         logging.error(error)
