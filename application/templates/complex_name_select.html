@@ -72,10 +72,11 @@
                                 </thead>
                                 <tbody id="complex_tbody">
                                 {% for row in complex %}
-                                    <tr onclick="myFunction(this,'{{row.name}}','{{row.number}}')">
-                                        <th>{{row.name}}</th>
-                                        <th>{{row.number}}</th>
-                                        <th><input type='radio' name ='comp_selected'/></th>
+                                    <tr>
+                                        <td>{{row.name}}</td>
+                                        <td>{{row.number}}</td>
+                                        <td><input type='radio' id="comp_name_{{loop.index-1}}" name ='comp_selected'
+                                                   onclick="myFunction(this,'{{row.name}}','{{row.number}}')"/></td>
                                     </tr>
                                 {% endfor %}
                                 </tbody>
