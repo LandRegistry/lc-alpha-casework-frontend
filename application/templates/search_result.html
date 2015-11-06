@@ -33,16 +33,12 @@
             {% endfor %}
         </div>
         <div class="row col-md-12">
-            {% if results|length > 0 %}
             <h5> Search results found </h5>
-            {% for result in results %}
+            {% for result in display %}
                 <div class="row col-md-12" style="margin-bottom:10px">
-                    {{loop.index}}) {{result.application_type}} Registration: {{result.registration_no}} dated {{result.registration_date}}
+                    {{loop.index}} {{result.name}} - {{result.result}}
                 </div>
             {% endfor %}
-            {% else %}
-                <h5> No results found </h5>
-            {% endif %}
         </div>
     </div>
 </div>

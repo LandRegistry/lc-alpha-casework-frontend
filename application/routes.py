@@ -758,9 +758,24 @@ def process_search(search_type):
 @app.route('/search_result', methods=['GET'])
 def search_result():
     print(session['search_result'])
+
+    display = []
+    for result in session['search_result']:
+        for key, value in result.items():
+            if len(value) == 0:
+                display.append({
+                    'name': key,
+                    'result': 'No Match'
+                })
+            else:
+                display.append({
+                    'name': key,
+                    'result': 'Match Found'
+                })
+
     print('---------')
     print(session['search_data'])
-    return render_template('search_result.html', results=session['search_result'], search_data=session['search_data'])
+    return render_template('search_result.html', display=display, results=session['search_result'], search_data=session['search_data'])
 
 
 @app.route('/notification', methods=['GET'])
