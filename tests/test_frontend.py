@@ -1028,12 +1028,3 @@ class TestCaseworkFrontend:
         tree = ET.fromstring(html)
         assert "Application Complete" in tree.find('.//*[@id="message"]').text
 
-    def test_search_result(self):
-        with self.app as c:
-            with c.session_transaction() as session:
-                session['search_result'] = search
-                session['search_data'] = json.loads(search_data)
-        response = self.app.get('/search_result')
-        html = response.data.decode('utf-8')
-        tree = ET.fromstring(html)
-        assert "Search results found" in tree.find('.//*[@id="main"]/div/div[3]/h5').text
