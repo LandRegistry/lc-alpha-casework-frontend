@@ -134,21 +134,27 @@ def get_bankruptcy_details():
         return render_template(template, application_type=application_type,
                                error_msg=error_msg, images=image_details, current_page=0)
 
-    original_image_data = ""
+    original_image_data = "none"
 
-    if application_json['document_id'] is not None:
+    if application_json['document_id'] is not None and application_json['document_id'] is not '0':
         document_id = application_json['document_id']
+
         doc_response = requests.get(app.config["DOCUMENT_URL"] + "/document/" + str(document_id))
         original_image_data = doc_response.json()
+
         images = []
         for image in original_image_data['images']:
             images.append(app.config["DOCUMENT_URL"] + image)
         original_image_data = images
-        set_session_variables({'document_id': document_id, 'original_image_data': original_image_data})
+
+        set_session_variables({'document_id': document_id})
         if application_type == 'rectify':
             session['images'] = images
 
-    session['application_dict'] = application_json
+    set_session_variables({
+        'original_image_data': original_image_data,
+        'application_dict': application_json
+    })
 
     return render_template(template, application_type=application_type, data=application_json,
                            images=image_details, current_page=0, original_image_data=original_image_data, addr=0)
