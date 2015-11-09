@@ -700,10 +700,10 @@ def process_search(search_type):
                 # Complex name so call legacy db api to get complex names and numbers
                 url = app.config['LEGACY_URL'] + '/complex_names/search'
                 headers = {'Content-Type': 'application/json'}
-                complex_name = {
+                comp_name = {
                     'name': request.form[name_field]
                 }
-                response = requests.post(url, data=json.dumps(complex_name), headers=headers)
+                response = requests.post(url, data=json.dumps(comp_name), headers=headers)
                 data = response.json()
 
                 for item in data:
