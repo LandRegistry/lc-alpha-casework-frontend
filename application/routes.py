@@ -6,10 +6,11 @@ import logging
 import json
 
 
-@app.errorhandler(Exception)
-def error_handler(err):
-    logging.error(err)
-    return render_template('error.html', error_msg=str(err)), 500
+# @app.errorhandler(Exception)
+# def error_handler(err):
+#     logging.error('========== Error Caught ===========')
+#     logging.error(err)
+#     return render_template('error.html', error_msg=str(err)), 500
 
 
 @app.route('/', methods=["GET"])
@@ -663,7 +664,11 @@ def process_rectification():
     application_dict['legal_body'] = request.form['court'].strip()
     application_dict['legal_body_ref'] = request.form['ref'].strip()
     application_dict['application_type'] = appn_type
-    application_dict['document_id'] = session['document_id']
+    if 'document_id' in session:
+        application_dict['document_id'] = session['document_id']
+    else:
+        application_dict['document_id'] = None
+
     session['application_dict'] = application_dict
 
     return render_template('rect_summary.html', application_type=session['application_type'], data=application_dict,
