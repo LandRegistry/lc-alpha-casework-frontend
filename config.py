@@ -27,4 +27,4 @@ class DemoConfig(Config):
     BANKRUPTCY_DATABASE_URL = "http://localhost:5004"
     DOCUMENT_URL = "http://lrq00103187:5014"
     LEGACY_URL = "http://localhost:5007"
-    DEMONSTRATION_VIEW = True
+    DEMONSTRATION_VIEW = False
