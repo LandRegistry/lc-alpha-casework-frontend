@@ -6,11 +6,11 @@ import logging
 import json
 
 
-# @app.errorhandler(Exception)
-# def error_handler(err):
-#     logging.error('========== Error Caught ===========')
-#     logging.error(err)
-#     return render_template('error.html', error_msg=str(err)), 500
+@app.errorhandler(Exception)
+def error_handler(err):
+    logging.error('========== Error Caught ===========')
+    logging.error(err)
+    return render_template('error.html', error_msg=str(err)), 500
 
 
 @app.route('/', methods=["GET"])
