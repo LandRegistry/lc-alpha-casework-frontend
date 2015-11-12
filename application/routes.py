@@ -766,6 +766,72 @@ def process_search(search_type):
     return render_template('confirmation.html', application_type=application_type)
 
 
+@app.route('/process_search_name/<search_type>', methods=['POST'])
+def process_search_name(search_type):
+    logging.info('Entering search name')
+    application_type = session['application_type']
+    application = session['application_dict']
+
+    if 'all_counties' in request.form:
+        counties = []
+    elif 'area_list' in request.form and request.form['area_list'] != '':
+        counties = request.form['area_list'].upper().strip('\r\n').split()
+    else:
+        counties = []
+    parameters = {
+        'counties': counties,
+        'search_type': "bankruptcy" if search_type == 'banks' else 'full',
+        'search_items': []
+    }
+
+    counter = 0
+    while True:
+        name_field = 'fullname{}'.format(counter)
+
+        if name_field not in request.form:
+            break
+
+        if request.form[name_field] != '':
+            if 'comp{}'.format(counter) in request.form:
+                # Complex name so call legacy db api to get complex names and numbers
+                url = app.config['LEGACY_URL'] + '/complex_names/search'
+                headers = {'Content-Type': 'application/json'}
+                comp_name = {
+                    'name': request.form[name_field]
+                }
+                response = requests.post(url, data=json.dumps(comp_name), headers=headers)
+                data = response.json()
+
+                for item in data:
+                    search_item = {
+                        'name': item['name'],
+                        'complex_no': item['number']
+                    }
+                    if search_type == 'full':
+                        logging.info('Getting year stuff')
+                        search_item['year_to'] = int(request.form['year_to{}'.format(counter)])
+                        search_item['year_from'] = int(request.form['year_from{}'.format(counter)])
+                    parameters['search_items'].append(search_item)
+            else:
+                # Normal name entered
+                search_item = {
+                    'name': request.form[name_field]
+                }
+
+                if search_type == 'full':
+                    logging.info('Getting year stuff')
+                    search_item['year_to'] = int(request.form['year_to{}'.format(counter)])
+                    search_item['year_from'] = int(request.form['year_from{}'.format(counter)])
+                parameters['search_items'].append(search_item)
+        counter += 1
+
+    print(parameters)
+    application['search_criteria'] = parameters
+    print(application)
+    return render_template('search_customer.html', images=session['images'], application=application,
+                           application_type=application_type, current_page=0)
+
+
 @app.route('/search_result', methods=['GET'])
 def search_result():
     print(session['search_result'])
@@ -905,7 +971,8 @@ def page_required(appn_type):
         "amend": "regn_retrieve.html",
         "cancel": "regn_retrieve.html",
         "bank_regn": "application.html",
-        "search": "search_capture.html",
+        # "search": "search_capture.html",
+        "search": "search_name.html",
         "full_search": "search_full_capture.html",
         "oc": "regn_retrieve.html",
         "lc": "application.html"

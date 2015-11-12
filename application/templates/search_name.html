@@ -1,0 +1,72 @@
+{% extends "/page_template/base.html" %}
+
+{% block maincontent %}
+
+<div class="breadcrumb">
+    <ol>
+        <li><a class="breadcrumb_links" href="/">Home</a></li>
+        <li><a class="breadcrumb_links" href="/">Bankruptcies</a></li>
+        <li><a class="breadcrumb_links" href="/get_list?appn=search">List of search applications</a></li>
+        <li class="breadcrumb_no_arrow"><span>Bankruptcy search</span></li>
+    </ol>
+</div>
+<div class="spacer_10"></div>
+
+<h1 class="title_36">Bankruptcy search</h1>
+
+<div class="spacer_5"></div>
+
+<div class="text_16_gray">
+    <span class="text_16_bold">1. Name(s) to be searched</span>
+    &nbsp;&nbsp;
+    2. Customer details
+</div>
+<div class="spacer_30"></div>
+
+<div class="grid-row">
+
+    <!-- ///////////////////////////////// data entry form ///////////////////////////////// -->
+    <form action="/process_search_name/banks" method="POST">
+    <div class="column-form">
+
+        <p class="text_24_bold">1. Name(s) to be searched</p>
+
+        <div class="spacer_20"></div>
+
+        {% for i in range(6) %}
+        <div class="form">
+            <label class="form_label" for="fullname{{loop.index-1}}">Full Name {{loop.index}}</label>
+            <input class="form_textfield" type="text" id="fullname{{loop.index-1}}" name="fullname{{loop.index-1}}" tabindex=1 value="{{fullname}}"/>
+            <label class="form_label" for="comp{{loop.index-1}}">Search as a complex name</label><input style="margin-left:10px" type="checkbox" name="comp{{loop.index-1}}" id="comp{{loop.index-1}}" tabindex=2 value="comp{{loop.index-1}}"/>
+        </div>
+        {% endfor %}
+
+        <div class="spacer_30"></div>
+
+        <div>
+            <table>
+                <tr>
+                    <td width="50%" class="no-line">
+                        <input id="search_name" type="submit" class="form_button" value="Continue"/>
+                    </td>
+                    <td width="50%" class="custom_3">
+                        <a href="#" class="link_16">Reject application</a>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+    </div>
+    </form>
+    <!-- ///////////////////////////////// end of data entry form ///////////////////////////////// -->
+
+    <!-- /////////////////////////////////  Include image tool ///////////////////////////////// -->
+
+    {% include 'includes/image_view_body.html' %}
+
+    <!-- ///////////////////////////////// End of image tool ///////////////////////////////// -->
+
+</div>
+
+
+{% endblock %}
