@@ -10,9 +10,14 @@
             <table>
                 <tr>
                     <td class="magnify_glass">
-                        <a href="javascript:show('zoomOut')"><img src="../../../../../public/images/MGlass_1.png" alt="Zoom in"></a>
+                        <a href="javascript:show('zoomOut')"><img style="width:20px;" src="/static/images/MGlass_1.png" alt="Zoom in"></a>
                     </td>
-                    <td class="pagination_scanned_pages custom_2">
+                    <td class="pagination_scanned_pages">
+                        <span>Page 1 of 2 &nbsp; <a class="link_14" href="javascript:show('page2')">Next</a></span>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
 
                         <div id="image_area">
                             <div id="imageContainer">
@@ -37,9 +42,10 @@
     <!-- ///////////////////////////////// thumbnails ///////////////////////////////// -->
 
     <div class="column-scan-small">
-        <div id="thumbnails" class="row col-sm-12">
+        <div class="spacer_30"></div>
+        <div id="thumbnails">
             {% for image in images %}
-            <div class="spacer_10"></div>
+            <div class="spacer_15"></div>
             <img id="thumbnail{{loop.index}}" class="thumbnail{% if loop.index0 == current_page %} active_thumbnail{% endif %}" src="{{image}}" alt="" onclick="imgClick(this, {{ loop.index0 }})"/>
             {% endfor %}
         </div>
