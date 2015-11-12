@@ -112,25 +112,19 @@
 
         <div class="form">
             <label class="form_label" for="key_no">Key Number</label>
-            <input class="form_textfield" type="text" id="key_no" name="key_no" onkeyup="getCustomerDetails(this);" onblur="getCustomerDetails(this);" value="{{key_no}}"/>
-            <div class="row col-sm-6" style="margin-left:5px; padding-top:19px; color:red">
-                <span id="error_msg"></span>
-            </div>
+            <input class="form_textfield" type="text" id="key_no" name="key_no" tabindex=1 onkeyup="getCustomerDetails(this);" onblur="getCustomerDetails(this);" value="{{key_no}}"/>
         </div>
-        <div style="padding:17px">
-            <div class="form-group" >
-                <label for="customer_name">Customer Name</label>
-                <input class="form-control" type="text" id="customer_name" name="customer_name" value="{{customer_name}}"/>
-            </div>
-            <div class="form-group" >
-                <label for="customer_address">Customer Address</label>
-                <p style="color:#b3b3b3; font-size:0.9em">This information must be provided. If the information shown is incorrect, please overkey.</p>
-                <textarea class="form-control" rows="8" id="customer_address" name="customer_address"></textarea>
-            </div>
-            <div class="form-group" >
-                <label for="customer_ref">Customer Reference</label>
-                <input class="form-control" type="text" id="customer_ref" name="customer_ref" value="{{customer_ref}}"/>
-            </div>
+        <div class="form">
+            <label class="form_label" for="customer_name">Customer Name</label>
+            <input class="form_textfield" type="text" id="customer_name" name="customer_name" tabindex=2 value="{{customer_name}}"/>
+        </div>
+        <div class="form">
+            <label class="form_label" for="customer_address">Customer Address</label>
+            <textarea class="form_textarea" rows="8" id="customer_address" tabindex=3 name="customer_address"></textarea>
+        </div>
+        <div class="form">
+            <label class="form_label" for="customer_ref">Customer Reference</label>
+            <input class="form_textfield" type="text" id="customer_ref" tabindex=4 name="customer_ref" value="{{customer_ref}}"/>
         </div>
 
         <div class="spacer_30"></div>
@@ -139,7 +133,7 @@
             <table>
                 <tr>
                     <td width="50%" class="no-line">
-                        <input id="search_name" type="submit" class="form_button" value="Continue"/>
+                        <input id="search_name" type="submit" class="form_button" tabindex=5 value="Continue"/>
                     </td>
                     <td width="50%" class="custom_3">
                         <a href="#" class="link_16">Reject application</a>
