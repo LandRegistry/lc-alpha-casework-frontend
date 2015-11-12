@@ -49,7 +49,7 @@
                     </tr>
                     <tr>
                         <td width="50%"><span class="text_review_table_bold">Number</span></td>
-                        <td width="50%"><span class="text_review_table">50010</span></td>
+                        <td width="50%"><span class="text_review_table">{{data.registration_no}}</span></td>
                     </tr>
                     <tr>
                         <td colspan="1"><span class="text_review_table_bold">Date</span></td>
@@ -87,16 +87,13 @@
                         <td colspan="1" style="vertical-align: top;"><span class="text_review_table_bold">Also known as</span></td>
                         <td colspan="2"><span class="text_review_table">
                         {% for name in data.debtor_alternative_name %}
-						{% for forename in name.forenames %}
-                                        {{forename}}
-                                        {% endfor %}
-                                        {{name.surname}}<br/> </span>
+						    {% for forename in name.forenames %}
+                                {{forename}}
+                            {% endfor %}
+                            {{name.surname}}<br/> </span>
                         {% endfor %}
                         </td>
                     </tr>
-
-
-
                     <tr>
                         <td colspan="1"><span class="text_review_table_bold">Occupation</span></td>
                         <td colspan="2"><span class="text_review_table">{{data.occupation}}</span></td>
@@ -133,25 +130,20 @@
 
                     <tr>
                         <th colspan="2" class="table_text_black"><span class="text_19_gray">Court details</span></th>
-                        <th colspan="1" class="table_text_black link_16_right"><a class="link_16_right" href="#">Edit</a></th>
+                        <th colspan="1" class="table_text_black link_16_right"><a class="link_16_right" href="/amend_court">Edit</a></th>
                     </tr>
                     <tr>
                         <td width="45%"><span class="text_review_table_bold">Key number</span></td>
-                        <td width="50%"><span class="text_review_table"> </span></td>
+                        <td width="50%"><span class="text_review_table">{{data.key_number}}</span></td>
                     </tr>
                     <tr>
                         <td colspan="1"><span class="text_review_table_bold">Court name</span></td>
                         <td colspan="2"><span class="text_review_table">{{data.legal_body}}</span></td>
                     </tr>
                     <tr>
-                        <td colspan="1"><span class="text_review_table_bold">Number</span></td>
+                        <td colspan="1"><span class="text_review_table_bold">Reference</span></td>
                         <td colspan="2"><span class="text_review_table">{{data.legal_body_ref}}</span></td>
                     </tr>
-                    <tr>
-                        <td colspan="1"><span class="text_review_table_bold">Year</span></td>
-                        <td colspan="2"><span class="text_review_table">2014</span></td>
-                    </tr>
-
                 </table>
 
                 <div class="spacer_30"></div>

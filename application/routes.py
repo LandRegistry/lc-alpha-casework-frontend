@@ -157,6 +157,7 @@ def get_bankruptcy_details():
         'application_dict': application_json
     })
 
+    print(application_json)
     return render_template(template, application_type=application_type, data=application_json,
                            images=image_details, current_page=0, original_image_data=original_image_data, addr=0)
 
