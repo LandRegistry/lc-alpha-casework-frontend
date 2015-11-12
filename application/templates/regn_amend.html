@@ -1,5 +1,6 @@
+{% extends "/page_template/base.html" %}
 
-<form action="/submit_amendment" method="POST">
+{% block maincontent %}
 {% if application_type == 'amend'%}
 {% set page_title = 'Bankruptcy Amendment' %}
 {% set trail = 'Amendments' %}
@@ -7,163 +8,174 @@
 {% set page_title = 'Bankruptcy Cancellation' %}
 {% set trail = 'Cancellations' %}
 {% endif %}
-    <div class="container">
-        <div class="row">
-            <h3>Land Charges - {{page_title}}</h3>
-            <div class="row col-sm-12">
-                <ul class="breadcrumb">
-                    <li><a href="/">Home</a></li>
-                    <li><a href="/get_list?appn={{application_type}}">{{trail}}</a></li>
-                </ul>
-            </div>
-            <div class="row col-sm-12" style="margin-top:10px">
-                {% include 'includes/image_view_body.html' %}
-                <div id="form_data" class="col-sm-6">
-                    <h5>Step 2 of 3</h5>
-                    <h4 style="display:inline">Amend details</h4>{% if original_image_data != 'none' %}<a id="view_image" class="pull-right" href="" data-toggle="modal" data-target="#deedModal"> View original image</a>{%endif%}
-                    <div class="row">
-                        <div class="col-md-12">
-                            <h5>Debtor details</h5>
-                            <div class="panel panel-default" id="debtor">
-                                <table class="table table-hover" style="width:100%">
-                                    <thead>
-                                    <tr>
-                                        <th style="width:80%">Name</th>
-                                        <th style="width:10%">Occupation</th>
-                                        <th style="width:5%"></th>
-                                        <th style="width:5%"></th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    <tr>
-                                        <td>
-                                        {% for forename in data.debtor_name.forenames %}
-                                        {{forename}}
-                                        {% endfor %}
-                                        {{data.debtor_name.surname}}
-                                        </td>
-                                        <td>{{data.occupation}}</td>
-                                        <td></td>
-                                        <td><a id="amend_name" href="/amend_name" class="btn btn-primary btn-sm pull-right"><i class="fa fa-pencil-square-o fa-fw fa-lg"></i> Amend</a></td>
-                                    </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                            <div class="panel panel-default" id="alias">
-                                <table class="table table-hover">
-                                    <thead>
-                                    <tr>
-                                        <th style="width:80%">Alias Name</th>
-                                        <th style="width:10%"></th>
-                                        <th style="width:10%"><a id="add_alias" href="/amend_alias/new" class="btn btn-primary btn-sm pull-right"><i class="fa fa-plus-square-o fa-fw fa-lg"></i> Add</a></th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    {% for name in data.debtor_alternative_name %}
-                                    <tr><td>
-                                        {% for forename in name.forenames %}
-                                        {{forename}}
-                                        {% endfor %}
-                                        {{name.surname}}
-                                    </td>
-                                        <td><a id="remove_alias_{{loop.index-1}}" href="/remove_alias/{{loop.index-1}}" class="btn btn-primary btn-sm pull-right"><i class="fa fa-trash-o fa-fw fa-lg"></i>Remove</a></td>
-                                        <td><a id="amend_alias_{{loop.index-1}}" href="/amend_alias/{{loop.index-1}}" class="btn btn-primary btn-sm pull-right"><i class="fa fa-pencil-square-o fa-fw fa-lg"></i> Amend</a></td>
-                                    </tr>
-                                    {% endfor %}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-
-                        {% if data.residence|length > 0 and data.residence[0].address_lines|length > 0 %}
-                        <div class="row">
-                            <div class="col-md-12">
-                                <h5>Address details</h5>
-                                <div class="panel panel-default" id="address">
-                                    <table class="table table-hover">
-                                        <thead>
-                                        <tr>
-                                            <th style="width:80%">Address</th>
-                                            <th style="width:10%"></th>
-                                            <th style="width:10%"><a id="add_address" href="/amend_address/new" class="btn btn-primary btn-sm pull-right"><i class="fa fa-plus-square-o fa-fw fa-lg"></i> Add</a></th>
-                                        </tr>
-                                        </thead>
-                                        <tbody>
-                                            {% for address in data.residence %}
-                                            <tr><td>
-                                                        {% for line in address.address_lines %}
-                                                        {{line}}
-                                                        {% endfor %}<br/>
-                                                        {{address.county}}
-                                                        {{address.postcode}}
-                                            </td>
-                                                <td>{% if data.residence|length > 1 %}
-                                                <a id="remove_address_{{loop.index-1}}" href="/remove_address/{{loop.index-1}}" type="button" class="btn btn-primary btn-sm pull-right"><i class="fa fa-trash-o fa-fw fa-lg"></i> Remove</a>
-
-                                                {% endif %}</td>
-                                                <td><a id="amend_address_{{loop.index-1}}" href="/amend_address/{{loop.index-1}}" class="btn btn-primary btn-sm pull-right"><i class="fa fa-pencil-square-o fa-fw fa-lg"></i> Amend</a></td>
-                                            </tr>
-                                            {% endfor %}
-
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                        {% endif %}
-                        <div class="row">
-                            <div class="col-md-12">
-                                <h5>Court details</h5>
-                                <div class="panel panel-default" id="court">
-                                    <table class="table table-hover">
-                                        <thead>
-                                        <tr>
-                                            <th>Name</th>
-                                            <th>Reference</th>
-                                            <th></th>
-                                        </tr>
-                                        </thead>
-                                        <tbody>
-                                        <tr><td>
-                                            {{data.legal_body}}
-                                        </td>
-                                            <td>
-                                                {{data.legal_body_ref}}
-                                            </td>
-                                            <td><a id="amend_court" href="/amend_court" class="btn btn-primary btn-sm pull-right"><i class="fa fa-pencil-square-o fa-fw fa-lg"></i> Amend</a></td>
-                                        </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <input class="btn-lg pull-right btn-primary" id="save_changes" type="submit" value="Submit"/>
-                            <input class="btn-lg pull-right btn-danger" style="margin-right:5px;" name="Reject" id="reject" type="submit" value="Reject"/>
-                        </div>
-                        </div>
-                </div>
-            </div>
-        </div>
-    </form>
-
-{% if original_image_data != 'none' %}
-    <!-- Modals -->
-    <div class="modal fade" id="deedModal" tabindex="-1" role="dialog" aria-labelledby="deedModalLabel" >
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">X</span></button>
-                    <h4 class="modal-title" id="deedModalLabel">Original Application</h4>
-                </div>
-                <div class="modal-body text-center">
-                    <img src="{{original_image_data[0]}}" alt="Scanned Deed" style="width:400px"/>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
-                </div>
-            </div>
-        </div>
+    <div class="breadcrumb">
+        <ol>
+            <li><a class="breadcrumb_links" href="/">Home</a></li>
+            <li><a class="breadcrumb_links" href="bankruptcies">Bankruptcies</a></li>
+            <li><a class="breadcrumb_links" href="/get_list?appn=amend">List of amendment applications</a></li>
+            <li class="breadcrumb_no_arrow"><span>Bankruptcy amendment</span></li>
+        </ol>
     </div>
-{% endif %}
+    <div class="spacer_10"></div>
+
+    <h1 class="title_36">Bankruptcy amendment</h1>
+
+    <div class="spacer_5"></div>
+
+    <div class="text_16_gray">
+        <span class="text_16_bold">1. Retrieve registration details</span>
+        &nbsp;&nbsp;
+        2. Registration details
+        &nbsp;&nbsp;
+        3. Review amendments
+    </div>
+
+    <div class="spacer_30"></div>
+
+    <div class="grid-row">
+        <!-- ///////////////////////////////// data entry form ///////////////////////////////// -->
+        <form action="/submit_amendment" method="POST">
+            <div class="column-form">
+
+                <p class="text_24_bold">2. Registration details</p>
+
+                <div class="spacer_10"></div>
+
+                <table class="review_table">
+
+                    <tr>
+                        <th colspan="2" class="table_text_black"><span class="text_19_gray">Registration details</span></th>
+                        <th colspan="1" class="table_text_black link_16_right"><a class="link_16_right" href="#"></a></th>
+                    </tr>
+                    <tr>
+                        <td width="50%"><span class="text_review_table_bold">Number</span></td>
+                        <td width="50%"><span class="text_review_table">50010</span></td>
+                    </tr>
+                    <tr>
+                        <td colspan="1"><span class="text_review_table_bold">Date</span></td>
+                        <td colspan="2"><span class="text_review_table">26 January 2014</span></td>
+                    </tr>
+                    <tr>
+                        <td colspan="1"><span class="text_review_table_bold">Type</span></td>
+                        <td colspan="2"><span class="text_review_table">WOB</span></td>
+                    </tr>
+
+                </table>
+
+                <div class="spacer_30"></div>
+
+                <table class="review_table">
+
+                    <tr>
+                        <th colspan="2" class="table_text_black"><span class="text_19_gray">Particulars of bankrupt</span></th>
+                        <th colspan="1" class="table_text_black link_16_right"><a class="link_16_right" href="#">Edit</a></th>
+                    </tr>
+                    <tr>
+                        <td width="45%"><span class="text_review_table_bold">Forename(s)</span></td>
+                        <td width="50%">
+                            <span class="text_review_table">
+                                {% for forename in data.debtor_name.forenames %}{{forename}} {% endfor %}
+                            </span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="1"><span class="text_review_table_bold">Surname</span></td>
+                        <td colspan="2"><span class="text_review_table">{{data.debtor_name.surname}}</span></td>
+                    </tr>
+
+                    <tr>
+                        <td colspan="1" style="vertical-align: top;"><span class="text_review_table_bold">Also known as</span></td>
+                        <td colspan="2"><span class="text_review_table">
+                        {% for name in data.debtor_alternative_name %}
+						{% for forename in name.forenames %}
+                                        {{forename}}
+                                        {% endfor %}
+                                        {{name.surname}}<br/> </span>
+                        {% endfor %}
+                        </td>
+                    </tr>
+
+
+
+                    <tr>
+                        <td colspan="1"><span class="text_review_table_bold">Occupation</span></td>
+                        <td colspan="2"><span class="text_review_table">{{data.occupation}}</span></td>
+                    </tr>
+
+                </table>
+
+               {% if data.residence|length > 0 and data.residence[0].address_lines|length > 0 %}
+                <div class="spacer_30"></div>
+                <table class="review_table">
+                    <tr>
+                        <th colspan="2" class="table_text_black"><span class="text_19_gray">Address(es) of bankrupt</span></th>
+                        <th colspan="1" class="table_text_black link_16_right"><a class="link_16_right" href="bankruptcy_amendment_step_2_amend_address">Edit</a></th>
+                    </tr>
+                    {% for address in data.residence %}
+                        <tr>
+                            <td width="45%" style="vertical-align: top;"><span class="text_review_table_bold">Address {{loop.index}}</span></td>
+                            <td width="50%"><span class="text_review_table">
+                                {% for line in address.address_lines %}
+                                {{line}}
+                                {% endfor %}<br/>
+                                {{address.county}}<br/>
+                                {{address.postcode}}
+                            </span>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </table>
+                {% endif %}
+
+                <div class="spacer_30"></div>
+
+                <table class="review_table">
+
+                    <tr>
+                        <th colspan="2" class="table_text_black"><span class="text_19_gray">Court details</span></th>
+                        <th colspan="1" class="table_text_black link_16_right"><a class="link_16_right" href="#">Edit</a></th>
+                    </tr>
+                    <tr>
+                        <td width="45%"><span class="text_review_table_bold">Key number</span></td>
+                        <td width="50%"><span class="text_review_table"> </span></td>
+                    </tr>
+                    <tr>
+                        <td colspan="1"><span class="text_review_table_bold">Court name</span></td>
+                        <td colspan="2"><span class="text_review_table">{{data.legal_body}}</span></td>
+                    </tr>
+                    <tr>
+                        <td colspan="1"><span class="text_review_table_bold">Number</span></td>
+                        <td colspan="2"><span class="text_review_table">{{data.legal_body_ref}}</span></td>
+                    </tr>
+                    <tr>
+                        <td colspan="1"><span class="text_review_table_bold">Year</span></td>
+                        <td colspan="2"><span class="text_review_table">2014</span></td>
+                    </tr>
+
+                </table>
+
+                <div class="spacer_30"></div>
+
+
+                <div><a href="bankruptcy_amendment_step_1" class="link_16">Retrieve details with another registration number</a></div>
+
+                <div class="spacer_20"></div>
+
+                <div><a href="#" class="link_16">Reject application</a></div>
+            </div>
+        </form>
+        <!-- ///////////////////////////////// end of data entry form ///////////////////////////////// -->
+
+        <!-- /////////////////////////////////  Include image tool ///////////////////////////////// -->
+
+        {% include 'includes/image_view_body.html' %}
+
+        <!-- ///////////////////////////////// End of image tool ///////////////////////////////// -->
+    </div>
+    <script>
+    jQuery( document ).ready(function() {
+        swap('{{current_page}}');
+    });
+</script>
+
+{% endblock %}
