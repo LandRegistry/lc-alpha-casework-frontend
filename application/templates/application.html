@@ -1,247 +1,116 @@
 {% extends "/page_template/base.html" %}
+
 {% block maincontent %}
-            <div class="breadcrumb">
-                <ol>
-                    <li><a href="/">Home</a></li>
-                    <li><a href="/get_list?appn={{application_type}}">{{page_title}}</a></li>
-                </ol>
-            </div>
-            <div class="spacer_10"></div>
 
-            <h1 class="title_36">Bankruptcy registration</h1>
+<div class="breadcrumb">
+    <ol>
+        <li><a class="breadcrumb_links" href="/">Home</a></li>
+        <li><a class="breadcrumb_links" href="/">Bankruptcies</a></li>
+        <li><a class="breadcrumb_links" href="/get_list?appn=bank_regn">List of registration applications</a></li>
+        <li class="breadcrumb_no_arrow"><span>Bankruptcy registration</span></li>
+    </ol>
+</div>
+<div class="spacer_10"></div>
 
-            <div class="spacer_5"></div>
+<h1 class="title_36">Bankruptcy registration</h1>
 
-            <div class="text_16_gray">
-                <span class="text_16_bold">1. Debtor details</span>
-                &nbsp;&nbsp;
-                2. Debtor address
-                &nbsp;&nbsp;
-                3. Court details
-                &nbsp;&nbsp;
-                4. Verify registration
-            </div>
-            <div class="spacer_30"></div>
+<div class="spacer_5"></div>
 
-    <div class="grid-row">
+<div class="text_16_gray">
+    <span class="text_16_bold">1. Debtor details</span>
+    &nbsp;&nbsp;
+    2. Debtor address
+    &nbsp;&nbsp;
+    3. Court details
+    &nbsp;&nbsp;
+    4. Verify registration
+</div>
+<div class="spacer_30"></div>
 
-        <!-- ///////////////////////////////// column two-thirds ///////////////////////////////// -->
+<div class="grid-row">
 
-        <div class="column-form">
+    <!-- ///////////////////////////////// data entry form ///////////////////////////////// -->
+    <form action="/process_banks_name" method="POST">
+    <div class="column-form">
 
-            <p class="text_24_bold">1. Debtor details</p>
+        <p class="text_24_bold">1. Debtor details</p>
 
-            <div class="spacer_20"></div>
+        <div class="spacer_20"></div>
 
-            <div class="form">
-                <label class="form_label">Forename(s)</label>
-                <input class="form_textfield" type="text">
-            </div>
-
-            <div class="form">
-                <label class="form_label">Surname</label>
-                <input class="form_textfield" type="text">
-            </div>
-
-            <div class="spacer_5"></div>
-
-            <div id="name1">
-
-                <div class="form">
-                    <label class="form_label">Alternative forename(s)</label>
-                    <input class="form_textfield" type="text">
-                </div>
-
-                <div class="form">
-                    <label class="form_label">Alternative surname</label>
-                    <input class="form_textfield" type="text">
-                </div>
-
-                <div class="spacer_5"></div>
-
-            </div>
-
-            <div><a href="#here" onclick="document.getElementById('name1').style.display = 'inline-block';" class="link_16" id="#">Add alternative name</a></div>
-
-            <div class="spacer_20"></div>
-
-            <div class="form">
-                <label class="form_label">Occupation</label>
-                <input class="form_textfield" type="text">
-            </div>
-
-            <div class="spacer_30"></div>
-
-            <div>
-                <table>
-                    <tr>
-                        <td width="50%" class="no-line">
-                            <a href="bankruptcy_registration_step_2"><input type="submit" value="Continue" class="form_button"></a>
-                        </td>
-                        <td width="50%" class="custom_3">
-                            <a href="#" class="link_16">Reject application</a>
-                        </td>
-                    </tr>
-                </table>
-            </div>
-
+        <div class="form">
+            <label class="form_label" for="forename" >Forename(s)</label>
+            <input class="form_textfield" type="text" id="forename" name="forename" value="{{forename}}">
         </div>
 
-        <!-- ///////////////////////////////// end of column-form ///////////////////////////////// -->
-
-        <!-- ///////////////////////////////// Script for page 1 in two columns ///////////////////////////////// -->
-
-        <div id="page1">
-
-            <div id="zoomIn">
-
-                <!-- ///////////////////////////////// column-scan ///////////////////////////////// -->
-
-                <div class="column-scan">
-
-                    <div>
-                        <table>
-                            <tr>
-                                <td class="magnify_glass">
-                                    <a href="javascript:show('zoomOut')"><img src="../../../../../public/images/MGlass_1.png" alt="Zoom in"></a>
-                                </td>
-                                <td class="pagination_scanned_pages custom_2">
-                                    <span>Page 1 of 2 &nbsp; <a class="link_14" href="javascript:show('page2')">Next</a></span>
-                                </td>
-                            </tr>
-                        </table>
-                    </div>
-
-                    <a href="javascript:show('zoomOut')">
-                        <img class="img_resize_big" src="../../../../../public/images/WOB.jpg" alt="WOB document">
-                    </a>
-
-                </div>
-
-                <!-- ///////////////////////////////// end of column-scan ///////////////////////////////// -->
-
-                <!-- ///////////////////////////////// column-scan ///////////////////////////////// -->
-
-                <div class="column-scan-small">
-
-                    <div class="spacer_30"></div>
-
-                    <div class="spacer_5"></div>
-
-                    <img class="img_resize_small_selected" src="../../../../../public/images/WOB.jpg" alt="WOB document">
-
-                    <div class="spacer_10"></div>
-
-                    <div>
-
-                        <img onclick="show('page2');" class="img_resize_small" src="../../../../../public/images/WOB_page2.jpg" alt="WOB document">
-
-                    </div>
-
-                </div>
-
-                <!-- ///////////////////////////////// end of column-scan-small ///////////////////////////////// -->
-
-            </div>
-
-            <div  id="zoomOut">
-
-                <!-- ///////////////////////////////// column-scan ///////////////////////////////// -->
-
-                <div class="column-scan">
-
-                    <div>
-                        <table>
-                            <tr>
-                                <td class="magnify_glass">
-                                    <a href="javascript:show('zoomIn')"><img src="../../../../../public/images/MGlass_2.png" alt="Zoom 0ut"></a>
-                                </td>
-                                <td class="pagination_scanned_pages custom_2">
-                                    <span>Page 1 of 2 &nbsp; <a class="link_14" href="javascript:show('page2')">Next</a></span>
-                                </td>
-                            </tr>
-                        </table>
-                    </div>
-
-                    <a href="javascript:show('zoomIn')">
-                        <img class="img_resize_big_magnified" src="../../../../../public/images/WOB2.jpg" alt="WOB document">
-                    </a>
-
-                </div>
-
-                <!-- ///////////////////////////////// end of column-scan ///////////////////////////////// -->
-
-                <!-- ///////////////////////////////// column-scan ///////////////////////////////// -->
-
-                <div class="column-scan-small">
-
-                    <div class="spacer_30"></div>
-
-                    <div class="spacer_5"></div>
-
-                    <div style="position:relative">
-
-                        <img class="img_resize_small_selected" src="../../../../../public/images/WOB.jpg" alt="WOB document">
-
-                        <div class="selected_area_1"></div>
-
-                    </div>
-
-                    <div class="spacer_10"></div>
-
-                    <div >
-
-                        <img onclick="show('page2');" class="img_resize_small" src="../../../../../public/images/WOB_page2.jpg" alt="WOB document">
-
-                    </div>
-
-                </div>
-
-                <!-- ///////////////////////////////// end of column-scan-small ///////////////////////////////// -->
-
-            </div>
-
+        <div class="form">
+            <label class="form_label" for="surname">Surname</label>
+            <input class="form_textfield" type="text" id="surname" name="surname" value="{{surname}}">
         </div>
 
-        <!-- ///////////////////////////////// End of script for page 1 in two columns ///////////////////////////////// -->
+        <div class="spacer_5"></div>
 
+        <div id="name1">
+            <div class="form">
+                <label class="form_label">Alternative forename(s)</label>
+                <input class="form_textfield" type="text" id="aliasforename" name="aliasforename" value="{{aliasforename}}">
+            </div>
 
+            <div class="form">
+                <label class="form_label">Alternative surname</label>
+                <input class="form_textfield" type="text" id="aliassurname" name="aliassurname" value="{{aliassurname}}">
+            </div>
+            <div class="spacer_5"></div>
+        </div>
+
+        <div><a href="#here" onclick="document.getElementById('name1').style.display = 'inline-block';" class="link_16" id="#">Add alternative name</a></div>
+
+        <div class="spacer_20"></div>
+
+        <div class="form">
+            <label class="form_label" for="occupation">Occupation</label>
+            <input class="form_textfield" type="text" id="occupation" name="occupation" value="{{occupation}}">
+        </div>
+
+        <div class="spacer_30"></div>
+
+        <div>
+            <table>
+                <tr>
+                    <td width="50%" class="no-line">
+                        <a href="bankruptcy_registration_step_2"><input type="submit" value="Continue" class="form_button"></a>
+                    </td>
+                    <td width="50%" class="custom_3">
+                        <a href="#" class="link_16">Reject application</a>
+                    </td>
+                </tr>
+            </table>
+        </div>
 
     </div>
+    </form>
+    <!-- ///////////////////////////////// end of data entry form ///////////////////////////////// -->
+
+    <!-- /////////////////////////////////  Include image tool ///////////////////////////////// -->
+
+    {% include 'includes/image_view_body.html' %}
+
+    <!-- ///////////////////////////////// End of image tool ///////////////////////////////// -->
 
 </div>
 
 
-            <div class="row col-sm-12" style="margin-top:10px">
-                <h3>Bankruptcy Registration</h3><br/>
-                {% include 'includes/image_view_body.html' %}
-                <div id="form_data" class="col-sm-6">
-                    <h5>Step 1 of 3</h5>
-                    <h4>Debtor name and details</h4>
-                    <div>
-                        <a href="/complex_name" id="enter_complex"><p>Enter a Complex Name</p></a>
-                    </div>
-                    <form action="/process_banks_name" method="POST">
-                        <div class="form-group">
-                            <label style="margin-top:1em" for="forename">Forename(s)</label>
-                            <input class="form-control defined" type="text" id="forename" name="forename" value="{{forename}}">
-                        </div>
-                        <div class="form-group">
-                            <label for="surname">Surname</label>
-                            <input class="form-control defined" type="text" id="surname" name="surname" value="{{surname}}">
-                        </div>
-                        <input id="addname" onclick="nameClick(this)" class="btn btn-primary pull-right"
-                               type="button" value="Add alias name">
-                        <div>
-                            <div class="form-group">
-                                <label style="margin-top:3em" for="occupation">Occupation</label>
-                                <input class="form-control defined" type="text" id="occupation" name="occupation" value="{{occupation}}">
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <input class="btn-lg pull-right btn-primary" id="continue" type="submit" value="Continue">
-                        </div>
-                    </form>
-                </div>
-            </div>
+
+<script>
+
+	function add_additional_name()
+	{
+	  if (document.getElementById("add").style.display == 'block'){
+	    document.getElementById("name1").style.display = 'none';
+	  }
+	}
+
+	document.getElementById("name1").style.display = 'none';
+
+</script>
+
 {% endblock %}
