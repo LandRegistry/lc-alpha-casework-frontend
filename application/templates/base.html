@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Land Charges</title>
+    {% include 'includes/ext_references.html' %}
+    {% include 'includes/image_view_head.html' %}
+    {% block page_specific_head %} {% endblock %}
+</head>
+<body>
+<div class="header_container">
+    <div class="header_box" style="background: #002a15">
+        <div class="header_logo"><a href="../../../../../index"><img src="/static/images/logo_3.png" alt="Land Registry"></a></div>
+        <div class="header_title">Digital Land Charges</div>
+        <div class="header_user">John Smith &nbsp;<span class="separator_2">|</span>&nbsp; <a class="logout" href="splash">Logout</a></div>
+    </div>
+</div>
+<div class="header_container_2">
+    <div class="header_box_line"></div>
+</div>
+<div id="content" >
+    {% block maincontent %} {% endblock %}
+</div>
+</body>
+</html>
