@@ -36,8 +36,9 @@
         {% for i in range(6) %}
         <div class="form">
             <label class="form_label" for="fullname{{loop.index-1}}">Full Name {{loop.index}}</label>
-            <input class="form_textfield" type="text" id="fullname{{loop.index-1}}" name="fullname{{loop.index-1}}" tabindex=1 value="{{fullname}}"/>
-            <label class="form_label" for="comp{{loop.index-1}}">Search as a complex name</label><input style="margin-left:10px" type="checkbox" name="comp{{loop.index-1}}" id="comp{{loop.index-1}}" tabindex=2 value="comp{{loop.index-1}}"/>
+            <input class="form_textfield" type="text" id="fullname{{loop.index-1}}" name="fullname{{loop.index-1}}" autofocus value="{{fullname}}"/>
+            <label class="form_label" for="comp{{loop.index-1}}">Search as a complex name</label>
+            <input style="margin-left:10px" type="checkbox" name="comp{{loop.index-1}}" id="comp{{loop.index-1}}" value="comp{{loop.index-1}}"/>
         </div>
         {% endfor %}
 

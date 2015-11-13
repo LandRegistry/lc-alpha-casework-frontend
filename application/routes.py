@@ -771,7 +771,7 @@ def process_search(search_type):
 def process_search_name(search_type):
     logging.info('Entering search name')
     application_type = session['application_type']
-    application = session['application_dict']
+    application_dict = session['application_dict']
 
     if 'all_counties' in request.form:
         counties = []
@@ -826,16 +826,51 @@ def process_search_name(search_type):
                 parameters['search_items'].append(search_item)
         counter += 1
 
-    print(parameters)
-    application['search_criteria'] = parameters
-    print(application)
-    return render_template('search_customer.html', images=session['images'], application=application,
+    application_dict['search_criteria'] = parameters
+    return render_template('search_customer.html', images=session['images'], application=application_dict,
                            application_type=application_type, current_page=0)
+
+
+@app.route('/submit_search', methods=['POST'])
+def submit_search():
+    logging.info('Entering submit search')
+    application_type = session['application_type']
+    application = session['application_dict']
+
+    customer = {
+        'key_number': request.form['key_no'],
+        'name': request.form['customer_name'],
+        'address': request.form['customer_address'],
+        'reference': request.form['customer_ref']
+    }
+
+    search_data = {
+        'customer': customer,
+        'document_id': application['document_id'],
+        'parameters': application['search_criteria']
+    }
+
+    session['search_data'] = search_data
+    url = app.config['BANKRUPTCY_DATABASE_URL'] + '/search'
+    headers = {'Content-Type': 'application/json'}
+    response = requests.post(url, data=json.dumps(search_data), headers=headers)
+
+    if response.status_code == 200:
+        search_response = response.json()
+        set_session_variables({'search_result': search_response})
+        delete_from_worklist(session['worklist_id'])
+    elif response.status_code == 404:
+        session['search_result'] = []
+        delete_from_worklist(session['worklist_id'])
+    else:
+        logging.error('Unexpected return code: %d', response.status_code)
+        return render_template('error.html')
+
+    return render_template('confirmation.html', application_type=application_type, application=application)
 
 
 @app.route('/search_result', methods=['GET'])
 def search_result():
-    print(session['search_result'])
 
     display = []
     for result in session['search_result']:
@@ -944,6 +979,7 @@ def complex_name():
 
     return render_template('complex_name_reg.html', images=session['images'], application=application,
                            application_type=application_type, current_page=0)
+
 
 @app.route('/complex_retrieve', methods=['POST'])
 def complex_name_retrieve():

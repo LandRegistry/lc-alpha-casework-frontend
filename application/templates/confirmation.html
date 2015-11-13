@@ -1,88 +1,108 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8"/>
-    <title>Land Charges</title>
-    {% include 'includes/ext_references.html' %}
-</head>
-<body>
-<input type="hidden" name="requested_list" value="{{requested_list}}"/>
-{% if application_type == 'amend'%}
-{% set page_title = 'Bankruptcy Amendment' %}
-{% set trail = 'Amendments' %}
-{% elif application_type == 'cancel' %}
-{% set page_title = 'Bankruptcy Cancellation' %}
-{% set trail = 'Cancellations' %}
-{% elif application_type == 'bank_regn' %}
-{% set page_title = 'Bankruptcy Registrations' %}
-{% set trail = 'Bankruptcy Registrations' %}
+{% extends "/page_template/base.html" %}
+{% block maincontent %}
+
+{% if application['application_type'] == 'bank_regn' %}
+{% set page_title = 'registration' %}
+{% elif application['application_type'] == 'WO(B)' %}
+{% set page_title = 'registration' %}
+{% elif application['application_type'] == 'PA(B)' %}
+{% set page_title = 'registration' %}
+{% elif application['application_type'] == 'Amend' %}
+{% set page_title = 'amendment' %}
+{% elif application['application_type'] == 'Cancel' %}
+{% set page_title = 'cancellation' %}
+{% elif application['application_type'] == 'Search' %}
+{% set page_title = 'search' %}
+{% elif application['application_type'] == 'OC' %}
+{% set page_title = 'office copy' %}
 {% endif %}
-<div id="main" class="container" style="margin-top:20px !important;">
-    {% include 'includes/lc_menu.html' %}
-    <div class="container">
-        <div class="row">
-            <div class="row col-sm-12">
-                <ul class="breadcrumb">
-                    <li><a href="/">Home</a></li>
-                    <li><a href="/get_list?appn={{application_type}}">{{trail}}</a></li>
-                </ul>
-            </div>
-            <div class="row col-sm-12" style="margin-top:50px">
-                    <div class="col-sm-2"></div>
-                    <div class="col-sm-8 box text-center" style="display:table; table-layout:fixed">
 
-                            <div class="col-sm-3" style="display:table-cell; vertical-align:middle; float:none;">
-                               <i class="glyphicon glyphicon-ok-circle gi-5x gi-tick" style="float:right" aria-hidden="true" ></i>
-                            </div>
-                            <div class="col-sm-8" style="display:table-cell; vertical-align:middle; float:none;">
-                                <h3 id="message" style="margin-left:20px; font-size:3em; color: #ffffff; float:left">
-                                    Application Complete</h3>
-                            </div><div class="col-sm-1"></div>
-                    </div>
-                    <div class="col-sm-2"></div>
-            </div>
-            <div class="row col-sm-12 text-center" style="margin-top:10px">
-                {% if application_type == 'cancel' %}
-                    {% if data|length <= 1 %}
-                    <h2>The following application has been cancelled:</h2>
-                    {% else %}
-                    <h2>The following applications have been cancelled:</h2>
-                    {% endif %}
-                    {% for n in data %}
-                    <h3>{{n}}</h3>
-                    {% endfor %}
-                    <br/>
-                    <h3 id="canceldate">Cancelled on {{date}}</h3>
-                {% elif application_type == 'search' %}
-                    <h3>The search result will be issued to the customer.</h3>
-                    <h4>If you wish to review the result click the link below</h4>
-                        <a href="/search_result" id="search_result" target="new">View Search Result</a>
-                {% else %}
-                    {% if data|length <= 1 %}
-                    <h2>Your application reference number is:</h2>
-                    {% else %}
-                    <h2>Your application reference numbers are:</h2>
-                    {% endif %}
-                    {% for n in data %}
-                    <h3>{{n}}</h3>
-                    {% endfor %}
-                    <br/>
-                    <h3 id="registereddate">Registered on {{date}}</h3>
-                    {% if acknowledgement != 'no' %}
-                    <a href="/notification" id="notification" target="new">View Notification</a>
-                    {% endif %}
-                {% endif %}
-            </div>
-
-        </div>
-        <div>
-            {% if application_type == 'rectify' %}
-                <a id="return_home" class="btn-lg pull-right btn-primary" href="/">Return to Worklist</a>
-            {% else %}
-                <a id="return_to_worklist" class="btn-lg pull-right btn-primary" href="/get_list?appn={{application_type}}">Return to Worklist</a>
-            {% endif %}
-        </div>
+    <div class="breadcrumb">
+        <ol>
+            <li><a class="breadcrumb_links" href="/">Home</a></li>
+            <li><a class="breadcrumb_links" href="/">Bankruptcies</a></li>
+            <li><a class="breadcrumb_links" href="/get_list?appn={{application_type}}">List of {{page_title}} applications</a></li>
+            <li class="breadcrumb_no_arrow"><span>Bankruptcy {{page_title}}</span></li>
+        </ol>
     </div>
-</div>
-</body>
-</html>
+
+    <div class="spacer_5"></div>
+
+    <div class="grid-row">
+
+        <!-- ///////////////////////////////// column two-thirds ///////////////////////////////// -->
+
+        <div class="column-two-thirds">
+
+            <p class="steps">Bankruptcy {{page_title}}</p>
+
+            <h1 class="title_36">Confirmation</h1>
+
+            <div class="spacer_20"></div>
+
+            <div class="confirmation">
+
+                <div class="spacer_30"></div>
+
+                <div class="spacer_10"></div>
+
+                    <span class="text_confirmation"><img src="/static/images/tick_2.png" style="padding: 0 10px 0 0" alt="">
+
+                        The backruptcy {{page_title}} application <br>have been successfully submitted
+
+                    </span>
+
+                <div class="spacer_10"></div>
+
+                <p class="text_confirmation_2">
+                    {% if data|length > 0 %}
+                    Reference(s):
+                    {% for n in data %}
+                    {{n}}
+                    {% if loop.index < data|length %}
+                    ,
+                    {% endif %}
+                    {% endfor %}
+                    {% endif %}
+                    {% if application_type == 'search' %}
+                    <a href="/search_result" id="search_result" style="text-decoration: none; color: white;" target="new">Click to view search result</a>
+                    {% endif %}
+                </p>
+
+                <div class="spacer_10"></div>
+
+            </div>
+
+            <div class="spacer_30"></div>
+
+            <p class="text_16_bold">What is next?</p>
+
+            <div class="spacer_10"></div>
+
+            <p class="text_16">Land Registry systems will now print the {{page_title}} confirmation and send to the applicant. </p>
+
+            <div class="spacer_20"></div>
+
+            <p><a class="link_16" href="/get_list?appn={{application_type}}">List of {{page_title}} applications</a></p>
+
+            <p><a class="link_16" href="/">Bankruptcies</a></p>
+
+            <p><a class="link_16" href="/">Home</a></p>
+
+        </div>
+
+        <!-- ///////////////////////////////// end of column two-thirds ///////////////////////////////// -->
+
+        <!-- ///////////////////////////////// column-third ///////////////////////////////// -->
+
+        <div class="column-third">
+
+
+
+        </div>
+
+        <!-- ///////////////////////////////// end of column-third ///////////////////////////////// -->
+
+    </div>
+
+{% endblock %}
