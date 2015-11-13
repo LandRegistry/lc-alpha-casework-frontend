@@ -1,17 +1,10 @@
 {% extends "/page_template/base.html" %}
 
 {% block maincontent %}
-{% if application_type == 'amend'%}
-{% set page_title = 'Bankruptcy Amendment' %}
-{% set trail = 'Amendments' %}
-{% elif application_type == 'cancel' %}
-{% set page_title = 'Bankruptcy Cancellation' %}
-{% set trail = 'Cancellations' %}
-{% endif %}
     <div class="breadcrumb">
         <ol>
             <li><a class="breadcrumb_links" href="/">Home</a></li>
-            <li><a class="breadcrumb_links" href="bankruptcies">Bankruptcies</a></li>
+            <li><a class="breadcrumb_links" href="/">Bankruptcies</a></li>
             <li><a class="breadcrumb_links" href="/get_list?appn=amend">List of amendment applications</a></li>
             <li class="breadcrumb_no_arrow"><span>Bankruptcy amendment</span></li>
         </ol>
