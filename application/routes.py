@@ -5,12 +5,12 @@ from datetime import datetime
 import logging
 import json
 
-
-@app.errorhandler(Exception)
-def error_handler(err):
-    logging.error('========== Error Caught ===========')
-    logging.error(err)
-    return render_template('error.html', error_msg=str(err)), 500
+#
+# @app.errorhandler(Exception)
+# def error_handler(err):
+#     logging.error('========== Error Caught ===========')
+#     logging.error(err)
+#     return render_template('error.html', error_msg=str(err)), 500
 
 
 @app.route('/', methods=["GET"])
@@ -298,7 +298,8 @@ def update_name_details():
     application_dict['occupation'] = occupation
 
     return render_template('regn_amend.html', application_type=application_type, data=application_dict,
-                           images=image_list, current_page=0, original_image_data=session['original_image_data'])
+                           images=image_list, current_page=0, original_image_data=session['original_image_data'],
+                           data_amended='true')
 
 
 # TODO: renamed as 'complete', move to back-end?
@@ -335,50 +336,48 @@ def delete_from_worklist(application_id):
 #     print(application)
 
 
-@app.route('/amend_address/<addr>', methods=["GET"])
-def show_address(addr):
+@app.route('/amend_address', methods=["GET"])
+def show_address():
     application_type = session['application_type']
     application_dict = session['application_dict']
     image_list = session['images']
-
-    if addr == 'new':
-        address = addr
-    else:
-        address = int(addr)
 
     return render_template('regn_address.html', application_type=application_type, data=application_dict,
-                           images=image_list, current_page=0, addr=address)
+                           images=image_list, current_page=0)
 
 
-@app.route('/update_address/<addr>', methods=["POST"])
-def update_address_details(addr):
+@app.route('/update_address', methods=["POST"])
+def update_address_details():
     application_type = session['application_type']
     application_dict = session['application_dict']
     image_list = session['images']
+    amended_addresses = []
+    address_no = 1
 
-    address = {'address_lines': []}
-    if 'address1' in request.form and request.form['address1'] != '':
-        address['address_lines'].append(request.form['address1'])
-    if 'address2' in request.form and request.form['address2'] != '':
-        address['address_lines'].append(request.form['address2'])
-    if 'address3' in request.form and request.form['address3'] != '':
-        address['address_lines'].append(request.form['address3'])
-    if 'address4' in request.form and request.form['address4'] != '':
-        address['address_lines'].append(request.form['address4'])
-    if 'address5' in request.form and request.form['address5'] != '':
-        address['address_lines'].append(request.form['address5'])
-    if 'address6' in request.form and request.form['address6'] != '':
-        address['address_lines'].append(request.form['address6'])
+    # update dictionary with any address amendments
+    while 'address_{:s}'.format(str(address_no)) in request.form:
 
-    address['county'] = request.form['county']
-    address['postcode'] = request.form['postcode']
-    if addr == 'new':
-        application_dict['residence'].append(address)
+        address = {'address_lines': []}
+        address['address_lines'].append(request.form['add_{:s}_line1'.format(str(address_no))])
+        address['address_lines'].append(request.form['add_{:s}_line2'.format(str(address_no))])
+        address['address_lines'].append(request.form['add_{:s}_line3'.format(str(address_no))])
+        address['county'] = request.form['add_{:s}_county'.format(str(address_no))]
+        address['postcode'] = request.form['add_{:s}_postcode'.format(str(address_no))]
+        amended_addresses.append(address)
+        address_no += 1
+
+    application_dict['residence'] = amended_addresses
+
+    # check if user wants to enter and additional address
+    if request.form['add_address'] == 'yes':
+        new_address = {'county': '', 'postcode': '', 'address_lines': []}
+        application_dict['residence'].append(new_address)
+        return render_template('regn_address.html', application_type=application_type, data=application_dict,
+                               images=image_list, current_page=0)
     else:
-        application_dict['residence'][int(addr)] = address
-
-    return render_template('regn_amend.html', application_type=application_type, data=application_dict,
-                           images=image_list, current_page=0, original_image_data=session['original_image_data'])
+        return render_template('regn_amend.html', application_type=application_type, data=application_dict,
+                               images=image_list, current_page=0, original_image_data=session['original_image_data'],
+                               data_amended='true')
 
 
 @app.route('/remove_address/<int:addr>', methods=["GET"])
@@ -389,8 +388,8 @@ def remove_address(addr):
 
     del application_dict['residence'][addr]
 
-    return render_template('regn_amend.html', application_type=application_type, data=application_dict,
-                           images=image_list, current_page=0, original_image_data=session['original_image_data'])
+    return render_template('regn_address.html', application_type=application_type, data=application_dict,
+                           images=image_list, current_page=0,data_amended='true')
 
 
 @app.route('/amend_alias/<name_index>', methods=["GET"])
@@ -461,7 +460,8 @@ def update_court():
     application_dict['legal_body_ref'] = request.form['ref'].strip()
 
     return render_template('regn_amend.html', application_type=application_type, data=application_dict,
-                           images=image_list, current_page=0, original_image_data=session['original_image_data'])
+                           images=image_list, current_page=0, original_image_data=session['original_image_data'],
+                           data_amended='true')
 
 
 @app.route('/process_banks_name', methods=["POST"])
