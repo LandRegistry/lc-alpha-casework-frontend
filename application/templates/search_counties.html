@@ -74,6 +74,15 @@
         jQuery('#search_area').val('')
     }
 
+    jQuery(document).ready(function(){
+    jQuery("#hide").click(function(){
+        jQuery("#areas").hide();
+    });
+    jQuery("#show").click(function(){
+        jQuery("#areas").show();
+    });
+});
+
 </script>
 
 {% endblock %}
@@ -96,40 +105,55 @@
 <div class="text_16_gray">
     <span class="text_16_no_link_style">1. Name(s) to be searched</span>
     &nbsp;&nbsp;
-    {% if application['search_criteria']['search_type'] == 'bankruptcy' %}
-    <span class="text_16_bold">2. Customer details</span>
-    {% else %}
-    <span class="text_16_bold">3. Customer details</span>
-    {% endif %}
+    <span class="text_16_bold">2. Counties to be searched</span>
+    &nbsp;&nbsp;
+    3. Customer details
 </div>
 <div class="spacer_30"></div>
 
 <div class="grid-row">
 
     <!-- ///////////////////////////////// data entry form ///////////////////////////////// -->
-    <form action="/submit_search" method="POST">
+    <form action="/process_search_county" method="POST">
     <div class="column-form">
 
-        <p class="text_24_bold">2. Customer details</p>
+        <p class="text_24_bold">2. Counties to be searched</p>
 
         <div class="spacer_20"></div>
 
-        <div class="form">
-            <label class="form_label" for="key_no">Key number</label>
-            <input class="form_textfield" type="text" id="key_no" name="key_no" autofocus
-                   onkeyup="getCustomerDetails(this);" onblur="getCustomerDetails(this);" value="{{key_no}}"/>
-        </div>
-        <div class="form">
-            <label class="form_label" for="customer_name">Customer name</label>
-            <input class="form_textfield" type="text" id="customer_name" name="customer_name" value="{{customer_name}}"/>
-        </div>
-        <div class="form">
-            <label class="form_label" for="customer_address">Customer address</label>
-            <textarea class="form_textarea" rows="8" id="customer_address" name="customer_address"></textarea>
-        </div>
-        <div class="form">
-            <label class="form_label" for="customer_ref">Customer reference</label>
-            <input class="form_textfield" type="text" id="customer_ref" name="customer_ref" value="{{customer_ref}}"/>
+        <label class="text_16">Do you wish to perform an all counties search?</label>
+
+        <div class="spacer_10"></div>
+
+        <fieldset class="inline">
+            <div>
+                <label class="block-label">
+                    <input type="radio" value="yes" id="hide" name="all_counties">
+                    <span class="text_16">Yes</span>
+                </label>
+            </div>
+            <div>
+                <label class="block-label">
+                    <input type="radio" value="no" id="show" checked="checked" name="all_counties"><span class="text_16">No</span>
+                </label>
+            </div>
+        </fieldset>
+
+        <div class="spacer_30"></div>
+
+        <div id="areas">
+            <div class="form">
+                <label class="form_label" for="search_area">Search area</label>
+                <input class="form_textfield" type="text" id="search_area" name="area" onclick="clear_area();"/>
+            </div>
+
+            <a class="form_button_6" href="#" style="text-decoration: none;" onclick="addArea();" id="add_area" >Add Area </a>
+
+
+            <div class="form">
+                <label class="form_label" for="area_list">List of Areas to Search</label>
+                <textarea class="form_textarea" rows="8" id="area_list" name="area_list"></textarea>
+            </div>
         </div>
 
         <div class="spacer_30"></div>
@@ -157,7 +181,24 @@
 
     <!-- ///////////////////////////////// End of image tool ///////////////////////////////// -->
 
-</div>
+<script>
+    jQuery.ajax({
+        url: HOST + ':5004/counties',
+        type: 'GET',
+        counties: {},
+        success: function( counties ) {
+            jQuery( "#search_area" ).autocomplete({
+              source: function( request, response ) {
+                var matcher = new RegExp( "^" + jQuery.ui.autocomplete.escapeRegex( request.term ), "i" );
+                response( jQuery.grep( counties, function( item ){
+                      return matcher.test( item );
+                    }) );
+                }
+            });
+        }
+    });
 
+</script>
+</div>
 
 {% endblock %}

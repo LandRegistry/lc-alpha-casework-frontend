@@ -2,6 +2,11 @@
 
 {% block maincontent %}
 
+{% if application['application_type'] == 'Search' %}
+    {% set search_type = 'banks' %}
+{% else %}
+    {% set search_type = 'full' %}
+{% endif %}
 <div class="breadcrumb">
     <ol>
         <li><a class="breadcrumb_links" href="/">Home</a></li>
@@ -18,15 +23,23 @@
 
 <div class="text_16_gray">
     <span class="text_16_bold">1. Name(s) to be searched</span>
+    {% if search_type == 'banks' %}
     &nbsp;&nbsp;
     2. Customer details
+    {% else %}
+    &nbsp;&nbsp;
+    2. Counties to search
+    &nbsp;&nbsp;
+    3. Customer details
+    {% endif %}
+
 </div>
 <div class="spacer_30"></div>
 
 <div class="grid-row">
 
     <!-- ///////////////////////////////// data entry form ///////////////////////////////// -->
-    <form action="/process_search_name/banks" method="POST">
+    <form action="/process_search_name/{{search_type}}" method="POST">
     <div class="column-form">
 
         <p class="text_24_bold">1. Name(s) to be searched</p>
@@ -35,10 +48,19 @@
 
         {% for i in range(6) %}
         <div class="form">
-            <label class="form_label" for="fullname{{loop.index-1}}">Full Name {{loop.index}}</label>
+            <div>
+            <label class="form_label" for="fullname{{loop.index-1}}">Full name {{loop.index}}</label>
             <input class="form_textfield" type="text" id="fullname{{loop.index-1}}" name="fullname{{loop.index-1}}" autofocus value="{{fullname}}"/>
             <label class="form_label" for="comp{{loop.index-1}}">Search as a complex name</label>
             <input style="margin-left:10px" type="checkbox" name="comp{{loop.index-1}}" id="comp{{loop.index-1}}" value="comp{{loop.index-1}}"/>
+            </div>
+            {% if search_type == 'full' %}
+            <label class="form_label" for="year_from{{loop.index-1}}">Search from</label>
+            <input class="form_textfield_review_year" type="text" id="year_from{{loop.index-1}}" name="year_from{{loop.index-1}}" value="{{years.year_from}}"/>
+            <label class="form_label" style="margin-left: 90px" for="year_to{{loop.index-1}}">Search to</label>
+            <input class="form_textfield_review_year" type="text" id="year_to{{loop.index-1}}" name="year_to{{loop.index-1}}" value="{{years.year_to}}"/>
+            {% endif %}
+
         </div>
         {% endfor %}
 

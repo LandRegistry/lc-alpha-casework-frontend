@@ -75,7 +75,7 @@ def get_application(application_type, appn_id, appn_type):
         images.append(app.config["DOCUMENT_URL"] + image)
 
     if appn_type == "Full Search":
-        template = page_required("full_search")
+        template = page_required("search")
     else:
         template = page_required(application_type)
 
@@ -773,12 +773,14 @@ def process_search_name(search_type):
     application_type = session['application_type']
     application_dict = session['application_dict']
 
+    """
     if 'all_counties' in request.form:
         counties = []
     elif 'area_list' in request.form and request.form['area_list'] != '':
         counties = request.form['area_list'].upper().strip('\r\n').split()
     else:
-        counties = []
+        counties = []"""
+    counties = []
     parameters = {
         'counties': counties,
         'search_type': "bankruptcy" if search_type == 'banks' else 'full',
@@ -827,8 +829,13 @@ def process_search_name(search_type):
         counter += 1
 
     application_dict['search_criteria'] = parameters
-    return render_template('search_customer.html', images=session['images'], application=application_dict,
-                           application_type=application_type, current_page=0)
+
+    if search_type == 'full':
+        return render_template('search_counties.html', images=session['images'], application=application_dict,
+                               application_type=application_type, current_page=0)
+    else:
+        return render_template('search_customer.html', images=session['images'], application=application_dict,
+                               application_type=application_type, current_page=0)
 
 
 @app.route('/submit_search', methods=['POST'])
