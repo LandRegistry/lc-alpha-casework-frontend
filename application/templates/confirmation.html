@@ -1,19 +1,19 @@
 {% extends "/page_template/base.html" %}
 {% block maincontent %}
 
-{% if application['application_type'] == 'bank_regn' %}
+{% if application_type == 'bank_regn' %}
 {% set page_title = 'registration' %}
-{% elif application['application_type'] == 'WO(B)' %}
+{% elif application_type == 'WO(B)' %}
 {% set page_title = 'registration' %}
-{% elif application['application_type'] == 'PA(B)' %}
+{% elif application_type == 'PA(B)' %}
 {% set page_title = 'registration' %}
-{% elif application['application_type'] == 'Amend' %}
+{% elif application_type == 'amend' %}
 {% set page_title = 'amendment' %}
-{% elif application['application_type'] == 'Cancel' %}
+{% elif application_type == 'cancel' %}
 {% set page_title = 'cancellation' %}
-{% elif application['application_type'] == 'Search' %}
+{% elif application_type == 'search' %}
 {% set page_title = 'search' %}
-{% elif application['application_type'] == 'OC' %}
+{% elif application_type == 'oc' %}
 {% set page_title = 'office copy' %}
 {% endif %}
 

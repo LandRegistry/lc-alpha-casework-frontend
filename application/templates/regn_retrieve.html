@@ -4,33 +4,40 @@
 {% if application_type == 'amend'%}
     {% set page_title = 'Bankruptcy Amendment' %}
     {% set trail = 'Bankruptcy amendment' %}
+    {% set app_type = 'amendment' %}
 {% elif application_type == 'cancel' %}
     {% set page_title = 'Bankruptcy Cancellation' %}
     {% set trail = 'Cancellations' %}
+    {% set app_type = 'cancellation' %}
 {% elif application_type == 'oc' %}
     {% set page_title = 'Bankruptcy Official Copy' %}
     {% set trail = 'OC' %}
+    {% set app_type = 'official copy' %}
 {% endif %}
     <div class="breadcrumb">
         <ol>
             <li><a class="breadcrumb_links" href="/">Home</a></li>
             <li><a class="breadcrumb_links" href="/">Bankruptcies</a></li>
-            <li><a class="breadcrumb_links" href="/">List of amendment applications</a></li>
-            <li class="breadcrumb_no_arrow"><span>Bankruptcy amendment</span></li>
+            <li><a class="breadcrumb_links" href="/get_list?appn={{application_type}}">List of {{app_type}} applications</a></li>
+            <li class="breadcrumb_no_arrow"><span>Bankruptcy {{app_type}}</span></li>
         </ol>
     </div>
     <div class="spacer_10"></div>
 
-    <h1 class="title_36">Bankruptcy amendment</h1>
+    <h1 class="title_36">Bankruptcy {{app_type}}</h1>
 
     <div class="spacer_5"></div>
 
     <div class="text_16_gray">
         <span class="text_16_bold">1. Retrieve registration details</span>
         &nbsp;&nbsp;
+        {% if app_type == 'amendment' %}
         2. Registration details
         &nbsp;&nbsp;
         3. Review amendments
+        {% else %}
+        2. Review registration details
+        {% endif %}
     </div>
 
     <div class="spacer_30"></div>
