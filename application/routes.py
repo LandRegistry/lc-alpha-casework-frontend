@@ -1003,6 +1003,15 @@ def complex_name_retrieve():
         return render_template('error.html', error_msg=error), 500
 
 
+@app.template_filter()
+def date_time_filter(date_str, format='%d %B %Y'):
+    """convert a datetime to a different format."""
+    value = datetime.strptime(date_str, '%Y-%m-%d').date()
+    return value.strftime(format)
+
+app.jinja_env.filters['date_time_filter'] = date_time_filter
+
+
 def page_required(appn_type):
     html_page = {
         "amend": "regn_retrieve.html",
