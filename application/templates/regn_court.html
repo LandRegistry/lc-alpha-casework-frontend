@@ -1,7 +1,6 @@
 {% extends "/page_template/base.html" %}
 
 {% block maincontent %}
-<form action="/update_court" method="POST">
 {% if application_type == 'amend'%}
 {% set page_title = 'Bankruptcy Amendment' %}
 {% set trail = 'Amendments' %}
@@ -95,5 +94,4 @@
     });
 </script>
 
-</form>
 {% endblock %}

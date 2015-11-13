@@ -23,9 +23,9 @@
     <div class="spacer_5"></div>
 
     <div class="text_16_gray">
-        <span class="text_16_bold">1. Retrieve registration details</span>
+        <a href="bankruptcy_amendment_step_1" class="link_16 no_link_style">1. Retrieve registration details</a>
         &nbsp;&nbsp;
-        2. Registration details
+        <span class="text_16_bold">2. Registration details</span>
         &nbsp;&nbsp;
         3. Review amendments
     </div>
@@ -101,13 +101,14 @@
 
                 </table>
 
-               {% if data.residence|length > 0 and data.residence[0].address_lines|length > 0 %}
+
                 <div class="spacer_30"></div>
                 <table class="review_table">
                     <tr>
                         <th colspan="2" class="table_text_black"><span class="text_19_gray">Address(es) of bankrupt</span></th>
-                        <th colspan="1" class="table_text_black link_16_right"><a class="link_16_right" href="bankruptcy_amendment_step_2_amend_address">Edit</a></th>
+                        <th colspan="1" class="table_text_black link_16_right"><a class="link_16_right" href="/amend_address">Edit</a></th>
                     </tr>
+                    {% if data.residence|length > 0 and data.residence[0].address_lines|length > 0 %}
                     {% for address in data.residence %}
                         <tr>
                             <td width="45%" style="vertical-align: top;"><span class="text_review_table_bold">Address {{loop.index}}</span></td>
@@ -121,8 +122,9 @@
                             </td>
                         </tr>
                     {% endfor %}
+                    {% endif %}
                 </table>
-                {% endif %}
+
 
                 <div class="spacer_30"></div>
 
@@ -146,14 +148,41 @@
                     </tr>
                 </table>
 
+
                 <div class="spacer_30"></div>
 
+                {% if "true" == data_amended %}
+                    <table class="review_table">
+                        <tr>
+                            <td width="10%" class="no-line"><input type="checkbox" id="cb" onclick="toggle()"></td>
+                            <td width="90%" class="no-line"><span class="text_review_table">I confirm I verified the amendments</span></td>
+                        </tr>
+                    </table>
 
-                <div><a href="bankruptcy_amendment_step_1" class="link_16">Retrieve details with another registration number</a></div>
+                    <div class="spacer_10"></div>
 
-                <div class="spacer_20"></div>
+                    <div>
+                        <table>
+                            <tr>
+                                <td width="50%" class="no-line">
 
-                <div><a href="#" class="link_16">Reject application</a></div>
+                                        <input type="submit" value="Register amends" class="form_button_6" id="btn" disabled>
+                                </td>
+                                <td width="50%" class="custom_3">
+                                    <a href="#" class="link_16">Reject application</a>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                {% else %}
+
+                    <div><a href="bankruptcy_amendment_step_1" class="link_16">Retrieve details with another registration number</a></div>
+
+                    <div class="spacer_20"></div>
+
+
+                    <div><a href="#" class="link_16">Reject application</a></div>
+                {% endif %}
             </div>
         </form>
         <!-- ///////////////////////////////// end of data entry form ///////////////////////////////// -->
@@ -168,6 +197,12 @@
     jQuery( document ).ready(function() {
         swap('{{current_page}}');
     });
-</script>
+
+    function toggle() {
+        var cbChecked = document.getElementById('cb').checked;
+        document.getElementById('btn').disabled = !cbChecked;
+    }
+
+    </script>
 
 {% endblock %}
