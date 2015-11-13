@@ -363,7 +363,10 @@ def update_address_details():
         address['address_lines'].append(request.form['add_{:s}_line3'.format(str(address_no))])
         address['county'] = request.form['add_{:s}_county'.format(str(address_no))]
         address['postcode'] = request.form['add_{:s}_postcode'.format(str(address_no))]
-        amended_addresses.append(address)
+
+        if address['address_lines'][0] != '' and address['county'] != '' and address['postcode'] != '':
+            amended_addresses.append(address)
+
         address_no += 1
 
     application_dict['residence'] = amended_addresses
