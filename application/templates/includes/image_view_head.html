@@ -1,30 +1,12 @@
 
 <style>
-
-
+    
         #image_area {
             position: relative;
             overflow: hidden;
             width: 100%; /* TODO: rubbish with non-fullscreen windows */
-            /*height: 800px;*/
             border:1px solid black;
             margin-bottom: 50px;
-        }
-
-        .sheetImage {
-            position: relative;
-            width: {{100 / images|length}}%;
-            height: 100%;
-            display: inline-block;
-            margin-left: -4px;
-        }
-
-        #imageContainer {
-            position: relative;
-            padding-left: 4px;
-            width: {{images|length * 100}}%;
-            height: 100%;
-            left: -{{500 * current_page}}px;
         }
 
         .thumbnail{
@@ -41,49 +23,32 @@
             border:1px solid #0000ff;
         }
 
-        .pancontainer .zoomcontrols{ /* default CSS class for magnify controls within container */
-            position:absolute;
+        .panned_image {
+            max-width: none;
+        }
+
+        #zoom_button {
             width: 30px;
             height: 30px;
-            background: #eee;
-            border: 1px solid gray;
-        }
-
-        .pancontainer {
-            width: 100%;
-            height: 100%;
-        }
-
-        img {
-            width: 100%;
+            background-image: url('/static/images/MGlass_1.png');
+            background-size: 100% 100%;
         }
     </style>
+    <script type="text/javascript" src="/static/js/imagepan.js"></script>
     <script>
         function imgClick(sender, index) {
-            jQuery(".thumbnail").removeClass('active_thumbnail');
-            sender.classList.add("active_thumbnail");
-            jQuery("#imageContainer").animate({
-                left: (-index * 100) + '%'  //500) + 'px'
-            });
+            jQuery('.thumbnail').removeClass('active_thumbnail');
+            sender.classList.add('active_thumbnail');
+            PannerControl.showImage(index);
         }
 
-        jQuery( document ).ready(function() {
+        window.onload = function(e) {
             jQuery("#image_area").height(1.3 * jQuery("#image_area").width() );
-        });
+            PannerControl.init(document.getElementById('image_container'),
+                              document.getElementById('zoom_button'));
+        };
 
         jQuery(window).resize(function() {
             jQuery("#image_area").height(1.3 * jQuery("#image_area").width() );
         });
-    </script>
-    <script type="text/javascript" src="/static/js/imagepanner.js"></script>
-
-
-    <script type="text/javascript" src="/static/js/imagepanner.js">
-
-        /***********************************************
-        * Simple Image Panner and Zoomer- (c) Dynamic Drive DHTML code library (www.dynamicdrive.com)
-        * Please keep this notice intact
-        * Visit Dynamic Drive at www.dynamicdrive.com for this script and 100s more
-        ***********************************************/
-
     </script>
