@@ -157,7 +157,6 @@ def get_bankruptcy_details():
         'application_dict': application_json
     })
 
-    print(application_json)
     return render_template(template, application_type=application_type, data=application_json,
                            images=image_details, current_page=0, original_image_data=original_image_data, addr=0)
 
@@ -294,12 +293,50 @@ def update_name_details():
         'surname': surname
     }
 
+    alt_name = {"forenames": [],
+                "surname": ""
+                }
+
+    application_dict['debtor_alternative_name'] = []
+    forename_var = "aliasforename"
+    surname_var = "aliassurname"
+    counter = 0
+    while True:
+        forename_counter = forename_var + str(counter)
+        surname_counter = surname_var + str(counter)
+        try:
+            alt_forenames = request.form[forename_counter]
+            alt_surname = request.form[surname_counter]
+        except KeyError:
+            break
+
+        for i in alt_forenames.split():
+            alt_name['forenames'].append(i)
+
+        alt_name['surname'] = alt_surname
+        if alt_forenames != '' and alt_surname != '':
+            application_dict['debtor_alternative_name'].append(alt_name)
+
+        alt_name = {"forenames": [], "surname": ""}
+        counter += 1
+
     application_dict['debtor_name'] = new_debtor_name
     application_dict['occupation'] = occupation
 
     return render_template('regn_amend.html', application_type=application_type, data=application_dict,
                            images=image_list, current_page=0, original_image_data=session['original_image_data'],
                            data_amended='true')
+
+@app.route('/remove_alias_name/<int:name>', methods=["GET"])
+def remove_alias_name(name):
+    application_type = session['application_type']
+    application_dict = session['application_dict']
+    image_list = session['images']
+
+    del application_dict['debtor_alternative_name'][name]
+
+    return render_template('regn_name.html', application_type=application_type, data=application_dict,
+                           images=image_list, current_page=0, data_amended='true')
 
 
 # TODO: renamed as 'complete', move to back-end?
@@ -900,7 +937,6 @@ def search_result():
     display = []
     for result in session['search_result']:
         for key, value in result.items():
-            print()
             if len(value) == 0:
                 display.append({
                     'name': key,
@@ -1019,7 +1055,6 @@ def complex_name_retrieve():
 
     if response.status_code == 200 or response.status_code == 404:
         data = response.json()
-        print(data)
 
         return render_template('complex_name_select.html', images=session['images'],
                                application=session['application_type'], application_type=session['application_type'],
