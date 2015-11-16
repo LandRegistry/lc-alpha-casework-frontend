@@ -1,5 +1,21 @@
 {% extends "/page_template/base.html" %}
 
+<script>
+    var n = 0;
+    function nameClick(sender){
+        jQuery('<div class="form-group"> \
+                    <label style="margin-top:1em" for="aliasforename">Alias Forename(s)</label> \
+                    <input class="form-control" id="aliasforename' +n+ '" name="aliasforename' +n+ '" value="{{aliasforename}}"> \
+                </div> \
+                <div class="form-group"> \
+                    <label for="aliassurname">Alias Surname</label> \
+                    <input class="form-control" id="aliassurname' +n+ '" name="aliassurname' +n+ '" value="{{aliassurname}}"> \
+                </div>').insertBefore("#addname");
+                n ++;
+        console.log(n);
+    };
+</script>
+
 {% block maincontent %}
 
 {% if application['application_type'] == 'Search' %}
@@ -60,7 +76,6 @@
             <label class="form_label" style="margin-left: 90px" for="year_to{{loop.index-1}}">Search to</label>
             <input class="form_textfield_review_year" type="text" id="year_to{{loop.index-1}}" name="year_to{{loop.index-1}}" value="{{years.year_to}}"/>
             {% endif %}
-
         </div>
         {% endfor %}
 
