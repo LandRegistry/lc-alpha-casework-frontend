@@ -841,6 +841,21 @@ def process_search_name(search_type):
                                application_type=application_type, current_page=0)
 
 
+@app.route('/process_search_county', methods=['POST'])
+def process_search_county():
+    if 'all_counties' in request.form and request.form['all_counties'] == 'yes':
+        counties = []
+    elif 'area_list' in request.form and request.form['area_list'] != '':
+        counties = request.form['area_list'].upper().strip('\r\n').split()
+    else:
+        counties = []
+
+    session['application_dict']['search_criteria']['counties'] = counties
+
+    return render_template('search_customer.html', images=session['images'], application=session['application_dict'],
+                           application_type=session['application_type'], current_page=0)
+
+
 @app.route('/submit_search', methods=['POST'])
 def submit_search():
     logging.info('Entering submit search')
@@ -885,6 +900,7 @@ def search_result():
     display = []
     for result in session['search_result']:
         for key, value in result.items():
+            print()
             if len(value) == 0:
                 display.append({
                     'name': key,
@@ -893,11 +909,12 @@ def search_result():
             else:
                 display.append({
                     'name': key,
-                    'result': 'Match Found'
+                    'result': 'Match Found - Registration number is: ' + str(value)
                 })
 
     print('---------')
     print(session['search_data'])
+    print('search_result is ', session['search_result'])
     return render_template('search_result.html', display=display, results=session['search_result'], search_data=session['search_data'])
 
 
