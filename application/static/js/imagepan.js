@@ -9,11 +9,13 @@ var PannerControl = {
     offset: {x: 0, y: 0},
     initial: {x: 0, y: 0},
     currentImage: null,
+    zoomButton: null,
 
     init: function(rootElement, zoomButton) {
         var zoom = zoomButton;
         zoom.addEventListener('click', PannerControl.zoomButtonClick);
         PannerControl.rootElement = rootElement;
+        PannerControl.zoomButton = zoomButton;
 
         var divs = rootElement.querySelectorAll('.image_panner');
         for( var i = 0; i < divs.length; i++ ) {
@@ -39,7 +41,7 @@ var PannerControl = {
 
                 var info = {
                     'ar': image.height / image.width,
-                    'zoom': 1,
+                    'zoomed': false,
                     'img': image,
                     'width': panner.parentElement.clientWidth,
                     'offset': {
@@ -81,6 +83,15 @@ var PannerControl = {
         PannerControl.currentImage = PannerControl.pannerInfo[
             divs[PannerControl.currentIndex].getAttribute('id')
         ];
+
+        PannerControl.zoomButton.classList.remove('zoom_button_in', 'zoom_button_out');
+        if(PannerControl.currentImage['zoomed']) {
+            PannerControl.zoomButton.classList.add('zoom_button_out');
+
+
+        } else {
+            PannerControl.zoomButton.classList.add('zoom_button_in');
+        }
     },
 
 
@@ -135,32 +146,55 @@ var PannerControl = {
         // for now, just zoom - do we animate? have jQuery anyway...
         //  ... but for animating non-CSS properties, Velocity.js is more fun
         var image = PannerControl.pannerInfo[id];
-        var newWidth = image['width'] * 2;
-        var newHeight = newWidth * image['ar'];
 
-        image['img'].style.width = newWidth + 'px';
+        if(image.zoomed) {
+            size = {
+                'x': panner.parentElement.clientWidth,
+                'y': panner.parentElement.clientWidth * image['ar']
+            }
+            image['img'].style.width = PannerControl.rootElement.clientWidth + 'px';
+            image['width'] = panner.parentElement.clientWidth;
+            image['size'] = size;
+            image['limits'] = {
+                'x': panner.parentElement.clientWidth - size.x,
+                'y': panner.parentElement.parentElement.clientHeight - size.y
+            }
+            image['img'].style.left = '0px';
+            image['img'].style.top = '0px';
+            PannerControl.zoomButton.classList.remove('zoom_button_out');
+            PannerControl.zoomButton.classList.add('zoom_button_in');
 
-        var left = parseInt(image['img'].style.left);
-        var top = parseInt(image['img'].style.top);
+            image.zoomed = false;
+        } else {
+            var newWidth = image['width'] * 2;
+            var newHeight = newWidth * image['ar'];
 
-        left -= (newWidth / 4);
-        top -= (newHeight / 4);
+            image['img'].style.width = newWidth + 'px';
 
-        image['img'].style.left = left + 'px';
-        image['img'].style.top = top + 'px';
+            var left = parseInt(image['img'].style.left);
+            var top = parseInt(image['img'].style.top);
 
-        image['width'] = newWidth;
-        image['zoom'] = 2 * image['zoom'];
+            left -= (newWidth / 4);
+            top -= (newHeight / 4);
 
-        // calc size and limits
-        image['size'] = {
-            'x': newWidth,
-            'y': newHeight
-        };
+            image['img'].style.left = left + 'px';
+            image['img'].style.top = top + 'px';
 
-        image['limits'] = {
-            'x': panner.parentElement.clientWidth - image['size'].x,
-            'y': panner.parentElement.parentElement.clientHeight - image['size'].y
-        };
+            image['width'] = newWidth;
+
+            // calc size and limits
+            image['size'] = {
+                'x': newWidth,
+                'y': newHeight
+            };
+
+            image['limits'] = {
+                'x': panner.parentElement.clientWidth - image['size'].x,
+                'y': panner.parentElement.parentElement.clientHeight - image['size'].y
+            };
+            PannerControl.zoomButton.classList.remove('zoom_button_in');
+            PannerControl.zoomButton.classList.add('zoom_button_out');
+            image.zoomed = true;
+        }
     }
 };

@@ -7,8 +7,13 @@
 
     <div class="column-scan">
         <div>
-            <div>
-                <div id="zoom_button"></div>
+            <div id="nav_bar">
+                <div id="zoom_button" class="zoom_button_in"></div>
+                <div id="page_nav">
+                    <span id="page_nav_text">Page 1 of</span> {{images|length}}
+                    <a href="#" onclick="clickNext()">Next</a>
+                </div>
+
             </div>
             <div id="image_area">
                 <div id="image_container">
