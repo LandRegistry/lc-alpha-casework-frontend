@@ -73,16 +73,30 @@
             background-image: url('/static/images/MGlass_2.png');
         }
 
+        .sticky {
+            position: fixed;
+            top: 0;
+        }
+
 
     </style>
     <script type="text/javascript" src="/static/js/imagepan.js"></script>
     <script>
         var page = 0;
         var numpages = {{images|length}};
+        var $window = null;
+        var $stickyEl = null;
+        var elTop = null;
+        var $thumbs = null;
+        var tLeft = null;
 
         function updateNav() {
             document.getElementById('page_nav_text').textContent = "Page " + ( page + 1 ) + " of";
         }
+
+
+
+
 
         function imgClick(sender, index) {
             jQuery('.thumbnail').removeClass('active_thumbnail');
@@ -104,6 +118,24 @@
 
         window.onload = function(e) {
             jQuery("#image_area").height(1.4 * jQuery("#image_area").width() );
+            $window = jQuery(window);
+            $stickyEl = jQuery('#sticky_div');
+            $thumbs = jQuery('#thumbnails');
+            elTop = $stickyEl.offset().top;
+            tLeft = $thumbs.offset().left;
+
+            $window.scroll(function() {
+                $stickyEl.toggleClass('sticky', $window.scrollTop() > elTop);
+
+                if( $window.scrollTop() > elTop ) {
+                    $thumbs[0].classList.add('sticky');
+                    $thumbs.css({'left': tLeft + 'px'});
+                } else {
+                    $thumbs[0].classList.remove('sticky');
+                    $thumbs.css({'left': ''});
+                }
+            });
+
             PannerControl.init(document.getElementById('image_container'),
                                document.getElementById('zoom_button'));
         };
