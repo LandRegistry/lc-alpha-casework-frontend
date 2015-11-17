@@ -945,7 +945,7 @@ def search_result():
             else:
                 display.append({
                     'name': key,
-                    'result': 'Match Found - Registration number is: ' + str(value)
+                    'result': 'Match Found'
                 })
 
     print('---------')
