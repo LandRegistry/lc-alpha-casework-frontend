@@ -149,8 +149,9 @@
                 <input class="form_textfield" type="text" id="search_area" name="area" onclick="clear_area();"/>
             </div>
 
-            <a class="form_button_6" style="text-decoration: none;" onclick="addArea();" id="add_area" >Add Area </a>
-
+            <div style="padding-left: 240px">
+                <a class="form_button_6" href="#here" style="text-decoration: none;" onclick="addArea();" id="add_area" >Add Area </a>
+            </div>
 
             <div class="form">
                 <label class="form_label" for="area_list">List of Areas to Search</label>
@@ -194,7 +195,7 @@
                 var matcher = new RegExp( "^" + jQuery.ui.autocomplete.escapeRegex( request.term ), "i" );
                 response( jQuery.grep( counties, function( item ){
                       return matcher.test( item );
-                    }) );
+                    }) ).insertBefore("#add_area");
                 }
             });
         }
