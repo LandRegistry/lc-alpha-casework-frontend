@@ -561,7 +561,7 @@ def process_banks_name():
     set_session_variables({'application_dict': name})
     application = session['application_dict']
 
-    return render_template('address.html', application=application, images=images,
+    return render_template('address.html', application=application, images=images, data=application,
                            requested_list=requested_worklist, current_page=0)
 
 
@@ -569,12 +569,12 @@ def process_banks_name():
 def process_court_details():
     # application = json.loads(request.form['application'])
     application = session['application_dict']
-    application["application_type"] = request.form['nature']
+    # application["application_type"] = request.form['nature']
     application["legal_body"] = request.form['court']
-    application["legal_body_ref"] = request.form['court_ref']
+    application["legal_body_ref"] = '%s of %s' % (request.form['court_no'], request.form['court_year'])
 
     # these are needed at the moment for registration but are not captured on the form
-    application["key_number"] = "2244095"
+    application["key_number"] = request.form['keyno']
     application["application_ref"] = "customer reference"
     today = datetime.now().strftime('%Y-%m-%d')
     application["date"] = today
@@ -617,6 +617,7 @@ def application_step_2():
 
     # handle empty 'last address'.
     # if request.form['address1'] != '' and 'address2' in request.form and 'submit' in request.form:
+    """
     address = {'address_lines': []}
     if 'address1' in request.form and request.form['address1'] != '':
         address['address_lines'].append(request.form['address1'])
@@ -628,8 +629,34 @@ def application_step_2():
     address['county'] = request.form['county']
     address['postcode'] = request.form['postcode']
     application['residence'].append(address)
+    requested_worklist = 'bank_regn' """
+
+    # TODO: code commented out is pre assessment re-design. Needs to be removed once design agreed
+    counter = 0
+    while True:
+        addr1_counter = "address1" + str(counter)
+        addr2_counter = "address2" + str(counter)
+        addr3_counter = "address3" + str(counter)
+        county_counter = "county" + str(counter)
+        postcode_counter = "postcode" + str(counter)
+        address = {'address_lines': []}
+        if addr1_counter in request.form and request.form[addr1_counter] != '':
+            address['address_lines'].append(request.form[addr1_counter])
+        else:
+            break
+        if addr2_counter in request.form and request.form[addr2_counter] != '':
+            address['address_lines'].append(request.form[addr2_counter])
+        if addr3_counter in request.form and request.form[addr3_counter] != '':
+            address['address_lines'].append(request.form[addr3_counter])
+
+        address['county'] = request.form[county_counter]
+        address['postcode'] = request.form[postcode_counter]
+        application['residence'].append(address)
+        counter += 1
+
     requested_worklist = 'bank_regn'
 
+    """
     if 'add_address' in request.form:
         return render_template('address.html', application=json.dumps(application), images=session['images'],
                                residences=application['residence'], requested_list=requested_worklist, current_page=0)
@@ -637,7 +664,11 @@ def application_step_2():
         return render_template('banks_order.html', application=json.dumps(application),
                                images=session['images'],
                                requested_list=requested_worklist, current_page=0,
-                               appn_type=session['application_dict']['application_type'])
+                               appn_type=session['application_dict']['application_type'])  """
+
+    return render_template('banks_order.html', application=json.dumps(application), images=session['images'],
+                           requested_list=requested_worklist, current_page=0,
+                           appn_type=session['application_dict']['application_type'])
 
 
 @app.route('/process_rectification', methods=['POST'])
@@ -813,13 +844,6 @@ def process_search_name(search_type):
     application_type = session['application_type']
     application_dict = session['application_dict']
 
-    """
-    if 'all_counties' in request.form:
-        counties = []
-    elif 'area_list' in request.form and request.form['area_list'] != '':
-        counties = request.form['area_list'].upper().strip('\r\n').split()
-    else:
-        counties = []"""
     counties = []
     parameters = {
         'counties': counties,

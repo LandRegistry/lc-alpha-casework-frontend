@@ -1,4 +1,23 @@
 {% extends "/page_template/base.html" %}
+{% block page_specific_head %}
+
+<script>
+    var n = {{data.debtor_alternative_name|length}};
+    function nameClick(sender){
+        jQuery('<div class="text_16_bold">Alternative Name '+(n+1)+' &nbsp;&nbsp;</div> \
+                <div class="form"> \
+                    <label class="form_label" for="aliasforename">Forename(s)</label> \
+                    <input class="form_textfield" id="aliasforename' +n+ '" name="aliasforename' +n+ '" value="{{aliasforename}}"> \
+                </div> \
+                <div class="form"> \
+                    <label class="form_label" for="aliassurname">Surname</label> \
+                    <input class="form_textfield" id="aliassurname' +n+ '" name="aliassurname' +n+ '" value="{{aliassurname}}"> \
+                </div>').insertBefore("#addname");
+                n ++;
+        console.log(n);
+    };
+</script>
+{% endblock %}
 
 {% block maincontent %}
 
@@ -39,36 +58,24 @@
 
         <div class="form">
             <label class="form_label" for="forename" >Forename(s)</label>
-            <input class="form_textfield" type="text" id="forename" name="forename" value="{{forename}}">
+            <input class="form_textfield" type="text" id="forename" name="forename" autofocus>
         </div>
 
         <div class="form">
             <label class="form_label" for="surname">Surname</label>
-            <input class="form_textfield" type="text" id="surname" name="surname" value="{{surname}}">
+            <input class="form_textfield" type="text" id="surname" name="surname">
         </div>
-
-        <div class="spacer_5"></div>
-
-        <div id="name1">
-            <div class="form">
-                <label class="form_label">Alternative forename(s)</label>
-                <input class="form_textfield" type="text" id="aliasforename" name="aliasforename" value="{{aliasforename}}">
-            </div>
-
-            <div class="form">
-                <label class="form_label">Alternative surname</label>
-                <input class="form_textfield" type="text" id="aliassurname" name="aliassurname" value="{{aliassurname}}">
-            </div>
-            <div class="spacer_5"></div>
-        </div>
-
-        <div><a href="#here" onclick="document.getElementById('name1').style.display = 'inline-block';" class="link_16" id="#">Add alternative name</a></div>
 
         <div class="spacer_20"></div>
 
+        <div><a href="#here" onclick="nameClick(this)" class="link_16" id="addname">Add alternative name</a></div>
+
+        <div class="spacer_20"></div>
+
+
         <div class="form">
             <label class="form_label" for="occupation">Occupation</label>
-            <input class="form_textfield" type="text" id="occupation" name="occupation" value="{{occupation}}">
+            <input class="form_textfield" type="text" id="occupation" name="occupation">
         </div>
 
         <div class="spacer_30"></div>
@@ -77,7 +84,7 @@
             <table>
                 <tr>
                     <td width="50%" class="no-line">
-                        <a href="bankruptcy_registration_step_2"><input type="submit" value="Continue" class="form_button"></a>
+                        <input id="continue" type="submit" value="Continue" class="form_button">
                     </td>
                     <td width="50%" class="custom_3">
                         <a href="#" class="link_16">Reject application</a>
