@@ -380,7 +380,7 @@ def show_address():
     image_list = session['images']
 
     return render_template('regn_address.html', application_type=application_type, data=application_dict,
-                           images=image_list, current_page=0)
+                           images=image_list, current_page=0, focus_on_address=len(application_dict['residence']))
 
 
 @app.route('/update_address', methods=["POST"])
@@ -429,7 +429,7 @@ def remove_address(addr):
     del application_dict['residence'][addr]
 
     return render_template('regn_address.html', application_type=application_type, data=application_dict,
-                           images=image_list, current_page=0,data_amended='true')
+                           images=image_list, current_page=0,data_amended='true', focus_on_address=len(application_dict['residence']))
 
 
 @app.route('/amend_alias/<name_index>', methods=["GET"])
