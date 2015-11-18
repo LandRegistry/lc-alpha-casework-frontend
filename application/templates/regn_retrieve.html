@@ -44,10 +44,10 @@
 
     <div class="grid-row">
         <!-- ///////////////////////////////// data entry form ///////////////////////////////// -->
-        <form action="/get_details" method="POST">
-            <div class="column-form">
+        <form action="/get_details"  method="POST">
+            <div class="column-form" id="form_panel">
 
-                <p class="text_24_bold">1. Retrieve registration details</p>
+                <p class="text_24_bold">1. Retrieve registration details1</p>
 
                 <div class="spacer_20"></div>
                 {% if error_msg|length > 0 %}
@@ -65,7 +65,7 @@
                     <table>
                         <tr>
                             <td width="50%" class="no-line">
-                                <a href="bankruptcy_amendment_step_2"><input type="submit" value="Retrieve details" class="form_button_5"></a>
+                                <a href="bankruptcy_amendment_step_2" ><input type="submit" value="Retrieve details" class="form_button_5"></a>
                             </td>
                             <td width="50%" class="custom_3">
                                 <a href="#" class="link_16">Reject application</a>
