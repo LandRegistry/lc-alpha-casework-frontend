@@ -85,5 +85,12 @@
 
         <!-- ///////////////////////////////// End of image tool ///////////////////////////////// -->
     </div>
+<input type="hidden" id="addresscount" name="address_count" value="{{ focus_on_address }}" />
+<script type="text/javascript">
+    show_address= document.getElementById('address_count').value;
+    $(document).ready(function() {
+       $('#address' + show_address).get(0).scrollIntoView();
+    });
+</script>
 
 {% endblock %}

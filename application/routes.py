@@ -413,7 +413,7 @@ def update_address_details():
         new_address = {'county': '', 'postcode': '', 'address_lines': []}
         application_dict['residence'].append(new_address)
         return render_template('regn_address.html', application_type=application_type, data=application_dict,
-                               images=image_list, current_page=0)
+                               images=image_list, current_page=0, focus_on_address=len(application_dict['residence']))
     else:
         return render_template('regn_amend.html', application_type=application_type, data=application_dict,
                                images=image_list, current_page=0, original_image_data=session['original_image_data'],
