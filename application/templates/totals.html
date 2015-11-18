@@ -54,7 +54,7 @@
                             <div class="spacer_15"></div>
                                 <a class="no_link_style" href="/get_list?appn=bank_regn"><p class="text_16_bold">Registration<br>applications</p></a>
                             <div class="spacer_20"></div>
-                            <div class="indicator">
+                            <div class="indicator" id="banks_total">
                                 {% if data['banks'] < 10 %}
                                 <a class="indicator_middle" href="/get_list?appn=bank_regn">{{data['banks']}}</a>
                                 {% else %}
@@ -81,7 +81,7 @@
 
                             <div class="spacer_20"></div>
 
-                            <div class="indicator">
+                            <div class="indicator" id="amend">
                                 {% if data['amend'] < 10 %}
                                 <a class="indicator_middle" href="/get_list?appn=amend">{{data['amend']}}</a>
                                 {% else %}
@@ -113,7 +113,7 @@
 
                             <div class="spacer_20"></div>
 
-                            <div class="indicator">
+                            <div class="indicator" id="canc">
                                 {% if data['canc'] < 10 %}
                                 <a class="indicator_middle" href="/get_list?appn=cancel">{{data['canc']}}</a>
                                 {% else %}
@@ -147,7 +147,7 @@
 
                             <div class="spacer_20"></div>
 
-                            <div class="indicator">
+                            <div class="indicator" id="search">
                                 {% if data['search'] < 10 %}
                                 <a class="indicator_middle" href="/get_list?appn=search">{{data['search']}}</a>
                                 {% else %}
@@ -177,7 +177,7 @@
 
                             <div class="spacer_20"></div>
 
-                            <div class="indicator">
+                            <div class="indicator" id="oc">
                                 {% if data['oc'] < 10 %}
                                 <a class="indicator_middle" href="#">{{data['oc']}}</a>
                                 {% else %}
