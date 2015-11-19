@@ -31,7 +31,7 @@ def start_rectification():
 @app.route('/get_list', methods=["GET"])
 def get_list():
     requested_worklist = request.args.get('appn')
-    url = app.config['CASEWORK_DB_URL'] + '/work_list/' + requested_worklist
+    url = app.config['CASEWORK_DB_URL'] + '/applications?type=' + requested_worklist
     response = requests.get(url)
     work_list_json = response.json()
     appn_list = []
@@ -62,12 +62,13 @@ def get_list():
 
 @app.route('/get_application/<application_type>/<appn_id>/<appn_type>', methods=["GET"])
 def get_application(application_type, appn_id, appn_type):
-    url = app.config['CASEWORK_DB_URL'] + '/search/' + appn_id
+    url = app.config['CASEWORK_DB_URL'] + '/applications/' + appn_id
 
     response = requests.get(url)
     application_json = response.json()
-    document_id = application_json['document_id']
-    doc_response = requests.get(app.config["DOCUMENT_URL"] + "/document/" + str(document_id))
+    document_id = application_json['application_data']['document_id']
+    print(document_id)
+    doc_response = requests.get(app.config["DOCUMENT_URL"] + "/forms/" + str(document_id))
     image_data = doc_response.json()
 
     images = []
@@ -140,7 +141,7 @@ def get_bankruptcy_details():
     if application_json['document_id'] is not None and application_json['document_id'] is not '0':
         document_id = application_json['document_id']
 
-        doc_response = requests.get(app.config["DOCUMENT_URL"] + "/document/" + str(document_id))
+        doc_response = requests.get(app.config["DOCUMENT_URL"] + "/forms/" + str(document_id))
         original_image_data = doc_response.json()
 
         images = []
@@ -341,7 +342,7 @@ def remove_alias_name(name):
 
 # TODO: renamed as 'complete', move to back-end?
 def delete_from_worklist(application_id):
-    url = app.config['CASEWORK_DB_URL'] + '/workitem/' + application_id
+    url = app.config['CASEWORK_DB_URL'] + '/applications/' + application_id
     response = requests.delete(url)
     if response.status_code != 204:
         err = 'Failed to delete application ' + application_id + ' from the worklist. Error code:' \
@@ -775,7 +776,7 @@ def process_search(search_type):
         if request.form[name_field] != '':
             if 'comp{}'.format(counter) in request.form:
                 # Complex name so call legacy db api to get complex names and numbers
-                url = app.config['LEGACY_URL'] + '/complex_names/search'
+                url = app.config['CASEWORK_DB_URL'] + '/complex_names/search'
                 headers = {'Content-Type': 'application/json'}
                 comp_name = {
                     'name': request.form[name_field]
@@ -1014,7 +1015,7 @@ def notification():
 def get_totals():
     # initialise all counters to 0
     pabs, wobs, banks, lcreg, amend, canc, portal, search, ocp = (0,) * 9
-    url = app.config['CASEWORK_DB_URL'] + '/work_list/all?'
+    url = app.config['CASEWORK_DB_URL'] + '/applications'
     response = requests.get(url)
     if response.status_code == 200:
         full_list = response.json()
@@ -1073,7 +1074,7 @@ def complex_name_retrieve():
     logging.info('Entering complex name retrieval')
     complex_search = {"name": request.form['complex_name']}
 
-    url = app.config['LEGACY_URL'] + '/complex_names/search'
+    url = app.config['CASEWORK_DB_URL'] + '/complex_names/search'
     headers = {'Content-Type': 'application/json'}
     response = requests.post(url, data=json.dumps(complex_search), headers=headers)
 

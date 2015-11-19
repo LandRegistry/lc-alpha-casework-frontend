@@ -17,12 +17,12 @@
                     data: {},
                     success: function( data ) {
                         // alert(JSON.stringify(data));
-                        jQuery('#banks_total').html(data.banks);
-                        jQuery('#lcreg_total').html(data.lcreg);
-                        jQuery('#amend_total').html(data.amend);
-                        jQuery('#canc_total').html(data.canc);
-                        jQuery('#search_total').html(data.search);
-                        jQuery('#oc_total').html(data.oc);
+                        jQuery('#banks_total').find('.indicator_middle').text(data.banks);
+                        jQuery('#lcreg_total').find('.indicator_middle').text(data.lcreg);
+                        jQuery('#amend_total').find('.indicator_middle').text(data.amend);
+                        jQuery('#canc_total').find('.indicator_middle').text(data.canc);
+                        jQuery('#search_total').find('.indicator_middle').text(data.search);
+                        jQuery('#oc_total').find('.indicator_middle').text(data.oc);
                     }
                 } );
 
