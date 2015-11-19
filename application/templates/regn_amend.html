@@ -5,7 +5,7 @@
         <ol>
             <li><a class="breadcrumb_links" href="/">Home</a></li>
             <li><a class="breadcrumb_links" href="/">Bankruptcies</a></li>
-            <li><a class="breadcrumb_links" href="/get_list?appn=amend">List of amendment applications</a></li>
+            <li><a class="breadcrumb_links" id="return_worklist" href="/get_list?appn=amend">List of amendment applications</a></li>
             <li class="breadcrumb_no_arrow"><span>Bankruptcy amendment</span></li>
         </ol>
     </div>
@@ -61,7 +61,7 @@
 
                     <tr>
                         <th colspan="2" class="table_text_black"><span class="text_19_gray">Particulars of bankrupt</span></th>
-                        <th colspan="1" class="table_text_black link_16_right"><a class="link_16_right" href="/amend_name">Edit</a></th>
+                        <th colspan="1" class="table_text_black link_16_right"><a class="link_16_right" id="amend_name" href="/amend_name">Edit</a></th>
                     </tr>
                     <tr>
                         <td width="45%"><span class="text_review_table_bold">Forename(s)</span></td>
@@ -99,7 +99,7 @@
                 <table class="review_table">
                     <tr>
                         <th colspan="2" class="table_text_black"><span class="text_19_gray">Address(es) of bankrupt</span></th>
-                        <th colspan="1" class="table_text_black link_16_right"><a class="link_16_right" href="/amend_address">Edit</a></th>
+                        <th colspan="1" class="table_text_black link_16_right"><a class="link_16_right" id="amend_address" href="/amend_address">Edit</a></th>
                     </tr>
                     {% if data.residence|length > 0 and data.residence[0].address_lines|length > 0 %}
                     {% for address in data.residence %}
@@ -125,7 +125,7 @@
 
                     <tr>
                         <th colspan="2" class="table_text_black"><span class="text_19_gray">Court details</span></th>
-                        <th colspan="1" class="table_text_black link_16_right"><a class="link_16_right" href="/amend_court">Edit</a></th>
+                        <th colspan="1" class="table_text_black link_16_right"><a class="link_16_right" id="amend_court" href="/amend_court">Edit</a></th>
                     </tr>
                     <tr>
                         <td width="45%"><span class="text_review_table_bold">Key number</span></td>
@@ -147,7 +147,7 @@
                 {% if "true" == data_amended %}
                     <table class="review_table">
                         <tr>
-                            <td width="10%" class="no-line"><input type="checkbox" id="cb" onclick="toggle()"></td>
+                            <td width="10%" class="no-line"><input type="checkbox" id="check_box" onclick="toggle()"></td>
                             <td width="90%" class="no-line"><span class="text_review_table">I confirm I verified the amendments</span></td>
                         </tr>
                     </table>
@@ -159,7 +159,7 @@
                             <tr>
                                 <td width="50%" class="no-line">
 
-                                        <input type="submit" value="Register amends" class="form_button_6" id="btn" disabled>
+                                        <input type="submit" id="register_amends" value="Register amends" class="form_button_6" disabled>
                                 </td>
                                 <td width="50%" class="custom_3">
                                     <a href="#" class="link_16">Reject application</a>
@@ -174,7 +174,7 @@
                     <div class="spacer_20"></div>
 
 
-                    <div><a href="#" class="link_16">Reject application</a></div>
+                    <div><a href="/rejection" id="reject" class="link_16">Reject application</a></div>
                 {% endif %}
             </div>
         </form>
@@ -189,8 +189,8 @@
     <script>
 
     function toggle() {
-        var cbChecked = document.getElementById('cb').checked;
-        document.getElementById('btn').disabled = !cbChecked;
+        var cbChecked = document.getElementById('check_box').checked;
+        document.getElementById('register_amends').disabled = !cbChecked;
     }
 
     </script>

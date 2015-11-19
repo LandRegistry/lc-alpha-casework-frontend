@@ -54,7 +54,7 @@
 
                 <div class="spacer_10"></div>
 
-                <p class="text_confirmation_2">
+                <p id="reg_nos" class="text_confirmation_2">
                     {% if data|length > 0 %}
                     Reference(s):
                     {% for n in data %}
@@ -83,7 +83,7 @@
 
             <div class="spacer_20"></div>
 
-            <p><a class="link_16" href="/get_list?appn={{application_type}}">List of {{page_title}} applications</a></p>
+            <p><a class="link_16" id="return_worklist" href="/get_list?appn={{application_type}}">List of {{page_title}} applications</a></p>
 
             <p><a class="link_16" href="/">Bankruptcies</a></p>
 

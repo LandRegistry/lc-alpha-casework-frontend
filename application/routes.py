@@ -634,11 +634,11 @@ def application_step_2():
     # TODO: code commented out is pre assessment re-design. Needs to be removed once design agreed
     counter = 0
     while True:
-        addr1_counter = "address1" + str(counter)
-        addr2_counter = "address2" + str(counter)
-        addr3_counter = "address3" + str(counter)
-        county_counter = "county" + str(counter)
-        postcode_counter = "postcode" + str(counter)
+        addr1_counter = "add_" + str(counter) + "_line1"
+        addr2_counter = "add_" + str(counter) + "_line2"
+        addr3_counter = "add_" + str(counter) + "_line3"
+        county_counter = "add_" + str(counter) + "_county"
+        postcode_counter = "add_" + str(counter) + "_postcode"
         address = {'address_lines': []}
         if addr1_counter in request.form and request.form[addr1_counter] != '':
             address['address_lines'].append(request.form[addr1_counter])
@@ -653,7 +653,7 @@ def application_step_2():
         address['postcode'] = request.form[postcode_counter]
         application['residence'].append(address)
         counter += 1
-
+    print(application)
     requested_worklist = 'bank_regn'
 
     """
@@ -1087,6 +1087,12 @@ def complex_name_retrieve():
         error = response.status_code
         logging.error(error)
         return render_template('error.html', error_msg=error), 500
+
+@app.route('/rejection', methods=['GET'])
+def rejection():
+    application_type = session['application_type']
+
+    return render_template('rejection.html', application_type=application_type)
 
 
 @app.template_filter()
