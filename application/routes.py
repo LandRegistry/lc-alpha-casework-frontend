@@ -897,7 +897,7 @@ def process_search_name(search_type):
 
     if search_type == 'full':
         return render_template('search_counties.html', images=session['images'], application=application_dict,
-                               application_type=application_type, current_page=0)
+                               application_type=application_type, current_page=0, backend_uri=app.config['CASEWORK_DB_URL'])
     else:
         return render_template('search_customer.html', images=session['images'], application=application_dict,
                                application_type=application_type, current_page=0)
@@ -915,7 +915,7 @@ def process_search_county():
     session['application_dict']['search_criteria']['counties'] = counties
 
     return render_template('search_customer.html', images=session['images'], application=session['application_dict'],
-                           application_type=session['application_type'], current_page=0)
+                           application_type=session['application_type'], current_page=0, backend_uri=app.config['CASEWORK_DB_URL'])
 
 
 @app.route('/submit_search', methods=['POST'])

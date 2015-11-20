@@ -5,7 +5,7 @@
 <script>
     HOST = window.location.protocol + "//" + window.location.hostname;
 
-    function getCustomerDetails(obj){
+    /*function getCustomerDetails(obj){
         jQuery('#customer_name').val("");
         jQuery('#customer_address').val("");
         jQuery('#error_msg').html("");
@@ -35,7 +35,7 @@
                 }
             } );
         }
-    }
+    }*/
 
     function validateForm (){
         nameOk = false;
@@ -186,13 +186,14 @@
 
 <script>
     jQuery.ajax({
-        url: HOST + ':5004/counties',
+        url: '{{backend_uri}}/counties',
         type: 'GET',
         counties: {},
         success: function( counties ) {
             jQuery( "#search_area" ).autocomplete({
               source: function( request, response ) {
                 var matcher = new RegExp( "^" + jQuery.ui.autocomplete.escapeRegex( request.term ), "i" );
+                  console.log(response);
                 response( jQuery.grep( counties, function( item ){
                       return matcher.test( item );
                     }) ).insertBefore("#add_area");
