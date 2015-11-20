@@ -4,10 +4,10 @@
     <script>
         HOST = window.location.protocol + "//" + window.location.hostname;
 
-        //$(document).ready(function() {
-        //    $("#refresh").hide();
-        //    setInterval("getTotals()", 30000);
-        //});
+        $(document).ready(function() {
+            $("#refresh").hide();
+            setInterval("getTotals()", 30000);
+        });
 
         function getTotals(){
 
@@ -16,13 +16,43 @@
                     type: 'GET',
                     data: {},
                     success: function( data ) {
-                        // alert(JSON.stringify(data));
-                        jQuery('#banks_total').html(data.banks);
-                        jQuery('#lcreg_total').html(data.lcreg);
-                        jQuery('#amend_total').html(data.amend);
-                        jQuery('#canc_total').html(data.canc);
-                        jQuery('#search_total').html(data.search);
-                        jQuery('#oc_total').html(data.oc);
+                        // alert(JSON.stringify(data.search));
+                        if (JSON.stringify(data.banks) < 10) {
+                            jQuery('#reg').find('.indicator_middle').text(data.banks);
+                        }
+                        else {
+                            jQuery('#reg').find('.indicator_middle_2').text(data.banks);
+                        }
+                        if (JSON.stringify(data.lcreg) < 10) {
+                            jQuery('#lcreg_total').find('.indicator_middle').text(data.lcreg);
+                        }
+                        else{
+                            jQuery('#lcreg_total').find('.indicator_middle_2').text(data.lcreg);
+                        }
+                        if (JSON.stringify(data.amend) < 10) {
+                            jQuery('#amend').find('.indicator_middle').text(data.amend);
+                        }
+                        else{
+                            jQuery('#amend').find('.indicator_middle_2').text(data.amend);
+                        }
+                        if (JSON.stringify(data.canc < 10) {
+                            jQuery('#canc').find('.indicator_middle').text(data.canc);
+                        }
+                        else{
+                            jQuery('#canc').find('.indicator_middle_2').text(data.canc);
+                        }
+                        if (JSON.stringify(data.search) < 10) {
+                            jQuery('#search').find('.indicator_middle').text(data.search);
+                        }
+                        else {
+                            jQuery('#search').find('.indicator_middle_2').text(data.search);
+                        }
+                        if (JSON.stringify(data.oc < 10) {
+                            jQuery('#oc').find('.indicator_middle').text(data.oc);
+                        }
+                        else{
+                            jQuery('#oc').find('.indicator_middle_2').text(data.oc);
+                        }
                     }
                 } );
 
@@ -58,7 +88,7 @@
                                 {% if data['banks'] < 10 %}
                                 <a class="indicator_middle" href="/get_list?appn=bank_regn">{{data['banks']}}</a>
                                 {% else %}
-                                <a class="indicator_middle2" href="/get_list?appn=bank_regn">{{data['banks']}}</a>
+                                <a class="indicator_middle_2" href="/get_list?appn=bank_regn">{{data['banks']}}</a>
                                 {% endif %}
                             </div>
                             <div class="spacer_15"></div>
@@ -85,7 +115,7 @@
                                 {% if data['amend'] < 10 %}
                                 <a class="indicator_middle" href="/get_list?appn=amend">{{data['amend']}}</a>
                                 {% else %}
-                                <a class="indicator_middle2" href="/get_list?appn=amend">{{data['amend']}}</a>
+                                <a class="indicator_middle_2" href="/get_list?appn=amend">{{data['amend']}}</a>
                                 {% endif %}
                             </div>
 
@@ -117,7 +147,7 @@
                                 {% if data['canc'] < 10 %}
                                 <a class="indicator_middle" href="/get_list?appn=cancel">{{data['canc']}}</a>
                                 {% else %}
-                                <a class="indicator_middle2" href="/get_list?appn=cancel">{{data['canc']}}</a>
+                                <a class="indicator_middle_2" href="/get_list?appn=cancel">{{data['canc']}}</a>
                                 {% endif %}
                             </div>
 
@@ -151,7 +181,7 @@
                                 {% if data['search'] < 10 %}
                                 <a class="indicator_middle" href="/get_list?appn=search">{{data['search']}}</a>
                                 {% else %}
-                                <a class="indicator_middle2" href="/get_list?appn=search">{{data['search']}}</a>
+                                <a class="indicator_middle_2" href="/get_list?appn=search">{{data['search']}}</a>
                                 {% endif %}
                             </div>
 
@@ -181,7 +211,7 @@
                                 {% if data['oc'] < 10 %}
                                 <a class="indicator_middle" href="#">{{data['oc']}}</a>
                                 {% else %}
-                                <a class="indicator_middle2" href="#">{{data['oc']}}</a>
+                                <a class="indicator_middle_2" href="#">{{data['oc']}}</a>
                                 {% endif %}
                             </div>
 
@@ -239,7 +269,7 @@
 
                     <a class="no_link_style" href="bankruptcy_registrations"><p class="text_16_bold">John Smith actions</p></a>
 
-                    <p><a class="no_link_style" href="#"><p class="link_14">Rectifications</p></a>
+                    <p><a class="no_link_style" href="/start_rectification"><p id="rectify" class="link_14">Rectifications</p></a>
 
                     <p><a class="no_link_style" href="#"><p class="link_14">Deletions</p></a>
 

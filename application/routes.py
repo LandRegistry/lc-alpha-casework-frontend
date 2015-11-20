@@ -924,7 +924,7 @@ def submit_search():
     application = session['application_dict']
 
     customer = {
-        'key_number': request.form['key_no'],
+        'key_number': request.form['key_number'],
         'name': request.form['customer_name'],
         'address': request.form['customer_address'],
         'reference': request.form['customer_ref']

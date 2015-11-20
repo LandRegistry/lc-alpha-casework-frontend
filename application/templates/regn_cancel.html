@@ -110,7 +110,7 @@
 
             <table class="review_table">
                 <tr>
-                    <td width="10%" class="no-line"><input type="checkbox" id="cb" onclick="toggle()"></td>
+                    <td width="10%" class="no-line"><input type="checkbox" id="check_box" onclick="toggle()"></td>
                     <td width="90%" class="no-line"><span class="text_review_table">I confirm I verified the cancellation</span></td>
                 </tr>
             </table>
@@ -121,10 +121,10 @@
                 <table>
                     <tr>
                         <td width="50%" class="no-line">
-                            <input type="submit" value="Register cancellation" name="Continue" class="form_button_7" id="btn" disabled></a>
+                            <input type="submit" value="Register cancellation" name="Continue" class="form_button_7" id="submit" disabled></a>
                         </td>
                         <td width="50%" class="custom_3">
-                            <a href="#" class="link_16">Reject application</a>
+                            <a href="/rejection" id="reject" class="link_16">Reject application</a>
                         </td>
                     </tr>
                 </table>
@@ -144,8 +144,8 @@
 <script type="text/javascript">
 
 function toggle() {
-    var cbChecked = document.getElementById('cb').checked;
-    document.getElementById('btn').disabled = !cbChecked;
+    var cbChecked = document.getElementById('check_box').checked;
+    document.getElementById('submit').disabled = !cbChecked;
 }
 
 </script>
