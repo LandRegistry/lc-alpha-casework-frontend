@@ -4,10 +4,10 @@
     <script>
         HOST = window.location.protocol + "//" + window.location.hostname;
 
-        $(document).ready(function() {
-            $("#refresh").hide();
-            setInterval("getTotals()", 30000);
-        });
+        //$(document).ready(function() {
+        //    $("#refresh").hide();
+        //    setInterval("getTotals()", 30000);
+        //});
 
         function getTotals(){
 
@@ -54,7 +54,7 @@
                             <div class="spacer_15"></div>
                                 <a class="no_link_style" href="/get_list?appn=bank_regn"><p class="text_16_bold">Registration<br>applications</p></a>
                             <div class="spacer_20"></div>
-                            <div class="indicator" id="banks_total">
+                            <div class="indicator" id="reg">
                                 {% if data['banks'] < 10 %}
                                 <a class="indicator_middle" href="/get_list?appn=bank_regn">{{data['banks']}}</a>
                                 {% else %}

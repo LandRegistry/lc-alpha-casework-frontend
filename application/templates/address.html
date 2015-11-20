@@ -10,24 +10,24 @@
         i = no_of_addr;
         jQuery('<div class="text_16_bold">Additional address '+(i+1)+' &nbsp;&nbsp;</div> \
                 <div class="form"> \
-                    <label class="form_label" for="address1' +i+ '">Address line 1</label> \
-                    <input class="form_textfield" id="address1' +i+ '" name="address1' +i+ '" value="{{address1}}" /> \
+                    <label class="form_label" for="add_' +i+ '_line1">Address line 1</label> \
+                    <input class="form_textfield" id="add_' +i+ '_line1" name="add_' +i+ '_line1" /> \
                 </div> \
                 <div class="form"> \
-                    <label class="form_label" for="address2' +i+ '">Address line 2</label> \
-                    <input class="form_textfield" id="address2' +i+ '" name="address2' +i+ '" value="{{addresss2}}" /> \
+                    <label class="form_label" for="add_' +i+ '_line2">Address line 2</label> \
+                    <input class="form_textfield" id="add_' +i+ '_line2" name="add_' +i+ 'line2" /> \
                 </div> \
                 <div class="form"> \
-                    <label class="form_label" for="address3' +i+ '">Address line 3</label> \
-                    <input class="form_textfield" id="address3' +i+ '" name="address3' +i+ '" value="{{address3}}" /> \
+                    <label class="form_label" for="add_' +i+ '_line3">Address line 3</label> \
+                    <input class="form_textfield" id="add_' +i+ 'line3" name="add_' +i+ '_line3" /> \
                 </div> \
                 <div class="form"> \
-                    <label class="form_label" for="county' +i+ '">County</label> \
-                    <input class="form_textfield" id="county' +i+ '" name="county' +i+ '" value="{{county}}" /> \
+                    <label class="form_label" for="add' +i+ '_county">County</label> \
+                    <input class="form_textfield" id="add' +i+ '_county" name="add_' +i+ '_county" /> \
                 </div> \
                 <div class="form"> \
-                    <label class="form_label" for="postcode' +i+ '">Postcode</label> \
-                    <input class="form_textfield" id="postcode' +i+ '" name="postcode' +i+ '" value="{{postcode}}" /> \
+                    <label class="form_label" for="add_' +i+ '_postcode">Postcode</label> \
+                    <input class="form_textfield" id="add_' +i+ '_postcode" name="add_' +i+ '_postcode" /> \
                 </div> \
                 <div class="spacer_20"></div>').insertBefore("#addaddr1");
 
@@ -74,28 +74,28 @@
             <div class="spacer_20"></div>
 
             <div class="form">
-                <label class="form_label" for="address10" >Address line 1</label>
-                <input class="form_textfield" type="text" id="address10" autofocus name="address10">
+                <label class="form_label" for="add_0_line1" >Address line 1</label>
+                <input class="form_textfield" type="text" id="add_0_line1" autofocus name="add_0_line1">
             </div>
 
             <div class="form">
-                <label class="form_label" for="address20" >Address line 2</label>
-                <input class="form_textfield" type="text" id="address20" name="address20">
+                <label class="form_label" for="add_0_line2" >Address line 2</label>
+                <input class="form_textfield" type="text" id="add_0_line2" name="add_0_line2">
             </div>
 
             <div class="form">
-                <label class="form_label" for="address30" >Address line 3</label>
-                <input class="form_textfield" type="text" id="address30" name="address30">
+                <label class="form_label" for="add_0_line3" >Address line 3</label>
+                <input class="form_textfield" type="text" id="add_0_line3" name="add_0_line3">
             </div>
 
             <div class="form">
-                <label class="form_label" for="county0" >County</label>
-                <input class="form_textfield" type="text" id="county0" name="county0">
+                <label class="form_label" for="add_0_county" >County</label>
+                <input class="form_textfield" type="text" id="add_0_county" name="add_0_county">
             </div>
 
             <div class="form">
-                <label class="form_label" for="postcode0" >Postcode</label>
-                <input class="form_textfield" type="text" id="postcode0" name="postcode0">
+                <label class="form_label" for="add_0_postcode" >Postcode</label>
+                <input class="form_textfield" type="text" id="add_0_postcode" name="add_0_postcode">
             </div>
 
             <div class="spacer_5"></div>
@@ -126,7 +126,7 @@
                 <table>
                     <tr>
                         <td width="50%" class="no-line">
-                            <input id="submit" type="submit" value="Continue" class="form_button">
+                            <input type="submit" id="continue" value="Continue" class="form_button">
                         </td>
                         <!--<td width="50%" class="custom_3">
                             <a href="bankruptcy_amendment_step_2" class="link_16">Cancel amends</a>

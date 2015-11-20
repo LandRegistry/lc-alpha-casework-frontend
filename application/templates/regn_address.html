@@ -46,7 +46,7 @@
                     {% for address in data.residence %}
                         <div class="spacer_20"></div>
                         <input type="hidden" name="address_{{loop.index}}" value="true" />
-                        <div class="text_16_bold">Address {{loop.index}} &nbsp;&nbsp;<a class="link_16_right" href="/remove_address/{{loop.index-1}}">Remove</a></div>
+                        <div class="text_16_bold">Address {{loop.index}} &nbsp;&nbsp;<a class="link_16_right" id="remove_address_{{loop.index}}" href="/remove_address/{{loop.index-1}}">Remove</a></div>
 
                         <div id="address{{loop.index}}">
                             {% include 'includes/address_fields.html' %}
@@ -66,7 +66,7 @@
                     <table>
                         <tr>
                             <td width="50%" class="no-line">
-                                <a href="bankruptcy_amendment_step_3"><input type="submit" value="Continue" class="form_button"></a>
+                                <input type="submit" id="continue" value="Continue" class="form_button"></a>
                             </td>
                             <!--<td width="50%" class="custom_3">
                                 <a href="bankruptcy_amendment_step_2" class="link_16">Cancel amends</a>
