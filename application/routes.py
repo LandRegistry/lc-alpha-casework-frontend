@@ -5,12 +5,12 @@ from datetime import datetime
 import logging
 import json
 
-
-@app.errorhandler(Exception)
-def error_handler(err):
-    logging.error('========== Error Caught ===========')
-    logging.error(err)
-    return render_template('error.html', error_msg=str(err)), 500
+#
+# @app.errorhandler(Exception)
+# def error_handler(err):
+#     logging.error('========== Error Caught ===========')
+#     logging.error(err)
+#     return render_template('error.html', error_msg=str(err)), 500
 
 
 @app.route('/', methods=["GET"])
@@ -75,7 +75,7 @@ def get_application(application_type, appn_id, appn_type):
         images.append(app.config["DOCUMENT_URL"] + image)
 
     if appn_type == "Full Search":
-        template = page_required("full_search")
+        template = page_required("search")
     else:
         template = page_required(application_type)
 
@@ -293,11 +293,50 @@ def update_name_details():
         'surname': surname
     }
 
+    alt_name = {"forenames": [],
+                "surname": ""
+                }
+
+    application_dict['debtor_alternative_name'] = []
+    forename_var = "aliasforename"
+    surname_var = "aliassurname"
+    counter = 0
+    while True:
+        forename_counter = forename_var + str(counter)
+        surname_counter = surname_var + str(counter)
+        try:
+            alt_forenames = request.form[forename_counter]
+            alt_surname = request.form[surname_counter]
+        except KeyError:
+            break
+
+        for i in alt_forenames.split():
+            alt_name['forenames'].append(i)
+
+        alt_name['surname'] = alt_surname
+        if alt_forenames != '' and alt_surname != '':
+            application_dict['debtor_alternative_name'].append(alt_name)
+
+        alt_name = {"forenames": [], "surname": ""}
+        counter += 1
+
     application_dict['debtor_name'] = new_debtor_name
     application_dict['occupation'] = occupation
 
     return render_template('regn_amend.html', application_type=application_type, data=application_dict,
-                           images=image_list, current_page=0, original_image_data=session['original_image_data'])
+                           images=image_list, current_page=0, original_image_data=session['original_image_data'],
+                           data_amended='true')
+
+@app.route('/remove_alias_name/<int:name>', methods=["GET"])
+def remove_alias_name(name):
+    application_type = session['application_type']
+    application_dict = session['application_dict']
+    image_list = session['images']
+
+    del application_dict['debtor_alternative_name'][name]
+
+    return render_template('regn_name.html', application_type=application_type, data=application_dict,
+                           images=image_list, current_page=0, data_amended='true')
 
 
 # TODO: renamed as 'complete', move to back-end?
@@ -334,50 +373,51 @@ def delete_from_worklist(application_id):
 #     print(application)
 
 
-@app.route('/amend_address/<addr>', methods=["GET"])
-def show_address(addr):
+@app.route('/amend_address', methods=["GET"])
+def show_address():
     application_type = session['application_type']
     application_dict = session['application_dict']
     image_list = session['images']
-
-    if addr == 'new':
-        address = addr
-    else:
-        address = int(addr)
 
     return render_template('regn_address.html', application_type=application_type, data=application_dict,
-                           images=image_list, current_page=0, addr=address)
+                           images=image_list, current_page=0, focus_on_address=len(application_dict['residence']))
 
 
-@app.route('/update_address/<addr>', methods=["POST"])
-def update_address_details(addr):
+@app.route('/update_address', methods=["POST"])
+def update_address_details():
     application_type = session['application_type']
     application_dict = session['application_dict']
     image_list = session['images']
+    amended_addresses = []
+    address_no = 1
 
-    address = {'address_lines': []}
-    if 'address1' in request.form and request.form['address1'] != '':
-        address['address_lines'].append(request.form['address1'])
-    if 'address2' in request.form and request.form['address2'] != '':
-        address['address_lines'].append(request.form['address2'])
-    if 'address3' in request.form and request.form['address3'] != '':
-        address['address_lines'].append(request.form['address3'])
-    if 'address4' in request.form and request.form['address4'] != '':
-        address['address_lines'].append(request.form['address4'])
-    if 'address5' in request.form and request.form['address5'] != '':
-        address['address_lines'].append(request.form['address5'])
-    if 'address6' in request.form and request.form['address6'] != '':
-        address['address_lines'].append(request.form['address6'])
+    # update dictionary with any address amendments
+    while 'address_{:s}'.format(str(address_no)) in request.form:
 
-    address['county'] = request.form['county']
-    address['postcode'] = request.form['postcode']
-    if addr == 'new':
-        application_dict['residence'].append(address)
+        address = {'address_lines': []}
+        address['address_lines'].append(request.form['add_{:s}_line1'.format(str(address_no))])
+        address['address_lines'].append(request.form['add_{:s}_line2'.format(str(address_no))])
+        address['address_lines'].append(request.form['add_{:s}_line3'.format(str(address_no))])
+        address['county'] = request.form['add_{:s}_county'.format(str(address_no))]
+        address['postcode'] = request.form['add_{:s}_postcode'.format(str(address_no))]
+
+        if address['address_lines'][0] != '' and address['county'] != '' and address['postcode'] != '':
+            amended_addresses.append(address)
+
+        address_no += 1
+
+    application_dict['residence'] = amended_addresses
+
+    # check if user wants to enter and additional address
+    if request.form['add_address'] == 'yes':
+        new_address = {'county': '', 'postcode': '', 'address_lines': []}
+        application_dict['residence'].append(new_address)
+        return render_template('regn_address.html', application_type=application_type, data=application_dict,
+                               images=image_list, current_page=0, focus_on_address=len(application_dict['residence']))
     else:
-        application_dict['residence'][int(addr)] = address
-
-    return render_template('regn_amend.html', application_type=application_type, data=application_dict,
-                           images=image_list, current_page=0, original_image_data=session['original_image_data'])
+        return render_template('regn_amend.html', application_type=application_type, data=application_dict,
+                               images=image_list, current_page=0, original_image_data=session['original_image_data'],
+                               data_amended='true')
 
 
 @app.route('/remove_address/<int:addr>', methods=["GET"])
@@ -388,8 +428,8 @@ def remove_address(addr):
 
     del application_dict['residence'][addr]
 
-    return render_template('regn_amend.html', application_type=application_type, data=application_dict,
-                           images=image_list, current_page=0, original_image_data=session['original_image_data'])
+    return render_template('regn_address.html', application_type=application_type, data=application_dict,
+                           images=image_list, current_page=0,data_amended='true', focus_on_address=len(application_dict['residence']))
 
 
 @app.route('/amend_alias/<name_index>', methods=["GET"])
@@ -460,7 +500,8 @@ def update_court():
     application_dict['legal_body_ref'] = request.form['ref'].strip()
 
     return render_template('regn_amend.html', application_type=application_type, data=application_dict,
-                           images=image_list, current_page=0, original_image_data=session['original_image_data'])
+                           images=image_list, current_page=0, original_image_data=session['original_image_data'],
+                           data_amended='true')
 
 
 @app.route('/process_banks_name', methods=["POST"])
@@ -520,7 +561,7 @@ def process_banks_name():
     set_session_variables({'application_dict': name})
     application = session['application_dict']
 
-    return render_template('address.html', application=application, images=images,
+    return render_template('address.html', application=application, images=images, data=application,
                            requested_list=requested_worklist, current_page=0)
 
 
@@ -528,12 +569,12 @@ def process_banks_name():
 def process_court_details():
     # application = json.loads(request.form['application'])
     application = session['application_dict']
-    application["application_type"] = request.form['nature']
+    # application["application_type"] = request.form['nature']
     application["legal_body"] = request.form['court']
-    application["legal_body_ref"] = request.form['court_ref']
+    application["legal_body_ref"] = '%s of %s' % (request.form['court_no'], request.form['court_year'])
 
     # these are needed at the moment for registration but are not captured on the form
-    application["key_number"] = "2244095"
+    application["key_number"] = request.form['keyno']
     application["application_ref"] = "customer reference"
     today = datetime.now().strftime('%Y-%m-%d')
     application["date"] = today
@@ -576,6 +617,7 @@ def application_step_2():
 
     # handle empty 'last address'.
     # if request.form['address1'] != '' and 'address2' in request.form and 'submit' in request.form:
+    """
     address = {'address_lines': []}
     if 'address1' in request.form and request.form['address1'] != '':
         address['address_lines'].append(request.form['address1'])
@@ -587,8 +629,34 @@ def application_step_2():
     address['county'] = request.form['county']
     address['postcode'] = request.form['postcode']
     application['residence'].append(address)
+    requested_worklist = 'bank_regn' """
+
+    # TODO: code commented out is pre assessment re-design. Needs to be removed once design agreed
+    counter = 0
+    while True:
+        addr1_counter = "add_" + str(counter) + "_line1"
+        addr2_counter = "add_" + str(counter) + "_line2"
+        addr3_counter = "add_" + str(counter) + "_line3"
+        county_counter = "add_" + str(counter) + "_county"
+        postcode_counter = "add_" + str(counter) + "_postcode"
+        address = {'address_lines': []}
+        if addr1_counter in request.form and request.form[addr1_counter] != '':
+            address['address_lines'].append(request.form[addr1_counter])
+        else:
+            break
+        if addr2_counter in request.form and request.form[addr2_counter] != '':
+            address['address_lines'].append(request.form[addr2_counter])
+        if addr3_counter in request.form and request.form[addr3_counter] != '':
+            address['address_lines'].append(request.form[addr3_counter])
+
+        address['county'] = request.form[county_counter]
+        address['postcode'] = request.form[postcode_counter]
+        application['residence'].append(address)
+        counter += 1
+    print(application)
     requested_worklist = 'bank_regn'
 
+    """
     if 'add_address' in request.form:
         return render_template('address.html', application=json.dumps(application), images=session['images'],
                                residences=application['residence'], requested_list=requested_worklist, current_page=0)
@@ -596,7 +664,11 @@ def application_step_2():
         return render_template('banks_order.html', application=json.dumps(application),
                                images=session['images'],
                                requested_list=requested_worklist, current_page=0,
-                               appn_type=session['application_dict']['application_type'])
+                               appn_type=session['application_dict']['application_type'])  """
+
+    return render_template('banks_order.html', application=json.dumps(application), images=session['images'],
+                           requested_list=requested_worklist, current_page=0,
+                           appn_type=session['application_dict']['application_type'])
 
 
 @app.route('/process_rectification', methods=['POST'])
@@ -766,9 +838,125 @@ def process_search(search_type):
     return render_template('confirmation.html', application_type=application_type)
 
 
+@app.route('/process_search_name/<search_type>', methods=['POST'])
+def process_search_name(search_type):
+    logging.info('Entering search name')
+    application_type = session['application_type']
+    application_dict = session['application_dict']
+
+    counties = []
+    parameters = {
+        'counties': counties,
+        'search_type': "bankruptcy" if search_type == 'banks' else 'full',
+        'search_items': []
+    }
+
+    counter = 0
+    while True:
+        name_field = 'fullname{}'.format(counter)
+
+        if name_field not in request.form:
+            break
+
+        if request.form[name_field] != '':
+            if 'comp{}'.format(counter) in request.form:
+                # Complex name so call legacy db api to get complex names and numbers
+                url = app.config['LEGACY_URL'] + '/complex_names/search'
+                headers = {'Content-Type': 'application/json'}
+                comp_name = {
+                    'name': request.form[name_field]
+                }
+                response = requests.post(url, data=json.dumps(comp_name), headers=headers)
+                data = response.json()
+
+                for item in data:
+                    search_item = {
+                        'name': item['name'],
+                        'complex_no': item['number']
+                    }
+                    if search_type == 'full':
+                        logging.info('Getting year stuff')
+                        search_item['year_to'] = int(request.form['year_to{}'.format(counter)])
+                        search_item['year_from'] = int(request.form['year_from{}'.format(counter)])
+                    parameters['search_items'].append(search_item)
+            else:
+                # Normal name entered
+                search_item = {
+                    'name': request.form[name_field]
+                }
+
+                if search_type == 'full':
+                    logging.info('Getting year stuff')
+                    search_item['year_to'] = int(request.form['year_to{}'.format(counter)])
+                    search_item['year_from'] = int(request.form['year_from{}'.format(counter)])
+                parameters['search_items'].append(search_item)
+        counter += 1
+
+    application_dict['search_criteria'] = parameters
+
+    if search_type == 'full':
+        return render_template('search_counties.html', images=session['images'], application=application_dict,
+                               application_type=application_type, current_page=0)
+    else:
+        return render_template('search_customer.html', images=session['images'], application=application_dict,
+                               application_type=application_type, current_page=0)
+
+
+@app.route('/process_search_county', methods=['POST'])
+def process_search_county():
+    if 'all_counties' in request.form and request.form['all_counties'] == 'yes':
+        counties = []
+    elif 'area_list' in request.form and request.form['area_list'] != '':
+        counties = request.form['area_list'].upper().strip('\r\n').split()
+    else:
+        counties = []
+
+    session['application_dict']['search_criteria']['counties'] = counties
+
+    return render_template('search_customer.html', images=session['images'], application=session['application_dict'],
+                           application_type=session['application_type'], current_page=0)
+
+
+@app.route('/submit_search', methods=['POST'])
+def submit_search():
+    logging.info('Entering submit search')
+    application_type = session['application_type']
+    application = session['application_dict']
+
+    customer = {
+        'key_number': request.form['key_number'],
+        'name': request.form['customer_name'],
+        'address': request.form['customer_address'],
+        'reference': request.form['customer_ref']
+    }
+
+    search_data = {
+        'customer': customer,
+        'document_id': application['document_id'],
+        'parameters': application['search_criteria']
+    }
+
+    session['search_data'] = search_data
+    url = app.config['BANKRUPTCY_DATABASE_URL'] + '/search'
+    headers = {'Content-Type': 'application/json'}
+    response = requests.post(url, data=json.dumps(search_data), headers=headers)
+
+    if response.status_code == 200:
+        search_response = response.json()
+        set_session_variables({'search_result': search_response})
+        delete_from_worklist(session['worklist_id'])
+    elif response.status_code == 404:
+        session['search_result'] = []
+        delete_from_worklist(session['worklist_id'])
+    else:
+        logging.error('Unexpected return code: %d', response.status_code)
+        return render_template('error.html')
+
+    return render_template('confirmation.html', application_type=application_type, application=application)
+
+
 @app.route('/search_result', methods=['GET'])
 def search_result():
-    print(session['search_result'])
 
     display = []
     for result in session['search_result']:
@@ -786,6 +974,7 @@ def search_result():
 
     print('---------')
     print(session['search_data'])
+    print('search_result is ', session['search_result'])
     return render_template('search_result.html', display=display, results=session['search_result'], search_data=session['search_data'])
 
 
@@ -878,6 +1067,7 @@ def complex_name():
     return render_template('complex_name_reg.html', images=session['images'], application=application,
                            application_type=application_type, current_page=0)
 
+
 @app.route('/complex_retrieve', methods=['POST'])
 def complex_name_retrieve():
     logging.info('Entering complex name retrieval')
@@ -889,7 +1079,6 @@ def complex_name_retrieve():
 
     if response.status_code == 200 or response.status_code == 404:
         data = response.json()
-        print(data)
 
         return render_template('complex_name_select.html', images=session['images'],
                                application=session['application_type'], application_type=session['application_type'],
@@ -899,13 +1088,29 @@ def complex_name_retrieve():
         logging.error(error)
         return render_template('error.html', error_msg=error), 500
 
+@app.route('/rejection', methods=['GET'])
+def rejection():
+    application_type = session['application_type']
+
+    return render_template('rejection.html', application_type=application_type)
+
+
+@app.template_filter()
+def date_time_filter(date_str, format='%d %B %Y'):
+    """convert a datetime to a different format."""
+    value = datetime.strptime(date_str, '%Y-%m-%d').date()
+    return value.strftime(format)
+
+app.jinja_env.filters['date_time_filter'] = date_time_filter
+
 
 def page_required(appn_type):
     html_page = {
         "amend": "regn_retrieve.html",
         "cancel": "regn_retrieve.html",
         "bank_regn": "application.html",
-        "search": "search_capture.html",
+        # "search": "search_capture.html",
+        "search": "search_name.html",
         "full_search": "search_full_capture.html",
         "oc": "regn_retrieve.html",
         "lc": "application.html"

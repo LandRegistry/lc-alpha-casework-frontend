@@ -1,18 +1,48 @@
-<div id="images_data" class="col-sm-6">
-<div id="thumbnails" class="row col-sm-12">
-    {% for image in images %}
-    <img id="thumbnail{{loop.index}}" class="thumbnail{% if loop.index0 == current_page %} active_thumbnail{% endif %}" src="{{image}}" alt="" onclick="imgClick(this, {{ loop.index0 }})"/>
-    {% endfor %}
-</div>
-<div id="image_area">
-    <div id="imageContainer">
-        {% for image in images %}
-        <div class="sheetImage">
-            <div class="pancontainer" id="container{{loop.index0}}" data-canzoom="yes">
-                <img alt="" src="{{image}}"/>
+{% block page_specific_head %}
+{% include 'includes/image_view_head.html' %}
+{% endblock %}
+
+<div id="page1">
+    <!-- ///////////////////////////////// scanned page ///////////////////////////////// -->
+
+    <div class="column-scan">
+        <div id="sticky_div">
+            <div id="nav_bar">
+                <div id="zoom_button" class="zoom_button_in"></div>
+                <div id="page_nav">
+                    <span id="page_nav_text">Page 1 of</span> {{images|length}}
+                    <a href="#" onclick="clickNext()">Next</a>
+                </div>
+
+            </div>
+            <div id="image_area">
+                <div id="image_container">
+                    {% for image in images %}
+                    <div class="image_panner" id="container{{loop.index0}}">
+                        <img class="panned_image" src="{{image}}"/>
+                    </div>
+                    {% endfor %}
+                </div>
             </div>
         </div>
-        {% endfor %}
     </div>
-</div>
+
+    <!-- ///////////////////////////////// end of scanned page ///////////////////////////////// -->
+
+    <!-- ///////////////////////////////// thumbnails ///////////////////////////////// -->
+
+    <div class="column-scan-small">
+        <div class="spacer_30"></div>
+        <div id="thumbnails">
+            {% for image in images %}
+            <div class="spacer_15"></div>
+            <img id="thumbnail{{loop.index}}" class="thumbnail{% if loop.index0 == current_page %} active_thumbnail{% endif %}" src="{{image}}" alt=""
+                 onclick="imgClick(this, {{ loop.index0 }})"/>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- ///////////////////////////////// end of thumbnails///////////////////////////////// -->
+
+
 </div>

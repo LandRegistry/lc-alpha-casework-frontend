@@ -1,96 +1,149 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8"/>
-    <title>Land Charges</title>
-    <style>
-        .address {
-            margin: 5px;
-            display: inline-block;
-        }
-    </style>
-    {% include 'includes/ext_references.html' %}
-    {% include 'includes/image_view_head.html' %}
-</head>
-<body>
-<input type="hidden" name="requested_list" value="{{requested_list}}"/>
-{% if requested_list == 'pab' %}
-{% set page_title = 'PA Bankruptcy Registrations' %}
-{% elif requested_list == 'wob' %}
-{% set page_title = 'WO Bankruptcy Registrations' %}
-{% elif requested_list == 'bank_regn' %}
-{% set page_title = 'Bankruptcy Registrations' %}
-{% elif requested_list == 'lc_regn' %}
-{% set page_title = 'Land Charge Registrations' %}
-{% elif requested_list == 'amend' %}
-{% set page_title = 'Amendments' %}
-{% elif requested_list == 'cancel' %}
-{% set page_title = 'Cancellations' %}
-{% elif requested_list == 'prt_search' %}
-{% set page_title = 'Portal Searches' %}
-{% elif requested_list == 'search' %}
-{% set page_title = 'Searches' %}
-{% elif requested_list == 'oc' %}
-{% set page_title = 'Office Copies' %}
-{% endif %}
-<div id="main" class="container" style="margin-top:20px !important;">
-    <div class="container">
-        <div class="row">
-            <h3>Land Charges</h3>
-            <div class="row col-sm-12">
-                <ul class="breadcrumb">
-                    <li><a href="/">Home</a></li>
-                    <li><a href="/get_list?appn={{requested_list}}">{{page_title}}</a></li>
-                </ul>
-            </div>
-            <div class="row col-sm-12" style="margin-top:10px">
-                <h3>Bankruptcy Registration</h3><br/>
-                    {% include 'includes/image_view_body.html' %}
-                    <div id="form_data" class="col-sm-5">
-                        <h5>Step 2 of 3</h5>
-                        <h4>Debtor address</h4>
+{% extends "/page_template/base.html" %}
 
-                        <div id="address_area">
-                            {% for address in residences %}
-                            <div class="address" style="vertical-align: text-top">
-                                {% for line in address['address_lines'] %}
-                                    {{line}}<br/>
-                                {% endfor %}
-                                {{ address['county'] }}<br/>
-                                {{ address['postcode'] }}<br/>
-                            </div>
-                            {% endfor %}
-                        </div>
-                        <form action="/address" method="POST">
+{% block page_specific_head %}
 
-                            <div class="form-group">
-                                <label for="address1">Address</label>
-                                <input type="text" class="form-control defined" name="address1" id="address1"/>
-                                <input type="text" class="form-control defined" style="margin-top: 5px" name="address2" id="address2"/>
-                                <input type="text" class="form-control defined" style="margin-top: 5px" name="address3" id="address3"/>
-                            </div>
-                            <div class="form-group">
-                                <label for="county">County</label>
-                                <input type="text" name="county" id="county" class="form-control defined"/>
-                            </div>
-                            <div class="form-group">
-                                <label for="postcode">Post Code</label>
-                                <input type="text" class="form-control defined" id="postcode" name="postcode"/>
-                            </div>
-                            <div class="form-group">
-                                <input class="btn pull-right btn-primary" id="add_address" name="add_address" type="submit" value="Add additional address"/>
-                            </div>
-                            <div class="form-group" style="padding-top:4em">
-                                <input class="btn-lg pull-right btn-primary" id="continue" name="continue" type="submit" value="Continue"/>
-                            </div>
-                            <input type="hidden" value="{{application}}" name="application"/>
-                        </form>
-                    </div>
+<script>
+    no_of_addr = 0;
 
+    function addrClick(sender){
+        no_of_addr++;
+        i = no_of_addr;
+        jQuery('<div class="text_16_bold">Additional address '+(i+1)+' &nbsp;&nbsp;</div> \
+                <div class="form"> \
+                    <label class="form_label" for="add_' +i+ '_line1">Address line 1</label> \
+                    <input class="form_textfield" id="add_' +i+ '_line1" name="add_' +i+ '_line1" /> \
+                </div> \
+                <div class="form"> \
+                    <label class="form_label" for="add_' +i+ '_line2">Address line 2</label> \
+                    <input class="form_textfield" id="add_' +i+ '_line2" name="add_' +i+ 'line2" /> \
+                </div> \
+                <div class="form"> \
+                    <label class="form_label" for="add_' +i+ '_line3">Address line 3</label> \
+                    <input class="form_textfield" id="add_' +i+ 'line3" name="add_' +i+ '_line3" /> \
+                </div> \
+                <div class="form"> \
+                    <label class="form_label" for="add' +i+ '_county">County</label> \
+                    <input class="form_textfield" id="add' +i+ '_county" name="add_' +i+ '_county" /> \
+                </div> \
+                <div class="form"> \
+                    <label class="form_label" for="add_' +i+ '_postcode">Postcode</label> \
+                    <input class="form_textfield" id="add_' +i+ '_postcode" name="add_' +i+ '_postcode" /> \
+                </div> \
+                <div class="spacer_20"></div>').insertBefore("#addaddr1");
 
-            </div>
-        </div>
-    </div>
+        console.log(i);
+    };
+    </script>
+{% endblock %}
+
+{% block maincontent %}
+
+<div class="breadcrumb">
+    <ol>
+        <li><a class="breadcrumb_links" href="/">Home</a></li>
+        <li><a class="breadcrumb_links" href="/">Bankruptcies</a></li>
+        <li><a class="breadcrumb_links" href="/get_list?appn=bank_regn">List of registration applications</a></li>
+        <li class="breadcrumb_no_arrow"><span>Bankruptcy registration</span></li>
+    </ol>
 </div>
-</body>
-</html>
+<div class="spacer_10"></div>
+
+<h1 class="title_36">Bankruptcy registration</h1>
+
+<div class="spacer_5"></div>
+
+<div class="text_16_gray">
+    <span class="text_16_no_link_style">1. Debtor details</span>
+    &nbsp;&nbsp;
+    <span class="text_16_bold">2. Debtor address</span>
+    &nbsp;&nbsp;
+    3. Court details
+    &nbsp;&nbsp;
+    4. Verify registration
+</div>
+
+<div class="spacer_30"></div>
+
+<div class="grid-row">
+    <!-- ///////////////////////////////// data entry form ///////////////////////////////// -->
+    <form id="page_form" action="/address" method="POST">
+        <div class="column-form" id="form_panel">
+
+            <p class="text_24_bold">2. Debtor address</p>
+
+            <div class="spacer_20"></div>
+
+            <div class="form">
+                <label class="form_label" for="add_0_line1" >Address line 1</label>
+                <input class="form_textfield" type="text" id="add_0_line1" autofocus name="add_0_line1">
+            </div>
+
+            <div class="form">
+                <label class="form_label" for="add_0_line2" >Address line 2</label>
+                <input class="form_textfield" type="text" id="add_0_line2" name="add_0_line2">
+            </div>
+
+            <div class="form">
+                <label class="form_label" for="add_0_line3" >Address line 3</label>
+                <input class="form_textfield" type="text" id="add_0_line3" name="add_0_line3">
+            </div>
+
+            <div class="form">
+                <label class="form_label" for="add_0_county" >County</label>
+                <input class="form_textfield" type="text" id="add_0_county" name="add_0_county">
+            </div>
+
+            <div class="form">
+                <label class="form_label" for="add_0_postcode" >Postcode</label>
+                <input class="form_textfield" type="text" id="add_0_postcode" name="add_0_postcode">
+            </div>
+
+            <div class="spacer_5"></div>
+
+            <div class="spacer_20"></div>
+
+            <label id="addaddr1" class="text_16">Do you need to add another address?</label>
+
+            <div class="spacer_10"></div>
+
+            <fieldset class="inline">
+                <div>
+                    <label class="block-label">
+                        <input type="radio" id="addaddr" name="add_address" onclick="addrClick(this)">
+                        <span class="text_16">Yes</span>
+                    </label>
+                </div>
+                <div>
+                    <label class="block-label">
+                        <input type="radio" checked="checked" name="add_address"><span class="text_16">No</span>
+                    </label>
+                </div>
+            </fieldset>
+
+            <div class="spacer_30"></div>
+
+            <div>
+                <table>
+                    <tr>
+                        <td width="50%" class="no-line">
+                            <input type="submit" id="continue" value="Continue" class="form_button">
+                        </td>
+                        <!--<td width="50%" class="custom_3">
+                            <a href="bankruptcy_amendment_step_2" class="link_16">Cancel amends</a>
+                        </td>-->
+                    </tr>
+                </table>
+            </div>
+
+        </div>
+    </form>
+    <!-- ///////////////////////////////// end of data entry form ///////////////////////////////// -->
+
+    <!-- /////////////////////////////////  Include image tool ///////////////////////////////// -->
+
+    {% include 'includes/image_view_body.html' %}
+
+    <!-- ///////////////////////////////// End of image tool ///////////////////////////////// -->
+</div>
+
+{% endblock %}

@@ -1,194 +1,90 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <title>Land Charges</title>
-    {% include 'includes/ext_references.html' %}
-    <style>
-        #results td:hover {
-        cursor: pointer;
-        }
-    </style>
-    <script>
-        HOST = window.location.protocol + "//" + window.location.hostname;
+{% extends "/page_template/base.html" %}
+{% block maincontent %}
 
-        function getTotals(){
-                jQuery.ajax( {
-                    url: HOST + ':5010/totals',
-                    type: 'GET',
-                    data: {},
-                    success: function( data ) {
-                        // alert(JSON.stringify(data));
-                        jQuery('#banks_total').html(data.banks);
-                        jQuery('#lcreg_total').html(data.lcreg);
-                        jQuery('#amend_total').html(data.amend);
-                        jQuery('#canc_total').html(data.canc);
-                        jQuery('#search_total').html(data.search);
-                        jQuery('#oc_total').html(data.oc);
-                    }
-                } );
-        }
-    </script>
-</head>
-<body>
-<input type="hidden" name="requested_list" value="{{requested_list}}">
-{% if requested_list == 'pab'%}
-    {% set page_title = 'PA Bankruptcy Registrations' %}
-{% elif requested_list == 'wob' %}
-    {% set page_title = 'WO Bankruptcy Registrations' %}
-{% elif requested_list == 'bank_regn' %}
-{% set page_title = 'Bankruptcy Registrations' %}
+<input type="hidden" name="requested_list" value="{{requested_list}}"/>
+{% if requested_list == 'bank_regn' %}
+{% set page_title = 'bankruptcy registration' %}
 {% elif requested_list == 'lc_regn' %}
-    {% set page_title = 'Land Charge Registrations' %}
+{% set page_title = 'land charge registration' %}
 {% elif requested_list == 'amend' %}
-    {% set page_title = 'Amendments' %}
+{% set page_title = 'amendment' %}
 {% elif requested_list == 'cancel' %}
-    {% set page_title = 'Cancellations' %}
-{% elif requested_list == 'prt_search' %}
-    {% set page_title = 'Portal Searches' %}
+{% set page_title = 'cancellation' %}
 {% elif requested_list == 'search' %}
-    {% set page_title = 'Searches' %}
+{% set page_title = 'search' %}
 {% elif requested_list == 'oc' %}
-    {% set page_title = 'Office Copies' %}
+{% set page_title = 'office copy' %}
 {% endif %}
-<div id="main" class="container">
-    {% include 'includes/lc_menu.html' %}
-    <div class="container">
-        <div class="row" >
-            <div class="row col-sm-12">
-                <ul class="breadcrumb">
-                    <li><a href="/">Home</a></li>
-                    <li><a href="/get_list?appn={{requested_list}}">{{page_title}}</a></li>
-                </ul>
-                <a id="refresh" class="refresh-link" href="/get_list?appn={{requested_list}}">Refresh page</a>
 
-            </div>
-            <div class="row col-sm-12" style="margin-top:30px">
-                <div class="col-sm-6">
-                    <div class="col-sm-3"></div>
-                    <div class="col-sm-3 text-center">
-                        <a class="black" href="/get_list?appn=bank_regn">
-                            <div class="circle circle-border circle-solid">
-                                <div class="circle-inner">
-                                    <div id="banks_total" class="score-text sm">
-                                        {{data['banks']}}
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="type-label-sm">Bankruptcy<br>Registrations</div>
-                        </a>
-                    </div>
-                    <div class="col-sm-3 text-center">
-                        <a class="black" href="/get_list?appn=lc_regn">
-                            <div class="circle circle-border circle-solid">
-                                <div class="circle-inner">
-                                    <div id="lcreg_total" class="score-text sm">
-                                        {{data['lcreg']}}
-                                    </div>
-                                </div>
-                            </div>
-                        <div class="type-label-sm">Land Charge<br>Registrations</div>
-                        </a>
-                    </div>
-                    <div class="col-sm-3 text-center">
-                        <a class="black" href="/get_list?appn=amend">
-                            <div class="circle circle-border circle-solid">
-                                <div class="circle-inner">
-                                    <div id="amend_total" class="score-text sm">
-                                        {{data['amend']}}
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="type-label-sm">Amendments</div>
-                        </a>
-                    </div>
-                </div>
-                <div class="col-sm-6">
-                    <div class="col-sm-3 text-center">
-                        <a class="black" href="/get_list?appn=cancel">
-                            <div class="circle circle-border circle-solid">
-                                <div class="circle-inner">
-                                    <div id="canc_total" class="score-text sm">
-                                        {{data['canc']}}
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="type-label-sm">Cancellations</div>
-                        </a>
-                    </div>
-                    <div class="col-sm-3 text-center">
-                        <a class="black" href="/get_list?appn=search">
-                            <div class="circle circle-border circle-solid">
-                                <div class="circle-inner">
-                                    <div id="search_total" class="score-text sm">
-                                        {{data['search']}}
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="type-label-sm">Searches</div>
-                        </a>
-                    </div>
-                    <div class="col-sm-3 text-center">
-                        <a class="black" href="/get_list?appn=oc">
-                            <div class="circle circle-border circle-solid">
-                                <div class="circle-inner">
-                                    <div id="oc_total" class="score-text sm">
-                                        {{data['oc']}}
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="type-label-sm">Office Copies</div>
-                        </a>
-                    </div>
-                </div>
-            </div>
-                {% if worklist|length > 0 %}
-                    <div class="row col-sm-12" style="margin-top:10px">
-                         <h3>{{page_title}}</h3><br/>
-                        <div class="table-responsive">
-                            <table id="results" class="table table-hover" style="border: solid #CCCCCC 1px;">
-                                <thead>
-                                <tr>
-                                    <th class="col-sm-3 active" >Date Received</th>
-                                    <th class="col-sm-2 active" >Time</th>
-                                    <th class="col-sm-7 active" >Application Type</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                {% for n in worklist %}
-                                <tr>
-                                    <td><a href="/get_application/{{requested_list}}/{{n['appn_id']}}/{{n['application_type']|replace(' ', '%20')}}">{{n['date_received']}}</a></td>
-                                    <td>{{n['time_received']}}</td>
-                                    <td id="app_type{{loop.index}}">{{n['application_type']}}</td>
-                                </tr>
-                                {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                {% endif %}
-                {% if worklist|length == 0 and worklist|length == 0 %}
-                    <div class="row col-sm-12" style="margin-top:10px">
-                        <h2>{{page_title}}</h2><br/>
-                        <p>There are no waiting applications</p>
-                    </div>
-                {% endif %}
-        </div>
+<div class="breadcrumb">
+        <ol>
+            <li><a class="breadcrumb_links" href="/">Home</a></li>
+            <li><a class="breadcrumb_links" href="/">Bankruptcies</a></li>
+            <li class="breadcrumb_no_arrow"><span>List of {{page_title}} applications</span></li>
+        </ol>
     </div>
-</div>
-<script>
-    $(document).ready(function() {
-        $("#refresh").hide();
-        setInterval("getTotals()", 30000);
 
-        $('#results tr').click(function() {
-            var href = $(this).find("a").attr("href");
-            if(href) {
-                window.location = href;
-            }
-    });
-});
 
-</script>
-</body>
-</html>
+    <div class="spacer_5"></div>
+
+    <div class="grid-row">
+
+        <!-- ///////////////////////////////// column two-thirds ///////////////////////////////// -->
+
+        <div class="column-two-thirds">
+
+            <p class="steps">Bankruptcies</p>
+
+            <h1 class="title_36">List of {{page_title}} applications</h1>
+
+            <p class="text_indent">Select any application from the list to verify </p>
+
+            {% if worklist|length > 0 %}
+
+            <table id="results">
+                <tr>
+                    <th width="45%" class="table_text_black">Application type <a href="#"></a></th>
+                    <th width="25%" class="table_text_black">Reference <a href="#"></a></th>
+                    <th width="40%" class="table_text_black">Date received <a href="#"></a></th>
+                    <th width="5%" class="table_text_black">Time</th>
+                </tr>
+                {% for n in worklist %}
+                <tr>
+                    <td>
+                        <a id="app_type{{loop.index}}" href="/get_application/{{requested_list}}/{{n['appn_id']}}/{{n['application_type']|replace(' ', '%20')}}">
+                            {% if n['application_type'] == 'WO(B)' %}
+                            Writ or Order (WOB)
+                            {% elif n['application_type'] == 'PA(B)'%}
+                            Petition Action (PAB)
+                            {% else %}
+                            {{n['application_type']}}
+                            {% endif %}
+                        </a>
+                    </td>
+                    <td>{{n['appn_id']}}</td>
+                    <td>{{n['date_received']}}</td>
+                    <td>{{n['time_received']}}</td>
+                </tr>
+                {% endfor %}
+            </table>
+            {% endif %}
+            {% if worklist|length == 0 and worklist|length == 0 %}
+            <div class="row col-sm-12" style="margin-top:10px">
+                <p>There are no waiting applications</p>
+            </div>
+            {% endif %}
+
+        <!-- ///////////////////////////////// end of column two-thirds ///////////////////////////////// -->
+
+        <!-- ///////////////////////////////// column-third ///////////////////////////////// -->
+
+        <div class="column-third">
+
+            <p class="text_19"></p>
+
+        </div>
+
+        <!-- ///////////////////////////////// end of column-third ///////////////////////////////// -->
+
+    </div>
+{% endblock %}
