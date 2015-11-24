@@ -107,6 +107,8 @@
     {% if application['search_criteria']['search_type'] == 'bankruptcy' %}
     <span class="text_16_bold">2. Customer details</span>
     {% else %}
+    <span class="text_16_no_link_style">2. Counties to be searched</span>
+    &nbsp;&nbsp;
     <span class="text_16_bold">3. Customer details</span>
     {% endif %}
 </div>
@@ -118,7 +120,11 @@
     <form action="/submit_search" method="POST">
     <div class="column-form" id="form_panel">
 
+        {% if application['search_criteria']['search_type'] == 'bankruptcy' %}
         <p class="text_24_bold">2. Customer details</p>
+        {% else %}
+        <p class="text_24_bold">3. Customer details</p>
+        {% endif %}
 
         <div class="spacer_20"></div>
 

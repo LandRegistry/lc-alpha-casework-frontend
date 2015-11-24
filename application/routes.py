@@ -192,11 +192,10 @@ def submit_cancellation():
 
 @app.route('/submit_amendment', methods=["POST"])
 def submit_amendment():
-    application_type = session['application_type']
     application_dict = session['application_dict']
 
     if 'Reject' in request.form:
-        return render_template('rejection.html', application_type=application_type)
+        return render_template('rejection.html', application_type=session['application_type'])
 
     # TODO: these are needed at the moment for registration but are not captured on the form
     application_dict["key_number"] = "2244095"  # TODO: is design changing to add key_number??
@@ -598,6 +597,9 @@ def process_court_details():
 
 @app.route('/confirmation', methods=['GET'])
 def confirmation():
+    if 'regn_no' not in session:
+        session['regn_no'] = []
+
     return render_template('confirmation.html', data=session['regn_no'], application_type=session['application_type'])
 
 
@@ -771,8 +773,6 @@ def process_search(search_type):
 @app.route('/process_search_name/<search_type>', methods=['POST'])
 def process_search_name(search_type):
     logging.info('Entering search name')
-    application_type = session['application_type']
-    application_dict = session['application_dict']
 
     counties = []
     parameters = {
@@ -822,14 +822,24 @@ def process_search_name(search_type):
                 parameters['search_items'].append(search_item)
         counter += 1
 
-    application_dict['search_criteria'] = parameters
+    session['application_dict']['search_criteria'] = parameters
 
     if search_type == 'full':
-        return render_template('search_counties.html', images=session['images'], application=application_dict,
-                               application_type=application_type, current_page=0)
+        return redirect('/search_counties', code=302, Response=None)
     else:
-        return render_template('search_customer.html', images=session['images'], application=application_dict,
-                               application_type=application_type, current_page=0)
+        return redirect('/search_customer', code=302, Response=None)
+
+
+@app.route('/search_counties', methods=['GET'])
+def search_counties():
+    return render_template('search_counties.html', images=session['images'], application=session['application_dict'],
+                           application_type=session['application_type'], current_page=0)
+
+
+@app.route('/search_customer', methods=['GET'])
+def search_customer():
+    return render_template('search_customer.html', images=session['images'], application=session['application_dict'],
+                           application_type=session['application_type'], current_page=0)
 
 
 @app.route('/process_search_county', methods=['POST'])
@@ -843,15 +853,12 @@ def process_search_county():
 
     session['application_dict']['search_criteria']['counties'] = counties
 
-    return render_template('search_customer.html', images=session['images'], application=session['application_dict'],
-                           application_type=session['application_type'], current_page=0)
+    return redirect('/search_customer', code=302, Response=None)
 
 
 @app.route('/submit_search', methods=['POST'])
 def submit_search():
     logging.info('Entering submit search')
-    application_type = session['application_type']
-    application = session['application_dict']
 
     customer = {
         'key_number': request.form['key_number'],
@@ -862,8 +869,8 @@ def submit_search():
 
     search_data = {
         'customer': customer,
-        'document_id': application['document_id'],
-        'parameters': application['search_criteria']
+        'document_id': session['document_id'],
+        'parameters': session['application_dict']['search_criteria']
     }
 
     session['search_data'] = search_data
@@ -882,7 +889,7 @@ def submit_search():
         logging.error('Unexpected return code: %d', response.status_code)
         return render_template('error.html')
 
-    return render_template('confirmation.html', application_type=application_type, application=application)
+    return redirect('/confirmation', code=302, Response=None)
 
 
 @app.route('/search_result', methods=['GET'])
