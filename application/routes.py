@@ -1,5 +1,5 @@
 from application import app
-from flask import Response, request, render_template, session
+from flask import Response, request, render_template, session, redirect
 import requests
 from datetime import datetime
 import logging
@@ -506,8 +506,6 @@ def update_court():
 
 @app.route('/process_banks_name', methods=["POST"])
 def process_banks_name():
-    appn_type = session['application_dict']['application_type']
-    doc_id = session['document_id']
 
     name = {"debtor_name": {"forenames": [], "surname": ""},
             "occupation": "",
@@ -554,84 +552,22 @@ def process_banks_name():
             alt_name = {"forenames": [], "surname": ""}
             counter += 1
 
-    requested_worklist = 'bank_regn'
-    images = session['images']
-    name['application_type'] = appn_type
-    name['document_id'] = doc_id
+    name['application_type'] = session['application_dict']['application_type']
     set_session_variables({'application_dict': name})
-    application = session['application_dict']
 
-    return render_template('address.html', application=application, images=images, data=application,
-                           requested_list=requested_worklist, current_page=0)
+    return redirect('/address_details', code=302, Response=None)
 
-
-@app.route('/court_details', methods=["POST"])
-def process_court_details():
-    # application = json.loads(request.form['application'])
-    application = session['application_dict']
-    # application["application_type"] = request.form['nature']
-    application["legal_body"] = request.form['court']
-    application["legal_body_ref"] = '%s of %s' % (request.form['court_no'], request.form['court_year'])
-
-    # these are needed at the moment for registration but are not captured on the form
-    application["key_number"] = request.form['keyno']
-    application["application_ref"] = "customer reference"
-    today = datetime.now().strftime('%Y-%m-%d')
-    application["date"] = today
-    application["residence_withheld"] = False
-    application['date_of_birth'] = "1980-01-01"
-    application["document_id"] = session['document_id']
-
-    url = app.config['BANKRUPTCY_DATABASE_URL'] + '/registration'
-    headers = {'Content-Type': 'application/json'}
-    response = requests.post(url, data=json.dumps(application), headers=headers)
-
-    if response.status_code == 200:
-        data = response.json()
-        reg_list = []
-        for item in data['new_registrations']:
-            reg_list.append(item)
-        application['reg_nos'] = reg_list
-        requested_worklist = 'bank_regn'
-        display_date = datetime.now().strftime('%d.%m.%Y')
-        delete_from_worklist(session['worklist_id'])
-
-        # thread = Thread(target=send_notification, args=(session['application_dict'],))
-        # thread.start()
-        # send_notification(session['application_dict'])
-
-        return render_template('confirmation.html', application=application, data=reg_list, date=display_date,
-                               application_type=requested_worklist)
-    else:
-        error = response.status_code
-        logging.error(error)
-        return render_template('error.html', error_msg=error), 500
+@app.route('/address_details', methods=["GET"])
+def address_details():
+    return render_template('address.html', images=session['images'], current_page=0)
 
 
 @app.route('/address', methods=['POST'])
 def application_step_2():
-    # application = json.loads(request.form['application'])
     application = session['application_dict']
     if 'residence' not in application:
         application['residence'] = []
 
-    # handle empty 'last address'.
-    # if request.form['address1'] != '' and 'address2' in request.form and 'submit' in request.form:
-    """
-    address = {'address_lines': []}
-    if 'address1' in request.form and request.form['address1'] != '':
-        address['address_lines'].append(request.form['address1'])
-    if 'address2' in request.form and request.form['address2'] != '':
-        address['address_lines'].append(request.form['address2'])
-    if 'address3' in request.form and request.form['address3'] != '':
-        address['address_lines'].append(request.form['address3'])
-
-    address['county'] = request.form['county']
-    address['postcode'] = request.form['postcode']
-    application['residence'].append(address)
-    requested_worklist = 'bank_regn' """
-
-    # TODO: code commented out is pre assessment re-design. Needs to be removed once design agreed
     counter = 0
     while True:
         addr1_counter = "add_" + str(counter) + "_line1"
@@ -653,22 +589,51 @@ def application_step_2():
         address['postcode'] = request.form[postcode_counter]
         application['residence'].append(address)
         counter += 1
-    print(application)
-    requested_worklist = 'bank_regn'
 
-    """
-    if 'add_address' in request.form:
-        return render_template('address.html', application=json.dumps(application), images=session['images'],
-                               residences=application['residence'], requested_list=requested_worklist, current_page=0)
+    return redirect('/court_details', code=302, Response=None)
+
+
+@app.route('/court_details', methods=['GET'])
+def court_details():
+    return render_template('banks_order.html', images=session['images'], current_page=0,
+                           charge=session['application_dict']['application_type'])
+
+
+@app.route('/process_court_details', methods=["POST"])
+def process_court_details():
+    application = session['application_dict']
+    application["legal_body"] = request.form['court']
+    application["legal_body_ref"] = '%s of %s' % (request.form['court_no'], request.form['court_year'])
+    application["key_number"] = request.form['keyno']
+    application["application_ref"] = " "  # TODO: do we need to capture the customer reference
+    today = datetime.now().strftime('%Y-%m-%d')
+    application["date"] = today
+    application["residence_withheld"] = False
+    application['date_of_birth'] = "1980-01-01"  # TODO: what are we doing about the DOB??
+    application["document_id"] = session['document_id']
+
+    url = app.config['BANKRUPTCY_DATABASE_URL'] + '/registration'
+    headers = {'Content-Type': 'application/json'}
+    response = requests.post(url, data=json.dumps(application), headers=headers)
+
+    if response.status_code == 200:
+        data = response.json()
+        reg_list = []
+        for item in data['new_registrations']:
+            reg_list.append(item)
+        session['reg_nos'] = reg_list
+        delete_from_worklist(session['worklist_id'])
+
+        return redirect('/confirmation', code=302, Response=None)
     else:
-        return render_template('banks_order.html', application=json.dumps(application),
-                               images=session['images'],
-                               requested_list=requested_worklist, current_page=0,
-                               appn_type=session['application_dict']['application_type'])  """
+        error = response.status_code
+        logging.error(error)
+        return render_template('error.html', error_msg=error), 500
 
-    return render_template('banks_order.html', application=json.dumps(application), images=session['images'],
-                           requested_list=requested_worklist, current_page=0,
-                           appn_type=session['application_dict']['application_type'])
+
+@app.route('/confirmation', methods=['GET'])
+def confirmation():
+    return render_template('confirmation.html', data=session['reg_nos'], application_type=session['application_type'])
 
 
 @app.route('/process_rectification', methods=['POST'])
