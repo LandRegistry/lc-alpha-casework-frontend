@@ -4,10 +4,10 @@
     <script>
         HOST = window.location.protocol + "//" + window.location.hostname;
 
-        //$(document).ready(function() {
-        //    $("#refresh").hide();
-        //    setInterval("getTotals()", 30000);
-        //});
+        $(document).ready(function() {
+            $("#refresh").hide();
+            setInterval("getTotals()", 30000);
+        });
 
         function getTotals(){
 
@@ -16,13 +16,33 @@
                     type: 'GET',
                     data: {},
                     success: function( data ) {
-                        // alert(JSON.stringify(data));
-                        jQuery('#banks_total').find('.indicator_middle').text(data.banks);
-                        jQuery('#lcreg_total').find('.indicator_middle').text(data.lcreg);
-                        jQuery('#amend_total').find('.indicator_middle').text(data.amend);
-                        jQuery('#canc_total').find('.indicator_middle').text(data.canc);
-                        jQuery('#search_total').find('.indicator_middle').text(data.search);
-                        jQuery('#oc_total').find('.indicator_middle').text(data.oc);
+                        var reg = document.getElementById('reg').querySelector('a');
+                        //var lc = document.getElementById('lc').querySelector('a');
+                        var amend = document.getElementById('amend').querySelector('a');
+                        var canc = document.getElementById('canc').querySelector('a');
+                        var search = document.getElementById('search').querySelector('a');
+                        var oc = document.getElementById('oc').querySelector('a');
+
+                        var numReg = data.banks;
+                        //var numLC = data.lcreg;
+                        var numAmend = data.amend;
+                        var numCanc = data.canc;
+                        var numSearch = data.search;
+                        var numOC = data.oc;
+
+                        reg.className = numReg < 10 ? 'indicator_middle' : 'indicator_middle_2';
+                        //lc.className = numLC < 10 ? 'indicator_middle' : 'indicator_middle_2';
+                        amend.className = numAmend < 10 ? 'indicator_middle' : 'indicator_middle_2';
+                        canc.className = numCanc < 10 ? 'indicator_middle' : 'indicator_middle_2';
+                        search.className = numSearch < 10 ? 'indicator_middle' : 'indicator_middle_2';
+                        oc.className = numOC < 10 ? 'indicator_middle' : 'indicator_middle_2';
+
+                        reg.textContent = numReg;
+                        //lc.textContent = numLC;
+                        amend.textContent = numAmend;
+                        canc.textContent = numCanc;
+                        search.textContent = numSearch;
+                        oc.textContent = numOC;
                     }
                 } );
 
@@ -58,7 +78,7 @@
                                 {% if data['banks'] < 10 %}
                                 <a class="indicator_middle" href="/get_list?appn=bank_regn">{{data['banks']}}</a>
                                 {% else %}
-                                <a class="indicator_middle2" href="/get_list?appn=bank_regn">{{data['banks']}}</a>
+                                <a class="indicator_middle_2" href="/get_list?appn=bank_regn">{{data['banks']}}</a>
                                 {% endif %}
                             </div>
                             <div class="spacer_15"></div>
@@ -85,7 +105,7 @@
                                 {% if data['amend'] < 10 %}
                                 <a class="indicator_middle" href="/get_list?appn=amend">{{data['amend']}}</a>
                                 {% else %}
-                                <a class="indicator_middle2" href="/get_list?appn=amend">{{data['amend']}}</a>
+                                <a class="indicator_middle_2" href="/get_list?appn=amend">{{data['amend']}}</a>
                                 {% endif %}
                             </div>
 
@@ -117,7 +137,7 @@
                                 {% if data['canc'] < 10 %}
                                 <a class="indicator_middle" href="/get_list?appn=cancel">{{data['canc']}}</a>
                                 {% else %}
-                                <a class="indicator_middle2" href="/get_list?appn=cancel">{{data['canc']}}</a>
+                                <a class="indicator_middle_2" href="/get_list?appn=cancel">{{data['canc']}}</a>
                                 {% endif %}
                             </div>
 
@@ -151,7 +171,7 @@
                                 {% if data['search'] < 10 %}
                                 <a class="indicator_middle" href="/get_list?appn=search">{{data['search']}}</a>
                                 {% else %}
-                                <a class="indicator_middle2" href="/get_list?appn=search">{{data['search']}}</a>
+                                <a class="indicator_middle_2" href="/get_list?appn=search">{{data['search']}}</a>
                                 {% endif %}
                             </div>
 
@@ -181,7 +201,7 @@
                                 {% if data['oc'] < 10 %}
                                 <a class="indicator_middle" href="#">{{data['oc']}}</a>
                                 {% else %}
-                                <a class="indicator_middle2" href="#">{{data['oc']}}</a>
+                                <a class="indicator_middle_2" href="#">{{data['oc']}}</a>
                                 {% endif %}
                             </div>
 
@@ -239,7 +259,7 @@
 
                     <a class="no_link_style" href="bankruptcy_registrations"><p class="text_16_bold">John Smith actions</p></a>
 
-                    <p><a class="no_link_style" href="#"><p class="link_14">Rectifications</p></a>
+                    <p><a class="no_link_style" href="/start_rectification"><p id="rectify" class="link_14">Rectifications</p></a>
 
                     <p><a class="no_link_style" href="#"><p class="link_14">Deletions</p></a>
 

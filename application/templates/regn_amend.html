@@ -5,7 +5,7 @@
         <ol>
             <li><a class="breadcrumb_links" href="/">Home</a></li>
             <li><a class="breadcrumb_links" href="/">Bankruptcies</a></li>
-            <li><a class="breadcrumb_links" id="return_worklist" href="/get_list?appn=amend">List of amendment applications</a></li>
+            <li><a class="breadcrumb_links" id="worklist" href="/get_list?appn=amend">List of amendment applications</a></li>
             <li class="breadcrumb_no_arrow"><span>Bankruptcy amendment</span></li>
         </ol>
     </div>
@@ -159,7 +159,7 @@
                             <tr>
                                 <td width="50%" class="no-line">
 
-                                        <input type="submit" id="register_amends" value="Register amends" class="form_button_6" disabled>
+                                        <input type="submit" id="submit" value="Register amends" class="form_button_6" disabled>
                                 </td>
                                 <td width="50%" class="custom_3">
                                     <a href="#" class="link_16">Reject application</a>
@@ -190,7 +190,7 @@
 
     function toggle() {
         var cbChecked = document.getElementById('check_box').checked;
-        document.getElementById('register_amends').disabled = !cbChecked;
+        document.getElementById('submit').disabled = !cbChecked;
     }
 
     </script>

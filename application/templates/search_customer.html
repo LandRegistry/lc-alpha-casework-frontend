@@ -82,12 +82,20 @@
         <li><a class="breadcrumb_links" href="/">Home</a></li>
         <li><a class="breadcrumb_links" href="/">Bankruptcies</a></li>
         <li><a class="breadcrumb_links" href="/get_list?appn=search">List of search applications</a></li>
+        {% if search_type == 'banks' %}
         <li class="breadcrumb_no_arrow"><span>Bankruptcy search</span></li>
+        {% else %}
+        <li class="breadcrumb_no_arrow"><span>Land charge and bankruptcy search</span></li>
+        {% endif %}
     </ol>
 </div>
 <div class="spacer_10"></div>
 
+{% if search_type == 'banks' %}
 <h1 class="title_36">Bankruptcy search</h1>
+{% else %}
+<h1 class="title_36">Land charge and bankruptcy search</h1>
+{% endif %}
 
 <div class="spacer_5"></div>
 
@@ -113,9 +121,9 @@
         <div class="spacer_20"></div>
 
         <div class="form">
-            <label class="form_label" for="key_no">Key number</label>
-            <input class="form_textfield" type="text" id="key_no" name="key_no" autofocus
-                   onkeyup="getCustomerDetails(this);" onblur="getCustomerDetails(this);" value="{{key_no}}"/>
+            <label class="form_label" for="key_number">Key number</label>
+            <input class="form_textfield" type="text" id="key_number" name="key_number" autofocus
+                   onkeyup="getCustomerDetails(this);" onblur="getCustomerDetails(this);" value="{{key_number}}"/>
         </div>
         <div class="form">
             <label class="form_label" for="customer_name">Customer name</label>
@@ -136,7 +144,7 @@
             <table>
                 <tr>
                     <td width="50%" class="no-line">
-                        <input id="search_name" type="submit" class="form_button" value="Continue"/>
+                        <input id="submit" type="submit" class="form_button" value="Submit search"/>
                     </td>
                     <td width="50%" class="custom_3">
                         <a href="#" class="link_16">Reject application</a>
