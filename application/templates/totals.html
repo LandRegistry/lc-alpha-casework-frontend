@@ -16,43 +16,33 @@
                     type: 'GET',
                     data: {},
                     success: function( data ) {
-                        // alert(JSON.stringify(data.search));
-                        if (JSON.stringify(data.banks) < 10) {
-                            jQuery('#reg').find('.indicator_middle').text(data.banks);
-                        }
-                        else {
-                            jQuery('#reg').find('.indicator_middle_2').text(data.banks);
-                        }
-                        if (JSON.stringify(data.lcreg) < 10) {
-                            jQuery('#lcreg_total').find('.indicator_middle').text(data.lcreg);
-                        }
-                        else{
-                            jQuery('#lcreg_total').find('.indicator_middle_2').text(data.lcreg);
-                        }
-                        if (JSON.stringify(data.amend) < 10) {
-                            jQuery('#amend').find('.indicator_middle').text(data.amend);
-                        }
-                        else{
-                            jQuery('#amend').find('.indicator_middle_2').text(data.amend);
-                        }
-                        if (JSON.stringify(data.canc < 10) {
-                            jQuery('#canc').find('.indicator_middle').text(data.canc);
-                        }
-                        else{
-                            jQuery('#canc').find('.indicator_middle_2').text(data.canc);
-                        }
-                        if (JSON.stringify(data.search) < 10) {
-                            jQuery('#search').find('.indicator_middle').text(data.search);
-                        }
-                        else {
-                            jQuery('#search').find('.indicator_middle_2').text(data.search);
-                        }
-                        if (JSON.stringify(data.oc < 10) {
-                            jQuery('#oc').find('.indicator_middle').text(data.oc);
-                        }
-                        else{
-                            jQuery('#oc').find('.indicator_middle_2').text(data.oc);
-                        }
+                        var reg = document.getElementById('reg').querySelector('a');
+                        //var lc = document.getElementById('lc').querySelector('a');
+                        var amend = document.getElementById('amend').querySelector('a');
+                        var canc = document.getElementById('canc').querySelector('a');
+                        var search = document.getElementById('search').querySelector('a');
+                        var oc = document.getElementById('oc').querySelector('a');
+
+                        var numReg = data.banks;
+                        //var numLC = data.lcreg;
+                        var numAmend = data.amend;
+                        var numCanc = data.canc;
+                        var numSearch = data.search;
+                        var numOC = data.oc;
+
+                        reg.className = numReg < 10 ? 'indicator_middle' : 'indicator_middle_2';
+                        //lc.className = numLC < 10 ? 'indicator_middle' : 'indicator_middle_2';
+                        amend.className = numAmend < 10 ? 'indicator_middle' : 'indicator_middle_2';
+                        canc.className = numCanc < 10 ? 'indicator_middle' : 'indicator_middle_2';
+                        search.className = numSearch < 10 ? 'indicator_middle' : 'indicator_middle_2';
+                        oc.className = numOC < 10 ? 'indicator_middle' : 'indicator_middle_2';
+
+                        reg.textContent = numReg;
+                        //lc.textContent = numLC;
+                        amend.textContent = numAmend;
+                        canc.textContent = numCanc;
+                        search.textContent = numSearch;
+                        oc.textContent = numOC;
                     }
                 } );
 
