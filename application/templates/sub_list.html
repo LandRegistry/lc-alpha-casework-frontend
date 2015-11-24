@@ -51,7 +51,7 @@
                 {% for n in worklist %}
                 <tr>
                     <td>
-                        <a id="app_type{{loop.index}}" href="/get_application/{{requested_list}}/{{n['appn_id']}}/{{n['application_type']|replace(' ', '%20')}}">
+                        <a id="app_type{{loop.index}}" href="/application_start/{{requested_list}}/{{n['appn_id']}}/{{n['application_type']|replace(' ', '%20')}}">
                             {% if n['application_type'] == 'WO(B)' %}
                             Writ or Order (WOB)
                             {% elif n['application_type'] == 'PA(B)'%}
