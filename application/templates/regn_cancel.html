@@ -1,7 +1,6 @@
 {% extends "/page_template/base.html" %}
 {% block maincontent %}
 
-<form action="/process_request" method="POST">
     <div class="breadcrumb">
         <ol>
             <li><a class="breadcrumb_links" href="/">Home</a></li>
@@ -28,7 +27,7 @@
     <div class="grid-row">
 
         <!-- ///////////////////////////////// column two-thirds ///////////////////////////////// -->
-
+        <form action="/submit_cancellation" method="POST">
         <div class="column-form" id="form_panel">
 
             <p class="text_24_bold">2. Review registration details</p>
@@ -131,6 +130,7 @@
             </div>
 
         </div>
+        </form>
 
         <!-- ///////////////////////////////// end of column-form ///////////////////////////////// -->
         <!-- /////////////////////////////////  Include image tool ///////////////////////////////// -->
@@ -139,7 +139,6 @@
 
         <!-- ///////////////////////////////// End of image tool ///////////////////////////////// -->
     </div>
-</form>
 
 <script type="text/javascript">
 

@@ -12,7 +12,7 @@
         <ol>
             <li><a class="breadcrumb_links" href="/">Home</a></li>
             <li><a class="breadcrumb_links" href="/">Bankruptcies</a></li>
-            <li><a class="breadcrumb_links" href="/">List of amendment applications</a></li>
+            <li><a class="breadcrumb_links" id="worklist" href="/get_list?appn=amend">List of amendment applications</a></li>
             <li class="breadcrumb_no_arrow"><span>Bankruptcy amendment</span></li>
         </ol>
     </div>
@@ -23,9 +23,9 @@
     <div class="spacer_5"></div>
 
     <div class="text_16_gray">
-        <span class="text_16_bold">1. Retrieve registration details</span>
+        <span class="text_16_no_link_style">1. Retrieve registration details</span>
         &nbsp;&nbsp;
-        2. Registration details
+        <span class="text_16_bold">2. Registration details</span>
         &nbsp;&nbsp;
         3. Review amendments
     </div>
@@ -37,7 +37,7 @@
         <form action="/update_court" method="POST">
             <div class="column-form" id="form_panel">
 
-                <p class="text_24_bold">1. Retrieve registration details</p>
+                <p class="text_24_bold">2. Registration details</p>
 
                 <div class="spacer_20"></div>
                 {% if error_msg|length > 0 %}
