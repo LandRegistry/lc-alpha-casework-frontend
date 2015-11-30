@@ -299,6 +299,19 @@ def process_court_details():
     application["legal_body"] = request.form['court']
     application["legal_body_ref"] = '%s of %s' % (request.form['court_no'], request.form['court_year'])
     application["key_number"] = request.form['keyno']
+
+    return redirect('/verify_registration', code=302, Response=None)
+
+
+@app.route('/verify_registration', methods=['GET'])
+def verify_registration():
+    return render_template('regn_verify.html', images=session['images'], current_page=0,
+                           data=session['application_dict'])
+
+
+@app.route('/process_registration', methods=['POST'])
+def process_registration():
+    application = session['application_dict']
     application["application_ref"] = " "  # TODO: do we need to capture the customer reference
     today = datetime.now().strftime('%Y-%m-%d')
     application["date"] = today
@@ -385,7 +398,11 @@ def update_name_details():
     application_dict['occupation'] = occupation
     session['data_amended'] = 'true'
 
-    return redirect('/process_application/' + session['application_type'], code=302, Response=None)
+    print(session['application_type'])
+    if session['application_type'] == 'bank_regn':
+        return redirect('/verify_registration', code=302, Response=None)
+    else:
+        return redirect('/process_application/' + session['application_type'], code=302, Response=None)
 
 
 @app.route('/amend_address', methods=["GET"])
@@ -433,7 +450,10 @@ def update_address_details():
         application_dict['residence'].append(new_address)
         return redirect('/amend_address', code=302, Response=None)
     else:
-        return redirect('/process_application/' + session['application_type'], code=302, Response=None)
+        if session['application_type'] == 'bank_regn':
+            return redirect('/verify_registration', code=302, Response=None)
+        else:
+            return redirect('/process_application/' + session['application_type'], code=302, Response=None)
 
 
 @app.route('/amend_court', methods=["GET"])
@@ -452,7 +472,10 @@ def update_court():
 
     session['data_amended'] = 'true'
 
-    return redirect('/process_application/' + session['application_type'], code=302, Response=None)
+    if session['application_type'] == 'bank_regn':
+        return redirect('/verify_registration', code=302, Response=None)
+    else:
+        return redirect('/process_application/' + session['application_type'], code=302, Response=None)
 
 
 @app.route('/submit_amendment', methods=["POST"])

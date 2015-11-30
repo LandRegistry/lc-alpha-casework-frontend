@@ -5,69 +5,44 @@
         <ol>
             <li><a class="breadcrumb_links" href="/">Home</a></li>
             <li><a class="breadcrumb_links" href="/">Bankruptcies</a></li>
-            <li><a class="breadcrumb_links" id="worklist" href="/get_list?appn=amend">List of amendment applications</a></li>
-            <li class="breadcrumb_no_arrow"><span>Bankruptcy amendment</span></li>
+            <li><a class="breadcrumb_links" id="worklist" href="/get_list?appn=bank_regn">List of registration applications</a></li>
+            <li class="breadcrumb_no_arrow"><span>Bankruptcy registration</span></li>
         </ol>
     </div>
     <div class="spacer_10"></div>
 
-    <h1 class="title_36">Bankruptcy amendment</h1>
+    <h1 class="title_36">Bankruptcy registration</h1>
 
     <div class="spacer_5"></div>
 
     <div class="text_16_gray">
-        <span class="text_16_no_link_style">1. Retrieve registration details</span>
+        <span class="text_16_no_link_style">1. Debtor details</span>
         &nbsp;&nbsp;
-        {% if "true" == data_amended %}
-        <span class="text_16_no_link_style">2. Registration details</span>
+        <span class="text_16_no_link_style">2. Debtor address</span>
         &nbsp;&nbsp;
-        <span class="text_16_bold">3. Review amendments</span>
-        {% else %}
-        <span class="text_16_bold">2. Registration details</span>
+        <span class="text_16_no_link_style">3. Court details</span>
         &nbsp;&nbsp;
-        3. Review amendments
-        {% endif %}
+        <span class="text_16_bold">4. Verify registration</span>
     </div>
 
     <div class="spacer_30"></div>
 
     <div class="grid-row">
         <!-- ///////////////////////////////// data entry form ///////////////////////////////// -->
-        <form action="/submit_amendment" method="POST">
+        <form action="/process_registration" method="POST">
             <div class="column-form" id="form_panel">
 
-                <p class="text_24_bold">2. Registration details</p>
+                <p class="text_24_bold">4. Verify registration</p>
 
                 <div class="spacer_10"></div>
 
                 <table class="review_table">
 
                     <tr>
-                        <th colspan="2" class="table_text_black"><span class="text_19_gray">Registration details</span></th>
-                        <th colspan="1" class="table_text_black link_16_right"><a class="link_16_right" href="#"></a></th>
-                    </tr>
-                    <tr>
-                        <td width="50%"><span class="text_review_table_bold">Number</span></td>
-                        <td width="50%"><span class="text_review_table">{{data.registration_no}}</span></td>
-                    </tr>
-                    <tr>
-                        <td colspan="1"><span class="text_review_table_bold">Date</span></td>
-                        <td colspan="2"><span class="text_review_table">{{data.registration_date | date_time_filter}}</span></td>
-                    </tr>
-                    <tr>
-                        <td colspan="1"><span class="text_review_table_bold">Type</span></td>
-                        <td colspan="2"><span class="text_review_table">{{data.application_type}}</span></td>
-                    </tr>
-
-                </table>
-
-                <div class="spacer_30"></div>
-
-                <table class="review_table">
-
-                    <tr>
-                        <th colspan="2" class="table_text_black"><span class="text_19_gray">Particulars of bankrupt</span></th>
-                        <th colspan="1" class="table_text_black link_16_right"><a class="link_16_right" id="amend_name" href="/amend_name">Edit</a></th>
+                        <th colspan="2" class="table_text_black"><span class="text_19_gray">Debtor details</span></th>
+                        <th colspan="1" class="table_text_black link_16_right">
+                            <a class="link_16_right" id="amend_name" href="/amend_name">Edit</a>
+                        </th>
                     </tr>
                     <tr>
                         <td width="45%"><span class="text_review_table_bold">Forename(s)</span></td>
@@ -90,45 +65,44 @@
                                 {{forename}}
                             {% endfor %}
                             {{name.surname}}<br/> </span>
-                        {% endfor %}
+                            {% endfor %}
                         </td>
                     </tr>
                     <tr>
                         <td colspan="1"><span class="text_review_table_bold">Occupation</span></td>
                         <td colspan="2"><span class="text_review_table">{{data.occupation}}</span></td>
                     </tr>
-
                 </table>
 
-
                 <div class="spacer_30"></div>
+
                 <table class="review_table">
                     <tr>
-                        <th colspan="2" class="table_text_black"><span class="text_19_gray">Address(es) of bankrupt</span></th>
-                        <th colspan="1" class="table_text_black link_16_right"><a class="link_16_right" id="amend_address" href="/amend_address">Edit</a></th>
+                        <th colspan="2" class="table_text_black"><span class="text_19_gray">Debtor address</span></th>
+                        <th colspan="1" class="table_text_black link_16_right">
+                            <a class="link_16_right" id="amend_address" href="/amend_address">Edit</a>
+                        </th>
                     </tr>
                     {% if data.residence|length > 0 and data.residence[0].address_lines|length > 0 %}
                     {% for address in data.residence %}
-                        <tr>
-                            <td width="45%" style="vertical-align: top;"><span class="text_review_table_bold">Address {{loop.index}}</span></td>
-                            <td width="50%"><span class="text_review_table">
+                    <tr>
+                        <td width="45%" style="vertical-align: top;"><span class="text_review_table_bold">Address {{loop.index}}</span></td>
+                        <td width="50%"><span class="text_review_table">
                                 {% for line in address.address_lines %}
                                 {{line}}
                                 {% endfor %}<br/>
                                 {{address.county}}<br/>
                                 {{address.postcode}}
                             </span>
-                            </td>
-                        </tr>
+                        </td>
+                    </tr>
                     {% endfor %}
                     {% endif %}
                 </table>
 
-
                 <div class="spacer_30"></div>
 
                 <table class="review_table">
-
                     <tr>
                         <th colspan="2" class="table_text_black"><span class="text_19_gray">Court details</span></th>
                         <th colspan="1" class="table_text_black link_16_right"><a class="link_16_right" id="amend_court" href="/amend_court">Edit</a></th>
@@ -147,41 +121,30 @@
                     </tr>
                 </table>
 
-
                 <div class="spacer_30"></div>
 
-                {% if "true" == data_amended %}
-                    <table class="review_table">
+                <table class="review_table">
+                    <tr>
+                        <td width="10%" class="no-line"><input type="checkbox" id="check_box" onclick="toggle()"></td>
+                        <td width="90%" class="no-line"><span class="text_review_table">I confirm I have verified all above details</span></td>
+                    </tr>
+                </table>
+
+                <div class="spacer_10"></div>
+
+                <div>
+                    <table>
                         <tr>
-                            <td width="10%" class="no-line"><input type="checkbox" id="check_box" onclick="toggle()"></td>
-                            <td width="90%" class="no-line"><span class="text_review_table">I confirm I verified the amendments</span></td>
+                            <td width="50%" class="no-line">
+
+                                <input type="submit" id="submit" value="Register" class="form_button_6" disabled>
+                            </td>
+                            <td width="50%" class="custom_3">
+                                <a href="#" class="link_16">Reject application</a>
+                            </td>
                         </tr>
                     </table>
-
-                    <div class="spacer_10"></div>
-
-                    <div>
-                        <table>
-                            <tr>
-                                <td width="50%" class="no-line">
-
-                                        <input type="submit" id="submit" value="Register amends" class="form_button_6" disabled>
-                                </td>
-                                <td width="50%" class="custom_3">
-                                    <a href="#" class="link_16">Reject application</a>
-                                </td>
-                            </tr>
-                        </table>
-                    </div>
-                {% else %}
-
-                    <div><a href="/retrieve_new_reg" class="link_16">Retrieve details with another registration number</a></div>
-
-                    <div class="spacer_20"></div>
-
-
-                    <div><a href="/rejection" id="reject" class="link_16">Reject application</a></div>
-                {% endif %}
+                </div>
             </div>
         </form>
         <!-- ///////////////////////////////// end of data entry form ///////////////////////////////// -->

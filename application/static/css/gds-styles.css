@@ -412,6 +412,48 @@ td.custom_3 {
   background-color: #fff;
   border: 1px solid #bfc1c3; }
 
+.form_button:disabled {
+  background-color: #c2c2c2;
+  -webkit-box-shadow: 0 2px 0 #999999;
+  -moz-box-shadow: 0 2px 0 #999999;
+  box-shadow: 0 2px 0 #999999; }
+
+.form_button_2:disabled {
+  background-color: #c2c2c2;
+  -webkit-box-shadow: 0 2px 0 #999999;
+  -moz-box-shadow: 0 2px 0 #999999;
+  box-shadow: 0 2px 0 #999999; }
+
+.form_button_3:disabled {
+  background-color: #c2c2c2;
+  -webkit-box-shadow: 0 2px 0 #999999;
+  -moz-box-shadow: 0 2px 0 #999999;
+  box-shadow: 0 2px 0 #999999; }
+
+.form_button_4:disabled {
+  background-color: #c2c2c2;
+  -webkit-box-shadow: 0 2px 0 #999999;
+  -moz-box-shadow: 0 2px 0 #999999;
+  box-shadow: 0 2px 0 #999999; }
+
+.form_button_5:disabled {
+  background-color: #c2c2c2;
+  -webkit-box-shadow: 0 2px 0 #999999;
+  -moz-box-shadow: 0 2px 0 #999999;
+  box-shadow: 0 2px 0 #999999; }
+
+.form_button_6:disabled {
+  background-color: #c2c2c2;
+  -webkit-box-shadow: 0 2px 0 #999999;
+  -moz-box-shadow: 0 2px 0 #999999;
+  box-shadow: 0 2px 0 #999999; }
+
+.form_button_7:disabled {
+  background-color: #c2c2c2;
+  -webkit-box-shadow: 0 2px 0 #999999;
+  -moz-box-shadow: 0 2px 0 #999999;
+  box-shadow: 0 2px 0 #999999; }
+
 .form_button {
   background-color: #1d7a8c;
   position: relative;
