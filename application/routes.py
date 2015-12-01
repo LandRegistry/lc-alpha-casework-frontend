@@ -618,7 +618,7 @@ def process_search_name(search_type):
 @app.route('/search_counties', methods=['GET'])
 def search_counties():
     return render_template('search_counties.html', images=session['images'], application=session['application_dict'],
-                           application_type=session['application_type'], current_page=0)
+                           application_type=session['application_type'], current_page=0, backend_uri=app.config['CASEWORK_DB_URL'])
 
 
 @app.route('/process_search_county', methods=['POST'])
@@ -638,7 +638,7 @@ def process_search_county():
 @app.route('/search_customer', methods=['GET'])
 def search_customer():
     return render_template('search_customer.html', images=session['images'], application=session['application_dict'],
-                           application_type=session['application_type'], current_page=0)
+                           application_type=session['application_type'], current_page=0, backend_uri=app.config['CASEWORK_DB_URL'])
 
 
 @app.route('/submit_search', methods=['POST'])
