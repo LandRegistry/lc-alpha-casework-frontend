@@ -510,6 +510,7 @@ def submit_amendment():
     application_dict["residence_withheld"] = False
     application_dict['date_of_birth'] = "1980-01-01"  # TODO: DOB still needed??
     application_dict['regn_no'] = session['regn_no']
+    application_dict["document_id"] = session['document_id']
 
     url = app.config['CASEWORK_DB_URL'] + '/applications/' + session['regn_no'] + '?action=amend'
     headers = {'Content-Type': 'application/json'}
