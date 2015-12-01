@@ -1,8 +1,6 @@
 {% extends "/page_template/base.html" %}
 {% block page_specific_head %}
 <script>
-    HOST = window.location.protocol + "//" + window.location.hostname;
-
     function getCustomerDetails(obj){
         jQuery('#customer_name').val("");
         jQuery('#customer_address').val("");
@@ -12,7 +10,7 @@
         } else if (obj.value.length == 7) {
             jQuery.ajax( {
 
-                url: HOST + ':5007/keyholder/' + obj.value,
+                url: '{{backend_uri}}/keyholders/' + obj.value,
 
                 type: 'GET',
                 data: {},

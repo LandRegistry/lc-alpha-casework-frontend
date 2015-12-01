@@ -25,7 +25,7 @@ def index():
 @app.route('/get_list', methods=["GET"])
 def get_list():
     requested_worklist = request.args.get('appn')
-    url = app.config['CASEWORK_DB_URL'] + '/work_list/' + requested_worklist
+    url = app.config['CASEWORK_DB_URL'] + '/applications?type=' + requested_worklist
     response = requests.get(url)
     work_list_json = response.json()
     appn_list = []
@@ -57,12 +57,15 @@ def get_list():
 
 @app.route('/application_start/<application_type>/<appn_id>/<appn_type>', methods=["GET"])
 def application_start(application_type, appn_id, appn_type):
-    url = app.config['CASEWORK_DB_URL'] + '/search/' + appn_id
+    url = app.config['CASEWORK_DB_URL'] + '/applications/' + appn_id
 
     response = requests.get(url)
     application_json = response.json()
-    document_id = application_json['document_id']
-    doc_response = requests.get(app.config["DOCUMENT_URL"] + "/document/" + str(document_id))
+    document_id = application_json['application_data']['document_id']
+    doc_response = requests.get(app.config["DOCUMENT_URL"] + "/forms/" + str(document_id))
+
+
+
     image_data = doc_response.json()
 
     images = []
@@ -97,7 +100,7 @@ def get_bankruptcy_details():
     application_type = session['application_type']
     session['regn_no'] = request.form['reg_no']
 
-    url = app.config['BANKRUPTCY_DATABASE_URL'] + '/registration/' + session['regn_no']
+    url = app.config['BANKRUPTCY_DATABASE_URL'] + '/registrations/' + session['regn_no']
 
     response = requests.get(url)
 
@@ -123,7 +126,7 @@ def get_bankruptcy_details():
     if application_json['document_id'] is not None and application_json['document_id'] is not '0':
         document_id = application_json['document_id']
 
-        doc_response = requests.get(app.config["DOCUMENT_URL"] + "/document/" + str(document_id))
+        doc_response = requests.get(app.config["DOCUMENT_URL"] + "/forms/" + str(document_id))
         original_image_data = doc_response.json()
 
         images = []
@@ -319,23 +322,37 @@ def process_registration():
     application['date_of_birth'] = "1980-01-01"  # TODO: what are we doing about the DOB??
     application["document_id"] = session['document_id']
 
-    url = app.config['BANKRUPTCY_DATABASE_URL'] + '/registration'
+    url = app.config['CASEWORK_DB_URL'] + '/applications/' + session['worklist_id'] + '?action=complete'
     headers = {'Content-Type': 'application/json'}
-    response = requests.post(url, data=json.dumps(application), headers=headers)
-
+    response = requests.put(url, data=json.dumps(application), headers=headers)
     if response.status_code == 200:
         data = response.json()
         reg_list = []
         for item in data['new_registrations']:
             reg_list.append(item)
         session['regn_no'] = reg_list
-        delete_from_worklist(session['worklist_id'])
-
         return redirect('/confirmation', code=302, Response=None)
     else:
         error = response.status_code
         logging.error(error)
         return render_template('error.html', error_msg=error), 500
+    # url = app.config['BANKRUPTCY_DATABASE_URL'] + '/registrations'
+    # headers = {'Content-Type': 'application/json'}
+    # response = requests.post(url, data=json.dumps(application), headers=headers)
+    #
+    # if response.status_code == 200:
+    #     data = response.json()
+    #     reg_list = []
+    #     for item in data['new_registrations']:
+    #         reg_list.append(item)
+    #     session['regn_no'] = reg_list
+    #     delete_from_worklist(session['worklist_id'])
+    #
+    #     return redirect('/confirmation', code=302, Response=None)
+    # else:
+    #     error = response.status_code
+    #     logging.error(error)
+    #     return render_template('error.html', error_msg=error), 500
 # end of registration routes
 
 
@@ -491,8 +508,11 @@ def submit_amendment():
     today = datetime.now().strftime('%Y-%m-%d')
     application_dict["date"] = today
     application_dict["residence_withheld"] = False
-    application_dict['date_of_birth'] = "1980-01-01" # TODO: DOB still needed??
-    url = app.config['BANKRUPTCY_DATABASE_URL'] + '/registration/' + session['regn_no']
+    application_dict['date_of_birth'] = "1980-01-01"  # TODO: DOB still needed??
+    application_dict['regn_no'] = session['regn_no']
+    application_dict["document_id"] = session['document_id']
+
+    url = app.config['CASEWORK_DB_URL'] + '/applications/' + session['regn_no'] + '?action=amend'
     headers = {'Content-Type': 'application/json'}
     response = requests.put(url, json.dumps(application_dict), headers=headers)
     if response.status_code == 200:
@@ -502,7 +522,7 @@ def submit_amendment():
             reg_list.append(item)
 
         session['regn_no'] = reg_list
-        delete_from_worklist(session['worklist_id'])
+        #delete_from_worklist(session['worklist_id'])
     else:
         err = response.status_code
         logging.error(err)
@@ -639,7 +659,7 @@ def submit_search():
     }
 
     session['search_data'] = search_data
-    url = app.config['BANKRUPTCY_DATABASE_URL'] + '/search'
+    url = app.config['BANKRUPTCY_DATABASE_URL'] + '/searches'
     headers = {'Content-Type': 'application/json'}
     response = requests.post(url, data=json.dumps(search_data), headers=headers)
 
@@ -687,28 +707,6 @@ def start_rectification():
     session['application_type'] = "rectify"
     return render_template('rect_retrieve.html')
 # end of rectification routes
-
-
-# Commented out - it's quite slow...
-# def send_notification(application):
-#     logging.info('Sending notification')
-#     import subprocess
-#     from requests.utils import quote
-#     print(session)
-#     application = session['application_dict']
-#     name = quote(' '.join(application['debtor_name']['forenames']) + ' ' + application['debtor_name']['surname'])
-#     app_type = quote(application['application_type'])
-#     date = quote(application['date'])
-#     reg_no = quote(str(application['reg_nos'][0]))
-#     parts = quote('[Insert particulars here]')
-#     params = "type={}&date={}&reg_no={}&name={}&parts={}".format(
-#         app_type, date, reg_no, name, parts
-#     )
-#     url = "localhost:5010/acknowledgement?" + params
-#     subprocess.check_output(['wkhtmltopdf', 'http://' + url, '/tmp/' + reg_no + '.pdf'])
-#
-#     localhost:5010/acknowledgement?type=PA(B)&reg_no=50001&date=26.12.2014&name=Bob%20Howard&parts=Stuff%20Goes%20Here
-#     print(application)
 
 
 # Common routes
@@ -779,7 +777,7 @@ app.jinja_env.filters['date_time_filter'] = date_time_filter
 def get_totals():
     # initialise all counters to 0
     pabs, wobs, banks, lcreg, amend, canc, portal, search, ocp = (0,) * 9
-    url = app.config['CASEWORK_DB_URL'] + '/work_list/all?'
+    url = app.config['CASEWORK_DB_URL'] + '/applications'
     response = requests.get(url)
     if response.status_code == 200:
         full_list = response.json()
