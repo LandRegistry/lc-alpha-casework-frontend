@@ -64,7 +64,7 @@
   clear: both; }
 
 #content {
-  max-width: 960px;
+  max-width: 1160px;
   margin: 0 15px; }
   @media (min-width: 641px) {
     #content {
