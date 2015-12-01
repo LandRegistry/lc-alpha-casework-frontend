@@ -25,7 +25,7 @@ def index():
 @app.route('/get_list', methods=["GET"])
 def get_list():
     requested_worklist = request.args.get('appn')
-    url = app.config['CASEWORK_DB_URL'] + '/applications/' + requested_worklist
+    url = app.config['CASEWORK_DB_URL'] + '/applications?type=' + requested_worklist
     response = requests.get(url)
     work_list_json = response.json()
     appn_list = []
@@ -57,12 +57,15 @@ def get_list():
 
 @app.route('/application_start/<application_type>/<appn_id>/<appn_type>', methods=["GET"])
 def application_start(application_type, appn_id, appn_type):
-    url = app.config['CASEWORK_DB_URL'] + '/search/' + appn_id
+    url = app.config['CASEWORK_DB_URL'] + '/applications/' + appn_id
 
     response = requests.get(url)
     application_json = response.json()
-    document_id = application_json['document_id']
-    doc_response = requests.get(app.config["DOCUMENT_URL"] + "/documents/" + str(document_id))
+    document_id = application_json['application_data']['document_id']
+    doc_response = requests.get(app.config["DOCUMENT_URL"] + "/forms/" + str(document_id))
+
+
+
     image_data = doc_response.json()
 
     images = []
@@ -123,7 +126,7 @@ def get_bankruptcy_details():
     if application_json['document_id'] is not None and application_json['document_id'] is not '0':
         document_id = application_json['document_id']
 
-        doc_response = requests.get(app.config["DOCUMENT_URL"] + "/documents/" + str(document_id))
+        doc_response = requests.get(app.config["DOCUMENT_URL"] + "/forms/" + str(document_id))
         original_image_data = doc_response.json()
 
         images = []
@@ -319,23 +322,37 @@ def process_registration():
     application['date_of_birth'] = "1980-01-01"  # TODO: what are we doing about the DOB??
     application["document_id"] = session['document_id']
 
-    url = app.config['BANKRUPTCY_DATABASE_URL'] + '/registrations'
+    url = app.config['CASEWORK_DB_URL'] + '/applications/' + session['worklist_id'] + '?action=complete'
     headers = {'Content-Type': 'application/json'}
-    response = requests.post(url, data=json.dumps(application), headers=headers)
-
+    response = requests.put(url, data=json.dumps(application), headers=headers)
     if response.status_code == 200:
         data = response.json()
         reg_list = []
         for item in data['new_registrations']:
             reg_list.append(item)
         session['regn_no'] = reg_list
-        delete_from_worklist(session['worklist_id'])
-
         return redirect('/confirmation', code=302, Response=None)
     else:
         error = response.status_code
         logging.error(error)
         return render_template('error.html', error_msg=error), 500
+    # url = app.config['BANKRUPTCY_DATABASE_URL'] + '/registrations'
+    # headers = {'Content-Type': 'application/json'}
+    # response = requests.post(url, data=json.dumps(application), headers=headers)
+    #
+    # if response.status_code == 200:
+    #     data = response.json()
+    #     reg_list = []
+    #     for item in data['new_registrations']:
+    #         reg_list.append(item)
+    #     session['regn_no'] = reg_list
+    #     delete_from_worklist(session['worklist_id'])
+    #
+    #     return redirect('/confirmation', code=302, Response=None)
+    # else:
+    #     error = response.status_code
+    #     logging.error(error)
+    #     return render_template('error.html', error_msg=error), 500
 # end of registration routes
 
 
