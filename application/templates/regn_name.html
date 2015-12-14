@@ -77,19 +77,20 @@
 
                 <div class="form">
                     <label class="form_label">Forename(s)</label>
-                    <input class="form_textfield" type="text" id="forenames" name="forenames" autofocus value="{{data.debtor_name.forenames|join(' ') }}">
+                    <input class="form_textfield" type="text" id="forenames" name="forenames" autofocus value="{{data.debtor_names[0].forenames|join(' ') }}">
                 </div>
 
                 <div class="form">
                     <label class="form_label">Surname</label>
-                    <input class="form_textfield" type="text" id="surname" name="surname" value="{{data.debtor_name.surname}}">
+                    <input class="form_textfield" type="text" id="surname" name="surname" value="{{data.debtor_names[0].surname}}">
                 </div>
 
 
-                {% for name in data.debtor_alternative_name %}
+                {% for name in data.debtor_names %}
+                {% if loop.index > 1 %}
                 <div class="spacer_20"></div>
 
-                <div class="text_16_bold">Alternative Name {{loop.index}} &nbsp;&nbsp;<a class="link_16_right" href="/remove_alias_name/{{loop.index-1}}">Remove</a></div>
+                <div class="text_16_bold">Alternative Name {{loop.index-1}} &nbsp;&nbsp;<a class="link_16_right" href="/remove_alias_name/{{loop.index-1}}">Remove</a></div>
 
                 <div class="form">
                     <label class="form_label">Forename(s)</label>
@@ -100,6 +101,7 @@
                     <label class="form_label">Surname</label>
                     <input class="form_textfield" type="text" name="aliassurname{{loop.index-1}}" id="aliassurname{{loop.index-1}}" value="{{name.surname}}">
                 </div>
+                {% endif %}
                 {% endfor %}
 
                 <div class="spacer_20"></div>

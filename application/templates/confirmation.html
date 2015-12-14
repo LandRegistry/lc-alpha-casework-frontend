@@ -58,7 +58,7 @@
                     {% if data|length > 0 %}
                     Reference(s):
                     {% for n in data %}
-                    {{n}}
+                    {{n['number']}}
                     {% if loop.index < data|length %}
                     ,
                     {% endif %}

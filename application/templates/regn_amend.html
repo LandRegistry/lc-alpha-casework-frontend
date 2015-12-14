@@ -48,11 +48,11 @@
                     </tr>
                     <tr>
                         <td width="50%"><span class="text_review_table_bold">Number</span></td>
-                        <td width="50%"><span class="text_review_table">{{data.registration_no}}</span></td>
+                        <td width="50%"><span class="text_review_table">{{data.registration.number}}</span></td>
                     </tr>
                     <tr>
                         <td colspan="1"><span class="text_review_table_bold">Date</span></td>
-                        <td colspan="2"><span class="text_review_table">{{data.registration_date | date_time_filter}}</span></td>
+                        <td colspan="2"><span class="text_review_table">{{data.registration.date | date_time_filter}}</span></td>
                     </tr>
                     <tr>
                         <td colspan="1"><span class="text_review_table_bold">Type</span></td>
@@ -73,23 +73,25 @@
                         <td width="45%"><span class="text_review_table_bold">Forename(s)</span></td>
                         <td width="50%">
                             <span class="text_review_table">
-                                {% for forename in data.debtor_name.forenames %}{{forename}} {% endfor %}
+                                {% for forename in data.debtor_names[0].forenames %}{{forename}} {% endfor %}
                             </span>
                         </td>
                     </tr>
                     <tr>
                         <td colspan="1"><span class="text_review_table_bold">Surname</span></td>
-                        <td colspan="2"><span class="text_review_table">{{data.debtor_name.surname}}</span></td>
+                        <td colspan="2"><span class="text_review_table">{{data.debtor_names[0].surname}}</span></td>
                     </tr>
 
                     <tr>
                         <td colspan="1" style="vertical-align: top;"><span class="text_review_table_bold">Also known as</span></td>
                         <td colspan="2"><span class="text_review_table">
-                        {% for name in data.debtor_alternative_name %}
-						    {% for forename in name.forenames %}
+                        {% for names in data.debtor_names %}
+                            {% if loop.index > 1 %}
+						    {% for forename in names.forenames %}
                                 {{forename}}
                             {% endfor %}
-                            {{name.surname}}<br/> </span>
+                            {{names.surname}}<br/> </span>
+                            {% endif %}
                         {% endfor %}
                         </td>
                     </tr>

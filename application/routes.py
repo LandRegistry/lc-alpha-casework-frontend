@@ -64,8 +64,6 @@ def application_start(application_type, appn_id, appn_type):
     document_id = application_json['application_data']['document_id']
     doc_response = requests.get(app.config["DOCUMENT_URL"] + "/forms/" + str(document_id))
 
-
-
     image_data = doc_response.json()
 
     images = []
@@ -99,8 +97,9 @@ def application_start(application_type, appn_id, appn_type):
 def get_bankruptcy_details():
     application_type = session['application_type']
     session['regn_no'] = request.form['reg_no']
+    session['reg_date'] = '%s-%s-%s' % (request.form['reg_year'], request.form['reg_month'], request.form['reg_day'])
 
-    url = app.config['BANKRUPTCY_DATABASE_URL'] + '/registrations/' + session['regn_no']
+    url = app.config['BANKRUPTCY_DATABASE_URL'] + '/registrations/' + session['reg_date'] + '/' + session['regn_no']
 
     response = requests.get(url)
 
@@ -148,6 +147,7 @@ def get_bankruptcy_details():
 
 @app.route('/process_application/<application_type>', methods=['GET'])
 def process_application(application_type):
+    print(session['application_dict'])
     if application_type == 'rectify':
         template = 'rect_amend.html'
     elif application_type == 'amend':
