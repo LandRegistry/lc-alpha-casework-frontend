@@ -2,7 +2,7 @@
 {% block page_specific_head %}
 
 <script>
-    var n = {{data.debtor_alternative_name|length}};
+    var n = {{data.debtor_names|length-1}};
     function nameClick(sender){
         jQuery('<div class="text_16_bold">Alternative Name '+(n+1)+' &nbsp;&nbsp;</div> \
                 <div class="form"> \
@@ -94,12 +94,12 @@
 
                 <div class="form">
                     <label class="form_label">Forename(s)</label>
-                    <input class="form_textfield" type="text" name="aliasforename{{loop.index-1}}" id="aliasforename{{loop.index-1}}" value="{{name.forenames|join(' ') }}">
+                    <input class="form_textfield" type="text" name="aliasforename{{loop.index-2}}" id="aliasforename{{loop.index-2}}" value="{{name.forenames|join(' ') }}">
                 </div>
 
                 <div class="form">
                     <label class="form_label">Surname</label>
-                    <input class="form_textfield" type="text" name="aliassurname{{loop.index-1}}" id="aliassurname{{loop.index-1}}" value="{{name.surname}}">
+                    <input class="form_textfield" type="text" name="aliassurname{{loop.index-2}}" id="aliassurname{{loop.index-2}}" value="{{name.surname}}">
                 </div>
                 {% endif %}
                 {% endfor %}

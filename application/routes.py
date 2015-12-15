@@ -147,7 +147,6 @@ def get_bankruptcy_details():
 
 @app.route('/process_application/<application_type>', methods=['GET'])
 def process_application(application_type):
-    print(session['application_dict'])
     if application_type == 'rectify':
         template = 'rect_amend.html'
     elif application_type == 'amend':
@@ -365,7 +364,8 @@ def show_name():
 
 @app.route('/remove_alias_name/<int:name>', methods=["GET"])
 def remove_alias_name(name):
-    del session['application_dict']['debtor_alternative_name'][name]
+    # del session['application_dict']['debtor_alternative_name'][name]
+    del session['application_dict']['debtor_names'][name]
     session['data_amended'] = 'true'
 
     return redirect('/amend_name', code=302, Response=None)
@@ -412,10 +412,13 @@ def update_name_details():
         counter += 1
 
     application_dict['debtor_name'] = new_debtor_name
+    application_dict['debtor_names'] = []
+    application_dict['debtor_names'].append(new_debtor_name)
+    for name in application_dict['debtor_alternative_name']:
+        application_dict['debtor_names'].append(name)
     application_dict['occupation'] = occupation
     session['data_amended'] = 'true'
 
-    print(session['application_type'])
     if session['application_type'] == 'bank_regn':
         return redirect('/verify_registration', code=302, Response=None)
     else:
@@ -522,7 +525,7 @@ def submit_amendment():
             reg_list.append(item)
 
         session['regn_no'] = reg_list
-        #delete_from_worklist(session['worklist_id'])
+        delete_from_worklist(session['worklist_id'])
     else:
         err = response.status_code
         logging.error(err)
@@ -535,7 +538,7 @@ def submit_amendment():
 # Cancellation routes
 @app.route('/submit_cancellation', methods=["POST"])
 def submit_cancellation():
-    url = app.config['BANKRUPTCY_DATABASE_URL'] + '/registration/' + session['regn_no']
+    url = app.config['BANKRUPTCY_DATABASE_URL'] + '/registrations/' + session['reg_date'] + '/' + session['regn_no']
     # TODO: pass empty dict for now, ian mentioned about doc id needed?
     data = {}
     headers = {'Content-Type': 'application/json'}
@@ -830,7 +833,7 @@ def page_required(appn_type):
 
 # TODO: renamed as 'complete', move to back-end?
 def delete_from_worklist(application_id):
-    url = app.config['CASEWORK_DB_URL'] + '/workitem/' + application_id
+    url = app.config['CASEWORK_DB_URL'] + '/applications/' + application_id
     response = requests.delete(url)
     if response.status_code != 204:
         err = 'Failed to delete application ' + application_id + ' from the worklist. Error code:' \

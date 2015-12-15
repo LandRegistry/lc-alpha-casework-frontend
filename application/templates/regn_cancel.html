@@ -42,11 +42,11 @@
                 </tr>
                 <tr>
                     <td width="50%"><span class="text_review_table_bold">Number</span></td>
-                    <td width="50%"><span class="text_review_table">{{data.registration_no}}</span></td>
+                    <td width="50%"><span class="text_review_table">{{data.registration.number}}</span></td>
                 </tr>
                 <tr>
                     <td colspan="1"><span class="text_review_table_bold">Date</span></td>
-                    <td colspan="2"><span class="text_review_table">{{data.registration_date | date_time_filter}}</span></td>
+                    <td colspan="2"><span class="text_review_table">{{data.registration.date | date_time_filter}}</span></td>
                 </tr>
                 <tr>
                     <td colspan="1"><span class="text_review_table_bold">Type</span></td>
@@ -66,7 +66,7 @@
                     <td width="45%"><span class="text_review_table_bold">Forename(s)</span></td>
                     <td width="50%">
                         <span class="text_review_table">
-                        {% for forename in data.debtor_name.forenames %}
+                        {% for forename in data.debtor_names[0].forenames %}
                             {{forename}}
                         {% endfor %}
                         </span>
@@ -74,7 +74,7 @@
                 </tr>
                 <tr>
                     <td colspan="1"><span class="text_review_table_bold">Surname</span></td>
-                    <td colspan="2"><span class="text_review_table">{{data.debtor_name.surname}}</span></td>
+                    <td colspan="2"><span class="text_review_table">{{data.debtor_names[0].surname}}</span></td>
                 </tr>
                 <tr>
                     <td colspan="1"><span class="text_review_table_bold">Occupation</span></td>
