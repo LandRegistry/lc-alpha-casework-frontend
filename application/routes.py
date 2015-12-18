@@ -57,18 +57,30 @@ def get_list():
 
 @app.route('/application_start/<application_type>/<appn_id>/<appn_type>', methods=["GET"])
 def application_start(application_type, appn_id, appn_type):
+    print('in application start')
     url = app.config['CASEWORK_DB_URL'] + '/applications/' + appn_id
 
     response = requests.get(url)
     application_json = response.json()
     document_id = application_json['application_data']['document_id']
-    doc_response = requests.get(app.config["DOCUMENT_URL"] + "/forms/" + str(document_id))
-
-    image_data = doc_response.json()
+    print(document_id)
+    # doc_response = requests.get(app.config["DOCUMENT_URL"] + "/forms/" + str(document_id))
+    doc_response = requests.get(app.config["CASEWORK_DB_URL"] + "/forms/" + str(document_id))
+    print(doc_response.json())
 
     images = []
+    image_data = doc_response.json()
+    for x, pages in enumerate(image_data):
+        page_no = image_data[pages][x]
+        print(page_no)
+        page_response = requests.get(app.config["CASEWORK_DB_URL"] + "/forms/" + str(document_id) + '/' + str(page_no))
+        result = json.dumps(page_response)
+        # images.append(page_response)
+        # images.append(page_response.json())
+
+    """
     for image in image_data['images']:
-        images.append(app.config["DOCUMENT_URL"] + image)
+        images.append(app.config["DOCUMENT_URL"] + image)"""
 
     if appn_type == "Full Search":
         template = page_required("search")
