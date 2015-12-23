@@ -16,33 +16,12 @@
                     type: 'GET',
                     data: {},
                     success: function( data ) {
-                        var reg = document.getElementById('reg').querySelector('a');
-                        //var lc = document.getElementById('lc').querySelector('a');
-                        var amend = document.getElementById('amend').querySelector('a');
-                        var canc = document.getElementById('canc').querySelector('a');
-                        var search = document.getElementById('search').querySelector('a');
-                        var oc = document.getElementById('oc').querySelector('a');
+                        document.getElementById('bank_regn').innerHTML = data.bank_regn;
+                        document.getElementById('bank_amend').innerHTML = data.bank_amend;
+                        document.getElementById('bank_rect').innerHTML = data.bank_rect;
+                        document.getElementById('bank_with').innerHTML = data.bank_with;
+                        document.getElementById('bank_stored').innerHTML = data.bank_stored;
 
-                        var numReg = data.banks;
-                        //var numLC = data.lcreg;
-                        var numAmend = data.amend;
-                        var numCanc = data.canc;
-                        var numSearch = data.search;
-                        var numOC = data.oc;
-
-                        reg.className = numReg < 10 ? 'indicator_middle' : 'indicator_middle_2';
-                        //lc.className = numLC < 10 ? 'indicator_middle' : 'indicator_middle_2';
-                        amend.className = numAmend < 10 ? 'indicator_middle' : 'indicator_middle_2';
-                        canc.className = numCanc < 10 ? 'indicator_middle' : 'indicator_middle_2';
-                        search.className = numSearch < 10 ? 'indicator_middle' : 'indicator_middle_2';
-                        oc.className = numOC < 10 ? 'indicator_middle' : 'indicator_middle_2';
-
-                        reg.textContent = numReg;
-                        //lc.textContent = numLC;
-                        amend.textContent = numAmend;
-                        canc.textContent = numCanc;
-                        search.textContent = numSearch;
-                        oc.textContent = numOC;
                     }
                 } );
 
@@ -50,230 +29,109 @@
     </script>
 {% endblock %}
 {% block maincontent %}
-
-        <div class="breadcrumb">
-            <ol>
-                <li><a class="breadcrumb_links" href="/">Home</a></li>
-                <li class="breadcrumb_no_arrow"><span>Bankruptcies</span></li>
-            </ol>
-        </div>
-
-        <div class="spacer_5"></div>
+<div class="breadcrumb">
+    <ol>
+        <li class="breadcrumb_no_arrow">Home</li>
+    </ol>
+</div>
+<div class="spacer_5"></div>
+<div class="grid-row">
+    <div>
+        <div class="spacer_30"></div>
         <div class="grid-row">
-            <div class="column-two-thirds">
-                <div class="spacer_10"></div>
-                <h1 class="title_36">Bankruptcies</h1>
-                <div class="spacer_20"></div>
-
-                <div class="grid-row">
-
-                    <!-- ///////////////////////////////// column-third ///////////////////////////////// -->
-
-                    <div class="column-third">
-                        <div class="subservice_box">
-                            <div class="spacer_15"></div>
-                                <a class="no_link_style" href="/get_list?appn=bank_regn"><p class="text_16_bold">Registration<br>applications</p></a>
-                            <div class="spacer_20"></div>
-                            <div class="indicator" id="reg">
-                                {% if data['banks'] < 10 %}
-                                <a class="indicator_middle" href="/get_list?appn=bank_regn">{{data['banks']}}</a>
-                                {% else %}
-                                <a class="indicator_middle_2" href="/get_list?appn=bank_regn">{{data['banks']}}</a>
-                                {% endif %}
-                            </div>
-                            <div class="spacer_15"></div>
-                                <a class="no_link_style" href="/get_list?appn=bank_regn"><p class="link_14">See list of applications</p></a>
-                            <div class="spacer_20"></div>
-                        </div>
-                    </div>
-
-                    <!-- ///////////////////////////////// end of column-third ///////////////////////////////// -->
-
-                    <!-- ///////////////////////////////// column-third ///////////////////////////////// -->
-
-                    <div class="column-third">
-
-                        <div class="subservice_box">
-
-                            <div class="spacer_15"></div>
-
-                            <a class="no_link_style" href="/get_list?appn=amend"><p class="text_16_bold">Amendment<br>applications</p></a>
-
-                            <div class="spacer_20"></div>
-
-                            <div class="indicator" id="amend">
-                                {% if data['amend'] < 10 %}
-                                <a class="indicator_middle" href="/get_list?appn=amend">{{data['amend']}}</a>
-                                {% else %}
-                                <a class="indicator_middle_2" href="/get_list?appn=amend">{{data['amend']}}</a>
-                                {% endif %}
-                            </div>
-
-                            <div class="spacer_15"></div>
-
-                            <a class="no_link_style" href="/get_list?appn=amend"><p class="link_14">See list of applications</p></a>
-
-                            <div class="spacer_20"></div>
-
-                        </div>
-
-                    </div>
-
-                    <!-- ///////////////////////////////// end of column-third ///////////////////////////////// -->
-
-                    <!-- ///////////////////////////////// column-third ///////////////////////////////// -->
-
-                    <div class="column-third">
-
-                        <div class="subservice_box">
-
-                            <div class="spacer_15"></div>
-
-                            <a class="no_link_style" href="/get_list?appn=cancel"><p class="text_16_bold">Cancellation<br>applications</p></a>
-
-                            <div class="spacer_20"></div>
-
-                            <div class="indicator" id="canc">
-                                {% if data['canc'] < 10 %}
-                                <a class="indicator_middle" href="/get_list?appn=cancel">{{data['canc']}}</a>
-                                {% else %}
-                                <a class="indicator_middle_2" href="/get_list?appn=cancel">{{data['canc']}}</a>
-                                {% endif %}
-                            </div>
-
-                            <div class="spacer_15"></div>
-
-                            <a class="no_link_style" href="/get_list?appn=cancel"><p class="link_14">See list of applications</p></a>
-
-                            <div class="spacer_20"></div>
-
-                        </div>
-
-                    </div>
-
-                    <!-- ///////////////////////////////// end of column-third ///////////////////////////////// -->
-
-                    <div class="spacer_25"></div>
-
-                    <!-- ///////////////////////////////// column-third ///////////////////////////////// -->
-
-                    <div class="column-third">
-
-                        <div class="subservice_box">
-
-                            <div class="spacer_15"></div>
-
-                            <a class="no_link_style" href="/get_list?appn=search"><p class="text_16_bold">Search<br>applications</p></a>
-
-                            <div class="spacer_20"></div>
-
-                            <div class="indicator" id="search">
-                                {% if data['search'] < 10 %}
-                                <a class="indicator_middle" href="/get_list?appn=search">{{data['search']}}</a>
-                                {% else %}
-                                <a class="indicator_middle_2" href="/get_list?appn=search">{{data['search']}}</a>
-                                {% endif %}
-                            </div>
-
-                            <div class="spacer_15"></div>
-
-                            <a class="no_link_style" href="/get_list?appn=search"><p class="link_14">See list of applications</p></a>
-
-                        </div>
-
-                    </div>
-
-                    <!-- ///////////////////////////////// end of column-third ///////////////////////////////// -->
-
-                    <!-- ///////////////////////////////// column-third ///////////////////////////////// -->
-
-                    <div class="column-third">
-
-                        <div class="subservice_box">
-
-                            <div class="spacer_15"></div>
-
-                            <a class="no_link_style" href="#"><p class="text_16_bold">Office Copy<br>applications</p></a>
-
-                            <div class="spacer_20"></div>
-
-                            <div class="indicator" id="oc">
-                                {% if data['oc'] < 10 %}
-                                <a class="indicator_middle" href="#">{{data['oc']}}</a>
-                                {% else %}
-                                <a class="indicator_middle_2" href="#">{{data['oc']}}</a>
-                                {% endif %}
-                            </div>
-
-                            <div class="spacer_15"></div>
-
-                            <a class="no_link_style" href="#"><p class="link_14">See list of applications</p></a>
-
-                        </div>
-
-                    </div>
-
-                    <!-- ///////////////////////////////// end of column-third ///////////////////////////////// -->
-
-                    <!-- ///////////////////////////////// column-third ///////////////////////////////// -->
-
-                    <div class="column-third">
-
-                        <div class="subservice_box">
-
-                            <div class="spacer_15"></div>
-
-                            <a class="no_link_style" href="#"><p class="text_16_bold">Verification<br>applications</p></a>
-
-                            <div class="spacer_20"></div>
-
-                            <div class="indicator"><a class="indicator_middle" href="#">0</a></div>
-
-                            <div class="spacer_15"></div>
-
-                            <a class="no_link_style" href="#"><p class="link_14">See list of applications</p></a>
-
-                        </div>
-
-                    </div>
-
-                    <!-- ///////////////////////////////// end of column-third ///////////////////////////////// -->
-
-                </div>
-
+            <div class="service_box no_margin">
+                <a class="no_link_style text_19_bold" href="/get_list?appn=bank">Bankruptcy Applications</a><br/>
+                <a class="no_link_style" href="/get_list?appn=bank">
+                    <img src="/static/images/pig.png" alt="Bankruptcy Applications">
+                </a>
+                <ul class="appn_list">
+                    <li><a href="/get_list?appn=bank_regn">Registrations (<span id="bank_regn">{{data['bank_regn']}}</span>)</a></li>
+                    <li><a href="/get_list?appn=bank_amend">Amendments (<span id="bank_amend">{{data['bank_amend']}}</span>)</a></li>
+                    <li><a href="b_rc_list">Rectifications (<span id="bank_rect">{{data['bank_rect']}}</span>)</a></li>
+                    <li><a href="b_wa_list">Withheld Address (<span id="bank_with">{{data['bank_with']}}</span>)</a></li>
+                    <li><a href="b_stored_list">Stored Applications (<span id="bank_stored">{{data['bank_stored']}}</span>)</a></li>
+                </ul>
+            </div>
+            <div class="service_box">
+                <a class="no_link_style text_19_bold" href="/get_list?appn=bank_regn">Land Charge Applications</a><br/>
+                <a class="no_link_style" href="/get_list?appn=bank_regn">
+                    <img src="/static/images/land.png" alt="Land Charge Applications">
+                </a>
+                <ul class="appn_list">
+                    <li><a href="/get_list?appn=bank_regn">Registrations (?)</a></li>
+                    <li><a href="/get_list?appn=bank_amend">Priority Notices (?)</a></li>
+                    <li><a href="b_rc_list">Rectifications (?)</a></li>
+                    <li><a href="b_wa_list">Renewals (?)</a></li>
+                    <li><a href="b_stored_list">Stored Applications (?)</a></li>
+                </ul>
             </div>
 
-            <!-- ///////////////////////////////// end of column-two-thirds ///////////////////////////////// -->
-
-            <!-- ///////////////////////////////// column-third ///////////////////////////////// -->
-
-            <div class="column-third">
-
-                <div class="spacer_50"></div>
-
-                <div class="spacer_30"></div>
-
-                <div class="subservice_box_2">
-
-                    <div class="spacer_15"></div>
-
-                    <a class="no_link_style" href="bankruptcy_registrations"><p class="text_16_bold">John Smith actions</p></a>
-
-                    <p><a class="no_link_style" href="/start_rectification"><p id="rectify" class="link_14">Rectifications</p></a>
-
-                    <p><a class="no_link_style" href="#"><p class="link_14">Deletions</p></a>
-
-                    <p><a class="no_link_style" href="#"><p class="link_14">Rejections</p></a>
-
-                    <p><a class="no_link_style" href="#"><p class="link_14">Reports</p></a>
-
-                    <div class="spacer_20"></div>
-
-                </div>
-
+            <div class="service_box">
+                <a class="no_link_style text_19_bold" href="/get_list?appn=bank_regn">Searches</a><br/>
+                <a class="no_link_style" href="/get_list?appn=bank_regn">
+                    <img src="/static/images/search.png" alt="Searches">
+                </a>
+                <ul class="appn_list">
+                    <li><a href="/get_list?appn=bank_regn">Full Search (?)</a></li>
+                    <li><a href="/get_list?appn=bank_amend">Bankruptcy Search (?)</a></li>
+                </ul>
             </div>
-
-            <!-- ///////////////////////////////// end of column-third ///////////////////////////////// -->
-
+            <div class="service_box">
+                <a class="no_link_style text_19_bold" href="/get_list?appn=bank_regn">Cancellations</a><br/>
+                <a class="no_link_style" href="/get_list?appn=bank_regn">
+                    <img src="/static/images/cancel.png" alt="Cancellations">
+                </a>
+                <ul class="appn_list">
+                    <li><a href="/get_list?appn=cancel">Cancellations (?)</a></li>
+                    <li><a href="/get_list?appn=bank_amend">Part Cancellations ({?)</a></li>
+                    <li><a href="b_stored_list">Stored Applications (?)</a></li>
+                </ul>
+            </div>
         </div>
+        <div class="grid-row">
+        <div class="spacer_15"></div>
+            <div class="service_box no_margin">
+                <a class="no_link_style text_19_bold" href="/get_list?appn=bank_regn">Office Copies</a><br/>
+                <a class="no_link_style" href="/get_list?appn=bank_regn">
+                    <img src="/static/images/copy1.png" alt="Office Copies">
+                </a>
+                <ul class="appn_list">
+                    <li><a href="/get_list?appn=bank_regn">Office Copies</a></li>
+                </ul>
+            </div>
+            <div class="service_box">
+                <a class="no_link_style text_19_bold" href="/get_list?appn=bank_regn">Enquiries</a><br/>
+                <a class="no_link_style" href="/get_list?appn=bank_regn">
+                    <img src="/static/images/enquiries.png" alt="Enquiries">
+                </a>
+                <ul class="appn_list">
+                    <li><a href="/get_list?appn=bank_regn">Enquiries</a></li>
+                    <li><a href="/get_list?appn=bank_amend">Historical View</a></li>
+                    <li><a href="b_rc_list">Unidentified Applications (?)</a></li>
+                </ul>
+            </div>
+
+            <div class="service_box">
+                <a class="no_link_style text_19_bold" href="/get_list?appn=bank_regn">Image Management</a><br/>
+                <a class="no_link_style" href="/get_list?appn=bank_regn">
+                    <img src="/static/images/image_man.png" alt="Image Management">
+                </a>
+                <ul class="appn_list">
+                    <li><a href="#">Deletions</a></li>
+                    <li><a href="#">Image Management</a></li>
+                </ul>
+            </div>
+            <div class="service_box">
+                <a class="no_link_style text_19_bold" href="/get_list?appn=bank_regn">General Information</a><br/>
+                <a class="no_link_style" href="/get_list?appn=bank_regn">
+                    <img src="/static/images/info.png" alt="General Information">
+                </a>
+                <ul class="appn_list">
+                    <li><a href="#">MI</a></li>
+                    <li><a href="#">Job Instructions</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

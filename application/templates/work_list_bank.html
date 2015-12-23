@@ -1,0 +1,229 @@
+{% extends "/page_template/base.html" %}
+{% block page_specific_head %}
+<link href="/static/datatables/css/jquery.dataTables.css" rel="stylesheet" />
+<link href="/static/datatables/css/dataTables.responsive.css" rel="stylesheet" />
+<script type="text/javascript" src="/static/datatables/js/jquery.dataTables.js"></script>
+<script>
+ HOST = window.location.protocol + "//" + window.location.hostname;
+
+$(document).ready(function() {
+    $("#refresh").hide();
+    setInterval("getTotals()", 30000);
+    $('#work-list').DataTable({info: false, paging: false, searching: false});
+    $('#work-list tbody tr').click(function() {
+        var href = $(this).find("a").attr("href");
+        if(href) {
+            window.location = href;
+        }
+    });
+
+} );
+
+function getTotals(){
+
+    jQuery.ajax( {
+        url: HOST + ':5010/totals',
+        type: 'GET',
+        data: {},
+        success: function( data ) {
+            var bank_regn = document.getElementById('bank_regn').querySelector('span');
+            var bank_amend = document.getElementById('bank_amend').querySelector('span');
+            var bank_rect = document.getElementById('bank_rect').querySelector('span');
+            var bank_with = document.getElementById('bank_with').querySelector('span');
+            var bank_stored = document.getElementById('bank_stored').querySelector('span');
+
+            var numBankReg = data.bank_regn;
+            var numBankAmend = data.bank_amend;
+            var numBankRect = data.bank_rect;
+            var numBankWith = data.bank_with;
+            var numBankStore = data.bank_stored;
+            var numAmend = data.bank_amend;
+
+
+            bank_regn.className = numBankReg < 10 ? 'indicator_middle' : 'indicator_middle_2';
+            bank_amend.className = numBankAmend < 10 ? 'indicator_middle' : 'indicator_middle_2';
+            bank_rect.className = numBankRect < 10 ? 'indicator_middle' : 'indicator_middle_2';
+            bank_with.className = numBankWith < 10 ? 'indicator_middle' : 'indicator_middle_2';
+            bank_stored.className = numBankStore < 10 ? 'indicator_middle' : 'indicator_middle_2';
+
+            bank_regn.textContent = numBankReg;
+            bank_amend.textContent = numBankAmend;
+            bank_rect.textContent = numBankRect;
+            bank_with.textContent = numBankWith;
+            bank_stored.textContent = numBankStore;
+
+        }
+    } );
+
+}
+
+</script>
+{% endblock %}
+
+{% block maincontent %}
+
+<input type="hidden" name="requested_list" value="{{requested_list}}"/>
+
+{% if requested_list == 'bank_regn' %}
+{% set page_title = 'Registration' %}
+{% set regn_selected = 'selected' %}
+{% elif requested_list == 'bank_amend' %}
+{% set page_title = 'Amendment' %}
+{% set amend_selected = 'selected' %}
+{% elif requested_list == 'bank_rect' %}
+{% set page_title = 'Rectification' %}
+{% set rect_selected = 'selected' %}
+{% elif requested_list == 'bank_with' %}
+{% set page_title = 'Withheld Address' %}
+{% set with_selected = 'selected' %}
+{% elif requested_list == 'bank_stored' %}
+{% set page_title = 'Stored' %}
+{% set stored_selected = 'selected' %}
+{% endif %}
+<div class="breadcrumb">
+    <ol>
+        <li><a class="breadcrumb_links" href="/">Home</a></li>
+        <li class="breadcrumb_no_arrow"><span>Bankruptcy</span></li>
+    </ol>
+</div>
+
+<div class="spacer_5"></div>
+<div class="grid-row" >
+
+    <!-- Side Navigation -->
+    <div class="column-quarter no-padding">
+        <ul id="side-nav">
+            <li><a href="/">Home</a></li>
+            <li><a class="active" href="/get_list?appn=bank">Bankruptcy Applications</a></li>
+            <li><a href="/get_list?appn=lc">Land Charge Applications</a></li>
+            <li><a href="/get_list?appn=search">Searches</a></li>
+            <li><a href="/get_list?appn=cancel">Cancellations</a></li>
+            <li><a href="/get_list?appn=search">Office Copies</a></li>
+            <li><a href="uc">Enquiries</a></li>
+            <li><a href="uc">Image management</a></li>
+            <li><a href="uc">General Information</a></li>
+        </ul>
+    </div>
+
+    <!-- Content -->
+    <div class="column-three-quarter no-padding">
+        <div class="spacer_10"></div>
+        <h1 class="title_36">Bankruptcy</h1>
+        <div class="spacer_20"></div>
+        <!-- Totals -->
+        <div class="grid-row">
+            <div class="subservice_box no-margin">
+            <a class="no_link_style {{regn_selected}}"  href="/get_list?appn=bank_regn">
+                <div class="spacer_20"></div>
+                <p class="text_16_bold">Registrations</p>
+                <div class="spacer_30"></div>
+                <div class="indicator" id="bank_regn">
+                    {% if data['bank_regn'] < 10 %}
+                    <span class="indicator_middle">{{data['bank_regn']}}</span>
+                    {% else %}
+                    <span class="indicator_middle_2">{{data['bank_regn']}}</span>
+                    {% endif %}
+                </div>
+            </a>
+            </div>
+
+            <div class="subservice_box">
+                <a class="no_link_style {{amend_selected}}" href="/get_list?appn=bank_amend">
+                <div class="spacer_20"></div>
+                <p class="text_16_bold">Amendments</p>
+                <div class="spacer_30"></div>
+                <div class="indicator" id="bank_amend">
+                    {% if data['bank_amend'] < 10 %}
+                    <span class="indicator_middle">{{data['bank_amend']}}</span>
+                    {% else %}
+                    <span class="indicator_middle_2">{{data['bank_amend']}}</span>
+                    {% endif %}
+                </div>
+                </a>
+            </div>
+
+            <div class="subservice_box">
+                <a class="no_link_style  {{rect_selected}}" href="/get_list?appn=bank_rect">
+                    <div class="spacer_20"></div>
+                    <p class="text_16_bold">Rectifications</p>
+                    <div class="spacer_30"></div>
+                    <div class="indicator" id="bank_rect">
+                        {% if data['bank_rect'] < 10 %}
+                        <span class="indicator_middle">{{data['bank_rect']}}</span>
+                        {% else %}
+                        <span class="indicator_middle_2">{{data['bank_rect']}}</span>
+                        {% endif %}
+                    </div>
+                </a>
+            </div>
+
+            <div class="subservice_box">
+                <a class="no_link_style {{with_selected}}" href="/get_list?appn=bank_with">
+                    <div class="spacer_20"></div>
+                    <p class="text_16_bold">Withheld Address</p>
+                    <div class="spacer_30"></div>
+                    <div class="indicator" id="bank_with">
+                        {% if data['bank_with'] < 10 %}
+                        <span class="indicator_middle">{{data['bank_with']}}</span>
+                        {% else %}
+                        <span class="indicator_middle_2">{{data['bank_with']}}</span>
+                        {% endif %}
+                    </div>
+                </a>
+            </div>
+
+            <div class="subservice_box">
+                <a class="no_link_style {{stored_selected}}" href="/get_list?appn=bank_stored">
+                    <div class="spacer_20"></div>
+                    <p class="text_16_bold">Stored Applications</p>
+                    <div class="spacer_30"></div>
+                    <div class="indicator" id="bank_stored">
+                        {% if data['bank_stored'] < 10 %}
+                        <span class="indicator_middle">{{data['bank_stored']}}</span>
+                        {% else %}
+                        <span class="indicator_middle_2">{{data['bank_stored']}}</span>
+                        {% endif %}
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <!-- List of pending applications -->
+        {% if worklist|length > 0 %}
+        <div class="grid-row">
+            <div class="spacer_15"></div>
+            <h2 class="text_24_bold">{{page_title}} applications</h2>
+            <div class="spacer_15"></div>
+            <div style="margin-left:0px; float: left;  width: 75%;">
+                <table id="work-list" class="hover">
+                    <thead>
+                    <tr>
+                        <th class="table_text_black">Date and time received <a href="#"></a></th>
+                        <th class="table_text_black">Form type <a href="#"></a></th>
+                    </tr>
+                    </thead>
+                    {% for n in worklist %}
+                    <tbody>
+                    <tr>
+                        <td>{{n['date_received']}} {{n['time_received']}}</td>
+                        <td>
+                            <a id="appn_type{{loop.index}}" href="/application_start/{{requested_list}}/{{n['appn_id']}}/{{n['application_type']|replace(' ', '%20')}}">
+                                {% if n['application_type'] == 'WO(B)' %}
+                                WOB
+                                {% elif n['application_type'] == 'PA(B)'%}
+                                PAB
+                                {% else %}
+                                {{n['application_type']}}
+                                {% endif %}
+                            </a>
+                        </td>
+                    </tr>
+                    </tbody>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
