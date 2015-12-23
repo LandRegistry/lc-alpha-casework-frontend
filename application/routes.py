@@ -28,6 +28,12 @@ def get_list():
     url = app.config['CASEWORK_DB_URL'] + '/applications?type=' + requested_worklist
     response = requests.get(url)
     work_list_json = response.json()
+    return_page = 'sub_list.html'
+    if requested_worklist.startswith('bank'):
+        return_page = 'work_list_bank.html'
+    elif requested_worklist.startswith('lc'):
+        return_page = 'work_list_lc.html'
+
     appn_list = []
 
     if len(work_list_json) > 0:
@@ -52,7 +58,7 @@ def get_list():
     if app.config['DEMONSTRATION_VIEW']:
         return render_template('sub_list_demo.html', worklist=appn_list, requested_list=requested_worklist, data=app_totals)
     else:
-        return render_template('sub_list.html', worklist=appn_list, requested_list=requested_worklist, data=app_totals)
+        return render_template(return_page, worklist=appn_list, requested_list=requested_worklist, data=app_totals)
 
 
 @app.route('/application_start/<application_type>/<appn_id>/<appn_type>', methods=["GET"])
@@ -780,23 +786,28 @@ app.jinja_env.filters['date_time_filter'] = date_time_filter
 
 def get_totals():
     # initialise all counters to 0
-    pabs, wobs, banks, lcreg, amend, canc, portal, search, ocp = (0,) * 9
+
+    bank_regn, bank_amend, bank_rect, bank_with, bank_stored = (0,) * 5
+    lcreg, canc, portal, search, ocp = (0,) * 5
+
     url = app.config['CASEWORK_DB_URL'] + '/applications'
     response = requests.get(url)
     if response.status_code == 200:
         full_list = response.json()
 
         for item in full_list:
-            if item['work_type'] == "bank_regn" and item['application_type'] == "PA(B)":
-                pabs += 1
-                banks += 1
-            elif item['work_type'] == "bank_regn" and item['application_type'] == "WO(B)":
-                wobs += 1
-                banks += 1
+            if item['work_type'] == "bank_regn":
+                bank_regn += 1
+            elif item['work_type'] == "bank_amend":
+                bank_amend += 1
+            elif item['work_type'] == "bank_rect":
+                bank_rect += 1
+            elif item['work_type'] == "bank_with":
+                bank_with += 1
+            elif item['work_type'] == "bank_stored":
+                bank_stored += 1
             elif item['work_type'] == "lc_regn":
                 lcreg += 1
-            elif item['work_type'] == "amend":
-                amend += 1
             elif item['work_type'] == "cancel":
                 canc += 1
             elif item['work_type'] == "prt_search":
@@ -807,11 +818,9 @@ def get_totals():
                 ocp += 1
 
     return {
-        'pabs': pabs,
-        'wobs': wobs,
-        'banks': banks,
+        'bank_regn': bank_regn, 'bank_amend': bank_amend, 'bank_rect': bank_rect,
+        'bank_with': bank_with, 'bank_stored': bank_stored,
         'lcreg': lcreg,
-        'amend': amend,
         'canc': canc,
         'portal': portal,
         'search': search,
@@ -821,7 +830,7 @@ def get_totals():
 
 def page_required(appn_type):
     html_page = {
-        "amend": "regn_retrieve.html",
+        "bank_amend": "regn_retrieve.html",
         "cancel": "regn_retrieve.html",
         "bank_regn": "application.html",
         "search": "search_name.html",

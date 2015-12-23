@@ -64,17 +64,17 @@
   clear: both; }
 
 #content {
-  max-width: 1160px;
-  margin: 0 15px; }
+  max-width: 1460px;
+  margin: 0 0px; }
   @media (min-width: 641px) {
     #content {
-      margin: 0 30px; } }
+      margin: 0 0px; } }
   @media (min-width: 1020px) {
     #content {
       margin: 0 auto; } }
 
 .grid-row {
-  margin: 0 -15px; }
+  margin: 0 0px; }
 
 @-ms-viewport {
   width: device-width; }
@@ -498,6 +498,16 @@ pre, code {
     .column-half {
       float: left;
       width: 50%; } }
+
+.column-three-quarter {
+  padding: 0 15px;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box; }
+  @media (min-width: 641px) {
+    .column-three-quarter {
+      float: left;
+      width: 75%; } }
 
 .column-third {
   padding: 0 15px;
