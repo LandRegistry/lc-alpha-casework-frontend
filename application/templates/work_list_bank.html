@@ -64,6 +64,7 @@ function getTotals(){
 
 <input type="hidden" name="requested_list" value="{{requested_list}}"/>
 
+
 {% if requested_list == 'bank_regn' %}
 {% set page_title = 'Registration' %}
 {% set regn_selected = 'selected' %}
@@ -82,8 +83,13 @@ function getTotals(){
 {% endif %}
 <div class="breadcrumb">
     <ol>
-        <li><a class="breadcrumb_links" href="/">Home</a></li>
-        <li class="breadcrumb_no_arrow"><span>Bankruptcy</span></li>
+        <li><a href="/">Home</a></li>
+        {% if requested_list == "bank" %}
+            <li class="breadcrumb_no_arrow"><span>Bankruptcy</span></li>
+        {% else %}
+            <li><a href="/get_list?appn=bank">Bankruptcy</a></li>
+            <li class="breadcrumb_no_arrow"><span>{{page_title}}</span></li>
+        {% endif %}
     </ol>
 </div>
 
@@ -91,7 +97,7 @@ function getTotals(){
 <div class="grid-row" >
 
     <!-- Side Navigation -->
-    <div class="column-quarter no-padding">
+    <div class="col three">
         <ul id="side-nav">
             <li><a href="/">Home</a></li>
             <li><a class="active" href="/get_list?appn=bank">Bankruptcy Applications</a></li>
@@ -106,7 +112,7 @@ function getTotals(){
     </div>
 
     <!-- Content -->
-    <div class="column-three-quarter no-padding">
+    <div class="col nine">
         <div class="spacer_10"></div>
         <h1 class="title_36">Bankruptcy</h1>
         <div class="spacer_20"></div>

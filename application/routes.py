@@ -28,7 +28,7 @@ def get_list():
     url = app.config['CASEWORK_DB_URL'] + '/applications?type=' + requested_worklist
     response = requests.get(url)
     work_list_json = response.json()
-    return_page = 'sub_list.html'
+    return_page = ''
     if requested_worklist.startswith('bank'):
         return_page = 'work_list_bank.html'
     elif requested_worklist.startswith('lc'):

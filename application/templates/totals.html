@@ -34,24 +34,24 @@
         <li class="breadcrumb_no_arrow">Home</li>
     </ol>
 </div>
-<div class="spacer_5"></div>
+<div class="spacer_30"></div>
 <div class="grid-row">
-    <div>
-        <div class="spacer_30"></div>
-        <div class="grid-row">
-            <div class="service_box no_margin">
-                <a class="no_link_style text_19_bold" href="/get_list?appn=bank">Bankruptcy Applications</a><br/>
-                <a class="no_link_style" href="/get_list?appn=bank">
-                    <img src="/static/images/pig.png" alt="Bankruptcy Applications">
-                </a>
-                <ul class="appn_list">
-                    <li><a href="/get_list?appn=bank_regn">Registrations (<span id="bank_regn">{{data['bank_regn']}}</span>)</a></li>
-                    <li><a href="/get_list?appn=bank_amend">Amendments (<span id="bank_amend">{{data['bank_amend']}}</span>)</a></li>
-                    <li><a href="b_rc_list">Rectifications (<span id="bank_rect">{{data['bank_rect']}}</span>)</a></li>
-                    <li><a href="b_wa_list">Withheld Address (<span id="bank_with">{{data['bank_with']}}</span>)</a></li>
-                    <li><a href="b_stored_list">Stored Applications (<span id="bank_stored">{{data['bank_stored']}}</span>)</a></li>
-                </ul>
-            </div>
+    <div class="col three">
+        <div class="service_box">
+            <a class="no_link_style text_19_bold" href="/get_list?appn=bank">Bankruptcy Applications</a><br/>
+            <a class="no_link_style" href="/get_list?appn=bank">
+                <img src="/static/images/pig.png" alt="Bankruptcy Applications">
+            </a>
+            <ul class="appn_list">
+                <li><a href="/get_list?appn=bank_regn">Registrations (<span id="bank_regn">{{data['bank_regn']}}</span>)</a></li>
+                <li><a href="/get_list?appn=bank_amend">Amendments (<span id="bank_amend">{{data['bank_amend']}}</span>)</a></li>
+                <li><a href="b_rc_list">Rectifications (<span id="bank_rect">{{data['bank_rect']}}</span>)</a></li>
+                <li><a href="b_wa_list">Withheld Address (<span id="bank_with">{{data['bank_with']}}</span>)</a></li>
+                <li><a href="b_stored_list">Stored Applications (<span id="bank_stored">{{data['bank_stored']}}</span>)</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="col three">
             <div class="service_box">
                 <a class="no_link_style text_19_bold" href="/get_list?appn=bank_regn">Land Charge Applications</a><br/>
                 <a class="no_link_style" href="/get_list?appn=bank_regn">
@@ -65,7 +65,8 @@
                     <li><a href="b_stored_list">Stored Applications (?)</a></li>
                 </ul>
             </div>
-
+    </div>
+    <div class="col three" >
             <div class="service_box">
                 <a class="no_link_style text_19_bold" href="/get_list?appn=bank_regn">Searches</a><br/>
                 <a class="no_link_style" href="/get_list?appn=bank_regn">
@@ -76,6 +77,8 @@
                     <li><a href="/get_list?appn=bank_amend">Bankruptcy Search (?)</a></li>
                 </ul>
             </div>
+    </div>
+    <div class="col three" >
             <div class="service_box">
                 <a class="no_link_style text_19_bold" href="/get_list?appn=bank_regn">Cancellations</a><br/>
                 <a class="no_link_style" href="/get_list?appn=bank_regn">
@@ -87,10 +90,11 @@
                     <li><a href="b_stored_list">Stored Applications (?)</a></li>
                 </ul>
             </div>
-        </div>
+    </div>
         <div class="grid-row">
         <div class="spacer_15"></div>
-            <div class="service_box no_margin">
+        <div class="col three" >
+            <div class="service_box ">
                 <a class="no_link_style text_19_bold" href="/get_list?appn=bank_regn">Office Copies</a><br/>
                 <a class="no_link_style" href="/get_list?appn=bank_regn">
                     <img src="/static/images/copy1.png" alt="Office Copies">
@@ -99,6 +103,8 @@
                     <li><a href="/get_list?appn=bank_regn">Office Copies</a></li>
                 </ul>
             </div>
+        </div>
+        <div class="col three" >
             <div class="service_box">
                 <a class="no_link_style text_19_bold" href="/get_list?appn=bank_regn">Enquiries</a><br/>
                 <a class="no_link_style" href="/get_list?appn=bank_regn">
@@ -110,7 +116,8 @@
                     <li><a href="b_rc_list">Unidentified Applications (?)</a></li>
                 </ul>
             </div>
-
+        </div>
+        <div class="col three" >
             <div class="service_box">
                 <a class="no_link_style text_19_bold" href="/get_list?appn=bank_regn">Image Management</a><br/>
                 <a class="no_link_style" href="/get_list?appn=bank_regn">
@@ -121,6 +128,8 @@
                     <li><a href="#">Image Management</a></li>
                 </ul>
             </div>
+        </div>
+        <div class="col three" >
             <div class="service_box">
                 <a class="no_link_style text_19_bold" href="/get_list?appn=bank_regn">General Information</a><br/>
                 <a class="no_link_style" href="/get_list?appn=bank_regn">
@@ -132,6 +141,7 @@
                 </ul>
             </div>
         </div>
+            </div>
     </div>
 </div>
 {% endblock %}

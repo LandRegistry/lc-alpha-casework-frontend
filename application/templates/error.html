@@ -1,29 +1,76 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8" />
-    <title>Land Charges</title>
-    {% include 'includes/ext_references.html' %}
-</head>
-<body>
-<div id="main" class="container">
-    <div class="container">
-        <div class="row">
-            <h2>Land Charges</h2>
-            <div class="row col-sm-12">
-                <ul class="breadcrumb">
-                    <li><a href="/">Home</a></li>
-                </ul>
+{% extends "/page_template/base.html" %}
+{% block maincontent %}
+<input type="hidden" name="requested_list" value="{{requested_list}}"/>
+
+
+{% if requested_list == 'bank_regn' %}
+{% set page_title = 'Registration' %}
+{% set regn_selected = 'selected' %}
+{% elif requested_list == 'bank_amend' %}
+{% set page_title = 'Amendment' %}
+{% set amend_selected = 'selected' %}
+{% elif requested_list == 'bank_rect' %}
+{% set page_title = 'Rectification' %}
+{% set rect_selected = 'selected' %}
+{% elif requested_list == 'bank_with' %}
+{% set page_title = 'Withheld Address' %}
+{% set with_selected = 'selected' %}
+{% elif requested_list == 'bank_stored' %}
+{% set page_title = 'Stored' %}
+{% set stored_selected = 'selected' %}
+{% endif %}
+<div class="breadcrumb">
+    <ol>
+        <li><a href="/">Home</a></li>
+        {% if requested_list == "bank" %}
+        <li class="breadcrumb_no_arrow"><span>Bankruptcy</span></li>
+        {% else %}
+        <li><a href="/get_list?appn=bank">Bankruptcy</a></li>
+        <li class="breadcrumb_no_arrow"><span>{{page_title}}</span></li>
+        {% endif %}
+    </ol>
+</div>
+
+<div class="spacer_5"></div>
+<div class="grid-row" >
+
+    <!-- Side Navigation -->
+    <div class="col three">
+        <ul id="side-nav">
+            <li><a href="/">Home</a></li>
+            <li><a class="active" href="/get_list?appn=bank">Bankruptcy Applications</a></li>
+            <li><a href="/get_list?appn=lc">Land Charge Applications</a></li>
+            <li><a href="/get_list?appn=search">Searches</a></li>
+            <li><a href="/get_list?appn=cancel">Cancellations</a></li>
+            <li><a href="/get_list?appn=search">Office Copies</a></li>
+            <li><a href="uc">Enquiries</a></li>
+            <li><a href="uc">Image management</a></li>
+            <li><a href="uc">General Information</a></li>
+        </ul>
+    </div>
+
+    <!-- Content -->
+    <div class="col nine text_19">
+        <div class="spacer_10"></div>
+        <div class="grid-row" >
+            <div class="col one">
+                <img src="/static/images/error.png" width="75px" />
             </div>
-            <div class="col-sm-12" style="margin-top:10px">
-                <h2>Oops there has been an unexpected system error</h2>
-                <h3>Please contact #######  for assistance.</h3><br/>
-                <p id="error_msg">Error message:- {{error_msg}}</p>
+            <div class="col eleven">
+                <div class="spacer_20"></div>
+                <h1 class="title_36">Unexpected error</h1>
             </div>
+
+        </div>
+
+        <div class="spacer_20"></div>
+        <div class="col twelve">
+            <div class="spacer_10"></div>
+            <p class="text_24_bold">Please contact the service desk for assistance.</p>
+            <p id="error_msg">Error message:- {{error_msg}}</p>
         </div>
 
 
     </div>
 </div>
-</body>
-</html>
+{% endblock %}
