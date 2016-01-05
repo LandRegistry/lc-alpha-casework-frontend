@@ -57,7 +57,7 @@ body {
 
 .subservice_box {
     position:relative;
-    width: 160px;
+    min-width: 120px;
     height: 130px;
     text-align: center;
     border: 1px solid #d2d2d2;
@@ -139,7 +139,7 @@ body {
 .appn_list li{
     display:block;
     padding-bottom:5px;
-    font-size:16px;
+    font-size:14px;
 }
 
 #work-list tbody tr:hover {
