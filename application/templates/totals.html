@@ -26,7 +26,7 @@
                         document.getElementById('cancel_stored').innerHTML = data.canc_stored;
                         document.getElementById('full_search').innerHTML = data.full_search;
                         document.getElementById('bank_search').innerHTML = data.bank_search;
-                        document.getElementById('lc_reg').innerHTML = data.lcreg;
+                        document.getElementById('lc_regn').innerHTML = data.lc_regn;
                         document.getElementById('lc_prio_not').innerHTML = data.lc_pn;
                         document.getElementById('lc_rect').innerHTML = data.lc_rect;
                         document.getElementById('lc_renewal').innerHTML = data.lc_renewal;
@@ -68,8 +68,9 @@
                 <a class="no-link-style" href="/get_list?appn=bank_regn">
                     <img src="/static/images/land.png" alt="Land Charge Applications">
                 </a>
+
                 <ul class="appn-list">
-                    <li><a href="/get_list?appn=lc_regn">Registrations (<span id="lc_reg">{{data['lcreg']}}</span>)</a></li>
+                    <li><a href="/get_list?appn=lc_regn">Registrations (<span id="lc_reg">{{data['lc_regn']}}</span>)</a></li>
                     <li><a href="/get_list?appn=lc_pn">Priority Notices (<span id="lc_prio_not">{{data['lc_pn']}}</span>)</a></li>
                     <li><a href="/get_list?appn=lc_rect">Rectifications (<span id="lc_rect">{{data['lc_rect']}}</span>)</a></li>
                     <li><a href="/get_list?appn=lc_renewal">Renewals (<span id="lc_renewal">{{data['lc_renewal']}}</span>)</a></li>
