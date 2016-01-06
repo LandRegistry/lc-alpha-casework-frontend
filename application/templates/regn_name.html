@@ -4,14 +4,14 @@
 <script>
     var n = {{data.debtor_names|length-1}};
     function nameClick(sender){
-        jQuery('<div class="text_16_bold">Alternative Name '+(n+1)+' &nbsp;&nbsp;</div> \
+        jQuery('<div class="text-16-bold">Alternative Name '+(n+1)+' &nbsp;&nbsp;</div> \
                 <div class="form"> \
-                    <label class="form_label" for="aliasforename">Forename(s)</label> \
-                    <input class="form_textfield" id="aliasforename' +n+ '" name="aliasforename' +n+ '" value="{{aliasforename}}"> \
+                    <label class="form-label" for="aliasforename">Forename(s)</label> \
+                    <input class="form-textfield" id="aliasforename' +n+ '" name="aliasforename' +n+ '" value="{{aliasforename}}"> \
                 </div> \
                 <div class="form"> \
-                    <label class="form_label" for="aliassurname">Surname</label> \
-                    <input class="form_textfield" id="aliassurname' +n+ '" name="aliassurname' +n+ '" value="{{aliassurname}}"> \
+                    <label class="form-label" for="aliassurname">Surname</label> \
+                    <input class="form-textfield" id="aliassurname' +n+ '" name="aliassurname' +n+ '" value="{{aliassurname}}"> \
                 </div>').insertBefore("#addname");
                 n ++;
         console.log(n);
@@ -30,26 +30,26 @@
         <li><a class="breadcrumb_links" href="/">Home</a></li>
         <li><a class="breadcrumb_links" href="/">Bankruptcies</a></li>
         <li><a class="breadcrumb_links" href="/get_list?appn={{application_type}}">List of {{trail}} applications</a></li>
-        <li class="breadcrumb_no_arrow"><span>Bankruptcy {{trail}}</span></li>
+        <li class="breadcrumb-no-arrow"><span>Bankruptcy {{trail}}</span></li>
     </ol>
 </div>
-<div class="spacer_10"></div>
+<div class="spacer-10"></div>
 
-<h1 class="title_36">Bankruptcy {{trail}}</h1>
+<h1 class="title-36">Bankruptcy {{trail}}</h1>
 
-<div class="spacer_5"></div>
+<div class="spacer-5"></div>
 
 {% if application_type == 'amend' %}
-<div class="text_16_gray">
-    <span class="text_16_no_link_style">1. Retrieve registration details</span>
+<div class="text-16-gray">
+    <span class="text-16-no-link-style">1. Retrieve registration details</span>
     &nbsp;&nbsp;
-    <span class="text_16_bold">2. Registration details</span>
+    <span class="text-16-bold">2. Registration details</span>
     &nbsp;&nbsp;
     3. Review amendments
 </div>
 {% else %}
-<div class="text_16_gray">
-    <span class="text_16_bold">1. Debtor details</span>
+<div class="text-16-gray">
+    <span class="text-16-bold">1. Debtor details</span>
     &nbsp;&nbsp;
     2. Debtor address
     &nbsp;&nbsp;
@@ -59,7 +59,7 @@
 </div>
 {% endif %}
 
-<div class="spacer_30"></div>
+<div class="spacer-30"></div>
 
 <div class="grid-row">
     <!-- ///////////////////////////////// data entry form ///////////////////////////////// -->
@@ -67,64 +67,64 @@
         <div class="column-form" id="form_panel">
 
             {% if application_type == 'amend' %}
-            <p class="text_24_bold">2. Registration details</p>
+            <p class="text-24-bold">2. Registration details</p>
             {% else %}
-            <p class="text_24_bold">1. Debtor details</p>
+            <p class="text-24-bold">1. Debtor details</p>
             {% endif %}
-            <div class="spacer_30"></div>
+            <div class="spacer-30"></div>
 
             <div class="form">
 
                 <div class="form">
-                    <label class="form_label">Forename(s)</label>
-                    <input class="form_textfield" type="text" id="forenames" name="forenames" autofocus value="{{data.debtor_names[0].forenames|join(' ') }}">
+                    <label class="form-label">Forename(s)</label>
+                    <input class="form-textfield" type="text" id="forenames" name="forenames" autofocus value="{{data.debtor_names[0].forenames|join(' ') }}">
                 </div>
 
                 <div class="form">
-                    <label class="form_label">Surname</label>
-                    <input class="form_textfield" type="text" id="surname" name="surname" value="{{data.debtor_names[0].surname}}">
+                    <label class="form-label">Surname</label>
+                    <input class="form-textfield" type="text" id="surname" name="surname" value="{{data.debtor_names[0].surname}}">
                 </div>
 
 
                 {% for name in data.debtor_names %}
                 {% if loop.index > 1 %}
-                <div class="spacer_20"></div>
+                <div class="spacer-20"></div>
 
-                <div class="text_16_bold">Alternative Name {{loop.index-1}} &nbsp;&nbsp;<a class="link_16_right" href="/remove_alias_name/{{loop.index-1}}">Remove</a></div>
+                <div class="text-16-bold">Alternative Name {{loop.index-1}} &nbsp;&nbsp;<a class="link-16-right" href="/remove_alias_name/{{loop.index-1}}">Remove</a></div>
 
                 <div class="form">
-                    <label class="form_label">Forename(s)</label>
-                    <input class="form_textfield" type="text" name="aliasforename{{loop.index-2}}" id="aliasforename{{loop.index-2}}" value="{{name.forenames|join(' ') }}">
+                    <label class="form-label">Forename(s)</label>
+                    <input class="form-textfield" type="text" name="aliasforename{{loop.index-2}}" id="aliasforename{{loop.index-2}}" value="{{name.forenames|join(' ') }}">
                 </div>
 
                 <div class="form">
-                    <label class="form_label">Surname</label>
-                    <input class="form_textfield" type="text" name="aliassurname{{loop.index-2}}" id="aliassurname{{loop.index-2}}" value="{{name.surname}}">
+                    <label class="form-label">Surname</label>
+                    <input class="form-textfield" type="text" name="aliassurname{{loop.index-2}}" id="aliassurname{{loop.index-2}}" value="{{name.surname}}">
                 </div>
                 {% endif %}
                 {% endfor %}
 
-                <div class="spacer_20"></div>
+                <div class="spacer-20"></div>
 
-                <div><a href="#add_name" onclick="nameClick(this)" class="link_16" id="addname">Add alternative name</a></div>
+                <div><a href="#add_name" onclick="nameClick(this)" class="link-16" id="addname">Add alternative name</a></div>
 
-                <div class="spacer_20"></div>
+                <div class="spacer-20"></div>
 
                 <div class="form">
-                    <label class="form_label">Occupation</label>
-                    <input class="form_textfield" type="text" id="occupation" name="occupation" value="{{data.occupation}}">
+                    <label class="form-label">Occupation</label>
+                    <input class="form-textfield" type="text" id="occupation" name="occupation" value="{{data.occupation}}">
                 </div>
 
-                <div class="spacer_30"></div>
+                <div class="spacer-30"></div>
 
                 <div>
                     <table>
                         <tr>
                             <td width="50%" class="no-line">
-                                <input type="submit" id="continue" value="Continue" class="form_button"></a>
+                                <input type="submit" id="continue" value="Continue" class="form-button"></a>
                             </td>
-                            <td width="50%" class="custom_3">
-                                <a href="#" class="link_16">Reject application</a>
+                            <td width="50%" class="custom-3">
+                                <a href="#" class="link-16">Reject application</a>
                             </td>
                         </tr>
                     </table>

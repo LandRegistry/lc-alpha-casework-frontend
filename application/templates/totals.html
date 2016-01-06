@@ -31,18 +31,18 @@
 {% block maincontent %}
 <div class="breadcrumb">
     <ol>
-        <li class="breadcrumb_no_arrow">Home</li>
+        <li class="breadcrumb-no-arrow">Home</li>
     </ol>
 </div>
-<div class="spacer_30"></div>
+<div class="spacer-30"></div>
 <div class="grid-row">
     <div class="col three">
-        <div class="service_box">
-            <a class="no_link_style text_16_bold" href="/get_list?appn=bank">Bankruptcy Applications</a><br/>
-            <a class="no_link_style" href="/get_list?appn=bank">
+        <div class="service-box">
+            <a class="no-link-style text-16-bold" href="/get_list?appn=bank">Bankruptcy Applications</a><br/>
+            <a class="no-link-style" href="/get_list?appn=bank">
                 <img src="/static/images/pig.png" alt="Bankruptcy Applications">
             </a>
-            <ul class="appn_list">
+            <ul class="appn-list">
                 <li><a href="/get_list?appn=bank_regn">Registrations (<span id="bank_regn">{{data['bank_regn']}}</span>)</a></li>
                 <li><a href="/get_list?appn=bank_amend">Amendments (<span id="bank_amend">{{data['bank_amend']}}</span>)</a></li>
                 <li><a href="b_rc_list">Rectifications (<span id="bank_rect">{{data['bank_rect']}}</span>)</a></li>
@@ -52,12 +52,12 @@
         </div>
     </div>
     <div class="col three">
-            <div class="service_box">
-                <a class="no_link_style text_16_bold" href="/get_list?appn=bank_regn">Land Charge Applications</a><br/>
-                <a class="no_link_style" href="/get_list?appn=bank_regn">
+            <div class="service-box">
+                <a class="no-link-style text-16-bold" href="/get_list?appn=bank_regn">Land Charge Applications</a><br/>
+                <a class="no-link-style" href="/get_list?appn=bank_regn">
                     <img src="/static/images/land.png" alt="Land Charge Applications">
                 </a>
-                <ul class="appn_list">
+                <ul class="appn-list">
                     <li><a href="/get_list?appn=bank_regn">Registrations (?)</a></li>
                     <li><a href="/get_list?appn=bank_amend">Priority Notices (?)</a></li>
                     <li><a href="b_rc_list">Rectifications (?)</a></li>
@@ -67,24 +67,24 @@
             </div>
     </div>
     <div class="col three" >
-            <div class="service_box">
-                <a class="no_link_style text_16_bold" href="/get_list?appn=bank_regn">Searches</a><br/>
-                <a class="no_link_style" href="/get_list?appn=bank_regn">
+            <div class="service-box">
+                <a class="no-link-style text-16-bold" href="/get_list?appn=bank_regn">Searches</a><br/>
+                <a class="no-link-style" href="/get_list?appn=bank_regn">
                     <img src="/static/images/search.png" alt="Searches">
                 </a>
-                <ul class="appn_list">
+                <ul class="appn-list">
                     <li><a href="/get_list?appn=bank_regn">Full Search (?)</a></li>
                     <li><a href="/get_list?appn=bank_amend">Bankruptcy Search (?)</a></li>
                 </ul>
             </div>
     </div>
     <div class="col three" >
-            <div class="service_box">
-                <a class="no_link_style text_16_bold" href="/get_list?appn=bank_regn">Cancellations</a><br/>
-                <a class="no_link_style" href="/get_list?appn=bank_regn">
+            <div class="service-box">
+                <a class="no-link-style text-16-bold" href="/get_list?appn=bank_regn">Cancellations</a><br/>
+                <a class="no-link-style" href="/get_list?appn=bank_regn">
                     <img src="/static/images/cancel.png" alt="Cancellations">
                 </a>
-                <ul class="appn_list">
+                <ul class="appn-list">
                     <li><a href="/get_list?appn=cancel">Cancellations (?)</a></li>
                     <li><a href="/get_list?appn=bank_amend">Part Cancellations ({?)</a></li>
                     <li><a href="b_stored_list">Stored Applications (?)</a></li>
@@ -92,25 +92,25 @@
             </div>
     </div>
         <div class="grid-row">
-        <div class="spacer_15"></div>
+        <div class="spacer-15"></div>
         <div class="col three" >
-            <div class="service_box ">
-                <a class="no_link_style text_16_bold" href="/get_list?appn=bank_regn">Office Copies</a><br/>
-                <a class="no_link_style" href="/get_list?appn=bank_regn">
+            <div class="service-box ">
+                <a class="no-link-style text-16-bold" href="/get_list?appn=bank_regn">Office Copies</a><br/>
+                <a class="no-link-style" href="/get_list?appn=bank_regn">
                     <img src="/static/images/copy1.png" alt="Office Copies">
                 </a>
-                <ul class="appn_list">
+                <ul class="appn-list">
                     <li><a href="/get_list?appn=bank_regn">Office Copies</a></li>
                 </ul>
             </div>
         </div>
         <div class="col three" >
-            <div class="service_box">
-                <a class="no_link_style text_16_bold" href="/get_list?appn=bank_regn">Enquiries</a><br/>
-                <a class="no_link_style" href="/get_list?appn=bank_regn">
+            <div class="service-box">
+                <a class="no-link-style text-16-bold" href="/get_list?appn=bank_regn">Enquiries</a><br/>
+                <a class="no-link-style" href="/get_list?appn=bank_regn">
                     <img src="/static/images/enquiries.png" alt="Enquiries">
                 </a>
-                <ul class="appn_list">
+                <ul class="appn-list">
                     <li><a href="/get_list?appn=bank_regn">Enquiries</a></li>
                     <li><a href="/get_list?appn=bank_amend">Historical View</a></li>
                     <li><a href="b_rc_list">Unidentified Applications (?)</a></li>
@@ -118,24 +118,24 @@
             </div>
         </div>
         <div class="col three" >
-            <div class="service_box">
-                <a class="no_link_style text_16_bold" href="/get_list?appn=bank_regn">Image Management</a><br/>
-                <a class="no_link_style" href="/get_list?appn=bank_regn">
+            <div class="service-box">
+                <a class="no-link-style text-16-bold" href="/get_list?appn=bank_regn">Image Management</a><br/>
+                <a class="no-link-style" href="/get_list?appn=bank_regn">
                     <img src="/static/images/image_man.png" alt="Image Management">
                 </a>
-                <ul class="appn_list">
+                <ul class="appn-list">
                     <li><a href="#">Deletions</a></li>
                     <li><a href="#">Image Management</a></li>
                 </ul>
             </div>
         </div>
         <div class="col three" >
-            <div class="service_box">
-                <a class="no_link_style text_16_bold" href="/get_list?appn=bank_regn">General Information</a><br/>
-                <a class="no_link_style" href="/get_list?appn=bank_regn">
+            <div class="service-box">
+                <a class="no-link-style text-16-bold" href="/get_list?appn=bank_regn">General Information</a><br/>
+                <a class="no-link-style" href="/get_list?appn=bank_regn">
                     <img src="/static/images/info.png" alt="General Information">
                 </a>
-                <ul class="appn_list">
+                <ul class="appn-list">
                     <li><a href="#">MI</a></li>
                     <li><a href="#">Job Instructions</a></li>
                 </ul>

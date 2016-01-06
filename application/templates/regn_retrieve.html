@@ -19,17 +19,17 @@
             <li><a class="breadcrumb_links" href="/">Home</a></li>
             <li><a class="breadcrumb_links" href="/">Bankruptcies</a></li>
             <li><a class="breadcrumb_links" id="return_worklist" href="/get_list?appn={{application_type}}">List of {{app_type}} applications</a></li>
-            <li class="breadcrumb_no_arrow"><span>Bankruptcy {{app_type}}</span></li>
+            <li class="breadcrumb-no-arrow"><span>Bankruptcy {{app_type}}</span></li>
         </ol>
     </div>
-    <div class="spacer_10"></div>
+    <div class="spacer-10"></div>
 
-    <h1 class="title_36">Bankruptcy {{app_type}}</h1>
+    <h1 class="title-36">Bankruptcy {{app_type}}</h1>
 
-    <div class="spacer_5"></div>
+    <div class="spacer-5"></div>
 
-    <div class="text_16_gray">
-        <span class="text_16_bold">1. Retrieve registration details</span>
+    <div class="text-16-gray">
+        <span class="text-16-bold">1. Retrieve registration details</span>
         &nbsp;&nbsp;
         {% if app_type == 'amendment' %}
         2. Registration details
@@ -40,41 +40,41 @@
         {% endif %}
     </div>
 
-    <div class="spacer_30"></div>
+    <div class="spacer-30"></div>
 
     <div class="grid-row">
         <!-- ///////////////////////////////// data entry form ///////////////////////////////// -->
         <form action="/get_details"  method="POST">
             <div class="column-form" id="form_panel">
 
-                <p class="text_24_bold">1. Retrieve registration details</p>
+                <p class="text-24-bold">1. Retrieve registration details</p>
 
-                <div class="spacer_20"></div>
+                <div class="spacer-20"></div>
                 {% if error_msg|length > 0 %}
                 <p class="error"><strong>{{error_msg}}</strong></p>
                 {% endif %}
 
                 <div class="form">
-                    <label class="form_label" for="reg_no">Registration number</label>
-                    <input class="form_textfield" type="text" id="reg_no" autofocus name="reg_no" value="{{reg_no}}">
+                    <label class="form-label" for="reg_no">Registration number</label>
+                    <input class="form-textfield" type="text" id="reg_no" autofocus name="reg_no" value="{{reg_no}}">
                 </div>
                 <div class="form">
-                    <label class="form_label" for="reg_day">Registration date</label>
-                    <input class="form_textfield_review_year" type="text" id="reg_day" autofocus name="reg_day" value="{{reg_day}}" placeholder="DD">
-                    <input class="form_textfield_review_year" type="text" id="reg_month" autofocus name="reg_month" value="{{reg_month}}" placeholder="MM">
-                    <input class="form_textfield_review_year" type="text" id="reg_year" autofocus name="reg_year" value="{{reg_year}}" placeholder="YYYY">
+                    <label class="form-label" for="reg_day">Registration date</label>
+                    <input class="form-textfield-review-year" type="text" id="reg_day" autofocus name="reg_day" value="{{reg_day}}" placeholder="DD">
+                    <input class="form-textfield-review-year" type="text" id="reg_month" autofocus name="reg_month" value="{{reg_month}}" placeholder="MM">
+                    <input class="form-textfield-review-year" type="text" id="reg_year" autofocus name="reg_year" value="{{reg_year}}" placeholder="YYYY">
                 </div>
 
-                <div class="spacer_30"></div>
+                <div class="spacer-30"></div>
 
                 <div>
                     <table>
                         <tr>
                             <td width="50%" class="no-line">
-                                <input type="submit" id="continue" value="Retrieve details" class="form_button_5">
+                                <input type="submit" id="continue" value="Retrieve details" class="form-button-5">
                             </td>
-                            <td width="50%" class="custom_3">
-                                <a href="#" class="link_16">Reject application</a>
+                            <td width="50%" class="custom-3">
+                                <a href="#" class="link-16">Reject application</a>
                             </td>
                         </tr>
                     </table>

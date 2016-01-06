@@ -95,23 +95,23 @@
         <li><a class="breadcrumb_links" href="/">Home</a></li>
         <li><a class="breadcrumb_links" href="/">Bankruptcies</a></li>
         <li><a class="breadcrumb_links" href="/get_list?appn=search">List of search applications</a></li>
-        <li class="breadcrumb_no_arrow"><span>Land Charge and bankruptcy search</span></li>
+        <li class="breadcrumb-no-arrow"><span>Land Charge and bankruptcy search</span></li>
     </ol>
 </div>
-<div class="spacer_10"></div>
+<div class="spacer-10"></div>
 
-<h1 class="title_36">Land charge and bankruptcy search</h1>
+<h1 class="title-36">Land charge and bankruptcy search</h1>
 
-<div class="spacer_5"></div>
+<div class="spacer-5"></div>
 
-<div class="text_16_gray">
-    <span class="text_16_no_link_style">1. Name(s) to be searched</span>
+<div class="text-16-gray">
+    <span class="text-16-no-link-style">1. Name(s) to be searched</span>
     &nbsp;&nbsp;
-    <span class="text_16_bold">2. Counties to be searched</span>
+    <span class="text-16-bold">2. Counties to be searched</span>
     &nbsp;&nbsp;
     3. Customer details
 </div>
-<div class="spacer_30"></div>
+<div class="spacer-30"></div>
 
 <div class="grid-row">
 
@@ -119,56 +119,56 @@
     <form action="/process_search_county" method="POST">
     <div class="column-form" id="form_panel">
 
-        <p class="text_24_bold">2. Counties to be searched</p>
+        <p class="text-24-bold">2. Counties to be searched</p>
 
-        <div class="spacer_20"></div>
+        <div class="spacer-20"></div>
 
-        <label class="text_16">Do you wish to perform an all counties search?</label>
+        <label class="text-16">Do you wish to perform an all counties search?</label>
 
-        <div class="spacer_10"></div>
+        <div class="spacer-10"></div>
 
         <fieldset class="inline">
             <div>
                 <label class="block-label">
                     <input type="radio" value="yes" id="hide" name="all_counties">
-                    <span class="text_16">Yes</span>
+                    <span class="text-16">Yes</span>
                 </label>
             </div>
             <div>
                 <label class="block-label">
-                    <input type="radio" value="no" id="show" checked="checked" name="all_counties"><span class="text_16">No</span>
+                    <input type="radio" value="no" id="show" checked="checked" name="all_counties"><span class="text-16">No</span>
                 </label>
             </div>
         </fieldset>
 
-        <div class="spacer_30"></div>
+        <div class="spacer-30"></div>
 
         <div id="areas">
             <div class="form">
-                <label class="form_label" for="search_area">Search area</label>
-                <input class="form_textfield" type="text" id="search_area" name="area" onclick="clear_area();"/>
+                <label class="form-label" for="search_area">Search area</label>
+                <input class="form-textfield" type="text" id="search_area" name="area" onclick="clear_area();"/>
             </div>
 
             <div>
-                <a class="form_button_6" href="#addarea" style="text-decoration: none;" onclick="addArea();" id="add_area" >Add Area </a>
+                <a class="form-button-6" href="#addarea" style="text-decoration: none;" onclick="addArea();" id="add_area" >Add Area </a>
             </div>
 
             <div class="form">
-                <label class="form_label" for="area_list">List of Areas to Search</label>
-                <textarea class="form_textarea" rows="8" id="area_list" name="area_list"></textarea>
+                <label class="form-label" for="area_list">List of Areas to Search</label>
+                <textarea class="form-textarea" rows="8" id="area_list" name="area_list"></textarea>
             </div>
         </div>
 
-        <div class="spacer_30"></div>
+        <div class="spacer-30"></div>
 
         <div>
             <table>
                 <tr>
                     <td width="50%" class="no-line">
-                        <input id="continue" type="submit" class="form_button" value="Continue"/>
+                        <input id="continue" type="submit" class="form-button" value="Continue"/>
                     </td>
-                    <td width="50%" class="custom_3">
-                        <a href="#" class="link_16">Reject application</a>
+                    <td width="50%" class="custom-3">
+                        <a href="#" class="link-16">Reject application</a>
                     </td>
                 </tr>
             </table>

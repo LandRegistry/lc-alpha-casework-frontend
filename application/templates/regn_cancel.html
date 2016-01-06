@@ -6,23 +6,23 @@
             <li><a class="breadcrumb_links" href="/">Home</a></li>
             <li><a class="breadcrumb_links" href="/">Bankruptcies</a></li>
             <li><a class="breadcrumb_links" href="/get_list?appn=cancel">List of cancellation applications</a></li>
-            <li class="breadcrumb_no_arrow"><span>Bankruptcy cancellation</span></li>
+            <li class="breadcrumb-no-arrow"><span>Bankruptcy cancellation</span></li>
         </ol>
     </div>
 
-    <div class="spacer_10"></div>
+    <div class="spacer-10"></div>
 
-    <h1 class="title_36">Bankruptcy cancellation</h1>
+    <h1 class="title-36">Bankruptcy cancellation</h1>
 
-    <div class="spacer_5"></div>
+    <div class="spacer-5"></div>
 
-    <div class="text_16_gray">
-        <span class="text_16 no_link_style">1. Retrieve registration details</span>
+    <div class="text-16-gray">
+        <span class="text-16 no-link-style">1. Retrieve registration details</span>
         &nbsp;&nbsp;
-        <span class="text_16_bold">2. Review registration details</span>
+        <span class="text-16-bold">2. Review registration details</span>
     </div>
 
-    <div class="spacer_30"></div>
+    <div class="spacer-30"></div>
 
     <div class="grid-row">
 
@@ -30,42 +30,42 @@
         <form action="/submit_cancellation" method="POST">
         <div class="column-form" id="form_panel">
 
-            <p class="text_24_bold">2. Review registration details</p>
+            <p class="text-24-bold">2. Review registration details</p>
 
-            <div class="spacer_10"></div>
+            <div class="spacer-10"></div>
 
-            <table class="review_table">
+            <table class="review-table">
 
                 <tr>
-                    <th colspan="2" class="table_text_black"><span class="text_19_gray">Registration details</span></th>
-                    <th colspan="1" class="table_text_black link_16_right"><a class="link_16_right" href="#"></a></th>
+                    <th colspan="2" class="table-text-black"><span class="text-19-gray">Registration details</span></th>
+                    <th colspan="1" class="table-text-black link-16-right"><a class="link-16-right" href="#"></a></th>
                 </tr>
                 <tr>
-                    <td width="50%"><span class="text_review_table_bold">Number</span></td>
-                    <td width="50%"><span class="text_review_table">{{data.registration.number}}</span></td>
+                    <td width="50%"><span class="text-review-table-bold">Number</span></td>
+                    <td width="50%"><span class="text-review-table">{{data.registration.number}}</span></td>
                 </tr>
                 <tr>
-                    <td colspan="1"><span class="text_review_table_bold">Date</span></td>
-                    <td colspan="2"><span class="text_review_table">{{data.registration.date | date_time_filter}}</span></td>
+                    <td colspan="1"><span class="text-review-table-bold">Date</span></td>
+                    <td colspan="2"><span class="text-review-table">{{data.registration.date | date_time_filter}}</span></td>
                 </tr>
                 <tr>
-                    <td colspan="1"><span class="text_review_table_bold">Type</span></td>
-                    <td colspan="2"><span class="text_review_table">{{data.application_type}}</span></td>
+                    <td colspan="1"><span class="text-review-table-bold">Type</span></td>
+                    <td colspan="2"><span class="text-review-table">{{data.application_type}}</span></td>
                 </tr>
             </table>
 
-            <div class="spacer_30"></div>
+            <div class="spacer-30"></div>
 
-            <table class="review_table">
+            <table class="review-table">
 
                 <tr>
-                    <th colspan="2" class="table_text_black"><span class="text_19_gray">Particulars of bankrupt</span></th>
-                    <th colspan="1" class="table_text_black link_16_right"><a class="link_16_right" href="#"></a></th>
+                    <th colspan="2" class="table-text-black"><span class="text-19-gray">Particulars of bankrupt</span></th>
+                    <th colspan="1" class="table-text-black link-16-right"><a class="link-16-right" href="#"></a></th>
                 </tr>
                 <tr>
-                    <td width="45%"><span class="text_review_table_bold">Forename(s)</span></td>
+                    <td width="45%"><span class="text-review-table-bold">Forename(s)</span></td>
                     <td width="50%">
-                        <span class="text_review_table">
+                        <span class="text-review-table">
                         {% for forename in data.debtor_names[0].forenames %}
                             {{forename}}
                         {% endfor %}
@@ -73,57 +73,57 @@
                     </td>
                 </tr>
                 <tr>
-                    <td colspan="1"><span class="text_review_table_bold">Surname</span></td>
-                    <td colspan="2"><span class="text_review_table">{{data.debtor_names[0].surname}}</span></td>
+                    <td colspan="1"><span class="text-review-table-bold">Surname</span></td>
+                    <td colspan="2"><span class="text-review-table">{{data.debtor_names[0].surname}}</span></td>
                 </tr>
                 <tr>
-                    <td colspan="1"><span class="text_review_table_bold">Occupation</span></td>
-                    <td colspan="2"><span class="text_review_table">{{data.occupation}}</span></td>
+                    <td colspan="1"><span class="text-review-table-bold">Occupation</span></td>
+                    <td colspan="2"><span class="text-review-table">{{data.occupation}}</span></td>
                 </tr>
             </table>
 
-            <div class="spacer_30"></div>
+            <div class="spacer-30"></div>
 
-            <div class="spacer_30"></div>
+            <div class="spacer-30"></div>
 
-            <table class="review_table">
+            <table class="review-table">
                 <tr>
-                    <th colspan="2" class="table_text_black"><span class="text_19_gray">Court details</span></th>
-                    <th colspan="1" class="table_text_black link_16_right"><a class="link_16_right" href="#"></a></th>
+                    <th colspan="2" class="table-text-black"><span class="text-19-gray">Court details</span></th>
+                    <th colspan="1" class="table-text-black link-16-right"><a class="link-16-right" href="#"></a></th>
                 </tr>
                 <tr>
-                    <td colspan="1" width="45%"><span class="text_review_table_bold">Key number</span></td>
-                    <td colspan="2" width="50%"><span class="text_review_table">{{data.key_number}}</span></td>
+                    <td colspan="1" width="45%"><span class="text-review-table-bold">Key number</span></td>
+                    <td colspan="2" width="50%"><span class="text-review-table">{{data.key_number}}</span></td>
                 </tr>
                 <tr>
-                    <td colspan="1"><span class="text_review_table_bold">Court name</span></td>
-                    <td colspan="2"><span class="text_review_table">{{data.legal_body}}</span></td>
+                    <td colspan="1"><span class="text-review-table-bold">Court name</span></td>
+                    <td colspan="2"><span class="text-review-table">{{data.legal_body}}</span></td>
                 </tr>
                 <tr>
-                    <td colspan="1"><span class="text_review_table_bold">Reference</span></td>
-                    <td colspan="2"><span class="text_review_table">{{data.legal_body_ref}}</span></td>
+                    <td colspan="1"><span class="text-review-table-bold">Reference</span></td>
+                    <td colspan="2"><span class="text-review-table">{{data.legal_body_ref}}</span></td>
                 </tr>
             </table>
 
-            <div class="spacer_30"></div>
+            <div class="spacer-30"></div>
 
-            <table class="review_table">
+            <table class="review-table">
                 <tr>
                     <td width="10%" class="no-line"><input type="checkbox" id="check_box" onclick="toggle()"></td>
-                    <td width="90%" class="no-line"><span class="text_review_table">I confirm I verified the cancellation</span></td>
+                    <td width="90%" class="no-line"><span class="text-review-table">I confirm I verified the cancellation</span></td>
                 </tr>
             </table>
 
-            <div class="spacer_10"></div>
+            <div class="spacer-10"></div>
 
             <div>
                 <table>
                     <tr>
                         <td width="50%" class="no-line">
-                            <input type="submit" value="Register cancellation" name="Continue" class="form_button_7" id="submit" disabled></a>
+                            <input type="submit" value="Register cancellation" name="Continue" class="form-button-7" id="submit" disabled></a>
                         </td>
-                        <td width="50%" class="custom_3">
-                            <a href="/rejection" id="reject" class="link_16">Reject application</a>
+                        <td width="50%" class="custom-3">
+                            <a href="/rejection" id="reject" class="link-16">Reject application</a>
                         </td>
                     </tr>
                 </table>
