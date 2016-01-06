@@ -40,11 +40,11 @@ function getTotals(){
             var numAmend = data.bank_amend;
 
 
-            bank_regn.className = numBankReg < 10 ? 'indicator_middle' : 'indicator_middle_2';
-            bank_amend.className = numBankAmend < 10 ? 'indicator_middle' : 'indicator_middle_2';
-            bank_rect.className = numBankRect < 10 ? 'indicator_middle' : 'indicator_middle_2';
-            bank_with.className = numBankWith < 10 ? 'indicator_middle' : 'indicator_middle_2';
-            bank_stored.className = numBankStore < 10 ? 'indicator_middle' : 'indicator_middle_2';
+            bank_regn.className = numBankReg < 10 ? 'indicator-middle' : 'indicator-middle-2';
+            bank_amend.className = numBankAmend < 10 ? 'indicator-middle' : 'indicator-middle-2';
+            bank_rect.className = numBankRect < 10 ? 'indicator-middle' : 'indicator-middle-2';
+            bank_with.className = numBankWith < 10 ? 'indicator-middle' : 'indicator-middle-2';
+            bank_stored.className = numBankStore < 10 ? 'indicator-middle' : 'indicator-middle-2';
 
             bank_regn.textContent = numBankReg;
             bank_amend.textContent = numBankAmend;
@@ -85,15 +85,15 @@ function getTotals(){
     <ol>
         <li><a href="/">Home</a></li>
         {% if requested_list == "bank" %}
-            <li class="breadcrumb_no_arrow"><span>Bankruptcy</span></li>
+            <li class="breadcrumb-no-arrow"><span>Bankruptcy</span></li>
         {% else %}
             <li><a href="/get_list?appn=bank">Bankruptcy</a></li>
-            <li class="breadcrumb_no_arrow"><span>{{page_title}}</span></li>
+            <li class="breadcrumb-no-arrow"><span>{{page_title}}</span></li>
         {% endif %}
     </ol>
 </div>
 
-<div class="spacer_5"></div>
+<div class="spacer-5"></div>
 <div class="grid-row" >
 
     <!-- Side Navigation -->
@@ -112,82 +112,82 @@ function getTotals(){
     </div>
 
     <!-- Content -->
-    <div class="col nine" style="min-width:800px;">
-        <div class="spacer_10"></div>
-        <h1 class="title_36">Bankruptcy</h1>
-        <div class="spacer_20"></div>
+    <div id="content-with-side-nav" class="col nine" >
+        <div class="spacer-10"></div>
+        <h1 class="title-36">Bankruptcy</h1>
+        <div class="spacer-20"></div>
         <!-- Totals -->
         <div class="grid-row">
-            <div class="subservice_box no-margin">
-            <a class="no_link_style {{regn_selected}}"  href="/get_list?appn=bank_regn">
-                <div class="spacer_20"></div>
-                <p class="text_16_bold">Registrations</p>
-                <div class="spacer_30"></div>
+            <div class="subservice-box no-margin">
+            <a class="no-link-style {{regn_selected}}"  href="/get_list?appn=bank_regn">
+                <div class="spacer-20"></div>
+                <p class="text-16-bold">Registrations</p>
+                <div class="spacer-30"></div>
                 <div class="indicator" id="bank_regn">
                     {% if data['bank_regn'] < 10 %}
-                    <span class="indicator_middle">{{data['bank_regn']}}</span>
+                    <span class="indicator-middle">{{data['bank_regn']}}</span>
                     {% else %}
-                    <span class="indicator_middle_2">{{data['bank_regn']}}</span>
+                    <span class="indicator-middle-2">{{data['bank_regn']}}</span>
                     {% endif %}
                 </div>
             </a>
             </div>
 
-            <div class="subservice_box">
-                <a class="no_link_style {{amend_selected}}" href="/get_list?appn=bank_amend">
-                <div class="spacer_20"></div>
-                <p class="text_16_bold">Amendments</p>
-                <div class="spacer_30"></div>
+            <div class="subservice-box">
+                <a class="no-link-style {{amend_selected}}" href="/get_list?appn=bank_amend">
+                <div class="spacer-20"></div>
+                <p class="text-16-bold">Amendments</p>
+                <div class="spacer-30"></div>
                 <div class="indicator" id="bank_amend">
                     {% if data['bank_amend'] < 10 %}
-                    <span class="indicator_middle">{{data['bank_amend']}}</span>
+                    <span class="indicator-middle">{{data['bank_amend']}}</span>
                     {% else %}
-                    <span class="indicator_middle_2">{{data['bank_amend']}}</span>
+                    <span class="indicator-middle-2">{{data['bank_amend']}}</span>
                     {% endif %}
                 </div>
                 </a>
             </div>
 
-            <div class="subservice_box">
-                <a class="no_link_style  {{rect_selected}}" href="/get_list?appn=bank_rect">
-                    <div class="spacer_20"></div>
-                    <p class="text_16_bold">Rectifications</p>
-                    <div class="spacer_30"></div>
+            <div class="subservice-box">
+                <a class="no-link-style  {{rect_selected}}" href="/get_list?appn=bank_rect">
+                    <div class="spacer-20"></div>
+                    <p class="text-16-bold">Rectifications</p>
+                    <div class="spacer-30"></div>
                     <div class="indicator" id="bank_rect">
                         {% if data['bank_rect'] < 10 %}
-                        <span class="indicator_middle">{{data['bank_rect']}}</span>
+                        <span class="indicator-middle">{{data['bank_rect']}}</span>
                         {% else %}
-                        <span class="indicator_middle_2">{{data['bank_rect']}}</span>
+                        <span class="indicator-middle-2">{{data['bank_rect']}}</span>
                         {% endif %}
                     </div>
                 </a>
             </div>
 
-            <div class="subservice_box">
-                <a class="no_link_style {{with_selected}}" href="/get_list?appn=bank_with">
-                    <div class="spacer_20"></div>
-                    <p class="text_16_bold">Withheld Address</p>
-                    <div class="spacer_30"></div>
+            <div class="subservice-box">
+                <a class="no-link-style {{with_selected}}" href="/get_list?appn=bank_with">
+                    <div class="spacer-20"></div>
+                    <p class="text-16-bold">Withheld Address</p>
+                    <div class="spacer-30"></div>
                     <div class="indicator" id="bank_with">
                         {% if data['bank_with'] < 10 %}
-                        <span class="indicator_middle">{{data['bank_with']}}</span>
+                        <span class="indicator-middle">{{data['bank_with']}}</span>
                         {% else %}
-                        <span class="indicator_middle_2">{{data['bank_with']}}</span>
+                        <span class="indicator-middle-2">{{data['bank_with']}}</span>
                         {% endif %}
                     </div>
                 </a>
             </div>
 
-            <div class="subservice_box">
-                <a class="no_link_style {{stored_selected}}" href="/get_list?appn=bank_stored">
-                    <div class="spacer_20"></div>
-                    <p class="text_16_bold">Stored Applications</p>
-                    <div class="spacer_30"></div>
+            <div class="subservice-box">
+                <a class="no-link-style {{stored_selected}}" href="/get_list?appn=bank_stored">
+                    <div class="spacer-20"></div>
+                    <p class="text-16-bold">Stored Applications</p>
+                    <div class="spacer-30"></div>
                     <div class="indicator" id="bank_stored">
                         {% if data['bank_stored'] < 10 %}
-                        <span class="indicator_middle">{{data['bank_stored']}}</span>
+                        <span class="indicator-middle">{{data['bank_stored']}}</span>
                         {% else %}
-                        <span class="indicator_middle_2">{{data['bank_stored']}}</span>
+                        <span class="indicator-middle-2">{{data['bank_stored']}}</span>
                         {% endif %}
                     </div>
                 </a>
@@ -197,15 +197,15 @@ function getTotals(){
         <!-- List of pending applications -->
         {% if worklist|length > 0 %}
         <div class="grid-row">
-            <div class="spacer_15"></div>
-            <h2 class="text_24_bold">{{page_title}} applications</h2>
-            <div class="spacer_15"></div>
-            <div style="margin-left:0px; float: left;  width: 75%;">
+            <div class="spacer-15"></div>
+            <h2 class="text-24-bold">{{page_title}} applications</h2>
+            <div class="spacer-15"></div>
+            <div class="col nine no-margin">
                 <table id="work-list" class="hover">
                     <thead>
                     <tr>
-                        <th class="table_text_black">Date and time received <a href="#"></a></th>
-                        <th class="table_text_black">Form type <a href="#"></a></th>
+                        <th class="table-text-black">Date and time received <a href="#"></a></th>
+                        <th class="table-text-black">Form type <a href="#"></a></th>
                     </tr>
                     </thead>
                     {% for n in worklist %}

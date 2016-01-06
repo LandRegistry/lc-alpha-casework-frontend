@@ -83,34 +83,34 @@
         <li><a class="breadcrumb_links" href="/">Bankruptcies</a></li>
         <li><a class="breadcrumb_links" href="/get_list?appn=search">List of search applications</a></li>
         {% if search_type == 'banks' %}
-        <li class="breadcrumb_no_arrow"><span>Bankruptcy search</span></li>
+        <li class="breadcrumb-no-arrow"><span>Bankruptcy search</span></li>
         {% else %}
-        <li class="breadcrumb_no_arrow"><span>Land charge and bankruptcy search</span></li>
+        <li class="breadcrumb-no-arrow"><span>Land charge and bankruptcy search</span></li>
         {% endif %}
     </ol>
 </div>
-<div class="spacer_10"></div>
+<div class="spacer-10"></div>
 
 {% if search_type == 'banks' %}
-<h1 class="title_36">Bankruptcy search</h1>
+<h1 class="title-36">Bankruptcy search</h1>
 {% else %}
-<h1 class="title_36">Land charge and bankruptcy search</h1>
+<h1 class="title-36">Land charge and bankruptcy search</h1>
 {% endif %}
 
-<div class="spacer_5"></div>
+<div class="spacer-5"></div>
 
-<div class="text_16_gray">
-    <span class="text_16_no_link_style">1. Name(s) to be searched</span>
+<div class="text-16-gray">
+    <span class="text-16-no-link-style">1. Name(s) to be searched</span>
     &nbsp;&nbsp;
     {% if application['search_criteria']['search_type'] == 'bankruptcy' %}
-    <span class="text_16_bold">2. Customer details</span>
+    <span class="text-16-bold">2. Customer details</span>
     {% else %}
-    <span class="text_16_no_link_style">2. Counties to be searched</span>
+    <span class="text-16-no-link-style">2. Counties to be searched</span>
     &nbsp;&nbsp;
-    <span class="text_16_bold">3. Customer details</span>
+    <span class="text-16-bold">3. Customer details</span>
     {% endif %}
 </div>
-<div class="spacer_30"></div>
+<div class="spacer-30"></div>
 
 <div class="grid-row">
 
@@ -119,41 +119,41 @@
     <div class="column-form" id="form_panel">
 
         {% if application['search_criteria']['search_type'] == 'bankruptcy' %}
-        <p class="text_24_bold">2. Customer details</p>
+        <p class="text-24-bold">2. Customer details</p>
         {% else %}
-        <p class="text_24_bold">3. Customer details</p>
+        <p class="text-24-bold">3. Customer details</p>
         {% endif %}
 
-        <div class="spacer_20"></div>
+        <div class="spacer-20"></div>
 
         <div class="form">
-            <label class="form_label" for="key_number">Key number</label>
-            <input class="form_textfield" type="text" id="key_number" name="key_number" autofocus
+            <label class="form-label" for="key_number">Key number</label>
+            <input class="form-textfield" type="text" id="key_number" name="key_number" autofocus
                    onkeyup="getCustomerDetails(this);" onblur="getCustomerDetails(this);" value="{{key_number}}"/>
         </div>
         <div class="form">
-            <label class="form_label" for="customer_name">Customer name</label>
-            <input class="form_textfield" type="text" id="customer_name" name="customer_name" value="{{customer_name}}"/>
+            <label class="form-label" for="customer_name">Customer name</label>
+            <input class="form-textfield" type="text" id="customer_name" name="customer_name" value="{{customer_name}}"/>
         </div>
         <div class="form">
-            <label class="form_label" for="customer_address">Customer address</label>
-            <textarea class="form_textarea" rows="8" id="customer_address" name="customer_address"></textarea>
+            <label class="form-label" for="customer_address">Customer address</label>
+            <textarea class="form-textarea" rows="8" id="customer_address" name="customer_address"></textarea>
         </div>
         <div class="form">
-            <label class="form_label" for="customer_ref">Customer reference</label>
-            <input class="form_textfield" type="text" id="customer_ref" name="customer_ref" value="{{customer_ref}}"/>
+            <label class="form-label" for="customer_ref">Customer reference</label>
+            <input class="form-textfield" type="text" id="customer_ref" name="customer_ref" value="{{customer_ref}}"/>
         </div>
 
-        <div class="spacer_30"></div>
+        <div class="spacer-30"></div>
 
         <div>
             <table>
                 <tr>
                     <td width="50%" class="no-line">
-                        <input id="submit" type="submit" class="form_button" value="Submit search"/>
+                        <input id="submit" type="submit" class="form-button" value="Submit search"/>
                     </td>
-                    <td width="50%" class="custom_3">
-                        <a href="#" class="link_16">Reject application</a>
+                    <td width="50%" class="custom-3">
+                        <a href="#" class="link-16">Reject application</a>
                     </td>
                 </tr>
             </table>
