@@ -10,18 +10,18 @@
         i = no_of_name;
         jQuery('<div class="form"> \
                     <div> \
-                        <label class="form_label" for"fullname' +i+ '">Full name ' +(i+1)+ '</label> \
-                        <input class="form_textfield" type="text" id="fullname' +i+ '" name="fullname' +i+ '"/> \
-                        <label class="form_label" for="comp' +i+ '">Search as a complex name</label> \
+                        <label class="form-label" for"fullname' +i+ '">Full name ' +(i+1)+ '</label> \
+                        <input class="form-textfield" type="text" id="fullname' +i+ '" name="fullname' +i+ '"/> \
+                        <label class="form-label" for="comp' +i+ '">Search as a complex name</label> \
                         <input style="margin-left:10px" type="checkbox" name="comp' +i+ '" id="comp' +i+ '"/> \
                     </div> \
                     {% if application['application_type'] != "Search" %} \
-                    <label class="form_label" for="year_from' +i+ '">Search from</label> \
-                    <input class="form_textfield_review_year" type="text" id="year_from' +i+ '" name="year_from' +i+ '" value="{{years.year_from}}"/> \
-                    <label class="form_label" style="margin-left:90px" for="year_to' +i+ '">Search to</label> \
-                    <input class="form_textfield_review_year" type="text" id="year_to' +i+ '" name="year_to' +i+ '" value="{{years.year_to}}"/> \
+                    <label class="form-label" for="year_from' +i+ '">Search from</label> \
+                    <input class="form-textfield-review-year" type="text" id="year_from' +i+ '" name="year_from' +i+ '" value="{{years.year_from}}"/> \
+                    <label class="form-label" style="margin-left:90px" for="year_to' +i+ '">Search to</label> \
+                    <input class="form-textfield-review-year" type="text" id="year_to' +i+ '" name="year_to' +i+ '" value="{{years.year_to}}"/> \
                     {% endif %} \
-                    <div class="spacer_10" style="border-bottom: 1px solid #bfc1c3;"></div> \
+                    <div class="spacer-10" style="border-bottom: 1px solid #bfc1c3;"></div> \
                 </div>').insertBefore("#addname1");
     };
     </script>
@@ -40,24 +40,24 @@
         <li><a class="breadcrumb_links" href="/">Bankruptcies</a></li>
         <li><a class="breadcrumb_links" href="/get_list?appn=search">List of search applications</a></li>
         {% if search_type == 'banks' %}
-        <li class="breadcrumb_no_arrow"><span>Bankruptcy search</span></li>
+        <li class="breadcrumb-no-arrow"><span>Bankruptcy search</span></li>
         {% else %}
-        <li class="breadcrumb_no_arrow"><span>Land charge and bankruptcy search</span></li>
+        <li class="breadcrumb-no-arrow"><span>Land charge and bankruptcy search</span></li>
         {% endif %}
     </ol>
 </div>
-<div class="spacer_10"></div>
+<div class="spacer-10"></div>
 
 {% if search_type == 'banks' %}
-<h1 class="title_36">Bankruptcy search</h1>
+<h1 class="title-36">Bankruptcy search</h1>
 {% else %}
-<h1 class="title_36">Land charge and bankruptcy search</h1>
+<h1 class="title-36">Land charge and bankruptcy search</h1>
 {% endif %}
 
-<div class="spacer_5"></div>
+<div class="spacer-5"></div>
 
-<div class="text_16_gray">
-    <span class="text_16_bold">1. Name(s) to be searched</span>
+<div class="text-16-gray">
+    <span class="text-16-bold">1. Name(s) to be searched</span>
     {% if search_type == 'banks' %}
     &nbsp;&nbsp;
     2. Customer details
@@ -69,7 +69,7 @@
     {% endif %}
 
 </div>
-<div class="spacer_30"></div>
+<div class="spacer-30"></div>
 
 <div class="grid-row">
 
@@ -77,59 +77,59 @@
     <form action="/process_search_name/{{search_type}}" method="POST">
     <div class="column-form" id="form_panel">
 
-        <p class="text_24_bold">1. Name(s) to be searched</p>
+        <p class="text-24-bold">1. Name(s) to be searched</p>
 
-        <div class="spacer_20"></div>
+        <div class="spacer-20"></div>
 
         {% for i in range(3) %}
         <div class="form">
             <div>
-            <label class="form_label" for="fullname{{loop.index-1}}">Full name {{loop.index}}</label>
-            <input class="form_textfield" type="text" id="fullname{{loop.index-1}}" name="fullname{{loop.index-1}}" autofocus value="{{fullname}}"/>
-            <label class="form_label" for="comp{{loop.index-1}}">Search as a complex name</label>
+            <label class="form-label" for="fullname{{loop.index-1}}">Full name {{loop.index}}</label>
+            <input class="form-textfield" type="text" id="fullname{{loop.index-1}}" name="fullname{{loop.index-1}}" autofocus value="{{fullname}}"/>
+            <label class="form-label" for="comp{{loop.index-1}}">Search as a complex name</label>
             <input style="margin-left:10px" type="checkbox" name="comp{{loop.index-1}}" id="comp{{loop.index-1}}" value="comp{{loop.index-1}}"/>
             </div>
             {% if search_type == 'full' %}
-            <label class="form_label" for="year_from{{loop.index-1}}">Search from</label>
-            <input class="form_textfield_review_year" type="text" id="year_from{{loop.index-1}}" name="year_from{{loop.index-1}}" value="{{years.year_from}}"/>
-            <label class="form_label" style="margin-left: 90px" for="year_to{{loop.index-1}}">Search to</label>
-            <input class="form_textfield_review_year" type="text" id="year_to{{loop.index-1}}" name="year_to{{loop.index-1}}" value="{{years.year_to}}"/>
+            <label class="form-label" for="year_from{{loop.index-1}}">Search from</label>
+            <input class="form-textfield-review-year" type="text" id="year_from{{loop.index-1}}" name="year_from{{loop.index-1}}" value="{{years.year_from}}"/>
+            <label class="form-label" style="margin-left: 90px" for="year_to{{loop.index-1}}">Search to</label>
+            <input class="form-textfield-review-year" type="text" id="year_to{{loop.index-1}}" name="year_to{{loop.index-1}}" value="{{years.year_to}}"/>
             {% endif %}
 
-            <div class="spacer_10" style="border-bottom: 1px solid #bfc1c3;"></div>
+            <div class="spacer-10" style="border-bottom: 1px solid #bfc1c3;"></div>
         </div>
         {% endfor %}
 
-        <div class="spacer_10"></div>
+        <div class="spacer-10"></div>
 
-        <label id="addname1" class="text_16">Do you need to add another name?</label>
+        <label id="addname1" class="text-16">Do you need to add another name?</label>
 
-        <div class="spacer_10"></div>
+        <div class="spacer-10"></div>
 
         <fieldset class="inline">
             <div>
                 <label class="block-label">
                     <input type="radio" id="addname" name="add_name" onclick="nameClick(this)">
-                    <span class="text_16">Yes</span>
+                    <span class="text-16">Yes</span>
                 </label>
             </div>
             <div>
                 <label class="block-label">
-                    <input type="radio" checked="checked" name="add_name"><span class="text_16">No</span>
+                    <input type="radio" checked="checked" name="add_name"><span class="text-16">No</span>
                 </label>
             </div>
         </fieldset>
 
-        <div class="spacer_30"></div>
+        <div class="spacer-30"></div>
 
         <div>
             <table>
                 <tr>
                     <td width="50%" class="no-line">
-                        <input id="continue" type="submit" class="form_button" value="Continue"/>
+                        <input id="continue" type="submit" class="form-button" value="Continue"/>
                     </td>
-                    <td width="50%" class="custom_3">
-                        <a href="#" class="link_16">Reject application</a>
+                    <td width="50%" class="custom-3">
+                        <a href="#" class="link-16">Reject application</a>
                     </td>
                 </tr>
             </table>
