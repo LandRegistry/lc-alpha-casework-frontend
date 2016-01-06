@@ -1,0 +1,179 @@
+{% extends "/page_template/base.html" %}
+{% block page_specific_head %}
+<link href="/static/datatables/css/jquery.dataTables.css" rel="stylesheet" />
+<link href="/static/datatables/css/dataTables.responsive.css" rel="stylesheet" />
+<script type="text/javascript" src="/static/datatables/js/jquery.dataTables.js"></script>
+<script>
+ HOST = window.location.protocol + "//" + window.location.hostname;
+
+$(document).ready(function() {
+    $("#refresh").hide();
+    setInterval("getTotals()", 30000);
+    $('#work-list').DataTable({info: false, paging: false, searching: false});
+    $('#work-list tbody tr').click(function() {
+        var href = $(this).find("a").attr("href");
+        if(href) {
+            window.location = href;
+        }
+    });
+
+} );
+
+function getTotals(){
+
+    jQuery.ajax( {
+        url: HOST + ':5010/totals',
+        type: 'GET',
+        data: {},
+        success: function( data ) {
+            var canc = document.getElementById('canc').querySelector('span');
+            var canc_part = document.getElementById('canc_part').querySelector('span');
+            var canc_stored = document.getElementById('canc_stored').querySelector('span');
+
+            var numCancel = data.canc;
+            var numCancelPart = data.canc_part;
+            var numCancelStore = data.canc_stored;
+
+
+            cancel.className = numCancel < 10 ? 'indicator-middle' : 'indicator-middle_2';
+            cancel_part.className = numCancelPart < 10 ? 'indicator-middle' : 'indicator-middle_2';
+            cancel_stored.className = numCancelStore < 10 ? 'indicator-middle' : 'indicator-middle_2';
+
+            cancel.textContent = numCancel;
+            cancel_part.textContent = numCancelPart;
+            cancel_stored.textContent = numCancelStore;
+
+        }
+    } );
+
+}
+
+</script>
+{% endblock %}
+
+{% block maincontent %}
+
+<input type="hidden" name="requested_list" value="{{requested_list}}"/>
+
+
+{% if requested_list == 'cancel' %}
+{% set page_title = 'Full Cancellation' %}
+{% set cancel_selected = 'selected' %}
+{% elif requested_list == 'cancel_part' %}
+{% set page_title = 'Part Cancellation' %}
+{% set part_selected = 'selected' %}
+{% elif requested_list == 'cancel_stored' %}
+{% set page_title = 'Stored' %}
+{% set stored_selected = 'selected' %}
+{% endif %}
+<div class="breadcrumb">
+    <ol>
+        <li><a href="/">Home</a></li>
+        {% if requested_list == "canc" %}
+            <li class="breadcrumb-no-arrow"><span>Cancellation</span></li>
+        {% else %}
+            <li><a href="/get_list?appn=canc">Cancellation</a></li>
+            <li class="breadcrumb-no-arrow"><span>{{page_title}}</span></li>
+        {% endif %}
+    </ol>
+</div>
+
+<div class="spacer-5"></div>
+<div class="grid-row" >
+
+    <!-- Side Navigation -->
+    {% set side_nav_cancel = 'active' %}
+    {% include 'includes/side_nav.html' %}
+
+    <!-- Content -->
+    <div class="col nine" style="min-width:800px;">
+        <div class="spacer-10"></div>
+        <h1 class="title-36">Cancellation</h1>
+        <div class="spacer-20"></div>
+        <!-- Totals -->
+        <div class="grid-row">
+            <div class="subservice-box no-margin">
+            <a class="no-link-style {{cancel_selected}}"  href="/get_list?appn=cancel">
+                <div class="spacer-20"></div>
+                <p class="text-16-bold">Cancellations</p>
+                <div class="spacer-30"></div>
+                <div class="indicator" id="canc">
+                    {% if data['canc'] < 10 %}
+                    <span class="indicator-middle">{{data['canc']}}</span>
+                    {% else %}
+                    <span class="indicator-middle-2">{{data['canc']}}</span>
+                    {% endif %}
+                </div>
+            </a>
+            </div>
+
+            <div class="subservice-box">
+                <a class="no-link-style {{part_selected}}" href="/get_list?appn=cancel_part">
+                <div class="spacer-20"></div>
+                <p class="text-16-bold">Part Cancellations</p>
+                <div class="spacer-30"></div>
+                <div class="indicator" id="canc_part">
+                    {% if data['canc_part'] < 10 %}
+                    <span class="indicator-middle">{{data['canc_part']}}</span>
+                    {% else %}
+                    <span class="indicator-middle-2">{{data['canc_part']}}</span>
+                    {% endif %}
+                </div>
+                </a>
+            </div>
+
+            <div class="subservice-box">
+                <a class="no-link-style {{stored_selected}}" href="/get_list?appn=cancel_stored">
+                    <div class="spacer-20"></div>
+                    <p class="text-16-bold">Stored</p>
+                    <div class="spacer-30"></div>
+                    <div class="indicator" id="canc_stored">
+                        {% if data['canc_stored'] < 10 %}
+                        <span class="indicator-middle">{{data['canc_stored']}}</span>
+                        {% else %}
+                        <span class="indicator-middle-2">{{data['canc_stored']}}</span>
+                        {% endif %}
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <!-- List of pending applications -->
+        {% if worklist|length > 0 %}
+        <div class="grid-row">
+            <div class="spacer-15"></div>
+            <h2 class="text-24-bold">{{page_title}} applications</h2>
+            <div class="spacer-15"></div>
+            <div class="col nine no-margin">
+                <table id="work-list" class="hover">
+                    <thead>
+                    <tr>
+                        <th class="table-text-black">Date and time received <a href="#"></a></th>
+                        <th class="table-text-black">Form type <a href="#"></a></th>
+                    </tr>
+                    </thead>
+                    {% for n in worklist %}
+                    <tbody>
+                    <tr>
+                        <td>{{n['date_received']}} {{n['time_received']}}</td>
+                        <td>
+                            <a id="appn_type{{loop.index}}" href="/application_start/{{requested_list}}/{{n['appn_id']}}/{{n['application_type']|replace(' ', '%20')}}">
+                                {% if n['application_type'] == 'WO(B)' %}
+                                WOB
+                                {% elif n['application_type'] == 'PA(B)'%}
+                                PAB
+                                {% else %}
+                                {{n['application_type']}}
+                                {% endif %}
+                            </a>
+                        </td>
+                    </tr>
+                    </tbody>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
