@@ -1,0 +1,107 @@
+{% extends "/page_template/base.html" %}
+{% block page_specific_head %}
+
+<script>
+    var n = 1;
+    function countyClick(sender){
+        jQuery('<input class="form-textfield" type="text" id="county_' +n+ '" name="county_' +n+ '"> \
+                <div class="spacer-10"><div>').insertBefore("#addcounty");
+        n ++;
+    };
+</script>
+
+{% endblock %}
+
+{% block maincontent %}
+
+<div class="breadcrumb">
+    <ol>
+        <li><a class="breadcrumb_links" href="/">Home</a></li>
+        <li><a class="breadcrumb_links" href="/get_list?appn=lc">Land Charge</a></li>
+        <li><a class="breadcrumb_links" href="/get_list?appn=lc_regn">Registration</a></li>
+        <li class="breadcrumb-no-arrow"><span>Registration details</span></li>
+    </ol>
+</div>
+<div class="spacer-10"></div>
+
+<h1 class="title-36">Land charge registration</h1>
+
+<div class="spacer-5"></div>
+
+<div class="text-16-gray">
+    <span class="text-16-bold">1. Input details</span>
+    &nbsp;&nbsp;
+    2. Check details
+    &nbsp;&nbsp;
+    3. Conveyancer and fees
+</div>
+<div class="spacer-30"></div>
+
+<div class="grid-row">
+    <div class="col four">
+    <!-- ///////////////////////////////// data entry form ///////////////////////////////// -->
+    <form action="/process_banks_name" method="POST">
+
+        <!-- CHARGE -->
+        <h2 class="text-24-bold">Class of charge</h2>
+
+        <div class="spacer-10"></div>
+
+        <div class="form">
+            <label class="form-label" for="class">Class and subclass</label>
+            <input class="form-textfield" type="text" id="class" name="class" autofocus>
+        </div>
+
+        <div class="spacer-30"></div>
+
+        <!-- LAND INFO -->
+        <h2 class="text-24-bold">Particulars of land affected</h2>
+
+        <div class="spacer-10"></div>
+
+        <div class="form">
+            <label class="form-label" for="county_0">County or unitary authority area</label>
+            <input class="form-textfield" type="text" id="county_0" name="county_0">
+        </div>
+
+        <div class="spacer-10"></div>
+
+        <div><a href="#here" onclick="countyClick(this)" class="link-16" id="addcounty">Add additional county or unitary authority</a></div>
+
+        <div class="spacer-10"></div>
+
+        <div class="form">
+            <label class="form-label" for="district">District</label>
+            <input class="form-textfield" type="text" id="district" name="district">
+        </div>
+
+        <div class="form">
+            <label class="form-label" for="short_desc">Short description</label>
+            <textarea class="form-textarea-short" type="text" id="short_desc" name="short_desc"></textarea>
+        </div>
+
+
+
+
+
+
+
+
+
+
+
+
+    </form>
+    </div>
+
+    <!-- ///////////////////////////////// end of data entry form ///////////////////////////////// -->
+    <div class="col one"><p></p></div>
+    <!-- /////////////////////////////////  Include image tool ///////////////////////////////// -->
+    <div class="col seven">
+    {% include 'includes/image_view_body.html' %}
+
+    <!-- ///////////////////////////////// End of image tool ///////////////////////////////// -->
+    </div>
+</div>
+
+{% endblock %}

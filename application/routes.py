@@ -86,6 +86,8 @@ def application_start(application_type, appn_id, appn_type):
     else:
         template = page_required(application_type)
 
+    print('this is what we have so far', template, application_type)
+
     application_json['application_type'] = appn_type
 
     session.clear()
@@ -723,7 +725,15 @@ def start_rectification():
 # end of rectification routes
 
 
-# Common routes
+# ============== Land Charges routes ===============
+
+@app.route('/land_charge_capture', methods=['POST'])
+def land_charge_capture():
+    print('hello')
+
+
+# ============== Common routes =====================
+
 @app.route('/confirmation', methods=['GET'])
 def confirmation():
     if 'regn_no' not in session:
@@ -856,7 +866,7 @@ def page_required(appn_type):
         "bank_regn": "application.html",
         "search": "search_name.html",
         "oc": "regn_retrieve.html",
-        "lc": "application.html"
+        "lc_regn": "lc_regn_capture.html"
     }
 
     return html_page.get(appn_type)
