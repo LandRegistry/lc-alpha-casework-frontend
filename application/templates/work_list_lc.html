@@ -32,25 +32,24 @@ function getTotals(){
             var lc_renewal = document.getElementById('lc_renewal').querySelector('span');
             var lc_stored = document.getElementById('lc_stored').querySelector('span');
 
-            var numBankReg = data.lc_regn;
-            var numBankAmend = data.lc_pn;
-            var numBankRect = data.lc_rect;
-            var numBankWith = data.lc_renewal;
-            var numBankStore = data.lc_stored;
-            var numAmend = data.lc_pn;
+            var numLcReg = data.lc_regn;
+            var numLcPn = data.lc_pn;
+            var numLcRect = data.lc_rect;
+            var numlcRenewal = data.lc_renewal;
+            var numLcStore = data.lc_stored;
 
 
-            lc_regn.className = numBankReg < 10 ? 'indicator-middle' : 'indicator-middle_2';
-            lc_pn.className = numBankAmend < 10 ? 'indicator-middle' : 'indicator-middle_2';
-            lc_rect.className = numBankRect < 10 ? 'indicator-middle' : 'indicator-middle_2';
-            lc_renewal.className = numBankWith < 10 ? 'indicator-middle' : 'indicator-middle_2';
-            lc_stored.className = numBankStore < 10 ? 'indicator-middle' : 'indicator-middle_2';
+            lc_regn.className = numLcReg < 10 ? 'indicator-middle' : 'indicator-middle_2';
+            lc_pn.className = numLcPn < 10 ? 'indicator-middle' : 'indicator-middle_2';
+            lc_rect.className = numLcRect < 10 ? 'indicator-middle' : 'indicator-middle_2';
+            lc_renewal.className = numLcRenewal < 10 ? 'indicator-middle' : 'indicator-middle_2';
+            lc_stored.className = numLcStore < 10 ? 'indicator-middle' : 'indicator-middle_2';
 
-            lc_regn.textContent = numBankReg;
-            lc_pn.textContent = numBankAmend;
-            lc_rect.textContent = numBankRect;
-            lc_renewal.textContent = numBankWith;
-            lc_stored.textContent = numBankStore;
+            lc_regn.textContent = numLcReg;
+            lc_pn.textContent = numLcPn;
+            lc_rect.textContent = numLcRect;
+            lc_renewal.textContent = numLcRenewal;
+            lc_stored.textContent = numLcStore;
 
         }
     } );
@@ -97,19 +96,8 @@ function getTotals(){
 <div class="grid-row" >
 
     <!-- Side Navigation -->
-    <div class="col three">
-        <ul id="side-nav">
-            <li><a href="/">Home</a></li>
-            <li><a href="/get_list?appn=bank">Bankruptcy Applications</a></li>
-            <li><a class="active" href="/get_list?appn=lc">Land Charge Applications</a></li>
-            <li><a href="/get_list?appn=search">Searches</a></li>
-            <li><a href="/get_list?appn=cancel">Cancellations</a></li>
-            <li><a href="/get_list?appn=search">Office Copies</a></li>
-            <li><a href="uc">Enquiries</a></li>
-            <li><a href="uc">Image management</a></li>
-            <li><a href="uc">General Information</a></li>
-        </ul>
-    </div>
+    {% set side_nav_lc = 'active' %}
+    {% include 'includes/side_nav.html' %}
 
     <!-- Content -->
     <div class="col nine" style="min-width:800px;">
@@ -181,7 +169,7 @@ function getTotals(){
             <div class="subservice-box">
                 <a class="no-link-style {{stored_selected}}" href="/get_list?appn=lc_stored">
                     <div class="spacer-20"></div>
-                    <p class="text-16-bold">Stored Applications</p>
+                    <p class="text-16-bold">Stored</p>
                     <div class="spacer-30"></div>
                     <div class="indicator" id="lc_stored">
                         {% if data['lc_stored'] < 10 %}
