@@ -1,5 +1,5 @@
 from application import app
-from flask import Response, request, render_template, session, redirect
+from flask import Response, request, render_template, session, redirect, url_for
 import requests
 from datetime import datetime
 import logging
@@ -24,7 +24,10 @@ def index():
 
 @app.route('/get_list', methods=["GET"])
 def get_list():
-    requested_worklist = request.args.get('appn')
+    return get_list_of_applications(request.args.get('appn'), "")
+
+
+def get_list_of_applications(requested_worklist, error_msg):
     url = app.config['CASEWORK_DB_URL'] + '/applications?type=' + requested_worklist
     response = requests.get(url)
     work_list_json = response.json()
@@ -54,15 +57,18 @@ def get_list():
                 "status": appn['status'],
                 "work_type": appn['work_type'],
                 "assigned_to": appn['assigned_to'],
-            }
+                }
             appn_list.append(application)
 
     app_totals = get_totals()
+    print("return to page " + return_page)
 
     if app.config['DEMONSTRATION_VIEW']:
-        return render_template('sub_list_demo.html', worklist=appn_list, requested_list=requested_worklist, data=app_totals)
+        return render_template('sub_list_demo.html', worklist=appn_list, requested_list=requested_worklist,
+                               data=app_totals, error=error_msg)
     else:
-        return render_template(return_page, worklist=appn_list, requested_list=requested_worklist, data=app_totals)
+        return render_template(return_page, worklist=appn_list, requested_list=requested_worklist,
+                               data=app_totals, error=error_msg)
 
 
 @app.route('/application_start/<application_type>/<appn_id>/<appn_type>', methods=["GET"])
@@ -71,6 +77,10 @@ def application_start(application_type, appn_id, appn_type):
     url = app.config['CASEWORK_DB_URL'] + '/applications/' + appn_id
 
     response = requests.get(url)
+    if response.status_code == 404:
+        error_msg = "This application is being processed by another member of staff please select a different one"
+        return get_list_of_applications(application_type, error_msg)
+
     application_json = response.json()
     document_id = application_json['application_data']['document_id']
     doc_response = requests.get(app.config["CASEWORK_DB_URL"] + "/forms/" + str(document_id))
