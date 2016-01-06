@@ -788,7 +788,10 @@ def get_totals():
     # initialise all counters to 0
 
     bank_regn, bank_amend, bank_rect, bank_with, bank_stored = (0,) * 5
-    lcreg, canc, portal, search, ocp = (0,) * 5
+    lcreg, lc_pn, lc_rect, lc_renewal, lc_stored = (0,) * 5
+    canc, canc_part, canc_stored = (0,) * 3
+    full_search, bank_search, = (0,) * 2
+    unknown = 0
 
     url = app.config['CASEWORK_DB_URL'] + '/applications'
     response = requests.get(url)
@@ -808,23 +811,37 @@ def get_totals():
                 bank_stored += 1
             elif item['work_type'] == "lc_regn":
                 lcreg += 1
+            elif item['work_type'] == "lc_pn":
+                lc_pn += 1
+            elif item['work_type'] == "lc_rect":
+                lc_rect += 1
+            elif item['work_type'] == "lc_renewal":
+                lc_renewal += 1
+            elif item['work_type'] == "lc_stored":
+                lc_stored += 1
             elif item['work_type'] == "cancel":
                 canc += 1
-            elif item['work_type'] == "prt_search":
-                portal += 1
-            elif item['work_type'] == "search":
-                search += 1
-            elif item['work_type'] == "oc":
-                ocp += 1
+            elif item['work_type'] == "cancel_part":
+                canc_part += 1
+            elif item['work_type'] == "cancel_stored":
+                canc_stored += 1
+            # elif item['work_type'] == "prt_search":
+            #     portal += 1
+            elif item['work_type'] == "full_search":
+                full_search += 1
+            elif item['work_type'] == "bank_search":
+                bank_search += 1
+            elif item['work_type'] == "unknown":
+                unknown += 1
 
     return {
         'bank_regn': bank_regn, 'bank_amend': bank_amend, 'bank_rect': bank_rect,
         'bank_with': bank_with, 'bank_stored': bank_stored,
-        'lcreg': lcreg,
-        'canc': canc,
-        'portal': portal,
-        'search': search,
-        'oc': ocp
+        'lcreg': lcreg, 'lc_pn': lc_pn, 'lc_rect': lc_rect, 'lc_renewal': lc_renewal, 'lc_stored': lc_stored,
+        'canc': canc, 'canc_part': canc_part, 'canc_stored': canc_stored,
+        # 'portal': portal,
+        'full_search': full_search, 'bank_search': bank_search,
+        'unknown': unknown
     }
 
 
