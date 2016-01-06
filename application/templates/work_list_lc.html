@@ -32,25 +32,24 @@ function getTotals(){
             var lc_renewal = document.getElementById('lc_renewal').querySelector('span');
             var lc_stored = document.getElementById('lc_stored').querySelector('span');
 
-            var numBankReg = data.lc_regn;
-            var numBankAmend = data.lc_pn;
-            var numBankRect = data.lc_rect;
-            var numBankWith = data.lc_renewal;
-            var numBankStore = data.lc_stored;
-            var numAmend = data.lc_pn;
+            var numLcReg = data.lc_regn;
+            var numLcPn = data.lc_pn;
+            var numLcRect = data.lc_rect;
+            var numlcRenewal = data.lc_renewal;
+            var numLcStore = data.lc_stored;
 
 
-            lc_regn.className = numBankReg < 10 ? 'indicator_middle' : 'indicator_middle_2';
-            lc_pn.className = numBankAmend < 10 ? 'indicator_middle' : 'indicator_middle_2';
-            lc_rect.className = numBankRect < 10 ? 'indicator_middle' : 'indicator_middle_2';
-            lc_renewal.className = numBankWith < 10 ? 'indicator_middle' : 'indicator_middle_2';
-            lc_stored.className = numBankStore < 10 ? 'indicator_middle' : 'indicator_middle_2';
+            lc_regn.className = numLcReg < 10 ? 'indicator-middle' : 'indicator-middle_2';
+            lc_pn.className = numLcPn < 10 ? 'indicator-middle' : 'indicator-middle_2';
+            lc_rect.className = numLcRect < 10 ? 'indicator-middle' : 'indicator-middle_2';
+            lc_renewal.className = numLcRenewal < 10 ? 'indicator-middle' : 'indicator-middle_2';
+            lc_stored.className = numLcStore < 10 ? 'indicator-middle' : 'indicator-middle_2';
 
-            lc_regn.textContent = numBankReg;
-            lc_pn.textContent = numBankAmend;
-            lc_rect.textContent = numBankRect;
-            lc_renewal.textContent = numBankWith;
-            lc_stored.textContent = numBankStore;
+            lc_regn.textContent = numLcReg;
+            lc_pn.textContent = numLcPn;
+            lc_rect.textContent = numLcRect;
+            lc_renewal.textContent = numLcRenewal;
+            lc_stored.textContent = numLcStore;
 
         }
     } );
@@ -75,7 +74,7 @@ function getTotals(){
 {% set page_title = 'Rectification' %}
 {% set rect_selected = 'selected' %}
 {% elif requested_list == 'lc_renewal' %}
-{% set page_title = 'Renewals' %}
+{% set page_title = 'Renewal' %}
 {% set renewal_selected = 'selected' %}
 {% elif requested_list == 'lc_stored' %}
 {% set page_title = 'Stored' %}
@@ -85,109 +84,98 @@ function getTotals(){
     <ol>
         <li><a href="/">Home</a></li>
         {% if requested_list == "lc" %}
-            <li class="breadcrumb_no_arrow"><span>Land Charge</span></li>
+            <li class="breadcrumb-no-arrow"><span>Land Charge</span></li>
         {% else %}
-            <li><a href="/get_list?appn=bank">Land Charge</a></li>
-            <li class="breadcrumb_no_arrow"><span>{{page_title}}</span></li>
+            <li><a href="/get_list?appn=lc">Land Charge</a></li>
+            <li class="breadcrumb-no-arrow"><span>{{page_title}}</span></li>
         {% endif %}
     </ol>
 </div>
 
-<div class="spacer_5"></div>
+<div class="spacer-5"></div>
 <div class="grid-row" >
 
     <!-- Side Navigation -->
-    <div class="col three">
-        <ul id="side-nav">
-            <li><a href="/">Home</a></li>
-            <li><a href="/get_list?appn=bank">Bankruptcy Applications</a></li>
-            <li><a class="active" href="/get_list?appn=lc">Land Charge Applications</a></li>
-            <li><a href="/get_list?appn=search">Searches</a></li>
-            <li><a href="/get_list?appn=cancel">Cancellations</a></li>
-            <li><a href="/get_list?appn=search">Office Copies</a></li>
-            <li><a href="uc">Enquiries</a></li>
-            <li><a href="uc">Image management</a></li>
-            <li><a href="uc">General Information</a></li>
-        </ul>
-    </div>
+    {% set side_nav_lc = 'active' %}
+    {% include 'includes/side_nav.html' %}
 
     <!-- Content -->
     <div class="col nine" style="min-width:800px;">
-        <div class="spacer_10"></div>
-        <h1 class="title_36">Land Charge</h1>
-        <div class="spacer_20"></div>
+        <div class="spacer-10"></div>
+        <h1 class="title-36">Land Charge</h1>
+        <div class="spacer-20"></div>
         <!-- Totals -->
         <div class="grid-row">
-            <div class="subservice_box no-margin">
-            <a class="no_link_style {{regn_selected}}"  href="/get_list?appn=lc_regn">
-                <div class="spacer_20"></div>
-                <p class="text_16_bold">Registrations</p>
-                <div class="spacer_30"></div>
+            <div class="subservice-box no-margin">
+            <a class="no-link-style {{regn_selected}}"  href="/get_list?appn=lc_regn">
+                <div class="spacer-20"></div>
+                <p class="text-16-bold">Registrations</p>
+                <div class="spacer-30"></div>
                 <div class="indicator" id="lc_regn">
                     {% if data['lc_regn'] < 10 %}
-                    <span class="indicator_middle">{{data['lc_regn']}}</span>
+                    <span class="indicator-middle">{{data['lc_regn']}}</span>
                     {% else %}
-                    <span class="indicator_middle_2">{{data['lc_regn']}}</span>
+                    <span class="indicator-middle-2">{{data['lc_regn']}}</span>
                     {% endif %}
                 </div>
             </a>
             </div>
 
-            <div class="subservice_box">
-                <a class="no_link_style {{amend_selected}}" href="/get_list?appn=lc_pn">
-                <div class="spacer_20"></div>
-                <p class="text_16_bold">Priority Notices</p>
-                <div class="spacer_30"></div>
+            <div class="subservice-box">
+                <a class="no-link-style {{pn_selected}}" href="/get_list?appn=lc_pn">
+                <div class="spacer-20"></div>
+                <p class="text-16-bold">Priority Notices</p>
+                <div class="spacer-30"></div>
                 <div class="indicator" id="lc_pn">
                     {% if data['lc_pn'] < 10 %}
-                    <span class="indicator_middle">{{data['lc_pn']}}</span>
+                    <span class="indicator-middle">{{data['lc_pn']}}</span>
                     {% else %}
-                    <span class="indicator_middle_2">{{data['lc_pn']}}</span>
+                    <span class="indicator-middle-2">{{data['lc_pn']}}</span>
                     {% endif %}
                 </div>
                 </a>
             </div>
 
-            <div class="subservice_box">
-                <a class="no_link_style  {{rect_selected}}" href="/get_list?appn=lc_rect">
-                    <div class="spacer_20"></div>
-                    <p class="text_16_bold">Rectifications</p>
-                    <div class="spacer_30"></div>
+            <div class="subservice-box">
+                <a class="no-link-style  {{rect_selected}}" href="/get_list?appn=lc_rect">
+                    <div class="spacer-20"></div>
+                    <p class="text-16-bold">Rectifications</p>
+                    <div class="spacer-30"></div>
                     <div class="indicator" id="lc_rect">
                         {% if data['lc_rect'] < 10 %}
-                        <span class="indicator_middle">{{data['lc_rect']}}</span>
+                        <span class="indicator-middle">{{data['lc_rect']}}</span>
                         {% else %}
-                        <span class="indicator_middle_2">{{data['lc_rect']}}</span>
+                        <span class="indicator-middle-2">{{data['lc_rect']}}</span>
                         {% endif %}
                     </div>
                 </a>
             </div>
 
-            <div class="subservice_box">
-                <a class="no_link_style {{with_selected}}" href="/get_list?appn=lc_renewal">
-                    <div class="spacer_20"></div>
-                    <p class="text_16_bold">Renewals</p>
-                    <div class="spacer_30"></div>
+            <div class="subservice-box">
+                <a class="no-link-style {{renewal_selected}}" href="/get_list?appn=lc_renewal">
+                    <div class="spacer-20"></div>
+                    <p class="text-16-bold">Renewals</p>
+                    <div class="spacer-30"></div>
                     <div class="indicator" id="lc_renewal">
                         {% if data['lc_renewal'] < 10 %}
-                        <span class="indicator_middle">{{data['lc_renewal']}}</span>
+                        <span class="indicator-middle">{{data['lc_renewal']}}</span>
                         {% else %}
-                        <span class="indicator_middle_2">{{data['lc_renewal']}}</span>
+                        <span class="indicator-middle-2">{{data['lc_renewal']}}</span>
                         {% endif %}
                     </div>
                 </a>
             </div>
 
-            <div class="subservice_box">
-                <a class="no_link_style {{stored_selected}}" href="/get_list?appn=lc_stored">
-                    <div class="spacer_20"></div>
-                    <p class="text_16_bold">Stored Applications</p>
-                    <div class="spacer_30"></div>
+            <div class="subservice-box">
+                <a class="no-link-style {{stored_selected}}" href="/get_list?appn=lc_stored">
+                    <div class="spacer-20"></div>
+                    <p class="text-16-bold">Stored</p>
+                    <div class="spacer-30"></div>
                     <div class="indicator" id="lc_stored">
                         {% if data['lc_stored'] < 10 %}
-                        <span class="indicator_middle">{{data['lc_stored']}}</span>
+                        <span class="indicator-middle">{{data['lc_stored']}}</span>
                         {% else %}
-                        <span class="indicator_middle_2">{{data['lc_stored']}}</span>
+                        <span class="indicator-middle-2">{{data['lc_stored']}}</span>
                         {% endif %}
                     </div>
                 </a>
@@ -197,15 +185,15 @@ function getTotals(){
         <!-- List of pending applications -->
         {% if worklist|length > 0 %}
         <div class="grid-row">
-            <div class="spacer_15"></div>
-            <h2 class="text_24_bold">{{page_title}} applications</h2>
-            <div class="spacer_15"></div>
-            <div style="margin-left:0px; float: left;  width: 75%;">
+            <div class="spacer-15"></div>
+            <h2 class="text-24-bold">{{page_title}} applications</h2>
+            <div class="spacer-15"></div>
+            <div class="col nine no-margin">
                 <table id="work-list" class="hover">
                     <thead>
                     <tr>
-                        <th class="table_text_black">Date and time received <a href="#"></a></th>
-                        <th class="table_text_black">Form type <a href="#"></a></th>
+                        <th class="table-text-black">Date and time received <a href="#"></a></th>
+                        <th class="table-text-black">Form type <a href="#"></a></th>
                     </tr>
                     </thead>
                     {% for n in worklist %}

@@ -1,0 +1,157 @@
+{% extends "/page_template/base.html" %}
+{% block page_specific_head %}
+<link href="/static/datatables/css/jquery.dataTables.css" rel="stylesheet" />
+<link href="/static/datatables/css/dataTables.responsive.css" rel="stylesheet" />
+<script type="text/javascript" src="/static/datatables/js/jquery.dataTables.js"></script>
+<script>
+ HOST = window.location.protocol + "//" + window.location.hostname;
+
+$(document).ready(function() {
+    $("#refresh").hide();
+    setInterval("getTotals()", 30000);
+    $('#work-list').DataTable({info: false, paging: false, searching: false});
+    $('#work-list tbody tr').click(function() {
+        var href = $(this).find("a").attr("href");
+        if(href) {
+            window.location = href;
+        }
+    });
+
+} );
+
+function getTotals(){
+
+    jQuery.ajax( {
+        url: HOST + ':5010/totals',
+        type: 'GET',
+        data: {},
+        success: function( data ) {
+            var search_full = document.getElementById('search_full').querySelector('span');
+            var search_bank = document.getElementById('search_bank').querySelector('span');
+
+            var numFullSearch = data.search_full;
+            var numBankSearch = data.search_bank;
+
+
+            search_full.className = numBankReg < 10 ? 'indicator-middle' : 'indicator-middle_2';
+            search_bank.className = numBankAmend < 10 ? 'indicator-middle' : 'indicator-middle_2';
+
+            search_full.textContent = numFullSearch;
+            search_bank.textContent = numBankSearch;
+
+        }
+    } );
+
+}
+
+</script>
+{% endblock %}
+
+{% block maincontent %}
+
+<input type="hidden" name="requested_list" value="{{requested_list}}"/>
+
+
+{% if requested_list == 'search_full' %}
+{% set page_title = 'Full search' %}
+{% set full_selected = 'selected' %}
+{% elif requested_list == 'search_bank' %}
+{% set page_title = 'Bankruptcy search' %}
+{% set bank_selected = 'selected' %}
+{% endif %}
+<div class="breadcrumb">
+    <ol>
+        <li><a href="/">Home</a></li>
+        {% if requested_list == "lc" %}
+            <li class="breadcrumb-no-arrow"><span>Search</span></li>
+        {% else %}
+            <li><a href="/get_list?appn=search">Search</a></li>
+            <li class="breadcrumb-no-arrow"><span>{{page_title}}</span></li>
+        {% endif %}
+    </ol>
+</div>
+
+<div class="spacer-5"></div>
+<div class="grid-row" >
+
+    <!-- Side Navigation -->
+    {% set side_nav_search = 'active' %}
+    {% include 'includes/side_nav.html' %}
+
+    <!-- Content -->
+    <div class="col nine" style="min-width:800px;">
+        <div class="spacer-10"></div>
+        <h1 class="title-36">Search</h1>
+        <div class="spacer-20"></div>
+        <!-- Totals -->
+        <div class="grid-row">
+            <div class="subservice-box no-margin">
+            <a class="no-link-style {{full_selected}}"  href="/get_list?appn=search_full">
+                <div class="spacer-20"></div>
+                <p class="text-16-bold">Full</p>
+                <div class="spacer-30"></div>
+                <div class="indicator" id="search_full">
+                    {% if data['search_full'] < 10 %}
+                    <span class="indicator-middle">{{data['search_full']}}</span>
+                    {% else %}
+                    <span class="indicator-middle-2">{{data['search_full']}}</span>
+                    {% endif %}
+                </div>
+            </a>
+            </div>
+
+            <div class="subservice-box">
+                <a class="no-link-style {{bank_selected}}" href="/get_list?appn=search_bank">
+                <div class="spacer-20"></div>
+                <p class="text-16-bold">Bankruptcy</p>
+                <div class="spacer-30"></div>
+                <div class="indicator" id="search_bank">
+                    {% if data['search_bank'] < 10 %}
+                    <span class="indicator-middle">{{data['search_bank']}}</span>
+                    {% else %}
+                    <span class="indicator-middle-2">{{data['search_bank']}}</span>
+                    {% endif %}
+                </div>
+                </a>
+            </div>
+        </div>
+
+        <!-- List of pending applications -->
+        {% if worklist|length > 0 %}
+        <div class="grid-row">
+            <div class="spacer-15"></div>
+            <h2 class="text-24-bold">{{page_title}} applications</h2>
+            <div class="spacer-15"></div>
+            <div class="col nine no-margin">
+                <table id="work-list" class="hover">
+                    <thead>
+                    <tr>
+                        <th class="table-text-black">Date and time received <a href="#"></a></th>
+                        <th class="table-text-black">Form type <a href="#"></a></th>
+                    </tr>
+                    </thead>
+                    {% for n in worklist %}
+                    <tbody>
+                    <tr>
+                        <td>{{n['date_received']}} {{n['time_received']}}</td>
+                        <td>
+                            <a id="appn_type{{loop.index}}" href="/application_start/{{requested_list}}/{{n['appn_id']}}/{{n['application_type']|replace(' ', '%20')}}">
+                                {% if n['application_type'] == 'WO(B)' %}
+                                WOB
+                                {% elif n['application_type'] == 'PA(B)'%}
+                                PAB
+                                {% else %}
+                                {{n['application_type']}}
+                                {% endif %}
+                            </a>
+                        </td>
+                    </tr>
+                    </tbody>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

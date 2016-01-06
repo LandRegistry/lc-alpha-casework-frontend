@@ -97,19 +97,9 @@ function getTotals(){
 <div class="grid-row" >
 
     <!-- Side Navigation -->
-    <div class="col three">
-        <ul id="side-nav">
-            <li><a href="/">Home</a></li>
-            <li><a class="active" href="/get_list?appn=bank">Bankruptcy Applications</a></li>
-            <li><a href="/get_list?appn=lc">Land Charge Applications</a></li>
-            <li><a href="/get_list?appn=search">Searches</a></li>
-            <li><a href="/get_list?appn=cancel">Cancellations</a></li>
-            <li><a href="/get_list?appn=search">Office Copies</a></li>
-            <li><a href="uc">Enquiries</a></li>
-            <li><a href="uc">Image management</a></li>
-            <li><a href="uc">General Information</a></li>
-        </ul>
-    </div>
+    <!-- Side Navigation -->
+    {% set side_nav_bank = 'active' %}
+    {% include 'includes/side_nav.html' %}
 
     <!-- Content -->
     <div id="content-with-side-nav" class="col nine" >
@@ -166,7 +156,7 @@ function getTotals(){
             <div class="subservice-box">
                 <a class="no-link-style {{with_selected}}" href="/get_list?appn=bank_with">
                     <div class="spacer-20"></div>
-                    <p class="text-16-bold">Withheld Address</p>
+                    <p class="text-16-bold">Withheld address</p>
                     <div class="spacer-30"></div>
                     <div class="indicator" id="bank_with">
                         {% if data['bank_with'] < 10 %}
@@ -181,7 +171,7 @@ function getTotals(){
             <div class="subservice-box">
                 <a class="no-link-style {{stored_selected}}" href="/get_list?appn=bank_stored">
                     <div class="spacer-20"></div>
-                    <p class="text-16-bold">Stored Applications</p>
+                    <p class="text-16-bold">Stored</p>
                     <div class="spacer-30"></div>
                     <div class="indicator" id="bank_stored">
                         {% if data['bank_stored'] < 10 %}
