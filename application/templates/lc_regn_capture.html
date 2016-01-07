@@ -8,6 +8,7 @@
                 <div class="spacer-10"><div>').insertBefore("#addcounty");
         n ++;
     };
+
 </script>
 
 {% endblock %}
@@ -77,8 +78,80 @@
 
         <div class="form">
             <label class="form-label" for="short_desc">Short description</label>
-            <textarea class="form-textarea-short" type="text" id="short_desc" name="short_desc"></textarea>
+            <textarea class="form-textarea-short" id="short_desc" name="short_desc"></textarea>
         </div>
+
+        <div class="spacer-30"></div>
+
+        <!-- ESTATE OWNER -->
+        <h2 class="text-24-bold">Estate owner details</h2>
+
+        <div class="spacer-10"></div>
+
+        <div class="form">
+            <p class="text-indent">Please select the type of estate owner from the list</p>
+            <select id="estateOwnerTypes" class="drop-down">
+                <option value="empty">--</option>
+                <option value="privateIndividual">Private individual</option>
+                <option value="limitedCompany">Limited company</option>
+                <option value="localAuthority">Local authority</option>
+                <option value="complexName">Complex name</option>
+                <option value="other">Other</option>
+            </select>
+        </div>
+
+        <div id="private">
+            <div class="form">
+                <label class="form-label" for="forename">Forename(s)</label>
+                <input class="form-textfield" type="text" id="forename" name="forename">
+            </div>
+
+            <div class="form">
+                <label class="form-label" for="surname">Surname</label>
+                <input class="form-textfield" type="text" id="surname" name="surname">
+            </div>
+        </div>
+
+        <div id="limited">
+            <div class="form">
+                <label class="form-label" for="company">Company name</label>
+                <input class="form-textfield" type="text" id="company" name="company">
+            </div>
+        </div>
+
+        <div id="local">
+            <div class="form">
+                <label class="form-label" for="loc_auth">Local authority full name</label>
+                <input class="form-textfield" type="text" id="loc_auth" name="loc_auth">
+            </div>
+            <div class="form">
+                <label class="form-label" for="loc_auth_area">Local authority area</label>
+                <p class="text-indent">This is the area the local authority affects</p>
+                <input class="form-textfield" type="text" id="loc_auth_area" name="loc_auth_area">
+            </div>
+        </div>
+
+        <div id="complex">
+            <div class="form">
+                <label class="form-label" for="complex_name">Complex name</label>
+                <input class="form-textfield" type="text" id="complex_name" name="complex_name">
+                <div class="spacer-5"></div>
+                <a href="#here" class="link-14-right">Look up complex name</a>
+            </div>
+        </div>
+
+        <div id="other">
+            <div class="form">
+                <label class="form-label">Name</label>
+                <input class="form-textfield" type="text">
+            </div>
+        </div>
+
+        <div class="form">
+            <label class="form-label">Trade, title or profession</label>
+            <input class="form-textfield" type="text">
+        </div>
+
 
 
 
@@ -102,6 +175,55 @@
 
     <!-- ///////////////////////////////// End of image tool ///////////////////////////////// -->
     </div>
+
+<script>
+        document.getElementById("estateOwnerTypes").onchange = function() {
+        var type = this.value;
+
+        if (type == "privateIndividual") {
+            document.getElementById("private").style.display = 'block';
+            document.getElementById("limited").style.display = 'none';
+            document.getElementById("local").style.display = 'none';
+            document.getElementById("complex").style.display = 'none';
+            document.getElementById("other").style.display = 'none';
+        }
+        if (type == "limitedCompany") {
+            document.getElementById("limited").style.display = 'block';
+            document.getElementById("private").style.display = 'none';
+            document.getElementById("local").style.display = 'none';
+            document.getElementById("complex").style.display = 'none';
+            document.getElementById("other").style.display = 'none';
+        }
+        if (type == "localAuthority") {
+            document.getElementById("local").style.display = 'block';
+            document.getElementById("private").style.display = 'none';
+            document.getElementById("limited").style.display = 'none';
+            document.getElementById("complex").style.display = 'none';
+            document.getElementById("other").style.display = 'none';
+        }
+        if (type == "complexName") {
+            document.getElementById("complex").style.display = 'block';
+            document.getElementById("private").style.display = 'none';
+            document.getElementById("limited").style.display = 'none';
+            document.getElementById("local").style.display = 'none';
+            document.getElementById("other").style.display = 'none';
+        }
+        if (type == "other") {
+            document.getElementById("other").style.display = 'block';
+            document.getElementById("private").style.display = 'none';
+            document.getElementById("limited").style.display = 'none';
+            document.getElementById("local").style.display = 'none';
+            document.getElementById("complex").style.display = 'none';
+        }
+    }
+
+    document.getElementById("private").style.display = 'none';
+    document.getElementById("limited").style.display = 'none';
+    document.getElementById("local").style.display = 'none';
+    document.getElementById("complex").style.display = 'none';
+    document.getElementById("other").style.display = 'none';
+</script>
+
 </div>
 
 {% endblock %}

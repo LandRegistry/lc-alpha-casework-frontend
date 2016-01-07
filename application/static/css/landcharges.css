@@ -203,3 +203,27 @@ body {
     -moz-box-sizing: border-box;
     box-sizing: border-box;
 }
+
+.text-indent {
+  color: #000000;
+  font-family: Roboto;
+  font-size: 14px;
+  font-weight: 400;
+  clear: both;
+  border-left: 4px solid #87C426;
+  padding: 8px 0 8px 15px;
+  margin: 0px 15px 10px 0;
+}
+
+.drop-down {
+  font-family: Roboto;
+  font-size: 16px;
+  font-weight: 400;
+  text-transform: none;
+  width: 50%;
+  height: 26px;
+  padding: 4px;
+  background-color: #fff;
+  border: 1px solid #363839;
+}
+
