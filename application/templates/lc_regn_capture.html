@@ -41,7 +41,7 @@
 <div class="grid-row">
     <div class="col four">
     <!-- ///////////////////////////////// data entry form ///////////////////////////////// -->
-    <form action="/process_banks_name" method="POST">
+    <form action="/land_charge_capture" method="POST">
 
         <!-- CHARGE -->
         <h2 class="text-24-bold">Class of charge</h2>
@@ -50,7 +50,25 @@
 
         <div class="form">
             <label class="form-label" for="class">Class and subclass</label>
-            <input class="form-textfield" type="text" id="class" name="class" autofocus>
+            <input class="form-textfield" type="text" id="class" name="class" list="charge" required aria-required="true" autofocus/>
+            <datalist id="charge">
+                <option value="A"></option>
+                <option value="B"></option>
+                <option value="C1"></option>
+                <option value="C2"></option>
+                <option value="C3"></option>
+                <option value="C4"></option>
+                <option value="D1"></option>
+                <option value="D2"></option>
+                <option value="D3"></option>
+                <option value="E"></option>
+                <option value="F"></option>
+                <option value="PA"></option>
+                <option value="WO"></option>
+                <option value="DA"></option>
+                <option value="ANN"></option>
+                <option value="LC"></option>
+            </datalist>
         </div>
 
         <div class="spacer-30"></div>
@@ -62,7 +80,7 @@
 
         <div class="form">
             <label class="form-label" for="county_0">County or unitary authority area</label>
-            <input class="form-textfield" type="text" id="county_0" name="county_0">
+            <input class="form-textfield" type="text" id="county_0" name="county_0" required aria-required="true"/>
         </div>
 
         <div class="spacer-10"></div>
@@ -73,12 +91,12 @@
 
         <div class="form">
             <label class="form-label" for="district">District</label>
-            <input class="form-textfield" type="text" id="district" name="district">
+            <input class="form-textfield" type="text" id="district" name="district" required aria-required="true"/>
         </div>
 
         <div class="form">
             <label class="form-label" for="short_desc">Short description</label>
-            <textarea class="form-textarea-short" id="short_desc" name="short_desc"></textarea>
+            <textarea class="form-textarea-short" id="short_desc" name="short_desc" required aria-required="true"></textarea>
         </div>
 
         <div class="spacer-30"></div>
@@ -91,7 +109,7 @@
         <div class="form">
             <p class="text-indent">Please select the type of estate owner from the list</p>
             <select id="estateOwnerTypes" class="drop-down">
-                <option value="empty">--</option>
+                <option value="empty"></option>
                 <option value="privateIndividual">Private individual</option>
                 <option value="limitedCompany">Limited company</option>
                 <option value="localAuthority">Local authority</option>
@@ -103,38 +121,38 @@
         <div id="private">
             <div class="form">
                 <label class="form-label" for="forename">Forename(s)</label>
-                <input class="form-textfield" type="text" id="forename" name="forename">
+                <input class="form-textfield" type="text" id="forename" name="forename"/>
             </div>
 
             <div class="form">
                 <label class="form-label" for="surname">Surname</label>
-                <input class="form-textfield" type="text" id="surname" name="surname">
+                <input class="form-textfield" type="text" id="surname" name="surname"/>
             </div>
         </div>
 
         <div id="limited">
             <div class="form">
                 <label class="form-label" for="company">Company name</label>
-                <input class="form-textfield" type="text" id="company" name="company">
+                <input class="form-textfield" type="text" id="company" name="company"/>
             </div>
         </div>
 
         <div id="local">
             <div class="form">
                 <label class="form-label" for="loc_auth">Local authority full name</label>
-                <input class="form-textfield" type="text" id="loc_auth" name="loc_auth">
+                <input class="form-textfield" type="text" id="loc_auth" name="loc_auth"/>
             </div>
             <div class="form">
                 <label class="form-label" for="loc_auth_area">Local authority area</label>
                 <p class="text-indent">This is the area the local authority affects</p>
-                <input class="form-textfield" type="text" id="loc_auth_area" name="loc_auth_area">
+                <input class="form-textfield" type="text" id="loc_auth_area" name="loc_auth_area"/>
             </div>
         </div>
 
         <div id="complex">
             <div class="form">
                 <label class="form-label" for="complex_name">Complex name</label>
-                <input class="form-textfield" type="text" id="complex_name" name="complex_name">
+                <input class="form-textfield" type="text" id="complex_name" name="complex_name"/>
                 <div class="spacer-5"></div>
                 <a href="#here" class="link-14-right">Look up complex name</a>
             </div>
@@ -142,27 +160,32 @@
 
         <div id="other">
             <div class="form">
-                <label class="form-label">Name</label>
-                <input class="form-textfield" type="text">
+                <label class="form-label" for="other_name">Name</label>
+                <input class="form-textfield" type="text" id="other_name" name="other_name"/>
             </div>
         </div>
 
         <div class="form">
-            <label class="form-label">Trade, title or profession</label>
-            <input class="form-textfield" type="text">
+            <label class="form-label" for="occupation">Trade, title or profession</label>
+            <input class="form-textfield" type="text" id="occupation" name="occupation"/>
         </div>
 
+        <!-- FURTHER INFO -->
+        <div class="spacer-30"></div>
 
+        <h2 class="text-24-bold">Additional information</h2>
 
+        <div class="spacer-10"></div>
 
+        <div class="form">
+            <textarea class="form-textarea-mid" id="addl_info" name="addl_info"></textarea>
+        </div>
 
+        <div class="spacer-30"></div>
 
-
-
-
-
-
-
+        <div>
+            <input id="continue" type="submit" value="Continue" class="form-button"/>
+        </div>
 
     </form>
     </div>
