@@ -752,8 +752,11 @@ def start_rectification():
 
 @app.route('/land_charge_capture', methods=['POST'])
 def land_charge_capture():
-    print('hello')
-
+    print('this is request.form...')
+    print(request.form)
+    print('this is session...')
+    print(session)
+    return get_list_of_applications("lc_regn", "")
 
 # ============== Common routes =====================
 
