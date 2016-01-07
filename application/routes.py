@@ -61,14 +61,14 @@ def get_list_of_applications(requested_worklist, error_msg):
             appn_list.append(application)
 
     app_totals = get_totals()
-    print("return to page " + return_page)
+    print("return error " + error_msg)
 
     if app.config['DEMONSTRATION_VIEW']:
         return render_template('sub_list_demo.html', worklist=appn_list, requested_list=requested_worklist,
-                               data=app_totals, error=error_msg)
+                               data=app_totals, error_msg=error_msg)
     else:
         return render_template(return_page, worklist=appn_list, requested_list=requested_worklist,
-                               data=app_totals, error=error_msg)
+                               data=app_totals, error_msg=error_msg)
 
 
 @app.route('/application_start/<application_type>/<appn_id>/<appn_type>', methods=["GET"])
@@ -78,7 +78,8 @@ def application_start(application_type, appn_id, appn_type):
 
     response = requests.get(url)
     if response.status_code == 404:
-        error_msg = "This application is being processed by another member of staff please select a different one"
+        error_msg = "This application is being processed by another member of staff, " \
+                    "please select a different application."
         return get_list_of_applications(application_type, error_msg)
 
     application_json = response.json()

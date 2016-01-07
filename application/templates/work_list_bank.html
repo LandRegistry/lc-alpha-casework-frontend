@@ -190,6 +190,9 @@ function getTotals(){
             <div class="spacer-15"></div>
             <h2 class="text-24-bold">{{page_title}} applications</h2>
             <div class="spacer-15"></div>
+            {% if error_msg|length > 0 %}
+            <p class="text-16-bold error">{{error_msg}}</p>
+            {% endif %}
             <div class="col nine no-margin">
                 <table id="work-list" class="hover">
                     <thead>
