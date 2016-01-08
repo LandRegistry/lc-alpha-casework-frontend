@@ -2,7 +2,13 @@
 {% block page_specific_head %}
 
 <script>
-    var n = 1;
+    if ({{curr_data.county|length}} > 0) {
+        var n = {{curr_data.county|length}};
+    }
+    else {
+        var n = 1;
+    }
+
     function countyClick(sender){
         jQuery('<input class="form-textfield" type="text" id="county_' +n+ '" name="county_' +n+ '"> \
                 <div class="spacer-10"><div>').insertBefore("#addcounty");
@@ -42,6 +48,11 @@
     <div class="col four">
     <!-- ///////////////////////////////// data entry form ///////////////////////////////// -->
     <form action="/land_charge_capture" method="POST">
+        {% if errors|length > 0 %}
+        <div class="error-text">
+            <h3>Information missing or incorrect. Please amend as applicable.</h3>
+        </div>
+        {% endif %}
 
         <!-- CHARGE -->
         <h2 class="text-24-bold">Class of charge</h2>
@@ -49,18 +60,23 @@
         <div class="spacer-10"></div>
 
         <div class="form">
-            <label class="form-label" for="class">Class and subclass</label>
-            <input class="form-textfield" type="text" id="class" name="class" list="charge" required aria-required="true" autofocus/>
+            {% if 'class' in errors %}
+                <label class="error-text form-label" for="class">X Class and subclass</label>
+            {% else %}
+                <label class="form-label" for="class">Class and subclass</label>
+            {% endif %}
+            <input class="form-textfield" type="text" id="class" name="class" list="charge"
+                   required aria-required="true" autofocus value="{{curr_data.class}}"/>
             <datalist id="charge">
                 <option value="A"></option>
                 <option value="B"></option>
-                <option value="C1"></option>
-                <option value="C2"></option>
-                <option value="C3"></option>
-                <option value="C4"></option>
-                <option value="D1"></option>
-                <option value="D2"></option>
-                <option value="D3"></option>
+                <option value="C(I)"></option>
+                <option value="C(II)"></option>
+                <option value="C(III)"></option>
+                <option value="C(IV)"></option>
+                <option value="D(I)"></option>
+                <option value="D(II)"></option>
+                <option value="D(III)"></option>
                 <option value="E"></option>
                 <option value="F"></option>
                 <option value="PA"></option>
@@ -79,24 +95,45 @@
         <div class="spacer-10"></div>
 
         <div class="form">
-            <label class="form-label" for="county_0">County or unitary authority area</label>
-            <input class="form-textfield" type="text" id="county_0" name="county_0" required aria-required="true"/>
+            {% if 'county' in errors %}
+                <label class="error-text form-label" for="county_0">X County or unitary authority area</label>
+            {% else %}
+                <label class="form-label" for="county_0">County or unitary authority area</label>
+            {% endif %}
+            {% if errors|length > 0 and curr_data.county|length > 0%}
+                {% for rows in curr_data.county %}
+                <input class="form-textfield" type="text" id="county_{{loop.index-1}}" name="county_{{loop.index-1}}"
+                       value="{{rows}}"/>
+                <div class="spacer-10"></div>
+                {% endfor %}
+            {% else %}
+                <input class="form-textfield" type="text" id="county_0" name="county_0"/>
+                <div class="spacer-10"></div>
+            {% endif %}
         </div>
-
-        <div class="spacer-10"></div>
 
         <div><a href="#here" onclick="countyClick(this)" class="link-16" id="addcounty">Add additional county or unitary authority</a></div>
 
         <div class="spacer-10"></div>
 
         <div class="form">
-            <label class="form-label" for="district">District</label>
-            <input class="form-textfield" type="text" id="district" name="district" required aria-required="true"/>
+            {% if 'district' in errors %}
+                <label class="error-text form-label" for="district">X District</label>
+            {% else %}
+                <label class="form-label" for="district">District</label>
+            {% endif %}
+            <input class="form-textfield" type="text" id="district" name="district"
+                   required aria-required="true" value="{{curr_data.district}}"/>
         </div>
 
         <div class="form">
-            <label class="form-label" for="short_desc">Short description</label>
-            <textarea class="form-textarea-short" id="short_desc" name="short_desc" required aria-required="true"></textarea>
+            {% if 'short_desc' in errors %}
+                <label class="error-text form-label" for="short_desc">X Short description</label>
+            {% else %}
+                <label class="form-label" for="short_desc">Short description</label>
+            {% endif %}
+            <textarea class="form-textarea-short" id="short_desc" name="short_desc"
+                      required aria-required="true">{{curr_data.short_description}}</textarea>
         </div>
 
         <div class="spacer-30"></div>
@@ -121,38 +158,38 @@
         <div id="private">
             <div class="form">
                 <label class="form-label" for="forename">Forename(s)</label>
-                <input class="form-textfield" type="text" id="forename" name="forename"/>
+                <input class="form-textfield" type="text" id="forename" name="forename" value="{{curr_data.estate_owner.private.forenames}}"/>
             </div>
 
             <div class="form">
                 <label class="form-label" for="surname">Surname</label>
-                <input class="form-textfield" type="text" id="surname" name="surname"/>
+                <input class="form-textfield" type="text" id="surname" name="surname" value="{{curr_data.estate_owner.private.surname}}"/>
             </div>
         </div>
 
         <div id="limited">
             <div class="form">
                 <label class="form-label" for="company">Company name</label>
-                <input class="form-textfield" type="text" id="company" name="company"/>
+                <input class="form-textfield" type="text" id="company" name="company" value="{{curr_data.estate_owner.company}}"/>
             </div>
         </div>
 
         <div id="local">
             <div class="form">
                 <label class="form-label" for="loc_auth">Local authority full name</label>
-                <input class="form-textfield" type="text" id="loc_auth" name="loc_auth"/>
+                <input class="form-textfield" type="text" id="loc_auth" name="loc_auth" value="{{curr_data.estate_owner.local.name}}"/>
             </div>
             <div class="form">
                 <label class="form-label" for="loc_auth_area">Local authority area</label>
                 <p class="text-indent">This is the area the local authority affects</p>
-                <input class="form-textfield" type="text" id="loc_auth_area" name="loc_auth_area"/>
+                <input class="form-textfield" type="text" id="loc_auth_area" name="loc_auth_area" value="{{curr_data.estate_owner.local.area}}"/>
             </div>
         </div>
 
         <div id="complex">
             <div class="form">
                 <label class="form-label" for="complex_name">Complex name</label>
-                <input class="form-textfield" type="text" id="complex_name" name="complex_name"/>
+                <input class="form-textfield" type="text" id="complex_name" name="complex_name" value="{{curr_data.estate_owner.complex}}"/>
                 <div class="spacer-5"></div>
                 <a href="#here" class="link-14-right">Look up complex name</a>
             </div>
@@ -161,13 +198,13 @@
         <div id="other">
             <div class="form">
                 <label class="form-label" for="other_name">Name</label>
-                <input class="form-textfield" type="text" id="other_name" name="other_name"/>
+                <input class="form-textfield" type="text" id="other_name" name="other_name" value="{{curr_data.estate_owner.other}}"/>
             </div>
         </div>
 
         <div class="form">
             <label class="form-label" for="occupation">Trade, title or profession</label>
-            <input class="form-textfield" type="text" id="occupation" name="occupation"/>
+            <input class="form-textfield" type="text" id="occupation" name="occupation" value="{{curr_data.occupation}}"/>
         </div>
 
         <!-- FURTHER INFO -->
@@ -178,7 +215,7 @@
         <div class="spacer-10"></div>
 
         <div class="form">
-            <textarea class="form-textarea-mid" id="addl_info" name="addl_info"></textarea>
+            <textarea class="form-textarea-mid" id="addl_info" name="addl_info">{{curr_data.additional_info}}</textarea>
         </div>
 
         <div class="spacer-30"></div>

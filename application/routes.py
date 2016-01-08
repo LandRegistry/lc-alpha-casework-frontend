@@ -4,6 +4,8 @@ import requests
 from datetime import datetime
 import logging
 import json
+from application.form_validation import validate_land_charge
+from application.land_charge import build_lc_inputs
 
 #
 # @app.errorhandler(Exception)
@@ -97,8 +99,6 @@ def application_start(application_type, appn_id, appn_type):
     else:
         template = page_required(application_type)
 
-    print('this is what we have so far', template, application_type)
-
     application_json['application_type'] = appn_type
 
     session.clear()
@@ -112,9 +112,12 @@ def application_start(application_type, appn_id, appn_type):
              "year_to": datetime.now().strftime('%Y')
              }
 
+    # land charge input data required for validation on lc_regn_capture.html
+    curr_data = build_lc_inputs({})
+
     return render_template(template, application_type=application_type, data=application_json,
                            images=images, application=application, years=years,
-                           current_page=0)
+                           current_page=0, errors=[], curr_data=curr_data)
 
 
 @app.route('/get_details', methods=["POST"])
@@ -740,11 +743,21 @@ def start_rectification():
 
 @app.route('/land_charge_capture', methods=['POST'])
 def land_charge_capture():
-    print('this is request.form...')
-    print(request.form)
-    print('this is session...')
     print(session)
-    return get_list_of_applications("lc_regn", "")
+    result = validate_land_charge(request.form)
+    print(result)
+    entered_fields = build_lc_inputs(request.form)
+    entered_fields['class'] = result['class']
+    entered_fields['estate_owner_ind'] = 'Private individual'
+    print('these are the entered fields', entered_fields)
+
+    if len(result['error']) == 0:
+        return get_list_of_applications("lc_regn", "")
+    else:
+        return render_template('lc_regn_capture.html', application_type=session['application_type'], data={},
+                               images=session['images'], application=session['application_dict'], years='',
+                               current_page=0, errors=result['error'], curr_data=entered_fields)
+
 
 # ============== Common routes =====================
 
