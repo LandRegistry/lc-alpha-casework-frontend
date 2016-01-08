@@ -17,6 +17,11 @@ from application.land_charge import build_lc_inputs
 
 @app.route('/', methods=["GET"])
 def index():
+    if 'worklist_id' in session:
+        url = app.config['CASEWORK_DB_URL'] + '/applications/' + session['worklist_id'] + '/lock'
+        requests.delete(url)
+        del(session['worklist_id'])
+
     data = get_totals()
     if app.config['DEMONSTRATION_VIEW']:
         return render_template('totals_demo.html', data=data)
@@ -26,6 +31,11 @@ def index():
 
 @app.route('/get_list', methods=["GET"])
 def get_list():
+    if 'worklist_id' in session:
+        url = app.config['CASEWORK_DB_URL'] + '/applications/' + session['worklist_id'] + '/lock'
+        requests.delete(url)
+        del(session['worklist_id'])
+
     return get_list_of_applications(request.args.get('appn'), "")
 
 
@@ -63,7 +73,6 @@ def get_list_of_applications(requested_worklist, error_msg):
             appn_list.append(application)
 
     app_totals = get_totals()
-    print("return error " + error_msg)
 
     if app.config['DEMONSTRATION_VIEW']:
         return render_template('sub_list_demo.html', worklist=appn_list, requested_list=requested_worklist,
@@ -76,13 +85,18 @@ def get_list_of_applications(requested_worklist, error_msg):
 @app.route('/application_start/<application_type>/<appn_id>/<appn_type>', methods=["GET"])
 def application_start(application_type, appn_id, appn_type):
 
+    # Lock application if not in session otherwise assume user has refreshed the browser after select an application
+    if 'worklist_id' not in session:
+        url = app.config['CASEWORK_DB_URL'] + '/applications/' + appn_id + '/lock'
+        response = requests.post(url)
+        if response.status_code == 404:
+            error_msg = "This application is being processed by another member of staff, " \
+                        "please select a different application."
+            return get_list_of_applications(application_type, error_msg)
+
     url = app.config['CASEWORK_DB_URL'] + '/applications/' + appn_id
 
     response = requests.get(url)
-    if response.status_code == 404:
-        error_msg = "This application is being processed by another member of staff, " \
-                    "please select a different application."
-        return get_list_of_applications(application_type, error_msg)
 
     application_json = response.json()
     document_id = application_json['application_data']['document_id']
