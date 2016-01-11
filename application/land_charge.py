@@ -1,8 +1,4 @@
 def build_lc_inputs(data):
-    print('this is the data entered', data)
-    if len(data) > 0:
-        print('can we get a handle on class of charge?', data['class'])
-    print('this is the length', len(data))
     if len(data) == 0:
         result = {'class': '', 'county': [], 'district': '', 'short_description': '', 'estate_owner_ind': '',
                   'estate_owner': {'private': {'forenames': '', 'surname': ''},

@@ -23,13 +23,11 @@ def convert_class(class_of_charge):
 
 
 def validate_land_charge(data):
-    print(data)
 
     curr_class = ''
     errors = []
     if data['class'] != '':
         curr_class = convert_class(data['class'])
-        print(curr_class)
         if curr_class not in valid_land_charge:
             errors.append('class')
     else:
@@ -50,7 +48,6 @@ def validate_land_charge(data):
     elif data['loc_auth'] != '' and data['loc_auth_area'] == '':
         errors.append('estate_owner')
 
-    print('this is class and errors', curr_class, errors)
     result = {'class': curr_class, 'error': errors}
     return result
 

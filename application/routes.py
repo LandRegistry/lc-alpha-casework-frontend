@@ -757,20 +757,44 @@ def start_rectification():
 
 @app.route('/land_charge_capture', methods=['POST'])
 def land_charge_capture():
-    print(session)
     result = validate_land_charge(request.form)
-    print(result)
     entered_fields = build_lc_inputs(request.form)
     entered_fields['class'] = result['class']
     entered_fields['estate_owner_ind'] = 'Private individual'
-    print('these are the entered fields', entered_fields)
 
     if len(result['error']) == 0:
-        return get_list_of_applications("lc_regn", "")
+        # return get_list_of_applications("lc_regn", "")
+        session['register_details'] = entered_fields
+        return redirect('/land_charge_verification', code=302, Response=None)
     else:
-        return render_template('lc_regn_capture.html', application_type=session['application_type'], data={},
-                               images=session['images'], application=session['application_dict'], years='',
+        return render_template('lc_regn_capture.html', application_type=session['application_type'],
+                               images=session['images'], application=session['application_dict'],
                                current_page=0, errors=result['error'], curr_data=entered_fields)
+
+
+@app.route('/land_charge_verification', methods=['GET'])
+def land_charge_verification():
+    return render_template('lc_regn_verify.html', application_type=session['application_type'], data={},
+                           images=session['images'], application=session['application_dict'],
+                           current_page=0)
+
+
+@app.route('/lc_verify_details', methods=['POST'])
+def lc_verify_details():
+    return redirect('/conveyancer_fee_info', code=302, Response=None)
+
+
+@app.route('/conveyancer_fee_info', methods=['GET'])
+def conveyancer_fee_info():
+    return render_template('conveyancer_fee.html', application_type=session['application_type'], data={},
+                           images=session['images'], application=session['application_dict'],
+                           current_page=0)
+
+
+@app.route('/lc_process_application', methods=['POST'])
+def lc_process_application():
+    print(session)
+    return get_list_of_applications("lc_regn", "")
 
 
 # ============== Common routes =====================
