@@ -5,7 +5,7 @@ from datetime import datetime
 import logging
 import json
 from application.form_validation import validate_land_charge
-from application.land_charge import build_lc_inputs
+from application.land_charge import build_lc_inputs, build_customer_fee_inputs, submit_lc_registration
 
 #
 # @app.errorhandler(Exception)
@@ -794,6 +794,8 @@ def conveyancer_fee_info():
 @app.route('/lc_process_application', methods=['POST'])
 def lc_process_application():
     print(session)
+    customer_fee_details = build_customer_fee_inputs(request.form)
+    submit_lc_registration(session('register_details', customer_fee_details))
     return get_list_of_applications("lc_regn", "")
 
 

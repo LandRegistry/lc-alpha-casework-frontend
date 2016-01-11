@@ -2,6 +2,8 @@
 {% block page_specific_head %}
 
 <script>
+    HOST = window.location.protocol + "//" + window.location.hostname;
+
     if ({{curr_data.county|length}} > 0) {
         var n = {{curr_data.county|length}};
     }
@@ -14,6 +16,43 @@
                 <div class="spacer-10"><div>').insertBefore("#addcounty");
         n ++;
     };
+
+    function getComplexName(obj){
+        var obj = document.getElementById('complex_name');
+        jQuery.ajax( {
+
+            /* url: '{{backend_uri}}/keyholders/' + obj.value, */
+            url: HOST + ':5006/complex_names/' + obj.value,
+
+            type: 'GET',
+            data: {},
+            success: function( data ) {
+                alert(JSON.stringify(data));
+                // jQuery('#complex_result').val(data);
+                jQuery.each(data, function(key, val) {
+                    var tr=jQuery('<tr></tr>');
+                    jQuery.each(val, function(k, v){
+                        jQuery('<td>'+v+'</td>').appendTo(tr)
+                    });
+                    jQuery('<td><input type="radio" id="comp_name_0" name="comp_selected" onclick="myFunction(this, data.name)"/></td>').appendTo(tr);
+                    // <td><input type='radio' id="comp_name_0" name ='comp_selected'
+                                                 //  onclick="myFunction(this,'{{data.name}}','{{data.number}}')"/></td>
+                    tr.appendTo('#complex_result');
+                });
+                // full_address = data.address.address_lines.join('\r\n') + '\r\n'+ data.address.postcode;
+                // jQuery('#customer_address').val(full_address);
+                // jQuery('#error_msg').html("");
+
+            },
+          /*  error: function( xhr, textStatus, errorThrown ) {
+                jQuery('#customer_name').val('');
+                full_address = '';
+                jQuery('#customer_address').val(full_address);
+                jQuery('#error_msg').html("Key Number not found");
+            } */
+        } );
+
+    }
 
 </script>
 
@@ -191,7 +230,10 @@
                 <label class="form-label" for="complex_name">Complex name</label>
                 <input class="form-textfield" type="text" id="complex_name" name="complex_name" value="{{curr_data.estate_owner.complex}}"/>
                 <div class="spacer-5"></div>
-                <a href="#here" class="link-14-right">Look up complex name</a>
+                <a href="#here" onclick="getComplexName();" class="link-14-right">Look up complex name</a>
+                <div>
+                    <table id="complex_result"></table>
+                </div>
             </div>
         </div>
 
@@ -283,7 +325,22 @@
     document.getElementById("limited").style.display = 'none';
     document.getElementById("local").style.display = 'none';
     document.getElementById("complex").style.display = 'none';
-    document.getElementById("other").style.display = 'none';
+    document.getElementById("other").style.display = 'none'
+
+    jQuery.ajax({
+        url: HOST + ':5006/counties',
+        type: 'GET',
+        counties: {},
+        success: function( counties ) {
+            alert(counties)
+        }
+    });
+
+    function myFunction(x,param1) {
+    var comp_name = document.getElementById("complex_name").value=param1
+    // var comp_number = document.getElementById("comp_number").value=param2;
+    };
+
 </script>
 
 </div>
