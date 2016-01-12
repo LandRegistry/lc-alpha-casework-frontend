@@ -27,22 +27,15 @@
             type: 'GET',
             data: {},
             success: function( data ) {
-                alert(JSON.stringify(data));
-                // jQuery('#complex_result').val(data);
-                jQuery.each(data, function(key, val) {
+                var name1;
+                var number1;
+                for ( var i = 0; i < data.length; i++) {
                     var tr=jQuery('<tr></tr>');
-                    jQuery.each(val, function(k, v){
-                        jQuery('<td>'+v+'</td>').appendTo(tr)
-                    });
-                    jQuery('<td><input type="radio" id="comp_name_0" name="comp_selected" onclick="myFunction(this, data.name)"/></td>').appendTo(tr);
-                    // <td><input type='radio' id="comp_name_0" name ='comp_selected'
-                                                 //  onclick="myFunction(this,'{{data.name}}','{{data.number}}')"/></td>
+                    jQuery('<td>'+data[i].name+'</td><td>'+data[i].number+'</td>').appendTo(tr);
+                    alert('<td><input type="radio" id="comp_name_'+i+'" name="comp_selected" onclick="javascript:alert(document.getElementById("complex_name").value='+data[i].name+');"/></td>');
+                    jQuery('<td><input type="radio" id="comp_name_'+i+'" name="comp_selected" onclick="javascript:alert(document.getElementById("complex_name").value='+data[i].name+');"/></td>').appendTo(tr);
                     tr.appendTo('#complex_result');
-                });
-                // full_address = data.address.address_lines.join('\r\n') + '\r\n'+ data.address.postcode;
-                // jQuery('#customer_address').val(full_address);
-                // jQuery('#error_msg').html("");
-
+                }
             },
           /*  error: function( xhr, textStatus, errorThrown ) {
                 jQuery('#customer_name').val('');
@@ -53,6 +46,29 @@
         } );
 
     }
+
+    function showfields() {
+            var type = document.getElementById("estateOwnerTypes").value;
+            alert(type);
+            document.getElementById("private").style.display = 'none';
+            document.getElementById("limited").style.display = 'none';
+            document.getElementById("local").style.display = 'none';
+            document.getElementById("complex").style.display = 'none';
+            document.getElementById("other").style.display = 'none'
+
+
+            if (type == "limitedCompany") {
+                document.getElementById("limited").style.display = 'block';
+            } else if (type == "localAuthority") {
+                document.getElementById("local").style.display = 'block';
+            }else if (type == "complexName") {
+                document.getElementById("complex").style.display = 'block';
+            } else if (type == "other") {
+                document.getElementById("other").style.display = 'block';
+            } else {
+                document.getElementById("private").style.display = 'block';
+            }
+        }
 
 </script>
 
@@ -104,7 +120,7 @@
             {% else %}
                 <label class="form-label" for="class">Class and subclass</label>
             {% endif %}
-            <input class="form-textfield" type="text" id="class" name="class" list="charge"
+           <input class="form-textfield" type="text" id="class" name="class" list="charge"
                    required aria-required="true" autofocus value="{{curr_data.class}}"/>
             <datalist id="charge">
                 <option value="A"></option>
@@ -184,8 +200,7 @@
 
         <div class="form">
             <p class="text-indent">Please select the type of estate owner from the list</p>
-            <select id="estateOwnerTypes" class="drop-down">
-                <option value="empty"></option>
+            <select id="estateOwnerTypes" onchange="javascript:showfields();" class="drop-down">
                 <option value="privateIndividual">Private individual</option>
                 <option value="limitedCompany">Limited company</option>
                 <option value="localAuthority">Local authority</option>
@@ -281,65 +296,24 @@
     </div>
 
 <script>
-        document.getElementById("estateOwnerTypes").onchange = function() {
-        var type = this.value;
 
-        if (type == "privateIndividual") {
-            document.getElementById("private").style.display = 'block';
-            document.getElementById("limited").style.display = 'none';
-            document.getElementById("local").style.display = 'none';
-            document.getElementById("complex").style.display = 'none';
-            document.getElementById("other").style.display = 'none';
-        }
-        if (type == "limitedCompany") {
-            document.getElementById("limited").style.display = 'block';
-            document.getElementById("private").style.display = 'none';
-            document.getElementById("local").style.display = 'none';
-            document.getElementById("complex").style.display = 'none';
-            document.getElementById("other").style.display = 'none';
-        }
-        if (type == "localAuthority") {
-            document.getElementById("local").style.display = 'block';
-            document.getElementById("private").style.display = 'none';
-            document.getElementById("limited").style.display = 'none';
-            document.getElementById("complex").style.display = 'none';
-            document.getElementById("other").style.display = 'none';
-        }
-        if (type == "complexName") {
-            document.getElementById("complex").style.display = 'block';
-            document.getElementById("private").style.display = 'none';
-            document.getElementById("limited").style.display = 'none';
-            document.getElementById("local").style.display = 'none';
-            document.getElementById("other").style.display = 'none';
-        }
-        if (type == "other") {
-            document.getElementById("other").style.display = 'block';
-            document.getElementById("private").style.display = 'none';
-            document.getElementById("limited").style.display = 'none';
-            document.getElementById("local").style.display = 'none';
-            document.getElementById("complex").style.display = 'none';
-        }
-    }
 
-    document.getElementById("private").style.display = 'none';
-    document.getElementById("limited").style.display = 'none';
-    document.getElementById("local").style.display = 'none';
-    document.getElementById("complex").style.display = 'none';
-    document.getElementById("other").style.display = 'none'
+    jQuery(document).ready(function(){
+        // var type = {{curr_data.estate_owner_ind}};
+        jQuery("#estateOwnerTypes").val("{{curr_data.estate_owner_ind}}");
+        showfields();
+    });
+
 
     jQuery.ajax({
         url: HOST + ':5006/counties',
         type: 'GET',
         counties: {},
         success: function( counties ) {
-            alert(counties)
+            // alert(counties)
         }
     });
 
-    function myFunction(x,param1) {
-    var comp_name = document.getElementById("complex_name").value=param1
-    // var comp_number = document.getElementById("comp_number").value=param2;
-    };
 
 </script>
 

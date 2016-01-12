@@ -760,7 +760,7 @@ def land_charge_capture():
     result = validate_land_charge(request.form)
     entered_fields = build_lc_inputs(request.form)
     entered_fields['class'] = result['class']
-    entered_fields['estate_owner_ind'] = 'Private individual'
+    entered_fields['estate_owner_ind'] = 'limitedCompany'
 
     if len(result['error']) == 0:
         # return get_list_of_applications("lc_regn", "")
