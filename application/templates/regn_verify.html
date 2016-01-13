@@ -48,19 +48,19 @@
                         <td width="45%"><span class="text-review-table-bold">Forename(s)</span></td>
                         <td width="50%">
                             <span class="text-review-table">
-                                {% for forename in data.debtor_name.forenames %}{{forename}} {% endfor %}
+                                {% for forename in data.debtor_names[0].forenames %}{{forename}} {% endfor %}
                             </span>
                         </td>
                     </tr>
                     <tr>
                         <td colspan="1"><span class="text-review-table-bold">Surname</span></td>
-                        <td colspan="2"><span class="text-review-table">{{data.debtor_name.surname}}</span></td>
+                        <td colspan="2"><span class="text-review-table">{{data.debtor_names[0].surname}}</span></td>
                     </tr>
 
                     <tr>
                         <td colspan="1" style="vertical-align: top;"><span class="text-review-table-bold">Also known as</span></td>
                         <td colspan="2"><span class="text-review-table">
-                        {% for name in data.debtor_alternative_name %}
+                        {% for name in data.debtor_names[1:] %}
 						    {% for forename in name.forenames %}
                                 {{forename}}
                             {% endfor %}
