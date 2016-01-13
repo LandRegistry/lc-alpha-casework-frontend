@@ -23,7 +23,6 @@ def convert_class(class_of_charge):
 
 
 def validate_land_charge(data):
-
     curr_class = ''
     errors = []
     if data['class'] != '':

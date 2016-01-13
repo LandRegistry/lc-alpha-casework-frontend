@@ -164,7 +164,7 @@
                 {% endfor %}
             {% else %}
                 <!--input class="form-textfield" type="text" id="county_0" name="county_0"/-->
-                <textarea class="form-textarea-short" id="county0" name="county0"></textarea>
+                <textarea class="form-textfield" id="county_0" name="county_0"></textarea>
                 <div class="spacer-10"></div>
             {% endif %}
         </div>
@@ -314,7 +314,7 @@
         type: 'GET',
         counties: {},
         success: function( counties ) {
-            jQuery("#county0").autocomplete({
+            jQuery("#county_0").autocomplete({
               source: function( request, response ) {
                 var matcher = new RegExp( "^" + jQuery.ui.autocomplete.escapeRegex( request.term ), "i" );
                 response( jQuery.grep( counties, function( item ){
