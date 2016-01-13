@@ -1,6 +1,9 @@
 {% extends "/page_template/base.html" %}
 {% block page_specific_head %}
 
+<link href="http://code.jquery.com/ui/1.10.2/themes/smoothness/jquery-ui.css" rel="Stylesheet"/>
+<script src="http://code.jquery.com/ui/1.10.2/jquery-ui.js" ></script>
+
 <script>
     HOST = window.location.protocol + "//" + window.location.hostname;
 
@@ -36,37 +39,35 @@
                     jQuery('<td><input type="radio" id="comp_name_'+i+'" name="comp_selected" onclick="javascript:alert(document.getElementById("complex_name").value='+data[i].name+');"/></td>').appendTo(tr);
                     tr.appendTo('#complex_result');
                 }
-            },
-          /*  error: function( xhr, textStatus, errorThrown ) {
-                jQuery('#customer_name').val('');
-                full_address = '';
-                jQuery('#customer_address').val(full_address);
-                jQuery('#error_msg').html("Key Number not found");
-            } */
+            }
         } );
 
     }
 
     function showfields() {
             var type = document.getElementById("estateOwnerTypes").value;
-            alert(type);
             document.getElementById("private").style.display = 'none';
             document.getElementById("limited").style.display = 'none';
             document.getElementById("local").style.display = 'none';
             document.getElementById("complex").style.display = 'none';
-            document.getElementById("other").style.display = 'none'
+            document.getElementById("other").style.display = 'none';
 
 
             if (type == "limitedCompany") {
                 document.getElementById("limited").style.display = 'block';
+                jQuery("#forename, #surname, #loc_auth, #loc_auth_area, #complex_name, #other_name").val('');
             } else if (type == "localAuthority") {
                 document.getElementById("local").style.display = 'block';
+                jQuery("#forename, #surname, #company, #complex_name, #other_name").val('');
             }else if (type == "complexName") {
                 document.getElementById("complex").style.display = 'block';
+                jQuery("#forename, #surname, #company, #loc_auth, #loc_auth_area, #other_name").val('');
             } else if (type == "other") {
                 document.getElementById("other").style.display = 'block';
+                jQuery("#forename, #surname, #company, #loc_auth, #loc_auth_area, #complex_name").val('');
             } else {
                 document.getElementById("private").style.display = 'block';
+                jQuery("#company, #loc_auth, #loc_auth_area, #complex_name, #other_name").val('');
             }
         }
 
@@ -162,7 +163,8 @@
                 <div class="spacer-10"></div>
                 {% endfor %}
             {% else %}
-                <input class="form-textfield" type="text" id="county_0" name="county_0"/>
+                <!--input class="form-textfield" type="text" id="county_0" name="county_0"/-->
+                <textarea class="form-textarea-short" id="county0" name="county0"></textarea>
                 <div class="spacer-10"></div>
             {% endif %}
         </div>
@@ -199,8 +201,12 @@
         <div class="spacer-10"></div>
 
         <div class="form">
+            {% if 'estate_owner' in errors %}
+            <label class="error-text">X Estate owner</label>
+            {% endif %}
+
             <p class="text-indent">Please select the type of estate owner from the list</p>
-            <select id="estateOwnerTypes" onchange="javascript:showfields();" class="drop-down">
+            <select name="estateOwnerTypes" id="estateOwnerTypes" onchange="javascript:showfields();" class="drop-down">
                 <option value="privateIndividual">Private individual</option>
                 <option value="limitedCompany">Limited company</option>
                 <option value="localAuthority">Local authority</option>
@@ -297,21 +303,28 @@
 
 <script>
 
-
     jQuery(document).ready(function(){
-        // var type = {{curr_data.estate_owner_ind}};
         jQuery("#estateOwnerTypes").val("{{curr_data.estate_owner_ind}}");
         showfields();
     });
 
-
+    var a = 0;
     jQuery.ajax({
         url: HOST + ':5006/counties',
         type: 'GET',
         counties: {},
         success: function( counties ) {
-            // alert(counties)
+            jQuery("#county0").autocomplete({
+              source: function( request, response ) {
+                var matcher = new RegExp( "^" + jQuery.ui.autocomplete.escapeRegex( request.term ), "i" );
+                response( jQuery.grep( counties, function( item ){
+                      return matcher.test( item );
+                    }) );
+                }
+
+            });
         }
+
     });
 
 

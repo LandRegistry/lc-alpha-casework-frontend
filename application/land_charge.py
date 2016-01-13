@@ -5,9 +5,11 @@ from datetime import datetime
 import logging
 import json
 
+
 def build_lc_inputs(data):
     if len(data) == 0:
-        result = {'class': '', 'county': [], 'district': '', 'short_description': '', 'estate_owner_ind': '',
+        result = {'class': '', 'county': [], 'district': '', 'short_description': '',
+                  'estate_owner_ind': 'privateIndividual',
                   'estate_owner': {'private': {'forenames': '', 'surname': ''},
                                    'company': '',
                                    'local': {'name': '', 'area': ''},
@@ -19,7 +21,7 @@ def build_lc_inputs(data):
         counties = extract_counties(data)
 
         result = {'class': data['class'], 'county': counties, 'district': data['district'],
-                  'short_description': data['short_desc'], 'estate_owner_ind': '',
+                  'short_description': data['short_desc'], 'estate_owner_ind': data['estateOwnerTypes'],
                   'estate_owner': {'private': {'forenames': data['forename'], 'surname': data['surname']},
                                    'company': data['company'],
                                    'local': {'name': data['loc_auth'], 'area': data['loc_auth_area']},
