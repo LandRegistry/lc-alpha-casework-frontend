@@ -9,7 +9,7 @@
 $(document).ready(function() {
     $("#refresh").hide();
     setInterval("getTotals()", 30000);
-    $('#work-list').DataTable({info: false, paging: false, searching: false});
+    $('#work-list').DataTable({info: false, paging: false, searching: false, ordering:false});
 
     // make table row clickable link to child href
     $('#work-list tbody tr').click(function() {
