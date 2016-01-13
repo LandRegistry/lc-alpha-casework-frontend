@@ -154,6 +154,10 @@ body {
 #work-list td {
     padding-left: 0px;
 }
+#work-list a {
+    color: #000000;
+    text-decoration:none;
+}
 
 .steps {
     color: #6f777b;

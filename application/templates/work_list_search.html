@@ -9,7 +9,7 @@
 $(document).ready(function() {
     $("#refresh").hide();
     setInterval("getTotals()", 30000);
-    $('#work-list').DataTable({info: false, paging: false, searching: false});
+    $('#work-list').DataTable({info: false, paging: false, searching: false, ordering:false});
     $('#work-list tbody tr').click(function() {
         var href = $(this).find("a").attr("href");
         if(href) {
@@ -135,17 +135,18 @@ function getTotals(){
                     </thead>
                     {% for n in worklist %}
                     <tbody>
-                    <tr>
+                    <tr id="row_{{loop.index}}">
                         <td>{{n['date_received']}} {{n['time_received']}}</td>
                         <td>
-                            <a id="appn_type{{loop.index}}" href="/application_start/{{requested_list}}/{{n['appn_id']}}/{{n['application_type']|replace(' ', '%20')}}">
-                                {% if n['application_type'] == 'WO(B)' %}
-                                WOB
-                                {% elif n['application_type'] == 'PA(B)'%}
-                                PAB
-                                {% else %}
-                                {{n['application_type']}}
-                                {% endif %}
+                            {% if n['application_type'] == 'WO(B)' %}
+                            WOB
+                            {% elif n['application_type'] == 'PA(B)'%}
+                            PAB
+                            {% else %}
+                            {{n['application_type']}}
+                            {% endif %}
+                            <a class="hide" id="appn_type{{loop.index}}" href="/application_start/{{requested_list}}/{{n['appn_id']}}/{{n['application_type']|replace(' ', '%20')}}">
+                                link required for clickable table row
                             </a>
                         </td>
                     </tr>

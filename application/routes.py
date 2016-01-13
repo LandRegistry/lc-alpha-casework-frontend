@@ -211,12 +211,7 @@ def retrieve_new_reg():
 # Registration routes
 @app.route('/process_banks_name', methods=["POST"])
 def process_banks_name():
-
-    name = {"debtor_name": {"forenames": [], "surname": ""},
-            "occupation": "",
-            "debtor_alternative_name": [],
-            "residence": [],
-            }
+    name = {"debtor_names": []}
 
     if 'comp_number' in request.form:
         comp_name = {"name": request.form['comp_name'], "number": int(request.form['comp_number'])}
@@ -225,14 +220,11 @@ def process_banks_name():
         comp_name = {"name": request.form['complex_name'], "number": int(request.form['complex_number'])}
         name['complex'] = comp_name
     else:
-        alt_name = {"forenames": [],
-                    "surname": ""
-                    }
+        name['debtor_names'].append({
+            'forenames': request.form['forename'].split(),
+            'surname': request.form['surname']
+        })
 
-        for i in request.form['forename'].split():
-            name['debtor_name']['forenames'].append(i)
-
-        name['debtor_name']['surname'] = request.form['surname']
         name['occupation'] = request.form['occupation']
 
         forename_var = "aliasforename"
@@ -247,14 +239,11 @@ def process_banks_name():
             except KeyError:
                 break
 
-            for i in alt_forenames.split():
-                alt_name['forenames'].append(i)
-
-            alt_name['surname'] = alt_surname
             if alt_forenames != '' and alt_surname != '':
-                name['debtor_alternative_name'].append(alt_name)
-
-            alt_name = {"forenames": [], "surname": ""}
+                name['debtor_names'].append({
+                    'forenames': alt_forenames.split(),
+                    'surname': alt_surname
+                })
             counter += 1
 
     name['application_type'] = session['application_dict']['application_type']
