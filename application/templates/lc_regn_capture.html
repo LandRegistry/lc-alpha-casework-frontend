@@ -15,9 +15,30 @@
     }
 
     function countyClick(sender){
-        jQuery('<input class="form-textfield" type="text" id="county_' +n+ '" name="county_' +n+ '"> \
+        var fldnam = "county_" + n;
+        //alert(myVariable);
+        jQuery('<input class="form-textfield" type="text" id="' + fldnam + '" name="' + fldnam+ '"> \
                 <div class="spacer-10"><div>').insertBefore("#addcounty");
         n ++;
+
+		jQuery.ajax({
+		'async': false,
+        url: HOST + ':5006/counties',
+        type: 'GET',
+        counties: {},
+        success: function( counties ) {
+            jQuery("#"+fldnam).autocomplete({
+              source: function( request, response ) {
+                var matcher = new RegExp( "^" + jQuery.ui.autocomplete.escapeRegex( request.term ), "i" );
+                response( jQuery.grep( counties, function( item ){
+                      return matcher.test( item );
+                    }) );
+                }
+
+                });
+            }
+
+        });
     };
 
     function getComplexName(obj){
@@ -163,8 +184,7 @@
                 <div class="spacer-10"></div>
                 {% endfor %}
             {% else %}
-                <!--input class="form-textfield" type="text" id="county_0" name="county_0"/-->
-                <textarea class="form-textfield" id="county_0" name="county_0"></textarea>
+                <input class="form-textfield" type="text" id="county_0" name="county_0"/>
                 <div class="spacer-10"></div>
             {% endif %}
         </div>
@@ -295,6 +315,7 @@
     <!-- ///////////////////////////////// end of data entry form ///////////////////////////////// -->
     <div class="col one"><p></p></div>
     <!-- /////////////////////////////////  Include image tool ///////////////////////////////// -->
+
     <div class="col seven">
     {% include 'includes/image_view_body.html' %}
 
