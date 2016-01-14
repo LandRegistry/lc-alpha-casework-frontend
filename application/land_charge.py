@@ -30,8 +30,6 @@ def build_lc_inputs(data):
                   'occupation': data['occupation'],
                   'additional_info': data['addl_info']}
 
-    print(result)
-
     return result
 
 
@@ -50,7 +48,6 @@ def extract_counties(data):
 
 
 def build_customer_fee_inputs(data):
-    print(data)
     customer_fee_details = {'key_number': '244095',
                             'customer_name': 'Mr Conveyancer',
                             'customer_address': '2 New Street',
@@ -59,19 +56,31 @@ def build_customer_fee_inputs(data):
     return customer_fee_details
 
 
-def submit_lc_registration(reg_data, cust_fee_data):
-    url = app.config['CASEWORK_DB_URL'] + '/applications/' + session['regn_no'] + '?action=amend'
+def submit_lc_registration(cust_fee_data):
+    application = session['application_dict']
+    application['application_ref'] = cust_fee_data['application_reference']
+    application['key_number'] = cust_fee_data['key_number']
+    today = datetime.now().strftime('%Y-%m-%d')
+    application['date'] = today
+    application['residence_withheld'] = False
+    application['date_of_birth'] = "1980-01-01"  # TODO: what are we doing about the DOB??
+    application['document_id'] = session['document_id']
+    session['register_details']['estate_owner']['estate_owner_ind'] = session['register_details']['estate_owner_ind']
+    application['lc_register_details'] = session['register_details']
+    application['lc_register_details']['complex'] = {"name": "king", "number": 1010101}
+    application['cust_fee_data'] = cust_fee_data
+
+    url = app.config['CASEWORK_DB_URL'] + '/applications/' + session['worklist_id'] + '?action=complete'
     headers = {'Content-Type': 'application/json'}
-    response = requests.put(url, json.dumps(application_dict), headers=headers)
+    response = requests.put(url, data=json.dumps(application), headers=headers)
     if response.status_code == 200:
         data = response.json()
         reg_list = []
         for item in data['new_registrations']:
             reg_list.append(item)
-
         session['regn_no'] = reg_list
-        delete_from_worklist(session['worklist_id'])
+        return redirect('/confirmation', code=302, Response=None)
     else:
-        err = response.status_code
-        logging.error(err)
-        return render_template('error.html', error_msg=err), 500
+        error = response.status_code
+        logging.error(error)
+        return render_template('error.html', error_msg=error), 500
