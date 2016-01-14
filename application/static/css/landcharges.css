@@ -192,7 +192,7 @@ body {
 
 .column-scan {
     float: left;
-    width: 50%;
+    width: 88%;
     padding: 0 15px;
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
@@ -201,7 +201,7 @@ body {
 
 .column-scan-small {
     float: left;
-    width: 8%;
+    width: 12%;
     padding: 0 0px;
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
