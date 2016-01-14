@@ -783,7 +783,8 @@ def conveyancer_fee_info():
 def lc_process_application():
     print(session)
     customer_fee_details = build_customer_fee_inputs(request.form)
-    submit_lc_registration(customer_fee_details)
+    status_code = submit_lc_registration(customer_fee_details)
+    print('status_code is ', status_code)
     return get_list_of_applications("lc_regn", "")
 
 
