@@ -29,9 +29,8 @@
 
     <!-- ///////////////////////////////// end of scanned page ///////////////////////////////// -->
 
-    <!-- ///////////////////////////////// thumbnails ///////////////////////////////// -->
-
-    <div class="column-scan-small">
+    <!-- ///////////////////// display thumbnails if greater than one page //////////////////////// -->
+    <div class="{% if images|length > 0 %} column-scan-small {% else %} hide {% endif %} ">
         <div class="spacer-30"></div>
         <div id="thumbnails">
             {% for image in images %}
