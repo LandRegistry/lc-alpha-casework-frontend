@@ -1,0 +1,132 @@
+<script>
+
+    if ({{curr_data.county|length}} > 0) {
+        var n = {{curr_data.county|length}};
+    }
+    else {
+        var n = 1;
+    }
+
+    function setupCountyAutocomplete(element) {
+        var a = 0;
+        var host = "{{config.CASEWORK_API_URL}}";
+        
+
+        jQuery.ajax({
+            url: host + '/counties',
+            type: 'GET',
+            counties: {},
+            success: function( counties ) {
+                jQuery(element).autocomplete({
+                  source: function( request, response ) {
+                    var matcher = new RegExp( "^" + jQuery.ui.autocomplete.escapeRegex( request.term ), "i" );
+                    response( jQuery.grep( counties, function( item ){
+                          return matcher.test( item );
+                        }) );
+                    }
+
+                });
+            }
+
+        });
+    }
+
+    
+    
+    
+    
+    
+    function countyClick(sender){
+        var fldnam = "county_" + n;
+        //alert(myVariable);
+        jQuery('<input class="form-textfield" type="text" id="' + fldnam + '" name="' + fldnam+ '"> \
+                <div class="spacer-10"><div>').insertBefore("#addcounty");
+        n ++;
+
+		jQuery.ajax({
+		'async': false,
+        url: '{{config.CASEWORK_API_URL}}/counties',
+        type: 'GET',
+        counties: {},
+        success: function( counties ) {
+            jQuery("#"+fldnam).autocomplete({
+              source: function( request, response ) {
+                var matcher = new RegExp( "^" + jQuery.ui.autocomplete.escapeRegex( request.term ), "i" );
+                response( jQuery.grep( counties, function( item ){
+                      return matcher.test( item );
+                    }) );
+                }
+
+                });
+            }
+
+        });
+    };
+
+    function getComplexName(){
+
+        var obj = document.getElementById('complex_name');
+        jQuery.ajax( {
+
+            url: '{{config.CASEWORK_API_URL}}/complex_names/' + obj.value,
+
+            type: 'GET',
+            data: {},
+            success: function( data ) {
+                var resultTable = $('<table id="name_results"></table');
+                for ( var i = 0; i < data.length; i++) {
+                    var name = data[i].name;
+                    var number = data[i].number;
+                    var row =$('<tr/>');
+                    var cells =  $('<td>'+ name +'</td><td>' + number + '</td><td>' +
+                    '<input type="radio" name="comp_name" onclick="updateComplexName(this)" value="'+ name +' - ' + number +'"/></td>');
+                    row.append(cells);
+                    resultTable.append(row);
+                }
+                jQuery('#complex_result').append(resultTable);
+            }
+        } );
+        $('body').addClass('stop-scrolling');
+    }
+
+    function updateComplexName(obj){
+        document.getElementById('complex_name').value = obj.value;
+
+        $(document.getElementById('complex_name')).keydown(function(e) {
+            e.preventDefault();
+            return false;
+        });
+    }
+
+    function showFields() {
+        var type = document.getElementById("estateOwnerTypes").value;
+        document.getElementById("private").style.display = 'none';
+        document.getElementById("limited").style.display = 'none';
+        document.getElementById("local").style.display = 'none';
+        document.getElementById("complex").style.display = 'none';
+        document.getElementById("other").style.display = 'none';
+
+
+        if (type == "limitedCompany") {
+            document.getElementById("limited").style.display = 'block';
+            jQuery("#forename, #surname, #loc_auth, #loc_auth_area, #complex_name, #other_name").val('');
+        } else if (type == "localAuthority") {
+            document.getElementById("local").style.display = 'block';
+            jQuery("#forename, #surname, #company, #complex_name, #other_name").val('');
+        }else if (type == "complexName") {
+            document.getElementById("complex").style.display = 'block';
+            jQuery("#forename, #surname, #company, #loc_auth, #loc_auth_area, #other_name").val('');
+        } else if (type == "other") {
+            document.getElementById("other").style.display = 'block';
+            jQuery("#forename, #surname, #company, #loc_auth, #loc_auth_area, #complex_name").val('');
+        } else {
+            document.getElementById("private").style.display = 'block';
+            jQuery("#company, #loc_auth, #loc_auth_area, #complex_name, #other_name").val('');
+        }
+    }
+    
+    
+    
+    
+    
+</script>

@@ -1,0 +1,34 @@
+<!-- CHARGE -->
+        <h2 class="text-24-bold">Class of charge</h2>
+
+        <div class="spacer-10"></div>
+
+        <div class="form">
+            {% if 'class' in errors %}
+                <label class="error-text form-label" for="class">X Class and subclass</label>
+            {% else %}
+                <label class="form-label" for="class">Class and subclass</label>
+            {% endif %}
+           <input class="form-textfield" type="text" id="class" name="class" list="charge"
+                   required aria-required="true" autofocus value="{{curr_data.class}}"/>
+            <datalist id="charge">
+                <option value="A"></option>
+                <option value="B"></option>
+                <option value="C(I)"></option>
+                <option value="C(II)"></option>
+                <option value="C(III)"></option>
+                <option value="C(IV)"></option>
+                <option value="D(I)"></option>
+                <option value="D(II)"></option>
+                <option value="D(III)"></option>
+                <option value="E"></option>
+                <option value="F"></option>
+                <option value="PA"></option>
+                <option value="WO"></option>
+                <option value="DA"></option>
+                <option value="ANN"></option>
+                <option value="LC"></option>
+            </datalist>
+        </div>
+
+        <div class="spacer-30"></div>

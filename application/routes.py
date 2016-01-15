@@ -18,7 +18,7 @@ from application.land_charge import build_lc_inputs, build_customer_fee_inputs, 
 @app.route('/', methods=["GET"])
 def index():
     if 'worklist_id' in session:
-        url = app.config['CASEWORK_DB_URL'] + '/applications/' + session['worklist_id'] + '/lock'
+        url = app.config['CASEWORK_API_URL'] + '/applications/' + session['worklist_id'] + '/lock'
         requests.delete(url)
         del(session['worklist_id'])
 
@@ -32,7 +32,7 @@ def index():
 @app.route('/get_list', methods=["GET"])
 def get_list():
     if 'worklist_id' in session:
-        url = app.config['CASEWORK_DB_URL'] + '/applications/' + session['worklist_id'] + '/lock'
+        url = app.config['CASEWORK_API_URL'] + '/applications/' + session['worklist_id'] + '/lock'
         requests.delete(url)
         del(session['worklist_id'])
 
@@ -40,7 +40,7 @@ def get_list():
 
 
 def get_list_of_applications(requested_worklist, error_msg):
-    url = app.config['CASEWORK_DB_URL'] + '/applications?type=' + requested_worklist
+    url = app.config['CASEWORK_API_URL'] + '/applications?type=' + requested_worklist
     response = requests.get(url)
     work_list_json = response.json()
     return_page = ''
@@ -87,25 +87,25 @@ def application_start(application_type, appn_id, appn_type):
 
     # Lock application if not in session otherwise assume user has refreshed the browser after select an application
     if 'worklist_id' not in session:
-        url = app.config['CASEWORK_DB_URL'] + '/applications/' + appn_id + '/lock'
+        url = app.config['CASEWORK_API_URL'] + '/applications/' + appn_id + '/lock'
         response = requests.post(url)
         if response.status_code == 404:
             error_msg = "This application is being processed by another member of staff, " \
                         "please select a different application."
             return get_list_of_applications(application_type, error_msg)
 
-    url = app.config['CASEWORK_DB_URL'] + '/applications/' + appn_id
+    url = app.config['CASEWORK_API_URL'] + '/applications/' + appn_id
 
     response = requests.get(url)
 
     application_json = response.json()
     document_id = application_json['application_data']['document_id']
-    doc_response = requests.get(app.config["CASEWORK_DB_URL"] + "/forms/" + str(document_id))
+    doc_response = requests.get(app.config["CASEWORK_API_URL"] + "/forms/" + str(document_id))
 
     images = []
     image_data = doc_response.json()
     for page in image_data['images']:
-        url = app.config["CASEWORK_DB_URL"] + "/forms/" + str(document_id) + '/' + str(page)
+        url = app.config["CASEWORK_API_URL"] + "/forms/" + str(document_id) + '/' + str(page)
         images.append(url)
 
     if appn_type == "Full Search":
@@ -351,7 +351,7 @@ def process_registration():
     application['date_of_birth'] = "1980-01-01"  # TODO: what are we doing about the DOB??
     application["document_id"] = session['document_id']
 
-    url = app.config['CASEWORK_DB_URL'] + '/applications/' + session['worklist_id'] + '?action=complete'
+    url = app.config['CASEWORK_API_URL'] + '/applications/' + session['worklist_id'] + '?action=complete'
     headers = {'Content-Type': 'application/json'}
     response = requests.put(url, data=json.dumps(application), headers=headers)
     if response.status_code == 200:
@@ -545,7 +545,7 @@ def submit_amendment():
     application_dict['regn_no'] = session['regn_no']
     application_dict["document_id"] = session['document_id']
 
-    url = app.config['CASEWORK_DB_URL'] + '/applications/' + session['regn_no'] + '?action=amend'
+    url = app.config['CASEWORK_API_URL'] + '/applications/' + session['regn_no'] + '?action=amend'
     headers = {'Content-Type': 'application/json'}
     response = requests.put(url, json.dumps(application_dict), headers=headers)
     if response.status_code == 200:
@@ -651,7 +651,7 @@ def process_search_name(search_type):
 @app.route('/search_counties', methods=['GET'])
 def search_counties():
     return render_template('search_counties.html', images=session['images'], application=session['application_dict'],
-                           application_type=session['application_type'], current_page=0, backend_uri=app.config['CASEWORK_DB_URL'])
+                           application_type=session['application_type'], current_page=0, backend_uri=app.config['CASEWORK_API_URL'])
 
 
 @app.route('/process_search_county', methods=['POST'])
@@ -671,7 +671,7 @@ def process_search_county():
 @app.route('/search_customer', methods=['GET'])
 def search_customer():
     return render_template('search_customer.html', images=session['images'], application=session['application_dict'],
-                           application_type=session['application_type'], current_page=0, backend_uri=app.config['CASEWORK_DB_URL'])
+                           application_type=session['application_type'], current_page=0, backend_uri=app.config['CASEWORK_API_URL'])
 
 
 @app.route('/submit_search', methods=['POST'])
@@ -863,7 +863,7 @@ def get_totals():
     search_full, search_bank, = (0,) * 2
     unknown = 0
 
-    url = app.config['CASEWORK_DB_URL'] + '/applications'
+    url = app.config['CASEWORK_API_URL'] + '/applications'
     response = requests.get(url)
     if response.status_code == 200:
         full_list = response.json()
@@ -919,7 +919,9 @@ def page_required(appn_type, sub_type = ''):
     if appn_type == 'lc_regn':
         page = {
             'K1': 'k1.html',
-            'K2': 'k2.html'
+            'K2': 'k2.html',
+            'K3': 'k3.html',
+            'K4': 'k4.html',
         }
         return page[sub_type]
 
@@ -936,7 +938,7 @@ def page_required(appn_type, sub_type = ''):
 
 # TODO: renamed as 'complete', move to back-end?
 def delete_from_worklist(application_id):
-    url = app.config['CASEWORK_DB_URL'] + '/applications/' + application_id
+    url = app.config['CASEWORK_API_URL'] + '/applications/' + application_id
     response = requests.delete(url)
     if response.status_code != 204:
         err = 'Failed to delete application ' + application_id + ' from the worklist. Error code:' \

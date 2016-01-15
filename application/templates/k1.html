@@ -5,141 +5,13 @@
 <script src="http://code.jquery.com/ui/1.10.2/jquery-ui.js" ></script>
 <script src="/static/js/jquery.modal.js"></script>
 <link href="/static/css/jquery.modal.css" rel="stylesheet"/>
-<script>
-    HOST = window.location.protocol + "//" + window.location.hostname;
 
-    if ({{curr_data.county|length}} > 0) {
-        var n = {{curr_data.county|length}};
-    }
-    else {
-        var n = 1;
-    }
-
-    function countyClick(sender){
-        var fldnam = "county_" + n;
-        //alert(myVariable);
-        jQuery('<input class="form-textfield" type="text" id="' + fldnam + '" name="' + fldnam+ '"> \
-                <div class="spacer-10"><div>').insertBefore("#addcounty");
-        n ++;
-
-		jQuery.ajax({
-		'async': false,
-        url: HOST + ':5006/counties',
-        type: 'GET',
-        counties: {},
-        success: function( counties ) {
-            jQuery("#"+fldnam).autocomplete({
-              source: function( request, response ) {
-                var matcher = new RegExp( "^" + jQuery.ui.autocomplete.escapeRegex( request.term ), "i" );
-                response( jQuery.grep( counties, function( item ){
-                      return matcher.test( item );
-                    }) );
-                }
-
-                });
-            }
-
-        });
-    };
-
-    function getComplexName(){
-
-        var obj = document.getElementById('complex_name');
-        jQuery.ajax( {
-
-            url: HOST + ':5006/complex_names/' + obj.value,
-
-            type: 'GET',
-            data: {},
-            success: function( data ) {
-                var resultTable = $('<table id="name_results"></table');
-                for ( var i = 0; i < data.length; i++) {
-                    var name = data[i].name;
-                    var number = data[i].number;
-                    var row =$('<tr/>');
-                    var cells =  $('<td>'+ name +'</td><td>' + number + '</td><td>' +
-                    '<input type="radio" name="comp_name" onclick="updateComplexName(this)" value="'+ name +' - ' + number +'"/></td>');
-                    row.append(cells);
-                    resultTable.append(row);
-                }
-                jQuery('#complex_result').append(resultTable);
-            }
-        } );
-        $('body').addClass('stop-scrolling');
-    }
-
-    function updateComplexName(obj){
-        document.getElementById('complex_name').value = obj.value;
-
-        $(document.getElementById('complex_name')).keydown(function(e) {
-            e.preventDefault();
-            return false;
-        });
-    }
-
-    function showFields() {
-            var type = document.getElementById("estateOwnerTypes").value;
-            document.getElementById("private").style.display = 'none';
-            document.getElementById("limited").style.display = 'none';
-            document.getElementById("local").style.display = 'none';
-            document.getElementById("complex").style.display = 'none';
-            document.getElementById("other").style.display = 'none';
-
-
-            if (type == "limitedCompany") {
-                document.getElementById("limited").style.display = 'block';
-                jQuery("#forename, #surname, #loc_auth, #loc_auth_area, #complex_name, #other_name").val('');
-            } else if (type == "localAuthority") {
-                document.getElementById("local").style.display = 'block';
-                jQuery("#forename, #surname, #company, #complex_name, #other_name").val('');
-            }else if (type == "complexName") {
-                document.getElementById("complex").style.display = 'block';
-                jQuery("#forename, #surname, #company, #loc_auth, #loc_auth_area, #other_name").val('');
-            } else if (type == "other") {
-                document.getElementById("other").style.display = 'block';
-                jQuery("#forename, #surname, #company, #loc_auth, #loc_auth_area, #complex_name").val('');
-            } else {
-                document.getElementById("private").style.display = 'block';
-                jQuery("#company, #loc_auth, #loc_auth_area, #complex_name, #other_name").val('');
-            }
-        }
-
-</script>
-
-<style>
-    .stop-scrolling {
-    height: 100%;
-    overflow: hidden;
-    }
-
-</style>
-
+{% include 'includes/lc_regn_js.html' %}
 {% endblock %}
 
 {% block maincontent %}
 
-<div class="breadcrumb">
-    <ol>
-        <li><a class="breadcrumb_links" href="/">Home</a></li>
-        <li><a class="breadcrumb_links" href="/get_list?appn=lc">Land Charge</a></li>
-        <li><a class="breadcrumb_links" href="/get_list?appn=lc_regn">Registration</a></li>
-        <li class="breadcrumb-no-arrow"><span>Registration details</span></li>
-    </ol>
-</div>
-<div class="spacer-10"></div>
-
-<h1 class="title-36">Land charge registration</h1>
-
-<div class="spacer-5"></div>
-
-<div class="text-16-gray">
-    <span class="text-16-bold">1. Input details</span>
-    &nbsp;&nbsp;
-    2. Check details
-    &nbsp;&nbsp;
-    3. Conveyancer and fees
-</div>
-<div class="spacer-30"></div>
+{% include 'includes/lc_nav_title.html' %}
 
 <div class="grid-row">
     <div class="col four">
@@ -151,40 +23,7 @@
         </div>
         {% endif %}
 
-        <!-- CHARGE -->
-        <h2 class="text-24-bold">Class of charge</h2>
-
-        <div class="spacer-10"></div>
-
-        <div class="form">
-            {% if 'class' in errors %}
-                <label class="error-text form-label" for="class">X Class and subclass</label>
-            {% else %}
-                <label class="form-label" for="class">Class and subclass</label>
-            {% endif %}
-           <input class="form-textfield" type="text" id="class" name="class" list="charge"
-                   required aria-required="true" autofocus value="{{curr_data.class}}"/>
-            <datalist id="charge">
-                <option value="A"></option>
-                <option value="B"></option>
-                <option value="C(I)"></option>
-                <option value="C(II)"></option>
-                <option value="C(III)"></option>
-                <option value="C(IV)"></option>
-                <option value="D(I)"></option>
-                <option value="D(II)"></option>
-                <option value="D(III)"></option>
-                <option value="E"></option>
-                <option value="F"></option>
-                <option value="PA"></option>
-                <option value="WO"></option>
-                <option value="DA"></option>
-                <option value="ANN"></option>
-                <option value="LC"></option>
-            </datalist>
-        </div>
-
-        <div class="spacer-30"></div>
+        {% include 'includes/class_of_charge.html' %}
 
         <!-- LAND INFO -->
         <h2 class="text-24-bold">Particulars of land affected</h2>
@@ -235,102 +74,9 @@
 
         <div class="spacer-30"></div>
 
-        <!-- ESTATE OWNER -->
-        <h2 class="text-24-bold">Estate owner details</h2>
+        {% include 'includes/estate_owner.html' %}
 
-        <div class="spacer-10"></div>
-
-        <div class="form">
-            {% if 'estate_owner' in errors %}
-            <label class="error-text">X Estate owner</label>
-            {% endif %}
-
-            <p class="text-indent">Please select the type of estate owner from the list</p>
-            <select name="estateOwnerTypes" id="estateOwnerTypes" onchange="javascript:showFields();" class="drop-down">
-                <option value="privateIndividual">Private individual</option>
-                <option value="limitedCompany">Limited company</option>
-                <option value="localAuthority">Local authority</option>
-                <option value="complexName">Complex name</option>
-                <option value="other">Other</option>
-            </select>
-        </div>
-
-        <div id="private">
-            <div class="form">
-                <label class="form-label" for="forename">Forename(s)</label>
-                <input class="form-textfield" type="text" id="forename" name="forename" value="{{curr_data.estate_owner.private.forenames}}"/>
-            </div>
-
-            <div class="form">
-                <label class="form-label" for="surname">Surname</label>
-                <input class="form-textfield" type="text" id="surname" name="surname" value="{{curr_data.estate_owner.private.surname}}"/>
-            </div>
-        </div>
-
-        <div id="limited">
-            <div class="form">
-                <label class="form-label" for="company">Company name</label>
-                <input class="form-textfield" type="text" id="company" name="company" value="{{curr_data.estate_owner.company}}"/>
-            </div>
-        </div>
-
-        <div id="local">
-            <div class="form">
-                <label class="form-label" for="loc_auth">Local authority full name</label>
-                <input class="form-textfield" type="text" id="loc_auth" name="loc_auth" value="{{curr_data.estate_owner.local.name}}"/>
-            </div>
-            <div class="form">
-                <label class="form-label" for="loc_auth_area">Local authority area</label>
-                <p class="text-indent">This is the area the local authority affects</p>
-                <input class="form-textfield" type="text" id="loc_auth_area" name="loc_auth_area" value="{{curr_data.estate_owner.local.area}}"/>
-            </div>
-        </div>
-        <div id="complex">
-            <div class="form">
-                <label class="form-label" for="complex_name_field">Complex name</label>
-                <input class="form-textfield" type="text" id="complex_name_field" value="{{curr_data.estate_owner.complex}}"/>
-                <div class="spacer-5"></div>
-                <a href="#complex_result_modal"  onclick="getComplexName();" rel="modal:open" class="link-14-right">Look up complex name</a>
-                <div id="complex_result_modal" class="col six hide" style="max-height:600px; overflow-y:auto;">
-                    <h2 class="text-24-bold">Complex name result</h2>
-                    <div class="spacer-15"></div>
-                    <p class="text-16">Please select a complex name from the list</p>
-                    <div class="spacer-15"></div>
-                    <div id="complex_result"></div>
-                    <div class="spacer-15"></div>
-                    <div style="float:right">
-                        <a id="close" type="button" onclick="javascript:$('body').removeClass('stop-scrolling');" class="form-button" rel="modal:close">Close</a>
-                    </div>
-                </div>
-                <div class="spacer-15"></div>
-                <input class="form-textfield" type="text" disabled id="complex_name" value=""/>
-            </div>
-        </div>
-
-        <div id="other">
-            <div class="form">
-                <label class="form-label" for="other_name">Name</label>
-                <input class="form-textfield" type="text" id="other_name" name="other_name" value="{{curr_data.estate_owner.other}}"/>
-            </div>
-        </div>
-
-        <div class="form">
-            <label class="form-label" for="occupation">Trade, title or profession</label>
-            <input class="form-textfield" type="text" id="occupation" name="occupation" value="{{curr_data.occupation}}"/>
-        </div>
-
-        <!-- FURTHER INFO -->
-        <div class="spacer-30"></div>
-
-        <h2 class="text-24-bold">Additional information</h2>
-
-        <div class="spacer-10"></div>
-
-        <div class="form">
-            <textarea class="form-textarea-mid" id="addl_info" name="addl_info">{{curr_data.additional_info}}</textarea>
-        </div>
-
-        <div class="spacer-30"></div>
+        {% include 'includes/additional_info.html' %}
 
         <div>
             <input id="continue" type="submit" value="Continue" class="form-button"/>
@@ -355,25 +101,7 @@
     jQuery(document).ready(function(){
         jQuery("#estateOwnerTypes").val("{{curr_data.estate_owner_ind}}");
         showFields();
-    });
-
-    var a = 0;
-    jQuery.ajax({
-        url: HOST + ':5006/counties',
-        type: 'GET',
-        counties: {},
-        success: function( counties ) {
-            jQuery("#county_0").autocomplete({
-              source: function( request, response ) {
-                var matcher = new RegExp( "^" + jQuery.ui.autocomplete.escapeRegex( request.term ), "i" );
-                response( jQuery.grep( counties, function( item ){
-                      return matcher.test( item );
-                    }) );
-                }
-
-            });
-        }
-
+        setupCountyAutocomplete("#county_0");
     });
 
 
