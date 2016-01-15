@@ -7,33 +7,53 @@ import json
 
 
 def build_lc_inputs(data):
-    if len(data) == 0:
-        result = {'class': '', 'county': [], 'district': '', 'short_description': '',
-                  'estate_owner_ind': 'privateIndividual',
-                  'estate_owner': {'private': {'forenames': '', 'surname': ''},
-                                   'company': '',
-                                   'local': {'name': '', 'area': ''},
-                                   'complex': {"name": '', "number": ''},
-                                   'other': ''},
-                  'occupation': '',
-                  'additional_info': ''}
-    else:
-        counties = extract_counties(data)
+    print('building inputs')
+    type_of_form = session['application_dict']['form']
+    result = {'class': '', 'county': [], 'district': '', 'short_description': '',
+              'estate_owner_ind': 'privateIndividual',
+              'estate_owner': {'private': {'forenames': '', 'surname': ''},
+                               'company': '',
+                               'local': {'name': '', 'area': ''},
+                               'complex': {"name": '', "number": ''},
+                               'other': ''},
+              'occupation': '',
+              'additional_info': ''}
 
-        result = {'class': data['class'], 'county': counties, 'district': data['district'],
-                  'short_description': data['short_desc'], 'estate_owner_ind': data['estateOwnerTypes'],
-                  'estate_owner': {'private': {'forenames': data['forename'], 'surname': data['surname']},
-                                   'company': data['company'],
-                                   'local': {'name': data['loc_auth'], 'area': data['loc_auth_area']},
-                                   'complex': {"name": data['complex_name'], "number": data['complex_number']},
-                                   'other': data['other_name']},
-                  'occupation': data['occupation'],
-                  'additional_info': data['addl_info']}
+    if len(data) > 0:
+        if type_of_form == 'K1':
+            result['class'] = data['class']
+            result['district'] = data['district']
+            result['short_description'] = data['short_desc']
+            result['estate_owner_ind'] = data['estateOwnerTypes']
+            result['occupation'] = data['occupation']
+            result['additional_info'] = data['addl_info']
+
+            add_counties(result, data)
+
+            add_estate_owner_details(result, data)
+
+    print(type_of_form)
+    print(result)
 
     return result
 
 
-def extract_counties(data):
+def add_estate_owner_details(result, data):
+    result['estate_owner']['private']['forenames'] = data['forename']
+    result['estate_owner']['private']['surname'] = data['surname']
+
+    result['estate_owner']['company'] = data['company']
+    result['estate_owner']['local']['name'] = data['loc_auth']
+    result['estate_owner']['local']['area'] = data['loc_auth_area']
+    print(data)
+    result['estate_owner']['complex']['name'] = data['complex_name']
+
+    result['estate_owner']['complex']['number'] = data['complex_number']
+
+    result['estate_owner']['other'] = data['other_name']
+
+
+def add_counties(result, data):
     counter = 0
     counties = []
     while True:
@@ -44,7 +64,7 @@ def extract_counties(data):
             break
         counter += 1
 
-    return counties
+    result['county'] = counties
 
 
 def build_customer_fee_inputs(data):
@@ -71,7 +91,7 @@ def submit_lc_registration(cust_fee_data):
     application['lc_register_details']['complex'] = {"name": "", "number": 0}
     application['cust_fee_data'] = cust_fee_data
 
-    url = app.config['CASEWORK_DB_URL'] + '/applications/' + session['worklist_id'] + '?action=complete'
+    url = app.config['CASEWORK_API_URL'] + '/applications/' + session['worklist_id'] + '?action=complete'
     headers = {'Content-Type': 'application/json'}
     response = requests.put(url, data=json.dumps(application), headers=headers)
     if response.status_code == 200:

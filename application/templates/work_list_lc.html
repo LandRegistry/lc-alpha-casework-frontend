@@ -37,15 +37,15 @@ function getTotals(){
             var numLcReg = data.lc_regn;
             var numLcPn = data.lc_pn;
             var numLcRect = data.lc_rect;
-            var numlcRenewal = data.lc_renewal;
+            var numLcRenewal = data.lc_renewal;
             var numLcStore = data.lc_stored;
 
 
-            lc_regn.className = numLcReg < 10 ? 'indicator-middle' : 'indicator-middle_2';
-            lc_pn.className = numLcPn < 10 ? 'indicator-middle' : 'indicator-middle_2';
-            lc_rect.className = numLcRect < 10 ? 'indicator-middle' : 'indicator-middle_2';
-            lc_renewal.className = numLcRenewal < 10 ? 'indicator-middle' : 'indicator-middle_2';
-            lc_stored.className = numLcStore < 10 ? 'indicator-middle' : 'indicator-middle_2';
+            lc_regn.className = numLcReg < 10 ? 'indicator-middle' : 'indicator-middle-2';
+            lc_pn.className = numLcPn < 10 ? 'indicator-middle' : 'indicator-middle-2';
+            lc_rect.className = numLcRect < 10 ? 'indicator-middle' : 'indicator-middle-2';
+            lc_renewal.className = numLcRenewal < 10 ? 'indicator-middle' : 'indicator-middle-2';
+            lc_stored.className = numLcStore < 10 ? 'indicator-middle' : 'indicator-middle-2';
 
             lc_regn.textContent = numLcReg;
             lc_pn.textContent = numLcPn;
