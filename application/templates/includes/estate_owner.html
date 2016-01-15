@@ -51,13 +51,13 @@
         <div id="complex">
             <div class="form">
                 <label class="form-label" for="complex_name_field">Complex name</label>
-                <input class="form-textfield" type="text" id="complex_name_field" value="{{curr_data.estate_owner.complex}}"/>
+                <input class="form-textfield" type="text" id="complex_name_field" value="{{curr_data.estate_owner.complex.name}}"/>
                 <div class="spacer-5"></div>
                 <a href="#complex_result_modal"  onclick="getComplexName();" rel="modal:open" class="link-14-right">Look up complex name</a>
                 <div id="complex_result_modal" class="col six hide" style="max-height:600px; overflow-y:auto;">
                     <h2 class="text-24-bold">Complex name result</h2>
                     <div class="spacer-15"></div>
-                    <p class="text-16">Please select a complex name from the list</p>
+                    <p id="modal_message" class="text-16"></p>
                     <div class="spacer-15"></div>
                     <div id="complex_result"></div>
                     <div class="spacer-15"></div>
@@ -66,7 +66,10 @@
                     </div>
                 </div>
                 <div class="spacer-15"></div>
-                <input class="form-textfield" type="text" disabled id="complex_name" value=""/>
+                <div id="selected_name" >
+                    <input type="hidden" id="complex_name" name="complex_name" value=""/>
+                    <input type="hidden" id="complex_number" name="complex_number" value=""/>
+                </div>
             </div>
         </div>
 

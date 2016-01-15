@@ -231,6 +231,18 @@ body {
   border: 1px solid #363839;
 }
 
+.drop-down-75 {
+  font-family: Roboto;
+  font-size: 16px;
+  font-weight: 400;
+  text-transform: none;
+  width: 75%;
+  height: 26px;
+  padding: 4px;
+  background-color: #fff;
+  border: 1px solid #363839;
+}
+
 .error-text {
     font-family: Roboto;
     font-size: 16px;

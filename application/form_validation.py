@@ -42,7 +42,7 @@ def validate_land_charge(data):
         errors.append('short_desc')
 
     if data['forename'] == '' and data['surname'] == '' and data['company'] == '' \
-            and data['loc_auth'] == '' and data['complex_name'] == '' and data['other_name'] == '':
+            and data['loc_auth'] == '' """and data['complex_name'] == ''""" and data['other_name'] == '':
         errors.append('estate_owner')
     elif data['loc_auth'] != '' and data['loc_auth_area'] == '':
         errors.append('estate_owner')

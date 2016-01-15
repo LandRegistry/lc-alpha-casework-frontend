@@ -9,11 +9,9 @@
             {% else %}
                 <label class="form-label" for="class">Class and subclass</label>
             {% endif %}
-           <input class="form-textfield" type="text" id="class" name="class" list="charge"
-                   required aria-required="true" autofocus value="{{curr_data.class}}"/>
+           <input class="form-textfield" id="class" name="class" required aria-required="true" autofocus/>
             <datalist id="charge">
-                <option value="A"></option>
-                <option value="B"></option>
+
                 <option value="C(I)"></option>
                 <option value="C(II)"></option>
                 <option value="C(III)"></option>
@@ -21,6 +19,8 @@
                 <option value="D(I)"></option>
                 <option value="D(II)"></option>
                 <option value="D(III)"></option>
+                <option value="A"></option>
+                <option value="B"></option>
                 <option value="E"></option>
                 <option value="F"></option>
                 <option value="PA"></option>
