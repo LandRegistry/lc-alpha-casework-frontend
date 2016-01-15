@@ -111,7 +111,7 @@ def application_start(application_type, appn_id, appn_type):
     if appn_type == "Full Search":
         template = page_required("search")
     else:
-        template = page_required(application_type)
+        template = page_required(application_type, appn_type)
 
     application_json['application_type'] = appn_type
 
@@ -915,17 +915,23 @@ def get_totals():
     }
 
 
-def page_required(appn_type):
-    html_page = {
-        "bank_amend": "regn_retrieve.html",
-        "cancel": "regn_retrieve.html",
-        "bank_regn": "application.html",
-        "search": "search_name.html",
-        "oc": "regn_retrieve.html",
-        "lc_regn": "lc_regn_capture.html"
-    }
+def page_required(appn_type, sub_type = ''):
+    if appn_type == 'lc_regn':
+        page = {
+            'K1': 'k1.html',
+            'K2': 'k2.html'
+        }
+        return page[sub_type]
 
-    return html_page.get(appn_type)
+    else:
+        html_page = {
+            "bank_amend": "regn_retrieve.html",
+            "cancel": "regn_retrieve.html",
+            "bank_regn": "application.html",
+            "search": "search_name.html",
+            "oc": "regn_retrieve.html"
+        }
+        return html_page.get(appn_type)
 
 
 # TODO: renamed as 'complete', move to back-end?
