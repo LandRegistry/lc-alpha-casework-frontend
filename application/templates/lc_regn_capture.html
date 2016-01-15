@@ -118,16 +118,6 @@
 
 {% block maincontent %}
 
-<div class="breadcrumb">
-    <ol>
-        <li><a class="breadcrumb_links" href="/">Home</a></li>
-        <li><a class="breadcrumb_links" href="/get_list?appn=lc">Land Charge</a></li>
-        <li><a class="breadcrumb_links" href="/get_list?appn=lc_regn">Registration</a></li>
-        <li class="breadcrumb-no-arrow"><span>Registration details</span></li>
-    </ol>
-</div>
-<div class="spacer-10"></div>
-
 <h1 class="title-36">Land charge registration</h1>
 
 <div class="spacer-5"></div>
@@ -162,26 +152,24 @@
             {% else %}
                 <label class="form-label" for="class">Class and subclass</label>
             {% endif %}
-           <input class="form-textfield" type="text" id="class" name="class" list="charge"
-                   required aria-required="true" autofocus value="{{curr_data.class}}"/>
-            <datalist id="charge">
-                <option value="A"></option>
-                <option value="B"></option>
-                <option value="C(I)"></option>
-                <option value="C(II)"></option>
-                <option value="C(III)"></option>
-                <option value="C(IV)"></option>
-                <option value="D(I)"></option>
-                <option value="D(II)"></option>
-                <option value="D(III)"></option>
-                <option value="E"></option>
-                <option value="F"></option>
-                <option value="PA"></option>
-                <option value="WO"></option>
-                <option value="DA"></option>
-                <option value="ANN"></option>
-                <option value="LC"></option>
-            </datalist>
+            <select class="drop-down-75" id="class" name="class" required aria-required="true" autofocus>
+                <option id="C(I)" value="C(I)">C(I)</option>
+                <option id="C(II)" value="C(II)">C(II)</option>
+                <option id="C(III)" value="C(III)">C(III)</option>
+                <option id="C(IV)" value="C(IV)">C(IV)</option>
+                <option id="D(I)" value="D(I)">D(I)</option>
+                <option id="D(II)" value="D(II)">D(II)</option>
+                <option id="D(III)" value="D(III)">D(III)</option>
+                <option id="A" value="A">A</option>
+                <option id="B" value="B">B</option>
+                <option id="E" value="E">E</option>
+                <option id="F" value="F">F</option>
+                <option id="PA" value="PA">PA</option>
+                <option id="WO" value="WO">WO</option>
+                <option id="DA" value="DA">DA</option>
+                <option id="ANN" value="ANN">ANN</option>
+                <option id="LC" value="LC">LC</option>
+            </select>
         </div>
 
         <div class="spacer-30"></div>

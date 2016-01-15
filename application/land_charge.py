@@ -25,7 +25,8 @@ def build_lc_inputs(data):
                   'estate_owner': {'private': {'forenames': data['forename'], 'surname': data['surname']},
                                    'company': data['company'],
                                    'local': {'name': data['loc_auth'], 'area': data['loc_auth_area']},
-                                   'complex': {"name": data['complex_name'], "number": data['complex_number']},
+                                   # 'complex': {"name": data['complex_name'], "number": data['complex_number']},
+                                   'complex': {"name": '', "number": 0},
                                    'other': data['other_name']},
                   'occupation': data['occupation'],
                   'additional_info': data['addl_info']}
@@ -65,9 +66,10 @@ def submit_lc_registration(cust_fee_data):
     application['residence_withheld'] = False
     application['date_of_birth'] = "1980-01-01"  # TODO: what are we doing about the DOB??
     application['document_id'] = session['document_id']
-    session['register_details']['estate_owner']['estate_owner_ind'] = session['register_details']['estate_owner_ind']
+    session['register_details']['estate_owner']['estate_owner_ind'] = \
+        convert_estate_owner_ind(session['register_details']['estate_owner_ind'])
     application['lc_register_details'] = session['register_details']
-    # application['lc_register_details']['complex'] = {"name": "king", "number": 1010101}
+    application['lc_register_details']['complex'] = {"name": "", "number": 0}
     application['cust_fee_data'] = cust_fee_data
 
     url = app.config['CASEWORK_DB_URL'] + '/applications/' + session['worklist_id'] + '?action=complete'
@@ -85,3 +87,15 @@ def submit_lc_registration(cust_fee_data):
         # logging.error(error)
         # return render_template('error.html', error_msg=error), 500
         return response.status_code
+
+
+def convert_estate_owner_ind(data):
+    estate_ind = {
+        "privateIndividual": "Private individual",
+        "limitedCompany": "Company",
+        "localAuthority": "Local Authority",
+        "complexName": "Complex name",
+        "other": "other"
+    }
+
+    return estate_ind.get(data)
