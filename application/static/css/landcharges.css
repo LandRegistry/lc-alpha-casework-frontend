@@ -249,3 +249,7 @@ body {
     color: red;
 }
 
+.stop-scrolling {
+    height: 100%;
+    overflow: hidden;
+}

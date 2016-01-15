@@ -1,0 +1,86 @@
+        <!-- ESTATE OWNER -->
+        <h2 class="text-24-bold">Estate owner details</h2>
+
+        <div class="spacer-10"></div>
+
+        <div class="form">
+            {% if 'estate_owner' in errors %}
+            <label class="error-text">X Estate owner</label>
+            {% endif %}
+
+            <p class="text-indent">Please select the type of estate owner from the list</p>
+            <select name="estateOwnerTypes" id="estateOwnerTypes" onchange="javascript:showFields();" class="drop-down">
+                <option value="privateIndividual">Private individual</option>
+                <option value="limitedCompany">Limited company</option>
+                <option value="localAuthority">Local authority</option>
+                <option value="complexName">Complex name</option>
+                <option value="other">Other</option>
+            </select>
+        </div>
+
+        <div id="private">
+            <div class="form">
+                <label class="form-label" for="forename">Forename(s)</label>
+                <input class="form-textfield" type="text" id="forename" name="forename" value="{{curr_data.estate_owner.private.forenames}}"/>
+            </div>
+
+            <div class="form">
+                <label class="form-label" for="surname">Surname</label>
+                <input class="form-textfield" type="text" id="surname" name="surname" value="{{curr_data.estate_owner.private.surname}}"/>
+            </div>
+        </div>
+
+        <div id="limited">
+            <div class="form">
+                <label class="form-label" for="company">Company name</label>
+                <input class="form-textfield" type="text" id="company" name="company" value="{{curr_data.estate_owner.company}}"/>
+            </div>
+        </div>
+
+        <div id="local">
+            <div class="form">
+                <label class="form-label" for="loc_auth">Local authority full name</label>
+                <input class="form-textfield" type="text" id="loc_auth" name="loc_auth" value="{{curr_data.estate_owner.local.name}}"/>
+            </div>
+            <div class="form">
+                <label class="form-label" for="loc_auth_area">Local authority area</label>
+                <p class="text-indent">This is the area the local authority affects</p>
+                <input class="form-textfield" type="text" id="loc_auth_area" name="loc_auth_area" value="{{curr_data.estate_owner.local.area}}"/>
+            </div>
+        </div>
+        <div id="complex">
+            <div class="form">
+                <label class="form-label" for="complex_name_field">Complex name</label>
+                <input class="form-textfield" type="text" id="complex_name_field" value="{{curr_data.estate_owner.complex.name}}"/>
+                <div class="spacer-5"></div>
+                <a href="#complex_result_modal"  onclick="getComplexName();" rel="modal:open" class="link-14-right">Look up complex name</a>
+                <div id="complex_result_modal" class="col six hide" style="max-height:600px; overflow-y:auto;">
+                    <h2 class="text-24-bold">Complex name result</h2>
+                    <div class="spacer-15"></div>
+                    <p id="modal_message" class="text-16"></p>
+                    <div class="spacer-15"></div>
+                    <div id="complex_result"></div>
+                    <div class="spacer-15"></div>
+                    <div style="float:right">
+                        <a id="close" type="button" onclick="javascript:$('body').removeClass('stop-scrolling');" class="form-button" rel="modal:close">Close</a>
+                    </div>
+                </div>
+                <div class="spacer-15"></div>
+                <div id="selected_name" >
+                    <input type="hidden" id="complex_name" name="complex_name" value=""/>
+                    <input type="hidden" id="complex_number" name="complex_number" value=""/>
+                </div>
+            </div>
+        </div>
+
+        <div id="other">
+            <div class="form">
+                <label class="form-label" for="other_name">Name</label>
+                <input class="form-textfield" type="text" id="other_name" name="other_name" value="{{curr_data.estate_owner.other}}"/>
+            </div>
+        </div>
+
+        <div class="form">
+            <label class="form-label" for="occupation">Trade, title or profession</label>
+            <input class="form-textfield" type="text" id="occupation" name="occupation" value="{{curr_data.occupation}}"/>
+        </div>
