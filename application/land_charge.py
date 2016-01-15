@@ -25,8 +25,7 @@ def build_lc_inputs(data):
                   'estate_owner': {'private': {'forenames': data['forename'], 'surname': data['surname']},
                                    'company': data['company'],
                                    'local': {'name': data['loc_auth'], 'area': data['loc_auth_area']},
-                                   # 'complex': {"name": data['complex_name'], "number": data['complex_number']},
-                                   'complex': {"name": '', "number": 0},
+                                   'complex': {"name": data['complex_name'], "number": data['complex_number']},
                                    'other': data['other_name']},
                   'occupation': data['occupation'],
                   'additional_info': data['addl_info']}
