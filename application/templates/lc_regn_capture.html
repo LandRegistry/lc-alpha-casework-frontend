@@ -45,7 +45,7 @@
         $('body').addClass('stop-scrolling');
         var enteredName = jQuery('#complex_name_field').val().trim();
         clearPreviousResults();
-        if (enteredName.length > 2){
+        if (enteredName.length > 3){
             jQuery.ajax( {
                 url: HOST + ':5006/complex_names/' + enteredName,
                 type: 'GET',
@@ -308,7 +308,7 @@
         <div id="complex">
             <div class="form">
                 <label class="form-label" for="complex_name_field">Complex name</label>
-                <input class="form-textfield" type="text" id="complex_name_field" value="{{curr_data.estate_owner.complex}}"/>
+                <input class="form-textfield" type="text" id="complex_name_field" value="{{curr_data.estate_owner.complex.name}}"/>
                 <div class="spacer-5"></div>
                 <a href="#complex_result_modal"  onclick="getComplexName();" rel="modal:open" class="link-14-right">Look up complex name</a>
                 <div id="complex_result_modal" class="col six hide" style="max-height:600px; overflow-y:auto;">
