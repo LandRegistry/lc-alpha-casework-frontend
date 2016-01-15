@@ -61,6 +61,8 @@ def submit_lc_registration(cust_fee_data):
     application = session['application_dict']
     application['application_ref'] = cust_fee_data['application_reference']
     application['key_number'] = cust_fee_data['key_number']
+    application['customer_name'] = cust_fee_data['customer_name']
+    application['customer_address'] = cust_fee_data['customer_address']
     today = datetime.now().strftime('%Y-%m-%d')
     application['date'] = today
     application['residence_withheld'] = False
@@ -70,9 +72,8 @@ def submit_lc_registration(cust_fee_data):
         convert_estate_owner_ind(session['register_details']['estate_owner_ind'])
     application['lc_register_details'] = session['register_details']
     application['lc_register_details']['complex'] = {"name": "", "number": 0}
-    application['cust_fee_data'] = cust_fee_data
 
-    url = app.config['CASEWORK_DB_URL'] + '/applications/' + session['worklist_id'] + '?action=complete'
+    url = app.config['CASEWORK_API_URL'] + '/applications/' + session['worklist_id'] + '?action=complete'
     headers = {'Content-Type': 'application/json'}
     response = requests.put(url, data=json.dumps(application), headers=headers)
     if response.status_code == 200:
