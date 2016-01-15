@@ -1,3 +1,10 @@
+from application import app
+import json
+import requests
+
+
+
+
 # valid_land_charge = ['A', 'B', 'C1', 'C2', 'C3', 'C4', 'D1', 'D2', 'D3', 'E', 'F', 'PA', 'WO', 'DA', 'ANN', 'LC']
 
 valid_land_charge = ['A', 'B', 'C(I)', 'C(II)', 'C(III)', 'C(IV)', 'D(I)', 'D(II)', 'D(III)', 'E', 'F', 'PA', 'WO',
@@ -32,8 +39,14 @@ def validate_land_charge(data):
     else:
         errors.append('class')
 
-    if data['county_0'] == '':
-        errors.append('county')
+    #check that any entered counties are valid
+    response = requests.get(app.config['CASEWORK_API_URL'] + '/counties')
+    counties = json.loads(response.content.decode('utf-8'))
+    cntr = 0
+    while 'county_' + str(cntr) in data:
+        if data['county_' + str(cntr)] not in counties:
+            errors.append('county')
+        cntr = cntr +1
 
     if data['district'] == '':
         errors.append('district')
