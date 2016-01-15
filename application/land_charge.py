@@ -95,12 +95,14 @@ def submit_lc_registration(cust_fee_data):
     headers = {'Content-Type': 'application/json'}
     response = requests.put(url, data=json.dumps(application), headers=headers)
     if response.status_code == 200:
+        logging.info("200 response here")
         data = response.json()
         reg_list = []
         for item in data['new_registrations']:
             reg_list.append(item)
         session['regn_no'] = reg_list
-        return redirect('/confirmation', code=302, Response=None)
+        #return redirect('/confirmation', code=302, Response=None)
+        return response.status_code
     else:
         # error = response.status_code
         # logging.error(error)
