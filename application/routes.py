@@ -82,8 +82,8 @@ def get_list_of_applications(requested_worklist, error_msg):
                                data=app_totals, error_msg=error_msg)
 
 
-@app.route('/application_start/<application_type>/<appn_id>/<appn_type>', methods=["GET"])
-def application_start(application_type, appn_id, appn_type):
+@app.route('/application_start/<application_type>/<appn_id>/<form>', methods=["GET"])
+def application_start(application_type, appn_id, form):
 
     # Lock application if not in session otherwise assume user has refreshed the browser after select an application
     if 'worklist_id' not in session:
@@ -108,12 +108,12 @@ def application_start(application_type, appn_id, appn_type):
         url = app.config["CASEWORK_API_URL"] + "/forms/" + str(document_id) + '/' + str(page)
         images.append(url)
 
-    if appn_type == "Full Search":
+    if form == "Full Search":
         template = page_required("search")
     else:
-        template = page_required(application_type, appn_type)
+        template = page_required(application_type, form)
 
-    application_json['application_type'] = appn_type
+    application_json['form'] = form
 
     session.clear()
     set_session_variables({'images': images, 'document_id': document_id,
@@ -205,7 +205,7 @@ def process_application(application_type):
 @app.route('/retrieve_new_reg', methods=["GET"])
 def retrieve_new_reg():
     return redirect('/application_start/%s/%s/%s' % (session['application_type'], session['worklist_id'],
-                    session['application_dict']['application_type']), code=302, Response=None)
+                    session['application_dict']['form']), code=302, Response=None)
 
 
 # Registration routes
@@ -246,7 +246,7 @@ def process_banks_name():
                 })
             counter += 1
 
-    name['application_type'] = session['application_dict']['application_type']
+    name['application_type'] = session['application_dict']['form']
     set_session_variables({'application_dict': name})
 
     return redirect('/address_details', code=302, Response=None)
@@ -322,7 +322,7 @@ def application_step_2():
 @app.route('/court_details', methods=['GET'])
 def court_details():
     return render_template('banks_order.html', images=session['images'], current_page=0,
-                           charge=session['application_dict']['application_type'])
+                           charge=session['application_dict']['form'])
 
 
 @app.route('/process_court_details', methods=["POST"])
@@ -755,7 +755,8 @@ def land_charge_capture():
         session['register_details'] = entered_fields
         return redirect('/land_charge_verification', code=302, Response=None)
     else:
-        return render_template('lc_regn_capture.html', application_type=session['application_type'],
+        page = "%s.html" % (session['application_dict']['form'])
+        return render_template(page, application_type=session['application_type'],
                                images=session['images'], application=session['application_dict'],
                                current_page=0, errors=result['error'], curr_data=entered_fields)
 
@@ -785,7 +786,8 @@ def lc_process_application():
     customer_fee_details = build_customer_fee_inputs(request.form)
     status_code = submit_lc_registration(customer_fee_details)
     print('status_code is ', status_code)
-    return get_list_of_applications("lc_regn", "")
+    #return get_list_of_applications("lc_regn", "")
+    return redirect('/confirmation', code=302, Response=None)
 
 
 # ============== Common routes =====================
@@ -802,7 +804,7 @@ def confirmation():
 def notification():
     application = session['application_dict']
     data = {
-        "type": application['application_type'],
+        "type": application['form'],
         "reg_no": session['regn_no'],
         "date": application['date'],
         "details": [

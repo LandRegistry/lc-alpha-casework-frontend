@@ -68,7 +68,7 @@
         clearPreviousResults();
         if (enteredName.length > 3){
             jQuery.ajax( {
-                url: HOST + ':5006/complex_names/' + enteredName,
+                url: '{{config.CASEWORK_API_URL}}/complex_names/' + enteredName,
                 type: 'GET',
                 data: {},
                 success: function( data ) {
@@ -105,16 +105,16 @@
         nameHTML = jQuery('<p class="text-16-bold">' + name +' ('+ number +')' + '</p>');
         jQuery('#selected_name').empty();
         jQuery('#selected_name').append(nameHTML);
-        jQuery('#complex_name').value = name;
-        jQuery('#complex_number').value = number;
+        jQuery('#complex_name').val(name);
+        jQuery('#complex_number').val(number);
     }
 
 
     function clearPreviousResults(){
         jQuery('#name_results').remove();
         jQuery('#selected_name').empty();
-        jQuery('#complex_name').value = "";
-        jQuery('#complex_number').value = "";
+        jQuery('#complex_name').val("");
+        jQuery('#complex_number').val("");
     }
 
     function showFields() {
