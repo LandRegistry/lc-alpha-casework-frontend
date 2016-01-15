@@ -1,0 +1,82 @@
+{% extends "/page_template/base.html" %}
+{% block page_specific_head %}
+
+<link href="http://code.jquery.com/ui/1.10.2/themes/smoothness/jquery-ui.css" rel="stylesheet"/>
+<script src="http://code.jquery.com/ui/1.10.2/jquery-ui.js" ></script>
+<script src="/static/js/jquery.modal.js"></script>
+<link href="/static/css/jquery.modal.css" rel="stylesheet"/>
+
+{% include 'includes/lc_regn_js.html' %}
+{% endblock %}
+
+{% block maincontent %}
+
+{% include 'includes/lc_nav_title.html' %}
+
+<div class="grid-row">
+    <div class="col four">
+    <!-- ///////////////////////////////// data entry form ///////////////////////////////// -->
+    <form action="/land_charge_capture" method="POST">
+        {% if errors|length > 0 %}
+        <div class="error-text">
+            <h3>Information missing or incorrect. Please amend as applicable.</h3>
+        </div>
+        {% endif %}
+
+        {% include 'includes/class_of_charge.html' %}
+
+        <!-- LAND INFO -->
+    
+        
+        
+        
+        
+
+        <div class="form">
+            {% if 'short_desc' in errors %}
+                <label class="error-text form-label" for="short_desc">X Short description</label>
+            {% else %}
+                <label class="form-label" for="short_desc">Short description</label>
+            {% endif %}
+            <textarea class="form-textarea-short" id="short_desc" name="short_desc"
+                      required aria-required="true">{{curr_data.short_description}}</textarea>
+        </div>
+
+        <div class="spacer-30"></div>
+
+        {% include 'includes/estate_owner.html' %}
+
+        {% include 'includes/additional_info.html' %}
+
+        <div>
+            <input id="continue" type="submit" value="Continue" class="form-button"/>
+        </div>
+
+        <a href="/get_list?appn=lc_regn" class="link-16">Return to this application later</a>
+
+    </form>
+    </div>
+
+    <!-- ///////////////////////////////// end of data entry form ///////////////////////////////// -->
+    <div class="col one"><p></p></div>
+    <!-- /////////////////////////////////  Include image tool ///////////////////////////////// -->
+
+    <div class="col seven">
+    {% include 'includes/image_view_body.html' %}
+    </div>
+    <!-- ///////////////////////////////// End of image tool ///////////////////////////////// -->
+
+<script>
+
+    jQuery(document).ready(function(){
+        jQuery("#estateOwnerTypes").val("{{curr_data.estate_owner_ind}}");
+        showFields();
+        setupCountyAutocomplete("#county_0");
+    });
+
+
+</script>
+
+</div>
+
+{% endblock %}
