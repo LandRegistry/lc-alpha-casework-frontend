@@ -11,7 +11,7 @@
                 <div id="zoom_button" class="zoom_button_in"></div>
                 <div id="page_nav">
                     <span id="page_nav_text">Page 1 of</span> {{images|length}}
-                    <a id="next_image" href="#" onclick="clickNext()">Next</a>
+                    {% if images|length > 1 %}<a id="next_image" href="#" onclick="clickNext()">Next</a>{% endif %}
                 </div>
 
             </div>
