@@ -13,7 +13,7 @@ def build_lc_inputs(data):
                   'estate_owner': {'private': {'forenames': '', 'surname': ''},
                                    'company': '',
                                    'local': {'name': '', 'area': ''},
-                                   'complex': '',
+                                   'complex': {"name": '', "number": ''},
                                    'other': ''},
                   'occupation': '',
                   'additional_info': ''}
@@ -25,7 +25,7 @@ def build_lc_inputs(data):
                   'estate_owner': {'private': {'forenames': data['forename'], 'surname': data['surname']},
                                    'company': data['company'],
                                    'local': {'name': data['loc_auth'], 'area': data['loc_auth_area']},
-                                   'complex': data['complex_name'],
+                                   'complex': {"name": data['complex_name'], "number": data['complex_number']},
                                    'other': data['other_name']},
                   'occupation': data['occupation'],
                   'additional_info': data['addl_info']}
@@ -67,7 +67,7 @@ def submit_lc_registration(cust_fee_data):
     application['document_id'] = session['document_id']
     session['register_details']['estate_owner']['estate_owner_ind'] = session['register_details']['estate_owner_ind']
     application['lc_register_details'] = session['register_details']
-    application['lc_register_details']['complex'] = {"name": "king", "number": 1010101}
+    # application['lc_register_details']['complex'] = {"name": "king", "number": 1010101}
     application['cust_fee_data'] = cust_fee_data
 
     url = app.config['CASEWORK_DB_URL'] + '/applications/' + session['worklist_id'] + '?action=complete'
@@ -81,6 +81,7 @@ def submit_lc_registration(cust_fee_data):
         session['regn_no'] = reg_list
         return redirect('/confirmation', code=302, Response=None)
     else:
-        error = response.status_code
-        logging.error(error)
-        return render_template('error.html', error_msg=error), 500
+        # error = response.status_code
+        # logging.error(error)
+        # return render_template('error.html', error_msg=error), 500
+        return response.status_code
