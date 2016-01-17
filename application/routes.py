@@ -782,10 +782,8 @@ def conveyancer_fee_info():
 
 @app.route('/lc_process_application', methods=['POST'])
 def lc_process_application():
-    print(session)
     customer_fee_details = build_customer_fee_inputs(request.form)
     status_code = submit_lc_registration(customer_fee_details)
-    print('status_code is ', status_code)
     #return get_list_of_applications("lc_regn", "")
     return redirect('/confirmation', code=302, Response=None)
 

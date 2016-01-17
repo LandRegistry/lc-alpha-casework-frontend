@@ -78,8 +78,11 @@ def build_customer_fee_inputs(data):
 
 def submit_lc_registration(cust_fee_data):
     application = session['application_dict']
+    application['application_type'] = convert_application_type(session['application_type'])
     application['application_ref'] = cust_fee_data['application_reference']
     application['key_number'] = cust_fee_data['key_number']
+    application['customer_name'] = cust_fee_data['customer_name']
+    application['customer_address'] = cust_fee_data['customer_address']
     today = datetime.now().strftime('%Y-%m-%d')
     application['date'] = today
     application['residence_withheld'] = False
@@ -89,7 +92,6 @@ def submit_lc_registration(cust_fee_data):
         convert_estate_owner_ind(session['register_details']['estate_owner_ind'])
     application['lc_register_details'] = session['register_details']
     application['lc_register_details']['complex'] = {"name": "", "number": 0}
-    application['cust_fee_data'] = cust_fee_data
 
     url = app.config['CASEWORK_API_URL'] + '/applications/' + session['worklist_id'] + '?action=complete'
     headers = {'Content-Type': 'application/json'}
@@ -120,3 +122,16 @@ def convert_estate_owner_ind(data):
     }
 
     return estate_ind.get(data)
+
+
+def convert_application_type(type):
+    app_type = {
+        "lc_regn": "New Registration",
+        "banks": "New Registration",
+        "cancel": "Cancellation",
+        "amend": "Amendment",
+        "oc": "Official Copy",
+        "search": "Search"
+    }
+
+    return app_type.get(type)
