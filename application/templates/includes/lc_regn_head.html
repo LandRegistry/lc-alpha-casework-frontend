@@ -1,3 +1,30 @@
+<script src="/static/js/jquery-ui.js" ></script>
+<link href="/static/css/jquery-ui.css" rel="Stylesheet" type="text/css" />
+<style>
+    /*  Customisation of Modal dialog popup */
+
+    .ui-widget-overlay {
+    opacity: .7;
+    }
+    .ui-widget-header {
+    margin-top:10px;
+    border:0px;
+    background: #ffffff;
+    color: #000000;
+    font-family: Roboto;
+    font-size: 24px;
+    }
+    #ui-id-2 {
+    margin-left:-6px;
+    }
+    .ui-dialog-titlebar .ui-button {
+    display:none;
+    }
+    .stop-scrolling {
+    height: 100%;
+    overflow: hidden;
+    }
+</style>
 <script>
 
     if ({{curr_data.county|length}} > 0) {
@@ -10,7 +37,6 @@
     function setupCountyAutocomplete(element) {
         var a = 0;
         var host = "{{config.CASEWORK_API_URL}}";
-        
 
         jQuery.ajax({
             url: host + '/counties',
@@ -24,18 +50,12 @@
                           return matcher.test( item );
                         }) );
                     }
-
                 });
             }
-
         });
     }
 
-    
-    
-    
-    
-    
+
     function countyClick(sender){
         var fldnam = "county_" + n;
         jQuery('<input class="form-textfield" type="text" id="' + fldnam + '" name="' + fldnam+ '"> \
@@ -55,14 +75,48 @@
                       return matcher.test( item );
                     }) );
                 }
-
                 });
             }
-
         });
     };
 
+
+    function showComplexNameModal() {
+        $("#complex_result_modal").dialog({
+            modal:true,
+            show: true,
+            title:"Complex name result",
+            hide:true,
+            width: 600,
+            maxHeight: 500
+        });
+        getComplexName();
+    }
+
+    function updateComplexName(obj){
+        compNameStr = obj.value;
+        name = compNameStr.substring(0,compNameStr.indexOf('*'));
+        number = compNameStr.substring(compNameStr.indexOf('*')+1,compNameStr.length);
+        nameHTML = jQuery('<p class="text-16-bold">' + name +' ('+ number +')' + '</p>');
+        jQuery('#selected_name').empty();
+        jQuery('#selected_name').append(nameHTML);
+        jQuery('#complex_name').val(name);
+        jQuery('#complex_number').val(number);
+    }
+
+    function closeComplexNameModal(){
+        $('body').removeClass('stop-scrolling');
+        $('#complex_result_modal').dialog('close');
+    }
+    function clearPreviousResults(){
+        jQuery('#name_results').remove();
+        jQuery('#selected_name').empty();
+        jQuery('#complex_name').val("");
+        jQuery('#complex_number').val("");
+    }
+
     function getComplexName(){
+
         $('body').addClass('stop-scrolling');
         var enteredName = jQuery('#complex_name_field').val().trim();
         clearPreviousResults();
@@ -98,24 +152,7 @@
         }
     }
 
-    function updateComplexName(obj){
-        compNameStr = obj.value;
-        name = compNameStr.substring(0,compNameStr.indexOf('*'));
-        number = compNameStr.substring(compNameStr.indexOf('*')+1,compNameStr.length);
-        nameHTML = jQuery('<p class="text-16-bold">' + name +' ('+ number +')' + '</p>');
-        jQuery('#selected_name').empty();
-        jQuery('#selected_name').append(nameHTML);
-        jQuery('#complex_name').val(name);
-        jQuery('#complex_number').val(number);
-    }
 
-
-    function clearPreviousResults(){
-        jQuery('#name_results').remove();
-        jQuery('#selected_name').empty();
-        jQuery('#complex_name').val("");
-        jQuery('#complex_number').val("");
-    }
 
     function showFields() {
         var type = document.getElementById("estateOwnerTypes").value;
@@ -143,9 +180,5 @@
             jQuery("#company, #loc_auth, #loc_auth_area, #complex_name, #other_name").val('');
         }
     }
-    
-    
-    
-    
-    
+
 </script>

@@ -248,8 +248,3 @@ body {
     font-size: 16px;
     color: red;
 }
-
-.stop-scrolling {
-    height: 100%;
-    overflow: hidden;
-}

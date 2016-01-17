@@ -1,12 +1,7 @@
 {% extends "/page_template/base.html" %}
 {% block page_specific_head %}
 
-<link href="http://code.jquery.com/ui/1.10.2/themes/smoothness/jquery-ui.css" rel="stylesheet"/>
-<script src="http://code.jquery.com/ui/1.10.2/jquery-ui.js" ></script>
-<script src="/static/js/jquery.modal.js"></script>
-<link href="/static/css/jquery.modal.css" rel="stylesheet"/>
-
-{% include 'includes/lc_regn_js.html' %}
+{% include 'includes/lc_regn_head.html' %}
 {% endblock %}
 
 {% block maincontent %}
@@ -14,7 +9,7 @@
 {% include 'includes/lc_nav_title.html' %}
 
 <div class="grid-row">
-    <div class="col four">
+    <div class="col four" id="form_panel">
     <!-- ///////////////////////////////// data entry form ///////////////////////////////// -->
     <form action="/land_charge_capture" method="POST">
         {% if errors|length > 0 %}
