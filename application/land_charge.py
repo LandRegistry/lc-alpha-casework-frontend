@@ -45,10 +45,12 @@ def add_estate_owner_details(result, data):
     result['estate_owner']['company'] = data['company']
     result['estate_owner']['local']['name'] = data['loc_auth']
     result['estate_owner']['local']['area'] = data['loc_auth_area']
-    print(data)
     result['estate_owner']['complex']['name'] = data['complex_name']
 
-    result['estate_owner']['complex']['number'] = data['complex_number']
+    if data['complex_number'] == "":
+        result['estate_owner']['complex']['number'] = 0
+    else:
+        result['estate_owner']['complex']['number'] = int(data['complex_number'])
 
     result['estate_owner']['other'] = data['other_name']
 
@@ -91,7 +93,7 @@ def submit_lc_registration(cust_fee_data):
     session['register_details']['estate_owner']['estate_owner_ind'] = \
         convert_estate_owner_ind(session['register_details']['estate_owner_ind'])
     application['lc_register_details'] = session['register_details']
-    application['lc_register_details']['complex'] = {"name": "", "number": 0}
+    print('these are the register details', application['lc_register_details'])
 
     url = app.config['CASEWORK_API_URL'] + '/applications/' + session['worklist_id'] + '?action=complete'
     headers = {'Content-Type': 'application/json'}
