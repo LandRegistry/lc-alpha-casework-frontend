@@ -53,7 +53,7 @@
                 <label class="form-label" for="complex_name_field">Complex name</label>
                 <input class="form-textfield" type="text" id="complex_name_field" value="{{curr_data.estate_owner.complex.name}}"/>
                 <div class="spacer-5"></div>
-                <a href="#here"  onclick="showComplexNameModal();" class="link-14-right">Look up complex name</a>
+                <a href="#here" id="name_lookup_link" onclick="showComplexNameModal();" class="link-14-right">Look up complex name</a>
                 <div id="complex_result_modal" role="dialog" aria-labelledby="myDialog" style="display: none;">
                     <p id="modal_message" class="text-16"></p>
                     <div class="spacer-15"></div>
