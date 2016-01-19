@@ -8,7 +8,7 @@
 
 $(document).ready(function() {
     $("#refresh").hide();
-    setInterval("getTotals()", 30000);
+    setInterval(function(){ location.reload();}, 30000);
     $('#work-list').DataTable({info: false, paging: false, searching: false, ordering:false});
 
     // make table row clickable link to child href
@@ -19,44 +19,6 @@ $(document).ready(function() {
         }
     });
 } );
-
-
-function getTotals(){
-
-    jQuery.ajax( {
-        url: HOST + ':5010/totals',
-        type: 'GET',
-        data: {},
-        success: function( data ) {
-            var lc_regn = document.getElementById('lc_regn').querySelector('span');
-            var lc_pn = document.getElementById('lc_pn').querySelector('span');
-            var lc_rect = document.getElementById('lc_rect').querySelector('span');
-            var lc_renewal = document.getElementById('lc_renewal').querySelector('span');
-            var lc_stored = document.getElementById('lc_stored').querySelector('span');
-
-            var numLcReg = data.lc_regn;
-            var numLcPn = data.lc_pn;
-            var numLcRect = data.lc_rect;
-            var numLcRenewal = data.lc_renewal;
-            var numLcStore = data.lc_stored;
-
-
-            lc_regn.className = numLcReg < 10 ? 'indicator-middle' : 'indicator-middle-2';
-            lc_pn.className = numLcPn < 10 ? 'indicator-middle' : 'indicator-middle-2';
-            lc_rect.className = numLcRect < 10 ? 'indicator-middle' : 'indicator-middle-2';
-            lc_renewal.className = numLcRenewal < 10 ? 'indicator-middle' : 'indicator-middle-2';
-            lc_stored.className = numLcStore < 10 ? 'indicator-middle' : 'indicator-middle-2';
-
-            lc_regn.textContent = numLcReg;
-            lc_pn.textContent = numLcPn;
-            lc_rect.textContent = numLcRect;
-            lc_renewal.textContent = numLcRenewal;
-            lc_stored.textContent = numLcStore;
-
-        }
-    } );
-
-}
 
 </script>
 {% endblock %}

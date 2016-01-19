@@ -8,54 +8,17 @@
 
 $(document).ready(function() {
     $("#refresh").hide();
-    setInterval("getTotals()", 30000);
+    setInterval(function(){ location.reload();}, 30000);
     $('#work-list').DataTable({info: false, paging: false, searching: false, ordering:false});
+
+    // make table row clickable link to child href
     $('#work-list tbody tr').click(function() {
         var href = $(this).find("a").attr("href");
         if(href) {
             window.location = href;
         }
     });
-
 } );
-
-function getTotals(){
-
-    jQuery.ajax( {
-        url: HOST + ':5010/totals',
-        type: 'GET',
-        data: {},
-        success: function( data ) {
-            var bank_regn = document.getElementById('bank_regn').querySelector('span');
-            var bank_amend = document.getElementById('bank_amend').querySelector('span');
-            var bank_rect = document.getElementById('bank_rect').querySelector('span');
-            var bank_with = document.getElementById('bank_with').querySelector('span');
-            var bank_stored = document.getElementById('bank_stored').querySelector('span');
-
-            var numBankReg = data.bank_regn;
-            var numBankAmend = data.bank_amend;
-            var numBankRect = data.bank_rect;
-            var numBankWith = data.bank_with;
-            var numBankStore = data.bank_stored;
-            var numAmend = data.bank_amend;
-
-
-            bank_regn.className = numBankReg < 10 ? 'indicator-middle' : 'indicator-middle-2';
-            bank_amend.className = numBankAmend < 10 ? 'indicator-middle' : 'indicator-middle-2';
-            bank_rect.className = numBankRect < 10 ? 'indicator-middle' : 'indicator-middle-2';
-            bank_with.className = numBankWith < 10 ? 'indicator-middle' : 'indicator-middle-2';
-            bank_stored.className = numBankStore < 10 ? 'indicator-middle' : 'indicator-middle-2';
-
-            bank_regn.textContent = numBankReg;
-            bank_amend.textContent = numBankAmend;
-            bank_rect.textContent = numBankRect;
-            bank_with.textContent = numBankWith;
-            bank_stored.textContent = numBankStore;
-
-        }
-    } );
-
-}
 
 </script>
 {% endblock %}

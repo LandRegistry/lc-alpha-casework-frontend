@@ -8,45 +8,17 @@
 
 $(document).ready(function() {
     $("#refresh").hide();
-    setInterval("getTotals()", 30000);
+    setInterval(function(){ location.reload();}, 30000);
     $('#work-list').DataTable({info: false, paging: false, searching: false, ordering:false});
+
+    // make table row clickable link to child href
     $('#work-list tbody tr').click(function() {
         var href = $(this).find("a").attr("href");
         if(href) {
             window.location = href;
         }
     });
-
 } );
-
-function getTotals(){
-
-    jQuery.ajax( {
-        url: HOST + ':5010/totals',
-        type: 'GET',
-        data: {},
-        success: function( data ) {
-            var canc = document.getElementById('canc').querySelector('span');
-            var canc_part = document.getElementById('canc_part').querySelector('span');
-            var canc_stored = document.getElementById('canc_stored').querySelector('span');
-
-            var numCancel = data.canc;
-            var numCancelPart = data.canc_part;
-            var numCancelStore = data.canc_stored;
-
-
-            cancel.className = numCancel < 10 ? 'indicator-middle' : 'indicator-middle-2';
-            cancel_part.className = numCancelPart < 10 ? 'indicator-middle' : 'indicator-middle-2';
-            cancel_stored.className = numCancelStore < 10 ? 'indicator-middle' : 'indicator-middle-2';
-
-            cancel.textContent = numCancel;
-            cancel_part.textContent = numCancelPart;
-            cancel_stored.textContent = numCancelStore;
-
-        }
-    } );
-
-}
 
 </script>
 {% endblock %}

@@ -8,41 +8,17 @@
 
 $(document).ready(function() {
     $("#refresh").hide();
-    setInterval("getTotals()", 30000);
+    setInterval(function(){ location.reload();}, 30000);
     $('#work-list').DataTable({info: false, paging: false, searching: false, ordering:false});
+
+    // make table row clickable link to child href
     $('#work-list tbody tr').click(function() {
         var href = $(this).find("a").attr("href");
         if(href) {
             window.location = href;
         }
     });
-
 } );
-
-function getTotals(){
-
-    jQuery.ajax( {
-        url: HOST + ':5010/totals',
-        type: 'GET',
-        data: {},
-        success: function( data ) {
-            var search_full = document.getElementById('search_full').querySelector('span');
-            var search_bank = document.getElementById('search_bank').querySelector('span');
-
-            var numFullSearch = data.search_full;
-            var numBankSearch = data.search_bank;
-
-
-            search_full.className = numBankReg < 10 ? 'indicator-middle' : 'indicator-middle-2';
-            search_bank.className = numBankAmend < 10 ? 'indicator-middle' : 'indicator-middle-2';
-
-            search_full.textContent = numFullSearch;
-            search_bank.textContent = numBankSearch;
-
-        }
-    } );
-
-}
 
 </script>
 {% endblock %}
