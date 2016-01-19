@@ -5,11 +5,11 @@
 
         <div class="form">
             {% if 'class' in errors %}
-                <label class="error-text form-label" for="class">X Class and subclass</label>
+                <label class="error-text form-label" for="class">X Class and subclass</label><br/>
             {% else %}
-                <label class="form-label" for="class">Class and subclass</label>
+                <label class="form-label" for="class">Class and subclass</label><br/>
             {% endif %}
-           <select class="drop-down-75" id="class" name="class" required aria-required="true" autofocus>
+           <select class="form-select width-50" id="class" name="class" required aria-required="true" autofocus>
                 <option id="C(I)" value="C(I)">C(I)</option>
                 <option id="C(II)" value="C(II)">C(II)</option>
                 <option id="C(III)" value="C(III)">C(III)</option>
