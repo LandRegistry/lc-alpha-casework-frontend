@@ -8,7 +8,8 @@
 
 $(document).ready(function() {
     $("#refresh").hide();
-    setInterval(function(){ location.reload();}, 30000);
+    display_list = $('#requested_list').val();
+    setInterval(function(){ location.href="/get_list?appn=" + display_list;}, 30000);
     $('#work-list').DataTable({info: false, paging: false, searching: false, ordering:false});
 
     // make table row clickable link to child href
@@ -25,7 +26,7 @@ $(document).ready(function() {
 
 {% block maincontent %}
 
-<input type="hidden" name="requested_list" value="{{requested_list}}"/>
+<input type="hidden" id="requested_list" name="requested_list" value="{{requested_list}}"/>
 
 
 {% if requested_list == 'bank_regn' %}
