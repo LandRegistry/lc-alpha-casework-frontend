@@ -7,7 +7,6 @@ import json
 
 
 def build_lc_inputs(data):
-    print('building inputs')
     type_of_form = session['application_dict']['form']
     result = {'class': '', 'county': [], 'district': '', 'short_description': '',
               'estate_owner_ind': 'privateIndividual',
@@ -31,9 +30,6 @@ def build_lc_inputs(data):
             add_counties(result, data)
 
             add_estate_owner_details(result, data)
-
-    print(type_of_form)
-    print(result)
 
     return result
 
@@ -93,7 +89,6 @@ def submit_lc_registration(cust_fee_data):
     session['register_details']['estate_owner']['estate_owner_ind'] = \
         convert_estate_owner_ind(session['register_details']['estate_owner_ind'])
     application['lc_register_details'] = session['register_details']
-    print('these are the register details', application['lc_register_details'])
 
     url = app.config['CASEWORK_API_URL'] + '/applications/' + session['worklist_id'] + '?action=complete'
     headers = {'Content-Type': 'application/json'}
