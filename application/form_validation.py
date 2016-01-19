@@ -2,9 +2,6 @@ from application import app
 import json
 import requests
 
-
-
-
 # valid_land_charge = ['A', 'B', 'C1', 'C2', 'C3', 'C4', 'D1', 'D2', 'D3', 'E', 'F', 'PA', 'WO', 'DA', 'ANN', 'LC']
 
 valid_land_charge = ['A', 'B', 'C(I)', 'C(II)', 'C(III)', 'C(IV)', 'D(I)', 'D(II)', 'D(III)', 'E', 'F', 'PA', 'WO',
@@ -62,11 +59,3 @@ def validate_land_charge(data):
 
     result = {'class': curr_class, 'error': errors}
     return result
-
-
-
-
-
-
-
-
