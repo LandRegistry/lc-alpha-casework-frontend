@@ -10,13 +10,13 @@
                 <label class="form-label" for="class">Class and subclass</label><br/>
             {% endif %}
            <select class="form-select width-50" id="class" name="class" required aria-required="true" autofocus>
-                <option id="C(I)" value="C(I)">C(I)</option>
-                <option id="C(II)" value="C(II)">C(II)</option>
-                <option id="C(III)" value="C(III)">C(III)</option>
-                <option id="C(IV)" value="C(IV)">C(IV)</option>
-                <option id="D(I)" value="D(I)">D(I)</option>
-                <option id="D(II)" value="D(II)">D(II)</option>
-                <option id="D(III)" value="D(III)">D(III)</option>
+                <option id="C1" value="C(I)">C1</option>
+                <option id="C2" value="C(II)">C2</option>
+                <option id="C3" value="C(III)">C3</option>
+                <option id="C4" value="C(IV)">C4</option>
+                <option id="D1" value="D(I)">D1</option>
+                <option id="D2" value="D(II)">D2</option>
+                <option id="D3" value="D(III)">D3</option>
                 <option id="A" value="A">A</option>
                 <option id="B" value="B">B</option>
                 <option id="E" value="E">E</option>
@@ -30,3 +30,7 @@
         </div>
 
         <div class="spacer-30"></div>
+
+        <script>
+            $('#class').val('{{curr_data.class}}');
+        </script>
