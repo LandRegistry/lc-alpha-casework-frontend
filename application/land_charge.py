@@ -8,7 +8,7 @@ import json
 
 def build_lc_inputs(data):
     type_of_form = session['application_dict']['form']
-    result = {'class': '', 'county': [], 'district': '', 'short_description': '',
+    result = {'class': 'C(I)', 'county': [], 'district': '', 'short_description': '',
               'estate_owner_ind': 'privateIndividual',
               'estate_owner': {'private': {'forenames': '', 'surname': ''},
                                'company': '',
