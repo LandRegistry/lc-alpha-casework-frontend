@@ -12,7 +12,7 @@
 
         .thumbnail{
             border:1px solid #B3B3B3;
-            width:100%;
+            max-width:100px;
             margin-right:5px;
         }
         .thumbnail:hover{
@@ -23,7 +23,8 @@
         }
 
         .panned_image {
-            max-width: none;
+            width:100%;
+           /* max-width: none; */
         }
 
         #nav_bar {
@@ -77,6 +78,10 @@
             top: 0;
         }
 
+        #sticky_div {
+            width:750px;
+        }
+
 
     </style>
     <script type="text/javascript" src="/static/js/imagepan.js"></script>
@@ -119,22 +124,13 @@
             jQuery("#image_area").height(1.4 * jQuery("#image_area").width() );
             $window = jQuery(window);
             $stickyEl = jQuery('#sticky_div');
-            $thumbs = jQuery('#thumbnails');
             elTop = $stickyEl.offset().top;
-            tLeft = $thumbs.offset().left;
 
             $window.scroll(function() {
 
                 if (isScrolledIntoView(jQuery("#form_panel"))){
                     $stickyEl.toggleClass('sticky', $window.scrollTop() > elTop );
 
-                    if( $window.scrollTop() > elTop ) {
-                        $thumbs[0].classList.add('sticky');
-                        $thumbs.css({'left': tLeft + 'px'});
-                    } else {
-                        $thumbs[0].classList.remove('sticky');
-                        $thumbs.css({'left': ''});
-                    }
                 }
             });
 

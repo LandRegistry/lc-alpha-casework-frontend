@@ -4,9 +4,9 @@
 
 <div id="page1">
     <!-- ///////////////////////////////// scanned page ///////////////////////////////// -->
-
+    <div id="sticky_div">
     <div class="column-scan">
-        <div id="sticky_div">
+
             <div id="nav_bar">
                 <div id="zoom_button" class="zoom_button_in"></div>
                 <div id="page_nav">
@@ -25,13 +25,12 @@
                 </div>
             </div>
         </div>
-    </div>
+
 
     <!-- ///////////////////////////////// end of scanned page ///////////////////////////////// -->
 
     <!-- ///////////////////// display thumbnails if greater than one page //////////////////////// -->
-    <div class="{% if images|length > 1 %} column-scan-small {% else %} hide {% endif %} ">
-        <div class="spacer-30"></div>
+    <div class="{% if images|length > 0 %} column-scan-small {% else %} hide {% endif %} ">
         <div id="thumbnails">
             {% for image in images %}
             <div class="spacer-15"></div>
@@ -40,7 +39,7 @@
             {% endfor %}
         </div>
     </div>
-
+    </div>
     <!-- ///////////////////////////////// end of thumbnails///////////////////////////////// -->
 
 
