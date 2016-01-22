@@ -108,10 +108,7 @@ def application_start(application_type, appn_id, form):
         url = app.config["CASEWORK_API_URL"] + "/forms/" + str(document_id) + '/' + str(page)
         images.append(url)
 
-    if form == "Full Search":
-        template = page_required("search")
-    else:
-        template = page_required(application_type, form)
+    template = page_required(application_type, form)
 
     application_json['form'] = form
 
@@ -598,7 +595,6 @@ def process_search_name(search_type):
         'search_type': "bankruptcy" if search_type == 'banks' else 'full',
         'search_items': []
     }
-
     counter = 0
     while True:
         name_field = 'fullname{}'.format(counter)
@@ -930,7 +926,8 @@ def page_required(appn_type, sub_type = ''):
             "bank_amend": "regn_retrieve.html",
             "cancel": "regn_retrieve.html",
             "bank_regn": "application.html",
-            "search": "search_name.html",
+            "search_full": "search_input_pg1.html",
+            "search_bank": "search_input_pg1.html",
             "oc": "regn_retrieve.html"
         }
         return html_page.get(appn_type)

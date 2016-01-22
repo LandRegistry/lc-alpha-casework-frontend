@@ -1,0 +1,210 @@
+<script src="/static/js/jquery-ui.js" ></script>
+<link href="/static/css/jquery-ui.css" rel="Stylesheet" type="text/css" />
+<style>
+    /*  Customisation of Modal dialog popup */
+
+    .ui-widget-overlay {
+    opacity: .7;
+    }
+    .ui-widget-header {
+    margin-top:10px;
+    border:0px;
+    background: #ffffff;
+    color: #000000;
+    font-family: Roboto;
+    font-size: 24px;
+    }
+    #ui-id-2 {
+    margin-left:-6px;
+    }
+    .ui-dialog-titlebar {
+    display:none;
+    }
+    .stop-scrolling {
+    height: 100%;
+    overflow: hidden;
+    }
+</style>
+<script>
+
+function showComplexNameModal(ctr) {
+    $("#complex_result_modal_"+ctr).dialog({
+        modal:true,
+        show: true,
+        hide:true,
+        width: 600,
+        maxHeight: 500
+    });
+    getComplexName(ctr);
+}
+
+function updateComplexName(obj, ctr){
+    compNameStr = obj.value;
+    name = compNameStr.substring(0,compNameStr.indexOf('*'));
+    number = compNameStr.substring(compNameStr.indexOf('*')+1,compNameStr.length);
+    nameHTML = jQuery('<p class="text-16-bold">' + name +' ('+ number +')' + '</p>');
+    jQuery('#selected_name_' + ctr).empty();
+    jQuery('#selected_name_' + ctr).append(nameHTML);
+    jQuery('#complex_name_' + ctr).val(name);
+    jQuery('#complex_number_' + ctr).val(number);
+}
+
+function closeComplexNameModal(ctr){
+    $('body').removeClass('stop-scrolling');
+    $('#complex_result_modal_' + ctr).dialog('close');
+}
+function clearPreviousResults(ctr){
+    jQuery('#name_results_' + ctr).remove();
+    jQuery('#selected_name_' + ctr).empty();
+    jQuery('#complex_name_' + ctr).val("");
+    jQuery('#complex_number_' + ctr).val("");
+}
+
+function getComplexName(ctr){
+
+    $('body').addClass('stop-scrolling');
+    var enteredName = jQuery('#complex_name_field_'+ctr).val().trim();
+    clearPreviousResults(ctr);
+    if (enteredName.length > 3){
+        jQuery.ajax( {
+            url: '{{config.CASEWORK_API_URL}}/complex_names/' + enteredName,
+            type: 'GET',
+            data: {},
+            success: function( data ) {
+                jQuery('#modal_message_'+ ctr).replaceWith($('<p id="modal_message_'+ctr+'" class="text-16">Please select a complex name from the list</p>'));
+                if (data.length > 0 ){
+                    resultHTML = jQuery('<table id="name_results_'+ctr+'"></table');
+                    for ( var i = 0; i < data.length; i++) {
+                        var name = data[i].name;
+                        var number = data[i].number;
+                        var row =jQuery('<tr/>');
+                        var cells =  jQuery('<td>'+ name +'</td><td>' + number + '</td><td>' +
+                        '<input type="radio" id="comp_name_'+i+'" name="comp_name_sel" onclick="updateComplexName(this,'+ctr+')" value="'+ name +'*' + number +'"/></td>');
+                        row.append(cells);
+                resultHTML.append(row);
+                    }
+                    jQuery('#complex_result_'+ctr).append(resultHTML);
+                } else {
+                    jQuery('#modal_message_'+ ctr).replaceWith('<p id="modal_message_'+ctr+'" class="text-16">No match found for the name entered.'+
+                    '<br/><br/>Please check the details entered and if correct then create a new complex name using LCNU.</p>');
+                }
+
+            }
+        } );
+    } else {
+        jQuery('#modal_message_'+ ctr).replaceWith('<p id="modal_message_'+ ctr + '" class="text-16">The system is unable to retrieve a list '+
+                    'of complex names due to the name entered was less than 4 characters, please try again.</p>');
+    }
+}
+
+var nameCount = 0;
+
+function setupNameFields(){
+        $("#search_fields :input").attr("disabled", true);
+        showName();
+        showName();
+}
+
+function showName() {
+    nameCount++;
+    filterNameFields(nameCount);
+    jQuery('#name_' + nameCount).show();
+    if (nameCount == 6) {
+        jQuery('#add_name').hide();
+    }
+}
+
+function filterNameFields(i) {
+    var type = jQuery("#nameType_" + i).val();
+    jQuery("#private_" + i).hide();
+    jQuery("#limited_" + i).hide();
+    jQuery("#local_" + i).hide();
+    jQuery("#complex_" + i).hide();
+    jQuery("#other_" + i).hide();
+    jQuery("#search_name_" + i + " :input").attr("disabled", true);
+
+    if (type == "limitedCompany") {
+        jQuery("#limited_" + i).show();
+        jQuery("#limited_" + i + " :input").attr("disabled", false);
+        jQuery("#forename_" + i + ", #surname_" + i + ", #loc_auth_" + i + ", #loc_auth_area_" + i +
+        ", #complex_name_" + i + ", #other_name_" + i + "").val('');
+    } else if (type == "localAuthority") {
+        jQuery("#local_" + i).show();
+        jQuery("#local_" + i + " :input").attr("disabled", false);
+        jQuery("#forename_" + i + ", #surname_" + i + ", #company_" + i + ", #complex_name_" + i +
+        ", #other_name_" + i + "").val('');
+    }else if (type == "complexName") {
+        jQuery("#complex_" + i).show();
+        jQuery("#complex_" + i + " :input").attr("disabled", false);
+        jQuery("#forename_" + i + ", #surname_" + i + ", #company_" + i + ", #loc_auth_" + i +
+        ", #loc_auth_area_" + i + ", #other_name_" + i + "").val('');
+    } else if (type == "other") {
+        jQuery("#other_" + i).show();
+        jQuery("#other_" + i + " :input").attr("disabled", false);
+        jQuery("#forename_" + i + ", #surname_" + i + ", #company_" + i + ", #loc_auth_" + i +
+        ", #loc_auth_area_" + i + ", #complex_name_" + i + "").val('');
+    } else {
+        jQuery("#private_" + i).show();
+        jQuery("#private_" + i + " :input").attr("disabled", false);
+        jQuery("#company_" + i + ", #loc_auth_" + i + ", #loc_auth_area_" + i +
+        ", #complex_name_" + i + ", #other_name_" + i + "").val('');
+    }
+    jQuery("#nameType_" + i).attr("disabled", false);
+    jQuery("#search_date_" + i + " :input").attr("disabled", false);
+}
+
+
+if ({{curr_data.county|length}} > 0) {
+    var n = {{curr_data.county|length}};
+}
+else {
+    var n = 1;
+}
+
+function setupCountyAutocomplete(element) {
+    var a = 0;
+    var host = "{{config.CASEWORK_API_URL}}";
+
+    jQuery.ajax({
+        url: host + '/counties',
+        type: 'GET',
+        counties: {},
+        success: function( counties ) {
+            jQuery(element).autocomplete({
+              source: function( request, response ) {
+                var matcher = new RegExp( "^" + jQuery.ui.autocomplete.escapeRegex( request.term ), "i" );
+                response( jQuery.grep( counties, function( item ){
+                      return matcher.test( item );
+                    }) );
+                }
+            });
+        }
+    });
+}
+
+
+function countyClick(sender){
+    var fldnam = "county_" + n;
+    jQuery('<input class="form-textfield" type="text" id="' + fldnam + '" name="' + fldnam+ '"> \
+            <div class="spacer-10"><div>').insertBefore("#addcounty");
+    n ++;
+
+    jQuery.ajax({
+    'async': false,
+    url: '{{config.CASEWORK_API_URL}}/counties',
+    type: 'GET',
+    counties: {},
+    success: function( counties ) {
+        jQuery("#"+fldnam).autocomplete({
+          source: function( request, response ) {
+            var matcher = new RegExp( "^" + jQuery.ui.autocomplete.escapeRegex( request.term ), "i" );
+            response( jQuery.grep( counties, function( item ){
+                  return matcher.test( item );
+                }) );
+            }
+            });
+        }
+    });
+};
+
+</script>

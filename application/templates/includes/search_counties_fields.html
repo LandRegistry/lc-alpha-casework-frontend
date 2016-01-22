@@ -1,0 +1,34 @@
+<div class="spacer-20"></div>
+<h2 class="text-24-bold">County</h2>
+<div class="spacer-10"></div>
+<div class="grid-row">
+    <div class="col four checkbox-div">
+        <label class="form-label" for="all_counties">
+            <input id="all_counties" type="checkbox" name="all_counties" value="yes">
+            All county search
+        </label>
+    </div>
+    <div class="col one" style="padding:5px;"><label class="form-label">or</label></div>
+</div>
+<div class="spacer-10"></div>
+<div class="grid-row">
+<div class="form">
+    {% if 'county' in errors %}
+    <label class="error-text form-label" for="county_0">X County or unitary authority area</label>
+    {% else %}
+    <label class="form-label" for="county_0">County</label>
+    {% endif %}
+    {% if errors|length > 0 and curr_data.county|length > 0%}
+    {% for rows in curr_data.county %}
+    <input class="form-textfield" type="text" id="county_{{loop.index-1}}" name="county_{{loop.index-1}}"
+           value="{{rows}}"/>
+    <div class="spacer-10"></div>
+    {% endfor %}
+    {% else %}
+    <input class="form-textfield" type="text" id="county_0" name="county_0"/>
+    <div class="spacer-5"></div>
+    {% endif %}
+</div>
+
+<div><a href="#here" onclick="countyClick(this)" class="link-16" id="addcounty">Add additional county</a></div>
+</div>

@@ -19,7 +19,7 @@
                 <div id="image_container">
                     {% for image in images %}
                     <div class="image_panner" id="container{{loop.index0}}">
-                        <img class="panned_image" src="{{image}}"/>
+                        <img class="panned_image" alt="" src="{{image}}"/>
                     </div>
                     {% endfor %}
                 </div>
@@ -30,7 +30,7 @@
     <!-- ///////////////////////////////// end of scanned page ///////////////////////////////// -->
 
     <!-- ///////////////////// display thumbnails if greater than one page //////////////////////// -->
-    <div class="{% if images|length > 0 %} column-scan-small {% else %} hide {% endif %} ">
+    <div class="{% if images|length > 1 %} column-scan-small {% else %} hide {% endif %} ">
         <div id="thumbnails">
             {% for image in images %}
             <div class="spacer-15"></div>
