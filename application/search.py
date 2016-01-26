@@ -101,7 +101,7 @@ def process_search_criteria(data, search_type):
     result = {}
     if search_type == 'full':
         if 'all_counties' in data and data['all_counties'] == 'yes':
-            result['county'] = ['All']
+            result['county'] = ['ALL']
         else:
             add_counties(result, data)
     else:
