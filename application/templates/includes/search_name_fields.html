@@ -12,6 +12,12 @@
 {% elif id_count == 6%}
 {% set title = 'Sixth name to be searched' %}
 {% endif %}
+
+{% if is_mandatory == true %}
+{% set required = 'required aria-required="true"' %}
+{% else %}
+{% set required = '' %}
+{% endif %}
         <!-- SEARCH NAME -->
     <div id="search_name_{{id_count}}">
         <div class="spacer-40"></div>
@@ -35,37 +41,37 @@
         <div id="private_{{id_count}}">
             <div class="form">
                 <label class="form-label" for="forename_{{id_count}}">Forename(s)</label>
-                <input class="form-textfield" required aria-required="true" type="text" id="forename_{{id_count}}" name="forename_{{id_count}}" value="{{curr_data.estate_owner.private.forenames}}"/>
+                <input class="form-textfield" {{required}} type="text" id="forename_{{id_count}}" name="forename_{{id_count}}" value="{{curr_data.estate_owner.private.forenames}}"/>
             </div>
 
             <div class="form">
                 <label class="form-label" for="surname_{{id_count}}">Surname</label>
-                <input class="form-textfield" required aria-required="true" type="text" id="surname_{{id_count}}" name="surname_{{id_count}}" value="{{curr_data.estate_owner.private.surname}}"/>
+                <input class="form-textfield" {{required}} type="text" id="surname_{{id_count}}" name="surname_{{id_count}}" value="{{curr_data.estate_owner.private.surname}}"/>
             </div>
         </div>
 
         <div id="limited_{{id_count}}">
             <div class="form">
                 <label class="form-label" for="company_{{id_count}}">Company name</label>
-                <input class="form-textfield" required aria-required="true" type="text" id="company_{{id_count}}" name="company_{{id_count}}" value="{{curr_data.estate_owner.company}}"/>
+                <input class="form-textfield" {{required}} type="text" id="company_{{id_count}}" name="company_{{id_count}}" value="{{curr_data.estate_owner.company}}"/>
             </div>
         </div>
 
         <div id="local_{{id_count}}">
             <div class="form">
                 <label class="form-label" for="loc_auth_{{id_count}}">Local authority full name</label>
-                <input class="form-textfield" required aria-required="true" type="text" id="loc_auth_{{id_count}}" name="loc_auth_{{id_count}}" value="{{curr_data.estate_owner.local.name}}"/>
+                <input class="form-textfield" {{required}} type="text" id="loc_auth_{{id_count}}" name="loc_auth_{{id_count}}" value="{{curr_data.estate_owner.local.name}}"/>
             </div>
             <div class="form">
                 <label class="form-label" for="loc_auth_area_{{id_count}}">Local authority area</label>
                 <p class="text-indent">This is the area the local authority affects</p>
-                <input class="form-textfield" required aria-required="true" type="text" id="loc_auth_area_{{id_count}}" name="loc_auth_area_{{id_count}}" value="{{curr_data.estate_owner.local.area}}"/>
+                <input class="form-textfield" {{required}} type="text" id="loc_auth_area_{{id_count}}" name="loc_auth_area_{{id_count}}" value="{{curr_data.estate_owner.local.area}}"/>
             </div>
         </div>
         <div id="complex_{{id_count}}">
             <div class="form">
                 <label class="form-label" for="complex_name_field_{{id_count}}">Complex name</label>
-                <input class="form-textfield" required aria-required="true" type="text" id="complex_name_field_{{id_count}}" value="{{curr_data.estate_owner.complex.name}}"/>
+                <input class="form-textfield" {{required}} type="text" id="complex_name_field_{{id_count}}" value="{{curr_data.estate_owner.complex.name}}"/>
                 <div class="spacer-5"></div>
                 <a href="#here" id="name_lookup_link_{{id_count}}" onclick="showComplexNameModal('{{id_count}}');" class="link-14-right">Look up complex name</a>
                 <div id="complex_result_modal_{{id_count}}" role="dialog" aria-labelledby="modal_header_{{id_count}}" style="display: none;">
@@ -91,7 +97,7 @@
         <div id="other_{{id_count}}">
             <div class="form">
                 <label class="form-label" for="other_name_{{id_count}}">Name</label>
-                <input class="form-textfield" required aria-required="true" type="text" id="other_name_{{id_count}}" name="other_name_{{id_count}}" value="{{curr_data.estate_owner.other}}"/>
+                <input class="form-textfield" {{required}} type="text" id="other_name_{{id_count}}" name="other_name_{{id_count}}" value="{{curr_data.estate_owner.other}}"/>
             </div>
         </div>
 
@@ -104,11 +110,11 @@
         <div class="grid-row">
             <div class="col three">
                 <label class="form-label" for="year_from_{{id_count}}">From</label>
-                <input class="form-textfield width-75" required aria-required="true" type="text" id="year_from_{{id_count}}" maxlength="4" name="year_from_{{id_count}}" value="{{years.year_from}}"/>
+                <input class="form-textfield width-75" {{required}} type="text" id="year_from_{{id_count}}" maxlength="4" name="year_from_{{id_count}}" value="{{years.year_from}}"/>
             </div>
             <div class="col three">
                 <label class="form-label"  for="year_to_{{id_count}}">To</label>
-                <input class="form-textfield width-75" required aria-required="true" type="text" id="year_to_{{id_count}}" maxlength="4" name="year_to_{{id_count}}" value="{{years.year_to}}"/>
+                <input class="form-textfield width-75" {{required}} type="text" id="year_to_{{id_count}}" maxlength="4" name="year_to_{{id_count}}" value="{{years.year_to}}"/>
             </div>
             </div>
         </div>
