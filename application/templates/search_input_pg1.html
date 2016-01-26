@@ -37,6 +37,10 @@
         {% for i in range(6) %}
             {% set id_count = loop.index %}
             <div id="name_{{id_count}}" class="col twelve hide ">
+                {% set is_mandatory = true %}
+                {% if loop.index == 2 %}
+                    {% set is_mandatory = false %}
+                {% endif %}
                 {% include 'includes/search_name_fields.html' %}
             </div>
         {% endfor %}
@@ -53,7 +57,7 @@
         </div>
 
         <a href="/get_list?appn=search_full" class="link-16">Return to this application later</a>
-
+        <div class="spacer-40"></div>
     </form>
     </div>
     <!-- ///////////////////////////////// end of data entry form ///////////////////////////////// -->

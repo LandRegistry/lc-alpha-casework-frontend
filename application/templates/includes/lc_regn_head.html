@@ -162,19 +162,22 @@
         document.getElementById("complex").style.display = 'none';
         document.getElementById("other").style.display = 'none';
 
-
         if (type == "limitedCompany") {
             document.getElementById("limited").style.display = 'block';
             jQuery("#forename, #surname, #loc_auth, #loc_auth_area, #complex_name, #other_name").val('');
-        } else if (type == "localAuthority") {
+
+        } else if (type == "countyCouncil" || type == "parishCouncil" || type == "otherCouncil") {
             document.getElementById("local").style.display = 'block';
             jQuery("#forename, #surname, #company, #complex_name, #other_name").val('');
+
         }else if (type == "complexName") {
             document.getElementById("complex").style.display = 'block';
             jQuery("#forename, #surname, #company, #loc_auth, #loc_auth_area, #other_name").val('');
-        } else if (type == "other") {
+
+        } else if (type == "other" || type == "developmentCorporation" ) {
             document.getElementById("other").style.display = 'block';
             jQuery("#forename, #surname, #company, #loc_auth, #loc_auth_area, #complex_name").val('');
+
         } else {
             document.getElementById("private").style.display = 'block';
             jQuery("#company, #loc_auth, #loc_auth_area, #complex_name, #other_name").val('');
