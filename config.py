@@ -7,6 +7,7 @@ class Config(object):
 
 class DevelopmentConfig(object):
     DEBUG = True
+    CASEWORK_FRONTEND_URL = "http://localhost:5010"
     CASEWORK_API_URL = "http://localhost:5006"
     BANKRUPTCY_DATABASE_URL = "http://localhost:5004"
     DOCUMENT_URL = "http://localhost:5014"
@@ -14,6 +15,8 @@ class DevelopmentConfig(object):
 
 
 class PreviewConfig(Config):
+
+    CASEWORK_FRONTEND_URL = "http://localhost:5010"
     CASEWORK_API_URL = "http://localhost:5006"
     BANKRUPTCY_DATABASE_URL = "http://localhost:5004"
     DOCUMENT_URL = "http://localhost:5014"
@@ -21,6 +24,7 @@ class PreviewConfig(Config):
 
 
 class DemoConfig(Config):
+    CASEWORK_FRONTEND_URL = "http://localhost:5010"
     CASEWORK_API_URL = "http://localhost:5006"
     BANKRUPTCY_DATABASE_URL = "http://localhost:5004"
     DOCUMENT_URL = "http://lrq00103187:5014"
