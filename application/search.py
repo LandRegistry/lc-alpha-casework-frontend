@@ -11,7 +11,7 @@ def process_search_criteria(data, search_type):
     counties = []
     parameters = {
         'counties': counties,
-        'search_type': "bankruptcy" if search_type == 'banks' else 'full',
+        'search_type': "banks" if search_type == 'banks' else 'full',
         'search_items': []
     }
     counter = 1
@@ -99,10 +99,14 @@ def process_search_criteria(data, search_type):
         counter += 1
 
     result = {}
-    if 'all_counties' in data and data['all_counties'] == 'yes':
-        result['county'] = ['All']
+    if search_type == 'full':
+        if 'all_counties' in data and data['all_counties'] == 'yes':
+            result['county'] = ['All']
+        else:
+            add_counties(result, data)
     else:
-        add_counties(result, data)
+        result['county'] = None
+
     parameters['counties'] = result['county']
     session['application_dict']['search_criteria'] = parameters
     print('session after search criteria is:', session)
