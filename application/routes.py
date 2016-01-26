@@ -903,3 +903,17 @@ def delete_from_worklist(application_id):
 def set_session_variables(variable_dict):
     for key in variable_dict:
         session[key] = variable_dict[key]
+
+# pull back an individual page as an image
+@app.route('/images/<int:doc_id>/<int:page_no>', methods=['GET'])
+def get_page_image(doc_id, page_no):
+    url = app.config['CASEWORK_API_URL'] + '/forms/'+ str(doc_id) + '/' + str(page_no)
+    data = requests.get(url)
+    return Response(data, status=200, mimetype=data.headers['Content-Type'])
+
+# pull back a set of pages as JSON
+@app.route('/images/<int:doc_id>', methods=['GET'])
+def get_form_images(doc_id):
+    url = app.config['CASEWORK_API_URL'] + '/forms/'+ str(doc_id)
+    data = requests.get(url)
+    return Response(data, status=200, mimetype='application/json')
