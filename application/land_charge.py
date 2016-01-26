@@ -76,7 +76,7 @@ def build_customer_fee_inputs(data):
 
 def submit_lc_registration(cust_fee_data):
     application = session['application_dict']
-    application['application_type'] = convert_application_type(session['application_type'])
+    application['class_of_charge'] = convert_application_type(session['application_type'])
     application['application_ref'] = cust_fee_data['application_reference']
     application['key_number'] = cust_fee_data['key_number']
     application['customer_name'] = cust_fee_data['customer_name']
