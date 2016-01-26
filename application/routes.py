@@ -905,16 +905,15 @@ def set_session_variables(variable_dict):
 # pull back an individual page as an image
 @app.route('/images/<int:doc_id>/<int:page_no>', methods=['GET'])
 def get_page_image(doc_id, page_no):
-   url = app.config['CASEWORK_API_URL'] + '/forms/'+ str(doc_id) + '/' + str(page_no)
-   data = requests.get(url)
-   return (data.content, data.status_code, data.headers.items())
+    url = app.config['CASEWORK_API_URL'] + '/forms/' + str(doc_id) + '/' + str(page_no)
+    data = requests.get(url)
+    return data.content, data.status_code, data.headers.items()
 
 
 # pull back page data as JSON
 @app.route('/images/<int:doc_id>', methods=['GET'])
 def get_form_images(doc_id):
-   url = app.config['CASEWORK_API_URL'] + '/forms/'+ str(doc_id)
-   data = requests.get(url)
-   json_data = json.loads(data.content.decode('utf-8'))
-   return (json.dumps(json_data), data.status_code, data.headers.items())
-
+    url = app.config['CASEWORK_API_URL'] + '/forms/' + str(doc_id)
+    data = requests.get(url)
+    json_data = json.loads(data.content.decode('utf-8'))
+    return json.dumps(json_data), data.status_code, data.headers.items()
