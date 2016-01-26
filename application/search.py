@@ -11,16 +11,24 @@ def process_search_criteria(data, search_type):
     counties = []
     parameters = {
         'counties': counties,
-        'search_type': "banks" if search_type == 'banks' else 'full',
+        'search_type': "banks" if search_type == 'search_bank' else 'full',
         'search_items': []
     }
     counter = 1
+
+    print(data)
     while True:
+
         name_type = 'nameType_{}'.format(counter)
         if name_type not in data:
             break
 
-        if data[name_type] == 'privateIndividual':
+        name_extracted = False
+
+        if data[name_type] == 'privateIndividual' \
+                and data['forename_{}'.format(counter)] != '' \
+                and data['surname_{}'.format(counter)] != '':
+
             forename = 'forename_{}'.format(counter)
             surname = 'surname_{}'.format(counter)
             search_item = {
@@ -30,9 +38,11 @@ def process_search_criteria(data, search_type):
                     'surname': data[surname]
                 }
             }
-            print('search_item', search_item)
+            name_extracted = True
 
-        elif data[name_type] == 'limitedCompany':
+        elif data[name_type] == 'limitedCompany' \
+                and data['company_{}'.format(counter)] != '':
+
             company = 'company_{}'.format(counter)
             search_item = {
                 'name_type': 'Company',
@@ -40,9 +50,12 @@ def process_search_criteria(data, search_type):
                     'company_name': data[company]
                 }
             }
-            print(search_item)
+            name_extracted = True
 
-        elif data[name_type] == 'localAuthority':
+        elif data[name_type] == 'localAuthority' \
+                and data['loc_auth_{}'.format(counter)] != '' \
+                and data['loc_auth_area_{}'.format(counter)] != '':
+
             loc_auth = 'loc_auth_{}'.format(counter)
             loc_auth_area = 'loc_auth_area_{}'.format(counter)
             search_item = {
@@ -52,8 +65,12 @@ def process_search_criteria(data, search_type):
                     'local_authority_area': data[loc_auth_area]
                 }
             }
+            name_extracted = True
 
-        elif data[name_type] == 'complexName':
+        elif data[name_type] == 'complexName' \
+                and data['complex_name_{}'.format(counter)] != '' \
+                and data['complex_number_{}'.format(counter)] != '':
+
             complex_name = 'complex_name_{}'.format(counter)
             complex_number = 'complex_number_{}'.format(counter)
             search_item = {
@@ -72,16 +89,14 @@ def process_search_criteria(data, search_type):
             response = requests.post(url, data=json.dumps(comp_name), headers=headers)
             logging.info('POST {} -- {}'.format(url, response))
             result = response.json()
-            print('the result from complex call', result)
 
             for item in result:
-                print('item is', item)
                 search_item['name']['complex_variations'].append({'complex_name': item['name'],
                                                                   'complex_number': int(item['number'])})
+            name_extracted = True
 
-        else:
+        elif data[name_type] == 'other' and data['other_name_{}'.format(counter)] != '':
             # name_type is other
-            print('other')
             other_name = 'other_name_{}'.format(counter)
             search_item = {
                 'name_type': 'Other',
@@ -89,17 +104,20 @@ def process_search_criteria(data, search_type):
                     'company_name': data[other_name]
                 }
             }
+            name_extracted = True
 
-        if search_type == 'full':
+        if search_type == 'search_full' and name_extracted:
             logging.info('Getting year stuff')
             search_item['year_to'] = int(data['year_to_{}'.format(counter)])
             search_item['year_from'] = int(data['year_from_{}'.format(counter)])
 
-        parameters['search_items'].append(search_item)
+        if name_extracted:
+            parameters['search_items'].append(search_item)
+
         counter += 1
 
     result = {}
-    if search_type == 'full':
+    if search_type == 'search_full':
         if 'all_counties' in data and data['all_counties'] == 'yes':
             result['county'] = ['All']
         else:
@@ -109,5 +127,4 @@ def process_search_criteria(data, search_type):
 
     parameters['counties'] = result['county']
     session['application_dict']['search_criteria'] = parameters
-    print('session after search criteria is:', session)
     return

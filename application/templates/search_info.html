@@ -3,17 +3,6 @@
 {% block page_specific_head %}
 {% include 'includes/search_head.html' %}
 
-<script>
-    function validateFields(){
-        if ($('#all_counties').is(':checked') == false && $('#county_0').val() == "") {
-            $('#county_error').show();
-            return false;
-        } else {
-            $('#county_error').hide();
-        }
-    }
-</script>
-
 {% endblock %}
 {% block maincontent %}
 

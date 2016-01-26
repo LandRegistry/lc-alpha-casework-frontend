@@ -586,43 +586,17 @@ def submit_cancellation():
 
 
 # Search routes
-@app.route('/process_search_name/<search_type>', methods=['POST'])
-def process_search_name(search_type):
+@app.route('/process_search_name/<application_type>', methods=['POST'])
+def process_search_name(application_type):
     logging.info('Entering search name')
     print(request.form)
 
-    process_search_criteria(request.form, search_type)
+    process_search_criteria(request.form, application_type)
 
-    if search_type == 'full':
-        return redirect('/search_counties', code=302, Response=None)
-    else:
-        return redirect('/search_customer', code=302, Response=None)
-
-
-@app.route('/search_counties', methods=['GET'])
-def search_counties():
-    return render_template('search_counties.html', images=session['images'], application=session['application_dict'],
-                           application_type=session['application_type'], current_page=0, backend_uri=app.config['CASEWORK_API_URL'])
-
-
-@app.route('/process_search_county', methods=['POST'])
-def process_search_county():
-    if 'all_counties' in request.form and request.form['all_counties'] == 'yes':
-        counties = []
-    elif 'area_list' in request.form and request.form['area_list'] != '':
-        counties = request.form['area_list'].upper().strip('\r\n').split()
-    else:
-        counties = []
-
-    # session['application_dict']['search_criteria']['counties'] = counties
-
-    return redirect('/search_customer', code=302, Response=None)
-
-
-@app.route('/search_customer', methods=['GET'])
-def search_customer():
     return render_template('search_customer.html', images=session['images'], application=session['application_dict'],
-                           application_type=session['application_type'], current_page=0, backend_uri=app.config['CASEWORK_API_URL'])
+                           application_type=session['application_type'], current_page=0,
+                           backend_uri=app.config['CASEWORK_API_URL'])
+
 
 
 @app.route('/submit_search', methods=['POST'])
@@ -643,6 +617,7 @@ def submit_search():
     }
 
     session['search_data'] = search_data
+    print(search_data)
     url = app.config['BANKRUPTCY_DATABASE_URL'] + '/searches'
     headers = {'Content-Type': 'application/json'}
     response = requests.post(url, data=json.dumps(search_data), headers=headers)
@@ -881,8 +856,8 @@ def page_required(appn_type, sub_type = ''):
             "bank_amend": "regn_retrieve.html",
             "cancel": "regn_retrieve.html",
             "bank_regn": "application.html",
-            "search_full": "search_input_pg1.html",
-            "search_bank": "search_input_pg1.html",
+            "search_full": "search_info.html",
+            "search_bank": "search_info.html",
             "oc": "regn_retrieve.html"
         }
         return html_page.get(appn_type)

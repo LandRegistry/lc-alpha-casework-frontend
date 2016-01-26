@@ -77,52 +77,33 @@
 {% endblock %}
 {% block maincontent %}
 
-<div class="breadcrumb">
-    <ol>
-        <li><a class="breadcrumb_links" href="/">Home</a></li>
-        <li><a class="breadcrumb_links" href="/">Bankruptcies</a></li>
-        <li><a class="breadcrumb_links" href="/get_list?appn=search">List of search applications</a></li>
-        {% if search_type == 'banks' %}
-        <li class="breadcrumb-no-arrow"><span>Bankruptcy search</span></li>
-        {% else %}
-        <li class="breadcrumb-no-arrow"><span>Land charge and bankruptcy search</span></li>
-        {% endif %}
-    </ol>
-</div>
+
+{% if application_type == 'search_full' %}
+{% set title = 'Full search' %}
+{% else %}
+{% set title = 'Bankruptcy search' %}
+{% endif %}
+
 <div class="spacer-10"></div>
 
-{% if search_type == 'banks' %}
-<h1 class="title-36">Bankruptcy search</h1>
-{% else %}
-<h1 class="title-36">Land charge and bankruptcy search</h1>
-{% endif %}
+<h1 class="title-36">{{title}}</h1>
 
 <div class="spacer-5"></div>
 
 <div class="text-16-gray">
-    <span class="text-16-no-link-style">1. Name(s) to be searched</span>
+    <a class="link-16 no-link-style" href="/get_list?appn=search">1. Input details</a>
     &nbsp;&nbsp;
-    {% if application['search_criteria']['search_type'] == 'bankruptcy' %}
-    <span class="text-16-bold">2. Customer details</span>
-    {% else %}
-    <span class="text-16-no-link-style">2. Counties to be searched</span>
-    &nbsp;&nbsp;
-    <span class="text-16-bold">3. Customer details</span>
-    {% endif %}
+    2. Applicant and fees
 </div>
-<div class="spacer-30"></div>
 
 <div class="grid-row">
-
+    <div class="col four" id="form_panel">
     <!-- ///////////////////////////////// data entry form ///////////////////////////////// -->
-    <form action="/submit_search" method="POST">
-    <div class="column-form" id="form_panel">
 
-        {% if application['search_criteria']['search_type'] == 'bankruptcy' %}
-        <p class="text-24-bold">2. Customer details</p>
-        {% else %}
-        <p class="text-24-bold">3. Customer details</p>
-        {% endif %}
+        <form action="/submit_search" method="POST">
+        <div class="spacer-30"></div>
+        <p class="text-24-bold">Applicant</p>
+
 
         <div class="spacer-20"></div>
 
@@ -132,43 +113,59 @@
                    onkeyup="getCustomerDetails(this);" onblur="getCustomerDetails(this);" value="{{key_number}}"/>
         </div>
         <div class="form">
-            <label class="form-label" for="customer_name">Customer name</label>
+            <label class="form-label" for="customer_name">Applicant name</label>
             <input class="form-textfield" type="text" id="customer_name" name="customer_name" value="{{customer_name}}"/>
         </div>
         <div class="form">
-            <label class="form-label" for="customer_address">Customer address</label>
+            <label class="form-label" for="customer_address">Applicant address</label>
+            <p class="text-indent">This information must be provided.<br/>If dispatch address is different, please overkey.</p>
             <textarea class="form-textarea" rows="8" id="customer_address" name="customer_address"></textarea>
         </div>
         <div class="form">
-            <label class="form-label" for="customer_ref">Customer reference</label>
+            <label class="form-label" for="customer_ref">Applicant reference</label>
             <input class="form-textfield" type="text" id="customer_ref" name="customer_ref" value="{{customer_ref}}"/>
         </div>
+        <div class="spacer-20"></div>
+        <h2 class="text-24-bold">Fees</h2>
+        <div class="spacer-20"></div>
+            <div class="grid-row">
+            <div class="col three form-control-div">
+                <label class="form-label" for="pre_paid">
+                    <input id="pre_paid" type="radio" name="payment" value="pp">
+                    Pre-paid
+                </label>
+            </div>
+            <div class="col three form-control-div">
+                <label class="form-label" for="direct_debit">
+                    <input id="direct_debit" type="radio" name="payment" value="dd">
+                    Direct debit
+                </label>
+            </div>
 
+        </div>
         <div class="spacer-30"></div>
 
         <div>
             <table>
                 <tr>
                     <td width="50%" class="no-line">
-                        <input id="submit" type="submit" class="form-button" value="Submit search"/>
-                    </td>
-                    <td width="50%" class="custom-3">
-                        <a href="#" class="link-16">Reject application</a>
+                        <input id="submit" type="submit" class="form-button" value="Complete"/>
                     </td>
                 </tr>
             </table>
         </div>
 
-    </div>
-    </form>
-    <!-- ///////////////////////////////// end of data entry form ///////////////////////////////// -->
 
+    </form>
+    </div>
+    <!-- ///////////////////////////////// end of data entry form ///////////////////////////////// -->
+    <div class="col one"><p></p></div>
     <!-- /////////////////////////////////  Include image tool ///////////////////////////////// -->
 
-    {% include 'includes/image_view_body.html' %}
-
+    <div class="col seven">
+        {% include 'includes/image_view_body.html' %}
+    </div>
     <!-- ///////////////////////////////// End of image tool ///////////////////////////////// -->
-
 </div>
 
 

@@ -207,4 +207,13 @@ function countyClick(sender){
     });
 };
 
+function validateFields(){
+    if ($('#all_counties').is(':checked') == false && $('#county_0').val() == "") {
+        $('#county_error').show();
+        return false;
+    } else {
+        $('#county_error').hide();
+    }
+}
+
 </script>
