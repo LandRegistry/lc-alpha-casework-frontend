@@ -9,7 +9,6 @@ import json
 def build_lc_inputs(data):
     type_of_form = session['application_dict']['form']
     result = {'class': 'C(I)', 'county': [], 'district': '', 'short_description': '',
-              'estate_owner_ind': 'privateIndividual',
               'estate_owner': {'private': {'forenames': '', 'surname': ''},
                                'company': '',
                                'local': {'name': '', 'area': ''},
@@ -23,7 +22,7 @@ def build_lc_inputs(data):
             result['class'] = data['class']
             result['district'] = data['district']
             result['short_description'] = data['short_desc']
-            result['estate_owner_ind'] = data['estateOwnerTypes']
+            result['estate_owner_ind'] = get_eo_ind(data['estateOwnerTypes'])
             result['occupation'] = data['occupation']
             result['additional_info'] = data['addl_info']
 
@@ -34,8 +33,29 @@ def build_lc_inputs(data):
     return result
 
 
+def get_eo_ind(eo_type_string):
+    if eo_type_string.lower() == "privateindividual":
+        return "Private Individual"
+    elif eo_type_string.lower() == "countycouncil":
+        return "County Council"
+    elif eo_type_string.lower() == "parishcouncil":
+        return "Parish Council"
+    elif eo_type_string.lower() == "othercouncil":
+        return "Other Council"
+    elif eo_type_string.lower() == "developmentcorporation":
+        return "Development Corporation"
+    elif eo_type_string.lower() == "limitedcompany":
+        return "Limited Company"
+    elif eo_type_string.lower() == "complexname":
+        return "Complex Name"
+    elif eo_type_string.lower() == "other":
+        return "Other"
+    else:
+        raise RuntimeError("Unrecognised estate owner: {}".format(eo_type_string))
+
+
 def add_estate_owner_details(result, data):
-    result['estate_owner']['private']['forenames'] = data['forename']
+    result['estate_owner']['private']['forenames'] = data['forename'].split(' ')
     result['estate_owner']['private']['surname'] = data['surname']
 
     result['estate_owner']['company'] = data['company']
@@ -76,7 +96,7 @@ def build_customer_fee_inputs(data):
 
 def submit_lc_registration(cust_fee_data):
     application = session['application_dict']
-    application['application_type'] = convert_application_type(session['application_type'])
+    application['class_of_charge'] = convert_application_type(session['application_type'])
     application['application_ref'] = cust_fee_data['application_reference']
     application['key_number'] = cust_fee_data['key_number']
     application['customer_name'] = cust_fee_data['customer_name']
@@ -86,8 +106,8 @@ def submit_lc_registration(cust_fee_data):
     application['residence_withheld'] = False
     application['date_of_birth'] = "1980-01-01"  # TODO: what are we doing about the DOB??
     application['document_id'] = session['document_id']
-    session['register_details']['estate_owner']['estate_owner_ind'] = \
-        convert_estate_owner_ind(session['register_details']['estate_owner_ind'])
+    session['register_details']['estate_owner']['estate_owner_ind'] = session['register_details']['estate_owner_ind']
+    #     convert_estate_owner_ind(session['register_details']['estate_owner_ind'])
     application['lc_register_details'] = session['register_details']
 
     url = app.config['CASEWORK_API_URL'] + '/applications/' + session['worklist_id'] + '?action=complete'
@@ -109,16 +129,16 @@ def submit_lc_registration(cust_fee_data):
         return response.status_code
 
 
-def convert_estate_owner_ind(data):
-    estate_ind = {
-        "privateIndividual": "Private individual",
-        "limitedCompany": "Company",
-        "localAuthority": "Local Authority",
-        "complexName": "Complex name",
-        "other": "other"
-    }
-
-    return estate_ind.get(data)
+# def convert_estate_owner_ind(data):
+#     estate_ind = {
+#         "privateIndividual": "Private individual",
+#         "limitedCompany": "Company",
+#         "localAuthority": "Local Authority",
+#         "complexName": "Complex name",
+#         "other": "other"
+#     }
+#
+#     return estate_ind.get(data)
 
 
 def convert_application_type(type):
