@@ -3,22 +3,29 @@
 {% block page_specific_head %}
 {% include 'includes/search_head.html' %}
 
+<script>
+    function validateFields(){
+        if ($('#all_counties').is(':checked') == false && $('#county_0').val() == "") {
+            $('#county_error').show();
+            return false;
+        } else {
+            $('#county_error').hide();
+        }
+    }
+</script>
+
 {% endblock %}
 {% block maincontent %}
 
-{% if application['application_type'] == 'search_bank' %}
-    {% set search_type = 'banks' %}
+{% if application_type == 'search_full' %}
+    {% set title = 'Full search' %}
 {% else %}
-    {% set search_type = 'full' %}
+    {% set title = 'Bankruptcy search' %}
 {% endif %}
 
 <div class="spacer-10"></div>
 
-{% if search_type == 'banks' %}
-<h1 class="title-36">Bankruptcy search</h1>
-{% else %}
-<h1 class="title-36">Full search</h1>
-{% endif %}
+<h1 class="title-36">{{title}}</h1>
 
 <div class="spacer-5"></div>
 
@@ -31,7 +38,7 @@
 <div class="grid-row">
     <div class="col four" id="form_panel">
     <!-- ///////////////////////////////// data entry form ///////////////////////////////// -->
-    <form action="/process_search_name/{{search_type}}" method="POST">
+    <form id="search_form" action="/process_search_name/{{application_type}}" method="POST">
         <div id="search_fields">
 
         {% for i in range(6) %}
@@ -49,13 +56,14 @@
 
 
         </div>
-        <div class="spacer-10"></div>
-        {% include 'includes/search_counties_fields.html' %}
-        <div class="spacer-40"></div>
-        <div>
-            <input id="continue" type="submit" value="Continue" class="form-button"/>
-        </div>
-
+        {% if application_type == 'search_full' %}
+            <div class="spacer-10"></div>
+            {% include 'includes/search_counties_fields.html' %}
+        {% endif %}
+            <div class="spacer-40"></div>
+            <div>
+                <input id="continue" type="submit" value="Continue" onclick="return validateFields();" class="form-button"/>
+            </div>
         <a href="/get_list?appn=search_full" class="link-16">Return to this application later</a>
         <div class="spacer-40"></div>
     </form>
