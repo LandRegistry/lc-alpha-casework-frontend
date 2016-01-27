@@ -108,6 +108,7 @@ $(document).ready(function() {
                     <tr>
                         <th class="table-text-black">Date and time received <a href="#"></a></th>
                         <th class="table-text-black">Form type <a href="#"></a></th>
+                        <th class="table-text-black">Delivery method <a href="#"></a></th>
                     </tr>
                     </thead>
                     {% for n in worklist %}
@@ -126,6 +127,7 @@ $(document).ready(function() {
                                 link required for clickable table row
                             </a>
                         </td>
+                        <td>{{n['delivery_method']}}</td>
                     </tr>
                     </tbody>
                     {% endfor %}

@@ -70,7 +70,10 @@ def get_list_of_applications(requested_worklist, error_msg):
                 "status": appn['status'],
                 "work_type": appn['work_type'],
                 "assigned_to": appn['assigned_to'],
-                }
+            }
+            if requested_worklist.startswith('search'):
+                application['delivery_method'] = appn['delivery_method']
+
             appn_list.append(application)
 
     app_totals = get_totals()
