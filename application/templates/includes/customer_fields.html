@@ -1,0 +1,40 @@
+<h2 class="text-24-bold">{{customer_type}}</h2>
+<div class="spacer-20"></div>
+
+<div class="form">
+    <label class="form-label" for="key_number">Key number</label>
+    <input class="form-textfield" type="text" id="key_number" name="key_number" autofocus
+           onkeyup="getCustomerDetails(this);" onblur="getCustomerDetails(this);" value="{{key_number}}"/>
+</div>
+<div class="form">
+    <label class="form-label" for="customer_name">{{customer_type}} name</label>
+    <input class="form-textfield" type="text" id="customer_name" name="customer_name" value="{{customer_name}}"/>
+</div>
+<div class="form">
+    <label class="form-label" for="customer_address">{{customer_type}} address</label>
+    <p class="text-indent">This information must be provided.<br/>If dispatch address is different, please overkey.</p>
+    <textarea class="form-textarea" rows="8" id="customer_address" name="customer_address"></textarea>
+</div>
+<div class="form">
+    <label class="form-label" for="customer_ref">{{customer_type}} reference</label>
+    <input class="form-textfield" type="text" id="customer_ref" name="customer_ref" value="{{customer_ref}}"/>
+</div>
+<div class="spacer-20"></div>
+<h2 class="text-24-bold">Fees</h2>
+<div class="spacer-20"></div>
+<div class="grid-row">
+    <div class="col three form-control-div">
+        <label class="form-label" for="pre_paid">
+            <input id="pre_paid" type="radio" name="payment" value="pp">
+            Pre-paid
+        </label>
+    </div>
+    <div class="col three form-control-div">
+        <label class="form-label" for="direct_debit">
+            <input id="direct_debit" type="radio" name="payment" value="dd">
+            Direct debit
+        </label>
+    </div>
+
+</div>
+<div class="spacer-30"></div>
