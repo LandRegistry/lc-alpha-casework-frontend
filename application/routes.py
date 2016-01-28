@@ -125,7 +125,12 @@ def application_start(application_type, appn_id, form):
              }
 
     # land charge input data required for validation on lc_regn_capture.html
-    curr_data = build_lc_inputs({})
+    if 'register_details' in session:
+        curr_data = session['register_details']
+    else:
+        curr_data = build_lc_inputs({})
+
+    session['page_template'] = template #  Might need this later
 
     return render_template(template, application_type=application_type, data=application_json,
                            images=images, application=application, years=years,
@@ -598,7 +603,6 @@ def process_search_name(application_type):
                            backend_uri=app.config['CASEWORK_API_URL'])
 
 
-
 @app.route('/submit_search', methods=['POST'])
 def submit_search():
     logging.info('Entering submit search')
@@ -684,13 +688,31 @@ def land_charge_capture():
         page = "%s.html" % (session['application_dict']['form'])
         return render_template(page, application_type=session['application_type'],
                                images=session['images'], application=session['application_dict'],
-                               current_page=0, errors=result['error'], curr_data=entered_fields)
+                               current_page=0, errors=result['error'], curr_data=entered_fields,
+                               screen='capture')
+
+
+@app.route('/land_charge_capture', methods=['GET'])
+def get_land_charge_capture():
+    # For returning from verification screen
+
+    # session['page_template']
+    return render_template(session['page_template'],
+                           application_type=session['application_type'],
+                           # data=application_json,
+                           images=session['images'],
+                           application=session['application_dict'],
+                           current_page=0,
+                           errors=[],
+                           curr_data=session['register_details'])
+
 
 
 @app.route('/land_charge_verification', methods=['GET'])
 def land_charge_verification():
     return render_template('lc_regn_verify.html', application_type=session['application_type'], data={},
                            images=session['images'], application=session['application_dict'],
+                           details=session['register_details'], screen='verify',
                            current_page=0)
 
 
