@@ -85,6 +85,22 @@ body {
   clear: both;
 }
 
+.grid-row-padded-line {
+  display: block;
+  clear: both;
+  border-width: 1px 0px 0px 0px;
+  border-color: black;
+  border-style: solid;
+  padding: 8px;
+}
+
+.grid-row-padded-line:after {
+  content: " ";
+  display: block;
+  height: 0;
+  clear: both;
+}
+
 .col {
   float: left;
 }

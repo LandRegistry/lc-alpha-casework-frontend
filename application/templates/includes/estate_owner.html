@@ -10,51 +10,94 @@
 
             <p class="text-indent">Please select the type of estate owner from the list</p>
             <select name="estateOwnerTypes" id="estateOwnerTypes" onchange="javascript:showFields();" class="form-select width-50">
+
+
+
+                {% if curr_data.estate_owner_ind == 'Private Individual' %}
+                <option value="privateIndividual" selected="selected">Private individual</option>
+                {% else %}
                 <option value="privateIndividual">Private individual</option>
+                {% endif %}
+
+                {% if curr_data.estate_owner_ind == 'County Council' %}
+                <option value="countyCouncil" selected="selected">County Council or Greater London or Manchester Council</option>
+                {% else %}
                 <option value="countyCouncil">County Council or Greater London or Manchester Council</option>
+                {% endif %}
+
+                {% if curr_data.estate_owner_ind == 'Parish Council' %}
+                <option value="parishCouncil" selected="selected">Parish, Town or Community Council</option>
+                {% else %}
                 <option value="parishCouncil">Parish, Town or Community Council</option>
+                {% endif %}
+
+                {% if curr_data.estate_owner_ind == 'Other Council' %}
+                <option value="otherCouncil" selected="selected">Other Council</option>
+                {% else %}
                 <option value="otherCouncil">Other Council</option>
+                {% endif %}
+
+                {% if curr_data.estate_owner_ind == 'Development Corporation' %}
+                <option value="developmentCorporation" selected="selected">Development Corporation</option>
+                {% else %}
                 <option value="developmentCorporation">Development Corporation</option>
+                {% endif %}
+
+                {% if curr_data.estate_owner_ind == 'Limited Company' %}
+                <option value="limitedCompany" selected="selected">Limited company</option>
+                {% else %}
                 <option value="limitedCompany">Limited company</option>
+                {% endif %}
+
+                {% if curr_data.estate_owner_ind == 'Complex Name' %}
+                <option value="complexName" selected="selected">Complex Name</option>
+                {% else %}
                 <option value="complexName">Complex Name</option>
+                {% endif %}
+
+                {% if curr_data.estate_owner_ind == 'Other' %}
+                <option value="other" selected="selected">Other</option>
+                {% else %}
                 <option value="other">Other</option>
+                {% endif %}
+
             </select>
         </div>
 
         <div id="private">
             <div class="form">
                 <label class="form-label" for="forename">Forename(s)</label>
-                <input class="form-textfield" type="text" id="forename" name="forename" value="{{curr_data.estate_owner.private.forenames}}"/>
+                <input class="form-textfield" type="text" id="forename" autocomplete="off" name="forename" value="{{curr_data.estate_owner.private.forenames|join(' ')}}"/>
             </div>
 
             <div class="form">
                 <label class="form-label" for="surname">Surname</label>
-                <input class="form-textfield" type="text" id="surname" name="surname" value="{{curr_data.estate_owner.private.surname}}"/>
+                <input class="form-textfield" type="text" id="surname" autocomplete="off" name="surname" value="{{curr_data.estate_owner.private.surname}}"/>
             </div>
         </div>
 
         <div id="limited">
             <div class="form">
                 <label class="form-label" for="company">Company name</label>
-                <input class="form-textfield" type="text" id="company" name="company" value="{{curr_data.estate_owner.company}}"/>
+                <input class="form-textfield" type="text" id="company" autocomplete="off" name="company" value="{{curr_data.estate_owner.company}}"/>
             </div>
         </div>
 
         <div id="local">
             <div class="form">
                 <label class="form-label" for="loc_auth">Local authority full name</label>
-                <input class="form-textfield" type="text" id="loc_auth" name="loc_auth" value="{{curr_data.estate_owner.local.name}}"/>
+                <input class="form-textfield" type="text" id="loc_auth" autocomplete="off" name="loc_auth" value="{{curr_data.estate_owner.local.name}}"/>
             </div>
             <div class="form">
                 <label class="form-label" for="loc_auth_area">Local authority area</label>
                 <p class="text-indent">This is the area the local authority affects</p>
-                <input class="form-textfield" type="text" id="loc_auth_area" name="loc_auth_area" value="{{curr_data.estate_owner.local.area}}"/>
+                <input class="form-textfield" type="text" id="loc_auth_area" autocomplete="off" name="loc_auth_area" value="{{curr_data.estate_owner.local.area}}"/>
             </div>
         </div>
         <div id="complex">
             <div class="form">
                 <label class="form-label" for="complex_name_field">Complex name</label>
-                <input class="form-textfield" type="text" id="complex_name_field" value="{{curr_data.estate_owner.complex.name}}"/>
+                <input class="form-textfield" type="text" id="complex_name_field" autocomplete="off" value="{{curr_data.estate_owner.complex.name}}"/>
                 <div class="spacer-5"></div>
                 <a href="#here" id="name_lookup_link" onclick="showComplexNameModal();" class="link-14-right">Look up complex name</a>
                 <div id="complex_result_modal" role="dialog" aria-labelledby="myDialog" style="display: none;">
@@ -77,11 +120,11 @@
         <div id="other">
             <div class="form">
                 <label class="form-label" for="other_name">Name</label>
-                <input class="form-textfield" type="text" id="other_name" name="other_name" value="{{curr_data.estate_owner.other}}"/>
+                <input class="form-textfield" type="text" id="other_name" name="other_name" autocomplete="off" value="{{curr_data.estate_owner.other}}"/>
             </div>
         </div>
 
         <div class="form">
             <label class="form-label" for="occupation">Trade, title or profession</label>
-            <input class="form-textfield" type="text" id="occupation" name="occupation" value="{{curr_data.occupation}}"/>
+            <input class="form-textfield" type="text" id="occupation" autocomplete="off" name="occupation" value="{{curr_data.occupation}}"/>
         </div>

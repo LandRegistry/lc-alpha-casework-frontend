@@ -9,11 +9,12 @@ import json
 def build_lc_inputs(data):
     type_of_form = session['application_dict']['form']
     result = {'class': 'C(I)', 'county': [], 'district': '', 'short_description': '',
-              'estate_owner': {'private': {'forenames': '', 'surname': ''},
+              'estate_owner': {'private': {'forenames': [], 'surname': ''},
                                'company': '',
                                'local': {'name': '', 'area': ''},
                                'complex': {"name": '', "number": ''},
                                'other': ''},
+              'estate_owner_ind': '',
               'occupation': '',
               'additional_info': ''}
 
@@ -78,6 +79,7 @@ def add_counties(result, data):
         county_counter = "county_" + str(counter)
         if county_counter in data and data[county_counter] != '':
             counties.append(data[county_counter])
+            logging.debug('Add county ' + data[county_counter])
         else:
             break
         counter += 1

@@ -4,10 +4,22 @@
 <div class="spacer-5"></div>
 
 <div class="text-16-gray">
-    <span class="text-16-bold">1. Input details</span>
+    {% if screen=='capture' %}
+        <span class="text-16-bold">1. Input details</span>
+    {% else %}
+        1. Input details
+    {% endif %}
     &nbsp;&nbsp;
-    2. Check details
+    {% if screen=='verify' %}
+        <span class="text-16-bold">2. Check and verify details</span>
+    {% else %}
+        2. Check and verify details
+    {% endif %}
     &nbsp;&nbsp;
-    3. Conveyancer and fees
+    {% if screen=='customer' %}
+        <span class="text-16-bold">3. Conveyancer and fees</span>
+    {% else %}
+        3. Conveyancer and fees
+    {% endif %}
 </div>
 <div class="spacer-30"></div>

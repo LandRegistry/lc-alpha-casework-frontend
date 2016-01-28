@@ -8,37 +8,97 @@
 
 {% block maincontent %}
 
-<div class="breadcrumb">
-    <ol>
-        <li><a class="breadcrumb_links" href="/">Home</a></li>
-        <li><a class="breadcrumb_links" href="/get_list?appn=lc">Land Charge</a></li>
-        <li><a class="breadcrumb_links" href="/get_list?appn=lc_regn">Registration</a></li>
-        <li class="breadcrumb-no-arrow"><span>Registration details</span></li>
-    </ol>
-</div>
-<div class="spacer-10"></div>
-
-<h1 class="title-36">Land charge registration</h1>
-
-<div class="spacer-5"></div>
-
-<div class="text-16-gray">
-    <a href="#" class="link-16 no-link-style">1. Input details</a>
-    &nbsp;&nbsp;
-    <span class="text-16-bold">2. Check details</span>
-    &nbsp;&nbsp;
-    3. Conveyancer and fees
-</div>
-<div class="spacer-30"></div>
+{% include 'includes/lc_nav_title.html' %}
 
 <div class="grid-row">
     <div class="col four">
     <!-- ///////////////////////////////// data entry form ///////////////////////////////// -->
-    <form action="/lc_verify_details" method="POST">
-        <h1>Verification page placeholder</h1>
+    <form action="/lc_verify_details" method="POST" onsubmit="return validate(this);">
+
+
+        <div id="eo_validation">
+            <span id="eo_error" class="hide">
+                [placeholder]
+            </span>
+            <div class="grid-row">
+                <div class="text-19-gray col ten">Re-key estate owner details</div>
+                <div class="col two"><a href="land_charge_capture">Change</a></div>
+            </div>
+            <div class="grid-row-padded-line">
+                <label for="forename" class="text-16-bold col four">Forename</label>
+                <input type="text" id="forename" class="col six form-textfield-verify"/>
+            </div>
+            <div class="grid-row-padded-line">
+                <label for="surname" class="text-16-bold col four">Surname</label>
+                <input type="text" class="col six form-textfield-verify" id="surname"/>
+            </div>
+            <div class="grid-row-padded-line bottom-line">
+                <span class="text-16-bold col four">Title, trade or profession</span>
+                <span class="text-16-bold col six">{{details.occupation}}</span>
+            </div>
+        </div>
+
+        <div id="coc_validation">
+            <span id="coc_error" class="hide">
+                The class of charge does not match the previously entered class of charge. Please re-key or select to change the original.
+            </span>
+            <div class="grid-row">
+                <div class="text-19-gray col ten">Re-key class of charge</div>
+                <div class="col two"><a href="#">Change</a></div>
+            </div>
+            <div class="grid-row-padded-line bottom-line">
+                <label for="coc" class="text-16-bold col four">Class and subclass</label>
+                <!--<input type="text" class="col six form-textfield-verify" id="coc"/>-->
+                <select class="form-select col six" id="coc" name="coc" required aria-required="true" autofocus>
+                    <option id="CNONE" value="CNone"></option>
+                    <option id="C1" value="C(I)">C1</option>
+                    <option id="C2" value="C(II)">C2</option>
+                    <option id="C3" value="C(III)">C3</option>
+                    <option id="C4" value="C(IV)">C4</option>
+                    <option id="D1" value="D(I)">D1</option>
+                    <option id="D2" value="D(II)">D2</option>
+                    <option id="D3" value="D(III)">D3</option>
+                    <option id="A" value="A">A</option>
+                    <option id="B" value="B">B</option>
+                    <option id="E" value="E">E</option>
+                    <option id="F" value="F">F</option>
+                    <option id="PA" value="PA">PA</option>
+                    <option id="WO" value="WO">WO</option>
+                    <option id="DA" value="DA">DA</option>
+                    <option id="ANN" value="ANN">ANN</option>
+                    <option id="LC" value="LC">LC</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="grid-row">
+            <div class="text-19-gray col ten">Particulars of land affected</div>
+            <div class="col two"><a href="#">Change</a></div>
+        </div>
+        <div class="grid-row-padded-line">
+            <span class="text-16-bold col four">County or unitary authority area</span>
+            <span class="text-16-bold col six">{{details.county|join(', ')}}</span>
+        </div>
+        <div class="grid-row-padded-line">
+            <span class="text-16-bold col four">District</span>
+            <span class="text-16-bold col six">{{details.district}}</span>
+        </div>
+        <div class="grid-row-padded-line bottom-line">
+            <span class="text-16-bold col four">Short description</span>
+            <span class="text-16-bold col six">{{details.short_description}}</span>
+        </div>
+
+
+        <div class="grid-row">
+            <div class="text-19-gray col ten">Additional information</div>
+            <div class="col two"><a href="#">Change</a></div>
+        </div>
+        <div class="grid-row-padded-line bottom-line">
+            <span class="text-16-bold col four">Information</span>
+            <span class="text-16-bold col six">{{details.additional_info}}</span>
+        </div>
 
         <div class="spacer-30"></div>
-
         <div>
             <input id="continue" type="submit" value="Continue" class="form-button"/>
         </div>
@@ -56,6 +116,78 @@
     </div>
 
 <script>
+//error_block
+//error_text
+//hide
+
+//coc_validation
+function validate(sender) {
+    var allOK = true;
+
+    var origForename = "{{details.estate_owner.private.forenames|join(' ')}}";
+    var origSurname = "{{details.estate_owner.private.surname}}";
+    var origCoc = "{{details.class}}";
+    var enteredForename = document.getElementById('forename').value;
+    var enteredSurname = document.getElementById('surname').value;
+    var enteredCoc = document.getElementById('coc').value;
+
+    if(origForename !== enteredForename && origSurname !== enteredSurname) {
+        var errorBlock = document.getElementById('eo_validation');
+        errorBlock.classList.add('error_block');
+
+        var errorText = document.getElementById('eo_error');
+        errorText.textContent = 'The names do not match the previously entered names. Please re-key or select to change the original.';
+        errorText.classList.add('error_text');
+        errorText.classList.remove('hide');
+        allOK = false;
+    } else if(origForename !== enteredForename) {
+        var errorBlock = document.getElementById('eo_validation');
+        errorBlock.classList.add('error_block');
+
+        var errorText = document.getElementById('eo_error');
+        errorText.textContent = 'The forename does not match the previously entered forename. Please re-key or select to change the original.';
+        errorText.classList.add('error_text');
+        errorText.classList.remove('hide');
+        allOK = false;
+    } else if(origSurname !== enteredSurname) {
+        var errorBlock = document.getElementById('eo_validation');
+        errorBlock.classList.add('error_block');
+
+        var errorText = document.getElementById('eo_error');
+        errorText.textContent = 'The surname does not match the previously entered surname. Please re-key or select to change the original.';
+        errorText.classList.add('error_text');
+        errorText.classList.remove('hide');
+        allOK = false;
+    } else {
+        var errorBlock = document.getElementById('eo_validation');
+        errorBlock.classList.remove('error_block');
+
+        var errorText = document.getElementById('eo_error');
+        errorText.classList.remove('error_text');
+        errorText.classList.add('hide');
+    }
+
+    if(origCoc !== enteredCoc) {
+        var errorBlock = document.getElementById('coc_validation');
+        errorBlock.classList.add('error_block');
+
+        var errorText = document.getElementById('coc_error');
+        errorText.classList.add('error_text');
+        errorText.classList.remove('hide');
+        allOK = false;
+    } else {
+        var errorBlock = document.getElementById('coc_validation');
+        errorBlock.classList.remove('error_block');
+
+        var errorText = document.getElementById('coc_error');
+        errorText.classList.remove('error_text');
+        errorText.classList.add('hide');
+    }
+
+    return allOK;
+}
+
+
         document.getElementById("estateOwnerTypes").onchange = function() {
         var type = this.value;
 
