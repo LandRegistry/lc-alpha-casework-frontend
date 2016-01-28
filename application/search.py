@@ -123,7 +123,7 @@ def process_search_criteria(data, search_type):
         else:
             add_counties(result, data)
     else:
-        result['county'] = None
+        result['county'] = []
 
     parameters['counties'] = result['county']
     session['application_dict']['search_criteria'] = parameters
