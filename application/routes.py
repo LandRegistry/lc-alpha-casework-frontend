@@ -917,3 +917,19 @@ def get_form_images(doc_id):
     data = requests.get(url)
     json_data = json.loads(data.content.decode('utf-8'))
     return json.dumps(json_data), data.status_code, data.headers.items()
+
+
+@app.route('/counties', methods=['GET'])
+def get_counties():
+    params = ""
+    welsh_req = ""
+    if 'welsh' in request.args:
+        welsh_req = request.args['welsh']
+        if welsh_req == "yes":
+            params = "?welsh=yes"
+    else:
+        params = "?welsh=no"
+
+    url = app.config['BANKRUPTCY_DATABASE_URL'] + '/counties' + params
+    data = requests.get(url)
+    return Response(data, status=200, mimetype='application/json')
