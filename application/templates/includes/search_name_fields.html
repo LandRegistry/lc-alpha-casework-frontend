@@ -14,10 +14,11 @@
 {% endif %}
 
 {% if is_mandatory == true %}
-{% set required = 'required aria-required="true"' %}
+{% set required = 'required aria-required=true' %}
 {% else %}
 {% set required = '' %}
 {% endif %}
+
         <!-- SEARCH NAME -->
     <div id="search_name_{{id_count}}">
         <div class="spacer-40"></div>

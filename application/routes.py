@@ -589,11 +589,25 @@ def submit_cancellation():
 @app.route('/process_search_name/<application_type>', methods=['POST'])
 def process_search_name(application_type):
     logging.info('Entering search name')
-    print(request.form)
 
     process_search_criteria(request.form, application_type)
 
+    request_data = {}
+    for k in request.form:
+        request_data[k] = request.form[k]
+
+    print(request_data)
+
     return render_template('search_customer.html', images=session['images'], application=session['application_dict'],
+                           application_type=session['application_type'], current_page=0,
+                           backend_uri=app.config['CASEWORK_API_URL'], data=request_data)
+
+# Search routes
+@app.route('/back_to_search_name', methods=['GET'])
+def back_to_search_name():
+    logging.info('Entering search name')
+
+    return render_template('search_info.html', images=session['images'], application=session['application_dict'],
                            application_type=session['application_type'], current_page=0,
                            backend_uri=app.config['CASEWORK_API_URL'])
 

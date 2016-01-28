@@ -19,7 +19,7 @@
 <div class="spacer-5"></div>
 
 <div class="text-16-gray">
-    <a class="link-16 no-link-style" href="/get_list?appn=search">1. Input details</a>
+    <a class="link-16 no-link-style" href="/back_to_search_name">1. Input details</a>
     &nbsp;&nbsp;
     2. Applicant and fees
 </div>
@@ -32,15 +32,8 @@
         {% set customer_type = 'Applicant' %}
         {% include 'includes/customer_fields.html' %}
 
-        <div>
-            <table>
-                <tr>
-                    <td width="50%" class="no-line">
-                        <input id="submit" type="submit" class="form-button" value="Complete"/>
-                    </td>
-                </tr>
-            </table>
-        </div>
+        <input id="submit" type="submit" class="form-button" value="Complete"/>
+
         </form>
     </div>
     <!-- ///////////////////////////////// end of data entry form ///////////////////////////////// -->

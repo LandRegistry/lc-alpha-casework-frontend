@@ -97,19 +97,24 @@ function getComplexName(ctr){
     }
 }
 
-var nameCount = 0;
+var nameCount = 1
 
 function setupNameFields(){
         $("#search_fields :input").attr("disabled", true);
-        showName();
-        showName();
+        name_qty = jQuery('#name_qty').val();
+        for (i = 1; i < name_qty + 1; i++){
+            showName(i);
+        }
+
 }
 
-function showName() {
+function showName(i) {
     nameCount++;
-    filterNameFields(nameCount);
-    jQuery('#name_' + nameCount).show();
-    if (nameCount == 6) {
+    jQuery('#name_qty').val(nameCount);
+    alert("display name " + i)
+    filterNameFields(i);
+    jQuery('#name_' + i).show();
+    if (i == 6) {
         jQuery('#add_name').hide();
     }
 }
@@ -135,6 +140,7 @@ function filterNameFields(i) {
         ", #other_name_" + i + "").val('');
     }else if (type == "complexName") {
         jQuery("#complex_" + i).show();
+        jQuery('#selected_name_' + i).show();
         jQuery("#complex_" + i + " :input").attr("disabled", false);
         jQuery("#forename_" + i + ", #surname_" + i + ", #company_" + i + ", #loc_auth_" + i +
         ", #loc_auth_area_" + i + ", #other_name_" + i + "").val('');
@@ -154,12 +160,8 @@ function filterNameFields(i) {
 }
 
 
-if ({{curr_data.county|length}} > 0) {
-    var n = {{curr_data.county|length}};
-}
-else {
-    var n = 1;
-}
+var n = 1;
+
 
 function setupCountyAutocomplete(element) {
     var a = 0;
@@ -217,3 +219,4 @@ function validateFields(){
 }
 
 </script>
+

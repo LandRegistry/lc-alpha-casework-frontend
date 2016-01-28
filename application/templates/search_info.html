@@ -12,6 +12,12 @@
     {% set title = 'Bankruptcy search' %}
 {% endif %}
 
+{% if name_count is defined and name_count > 0 %}
+{% set qty = name_count %}
+{% else %}
+{% set qty = 2 %}
+{% endif %}
+
 <div class="spacer-10"></div>
 
 <h1 class="title-36">{{title}}</h1>
@@ -28,6 +34,7 @@
     <div class="col four" id="form_panel">
     <!-- ///////////////////////////////// data entry form ///////////////////////////////// -->
     <form id="search_form" action="/process_search_name/{{application_type}}" method="POST">
+        <input type="hidden" id="name_qty" name="name_qty" value="{{qty}}" />
         <div id="search_fields">
 
         {% for i in range(6) %}
@@ -41,7 +48,7 @@
             </div>
         {% endfor %}
         <div class="spacer-10"></div>
-        <a href="#here" id="add_name" onclick="showName();" class="link-16">Add additional name</a>
+        <a href="#here" id="add_name" onclick="showName(jQuery('#name_qty').val());" class="link-16">Add additional name</a>
 
 
         </div>
@@ -50,9 +57,8 @@
             {% include 'includes/search_counties_fields.html' %}
         {% endif %}
             <div class="spacer-40"></div>
-            <div>
-                <input id="continue" type="submit" value="Continue" onclick="return validateFields();" class="form-button"/>
-            </div>
+            <input id="continue" type="submit" value="Continue" onclick="return validateFields();" class="form-button"/>
+            <div class="spacer-20"></div>
         <a href="/get_list?appn=search_full" class="link-16">Return to this application later</a>
         <div class="spacer-40"></div>
     </form>
