@@ -19,20 +19,21 @@
 <div class="spacer-5"></div>
 
 <div class="text-16-gray">
-    <a class="link-16 no-link-style" href="/back_to_search_name">1. Input details</a>
+    <a class="link-16 no-link-style"
+       href="/application_start/{{application_type}}/{{application.appn_id}}/{{application.application_type}}">1. Input details</a>
     &nbsp;&nbsp;
     2. Applicant and fees
 </div>
 
 <div class="grid-row">
     <div class="col four" id="form_panel">
-    <!-- ///////////////////////////////// data entry form ///////////////////////////////// -->
+        <!-- ///////////////////////////////// data entry form ///////////////////////////////// -->
         <form action="/submit_search" method="POST">
-        <div class="spacer-30"></div>
-        {% set customer_type = 'Applicant' %}
-        {% include 'includes/customer_fields.html' %}
+            <div class="spacer-30"></div>
+            {% set customer_type = 'Applicant' %}
+            {% include 'includes/customer_fields.html' %}
 
-        <input id="submit" type="submit" class="form-button" value="Complete"/>
+            <input id="submit" type="submit" class="form-button" value="Complete"/>
 
         </form>
     </div>

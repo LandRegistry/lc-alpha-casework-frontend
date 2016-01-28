@@ -7,15 +7,9 @@
 {% block maincontent %}
 
 {% if application_type == 'search_full' %}
-    {% set title = 'Full search' %}
+{% set title = 'Full search' %}
 {% else %}
-    {% set title = 'Bankruptcy search' %}
-{% endif %}
-
-{% if name_count is defined and name_count > 0 %}
-{% set qty = name_count %}
-{% else %}
-{% set qty = 2 %}
+{% set title = 'Bankruptcy search' %}
 {% endif %}
 
 <div class="spacer-10"></div>
@@ -32,36 +26,35 @@
 
 <div class="grid-row">
     <div class="col four" id="form_panel">
-    <!-- ///////////////////////////////// data entry form ///////////////////////////////// -->
-    <form id="search_form" action="/process_search_name/{{application_type}}" method="POST">
-        <input type="hidden" id="name_qty" name="name_qty" value="{{qty}}" />
-        <div id="search_fields">
+        <!-- ///////////////////////////////// data entry form ///////////////////////////////// -->
+        <form id="search_form" action="/process_search_name/{{application_type}}" method="POST">
+            <div id="search_fields">
 
-        {% for i in range(6) %}
-            {% set id_count = loop.index %}
-            <div id="name_{{id_count}}" class="col twelve hide ">
-                {% set is_mandatory = true %}
-                {% if loop.index == 2 %}
+                {% for i in range(6) %}
+                {% set id_count = loop.index %}
+                <div id="name_{{id_count}}" class="col twelve hide ">
+                    {% set is_mandatory = true %}
+                    {% if loop.index == 2 %}
                     {% set is_mandatory = false %}
-                {% endif %}
-                {% include 'includes/search_name_fields.html' %}
+                    {% endif %}
+                    {% include 'includes/search_name_fields.html' %}
+                </div>
+                {% endfor %}
+                <div class="spacer-10"></div>
+                <a href="#here" id="add_name" onclick="showName();" class="link-16">Add additional name</a>
+
+
             </div>
-        {% endfor %}
-        <div class="spacer-10"></div>
-        <a href="#here" id="add_name" onclick="showName(jQuery('#name_qty').val());" class="link-16">Add additional name</a>
-
-
-        </div>
-        {% if application_type == 'search_full' %}
+            {% if application_type == 'search_full' %}
             <div class="spacer-10"></div>
             {% include 'includes/search_counties_fields.html' %}
-        {% endif %}
+            {% endif %}
             <div class="spacer-40"></div>
             <input id="continue" type="submit" value="Continue" onclick="return validateFields();" class="form-button"/>
             <div class="spacer-20"></div>
-        <a href="/get_list?appn=search_full" class="link-16">Return to this application later</a>
-        <div class="spacer-40"></div>
-    </form>
+            <a href="/get_list?appn=search_full" class="link-16">Return to this application later</a>
+            <div class="spacer-40"></div>
+        </form>
     </div>
     <!-- ///////////////////////////////// end of data entry form ///////////////////////////////// -->
     <div class="col one"><p></p></div>
