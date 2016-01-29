@@ -166,7 +166,7 @@ function setupCountyAutocomplete(element) {
     var host = "{{config.CASEWORK_FRONTEND_URL}}";
 
     jQuery.ajax({
-        url: host + '/counties/all',
+        url: host + '/counties?welsh=yes',
         type: 'GET',
         counties: {},
         success: function( counties ) {
@@ -191,7 +191,7 @@ function countyClick(sender){
 
     jQuery.ajax({
     'async': false,
-    url: '{{config.CASEWORK_FRONTEND_URL}}/counties/all',
+    url: '{{config.CASEWORK_FRONTEND_URL}}/counties?welsh=yes',
     type: 'GET',
     counties: {},
     success: function( counties ) {

@@ -936,10 +936,8 @@ def get_form_images(doc_id):
 @app.route('/counties', methods=['GET'])
 def get_counties():
     params = ""
-    welsh_req = ""
     if 'welsh' in request.args:
-        welsh_req = request.args['welsh']
-        if welsh_req == "yes":
+        if request.args['welsh'] == "yes":
             params = "?welsh=yes"
     else:
         params = "?welsh=no"
