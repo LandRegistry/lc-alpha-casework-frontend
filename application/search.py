@@ -2,7 +2,6 @@ from application import app
 from flask import Response, request, render_template, session, redirect, url_for
 import requests
 from datetime import datetime
-from application.land_charge import add_counties
 import logging
 import json
 
@@ -128,3 +127,28 @@ def process_search_criteria(data, search_type):
     parameters['counties'] = result['county']
     session['application_dict']['search_criteria'] = parameters
     return
+
+
+def add_counties(result, data):
+    counter = 0
+    counties = []
+    while True:
+        county_counter = "county_" + str(counter)
+        if county_counter in data and data[county_counter] != '':
+            county_names = get_translated_county(data[county_counter])
+            for item in county_names:
+                counties.append(item)
+            logging.debug('Add county ' + data[county_counter])
+        else:
+            break
+        counter += 1
+
+    result['county'] = counties
+
+
+def get_translated_county(county_name):
+
+    url = app.config['BANKRUPTCY_DATABASE_URL'] + '/county/' + county_name
+    response = requests.get(url)
+
+    return response.json()
