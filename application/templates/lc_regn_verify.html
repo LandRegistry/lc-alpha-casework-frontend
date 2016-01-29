@@ -14,6 +14,9 @@
     <div class="col four">
     <!-- ///////////////////////////////// data entry form ///////////////////////////////// -->
     <form action="/lc_verify_details" method="POST" onsubmit="return validate(this);">
+        <input type="hidden" id="orig_forename" value="{{details.estate_owner.private.forenames|join(' ')}}"/>
+        <input type="hidden" id="orig_surname" value="{{details.estate_owner.private.surname}}"/>
+        <input type="hidden" id="orig_class" value="{{details.class}}"/>
 
 
         <div id="eo_validation">
@@ -116,17 +119,12 @@
     </div>
 
 <script>
-//error_block
-//error_text
-//hide
-
-//coc_validation
 function validate(sender) {
     var allOK = true;
 
-    var origForename = "{{details.estate_owner.private.forenames|join(' ')}}";
-    var origSurname = "{{details.estate_owner.private.surname}}";
-    var origCoc = "{{details.class}}";
+    var origForename = document.getElementById('orig_forename').value;
+    var origSurname = document.getElementById('orig_surname').value;
+    var origCoc = document.getElementById('orig_class').value;
     var enteredForename = document.getElementById('forename').value;
     var enteredSurname = document.getElementById('surname').value;
     var enteredCoc = document.getElementById('coc').value;
