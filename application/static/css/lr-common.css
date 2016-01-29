@@ -14,8 +14,9 @@ body {
   margin: auto; }
 
 .header-box {
-  margin: auto;
-  width: 1460px;
+  margin: 0 auto;
+  max-width: 1460px;
+  min-width: 1243px;
   height: 70px;
   text-align: center; }
 
