@@ -32,7 +32,6 @@
                 <label class="form-label" for="county_0">County or unitary authority area</label>
             {% endif %}
             {% if curr_data.county|length > 0 %}
-                ADDING COUNTIES
                 {% for rows in curr_data.county %}
                 <input class="form-textfield" type="text" id="county_{{loop.index-1}}" name="county_{{loop.index-1}}"
                        value="{{rows}}"/>
