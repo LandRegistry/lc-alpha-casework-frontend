@@ -636,7 +636,7 @@ def submit_search():
 
     session['search_data'] = search_data
     print(search_data)
-    url = app.config['BANKRUPTCY_DATABASE_URL'] + '/searches'
+    url = app.config['CASEWORK_API_URL'] + '/searches'
     headers = {'Content-Type': 'application/json'}
     response = requests.post(url, data=json.dumps(search_data), headers=headers)
 
