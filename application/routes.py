@@ -130,7 +130,7 @@ def application_start(application_type, appn_id, form):
     else:
         curr_data = build_lc_inputs({})
 
-    session['page_template'] = template #  Might need this later
+    session['page_template'] = template  # Might need this later
 
     return render_template(template, application_type=application_type, data=application_json,
                            images=images, application=application, years=years,
@@ -607,6 +607,7 @@ def process_search_name(application_type):
                            application_type=session['application_type'], current_page=0,
                            backend_uri=app.config['CASEWORK_API_URL'], data=request_data)
 
+
 # Search routes
 @app.route('/back_to_search_name', methods=['GET'])
 def back_to_search_name():
@@ -674,7 +675,8 @@ def search_result():
     print('---------')
     print(session['search_data'])
     print('search_result is ', session['search_result'])
-    return render_template('search_result.html', display=display, results=session['search_result'], search_data=session['search_data'])
+    return render_template('search_result.html', display=display, results=session['search_result'],
+                           search_data=session['search_data'])
 # end of search routes
 
 
@@ -721,7 +723,6 @@ def get_land_charge_capture():
                            curr_data=session['register_details'])
 
 
-
 @app.route('/land_charge_verification', methods=['GET'])
 def land_charge_verification():
     return render_template('lc_regn_verify.html', application_type=session['application_type'], data={},
@@ -746,8 +747,7 @@ def conveyancer_fee_info():
 def lc_process_application():
     customer_fee_details = build_customer_fee_inputs(request.form)
     status_code = submit_lc_registration(customer_fee_details)
-    #return get_list_of_applications("lc_regn", "")
-    return redirect('/confirmation', code=302, Response=None)
+    return redirect('/confirmation', code=status_code, Response=None)
 
 
 # ============== Common routes =====================
@@ -791,10 +791,10 @@ def rejection():
 
 
 @app.template_filter()
-def date_time_filter(date_str, format='%d %B %Y'):
+def date_time_filter(date_str, date_format='%d %B %Y'):
     """convert a datetime to a different format."""
     value = datetime.strptime(date_str, '%Y-%m-%d').date()
-    return value.strftime(format)
+    return value.strftime(date_format)
 
 app.jinja_env.filters['date_time_filter'] = date_time_filter
 # end of common routes
@@ -877,7 +877,7 @@ def get_totals():
     }
 
 
-def page_required(appn_type, sub_type = ''):
+def page_required(appn_type, sub_type=''):
     if appn_type == 'lc_regn':
         page = {
             'K1': 'k1.html',
