@@ -83,7 +83,8 @@ def process_search_criteria(data, search_type):
             url = app.config['CASEWORK_API_URL'] + '/complex_names/search'
             headers = {'Content-Type': 'application/json'}
             comp_name = {
-                'name': data[complex_name]
+                'name': data[complex_name],
+                'number': int(data[complex_number])
             }
             response = requests.post(url, data=json.dumps(comp_name), headers=headers)
             logging.info('POST {} -- {}'.format(url, response))
