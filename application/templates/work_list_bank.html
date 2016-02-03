@@ -71,9 +71,10 @@ $(document).ready(function() {
         <h1 class="title-36">Bankruptcy</h1>
         <div class="spacer-20"></div>
         <!-- Totals -->
+        {% set sub_cat_qty = 5 %}
         <div class="grid-row">
             <div class="subservice-box no-margin">
-            <a class="no-link-style {{regn_selected}}"  href="/get_list?appn=bank_regn">
+            <a class="no-link-style {{regn_selected}}" tabindex="1"  href="/get_list?appn=bank_regn">
                 <div class="spacer-20"></div>
                 <p class="text-16-bold">Registrations</p>
                 <div class="spacer-30"></div>
@@ -88,7 +89,7 @@ $(document).ready(function() {
             </div>
 
             <div class="subservice-box">
-                <a class="no-link-style {{amend_selected}}" href="/get_list?appn=bank_amend">
+                <a class="no-link-style {{amend_selected}}" tabindex="2" href="/get_list?appn=bank_amend">
                 <div class="spacer-20"></div>
                 <p class="text-16-bold">Amendments</p>
                 <div class="spacer-30"></div>
@@ -103,7 +104,7 @@ $(document).ready(function() {
             </div>
 
             <div class="subservice-box">
-                <a class="no-link-style  {{rect_selected}}" href="/get_list?appn=bank_rect">
+                <a class="no-link-style  {{rect_selected}}" tabindex="3" href="/get_list?appn=bank_rect">
                     <div class="spacer-20"></div>
                     <p class="text-16-bold">Rectifications</p>
                     <div class="spacer-30"></div>
@@ -118,7 +119,7 @@ $(document).ready(function() {
             </div>
 
             <div class="subservice-box">
-                <a class="no-link-style {{with_selected}}" href="/get_list?appn=bank_with">
+                <a class="no-link-style {{with_selected}}" tabindex="4" href="/get_list?appn=bank_with">
                     <div class="spacer-20"></div>
                     <p class="text-16-bold">Withheld address</p>
                     <div class="spacer-30"></div>
@@ -133,7 +134,7 @@ $(document).ready(function() {
             </div>
 
             <div class="subservice-box">
-                <a class="no-link-style {{stored_selected}}" href="/get_list?appn=bank_stored">
+                <a class="no-link-style {{stored_selected}}" tabindex="5" href="/get_list?appn=bank_stored">
                     <div class="spacer-20"></div>
                     <p class="text-16-bold">Stored</p>
                     <div class="spacer-30"></div>
@@ -167,7 +168,7 @@ $(document).ready(function() {
                     </thead>
                     {% for n in worklist %}
                     <tbody>
-                    <tr id="row_{{loop.index}}">
+                    <tr id="row_{{loop.index}}" tabindex="{{loop.index + sub_cat_qty}}" onkeypress="this.click();">
                         <td>{{n['date_received']}} {{n['time_received']}}</td>
                         <td>
                             {% if n['application_type'] == 'WO(B)' %}

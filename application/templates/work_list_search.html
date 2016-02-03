@@ -61,9 +61,10 @@ $(document).ready(function() {
         <h1 class="title-36">Search</h1>
         <div class="spacer-20"></div>
         <!-- Totals -->
+        {% set sub_cat_qty = 2 %}
         <div class="grid-row">
             <div class="subservice-box no-margin">
-            <a class="no-link-style {{full_selected}}"  href="/get_list?appn=search_full">
+            <a class="no-link-style {{full_selected}}" tabindex="1"  href="/get_list?appn=search_full">
                 <div class="spacer-20"></div>
                 <p class="text-16-bold">Full</p>
                 <div class="spacer-30"></div>
@@ -76,9 +77,8 @@ $(document).ready(function() {
                 </div>
             </a>
             </div>
-
             <div class="subservice-box">
-                <a class="no-link-style {{bank_selected}}" href="/get_list?appn=search_bank">
+                <a class="no-link-style {{bank_selected}}" tabindex="2"  href="/get_list?appn=search_bank">
                 <div class="spacer-20"></div>
                 <p class="text-16-bold">Bankruptcy</p>
                 <div class="spacer-30"></div>
@@ -113,7 +113,7 @@ $(document).ready(function() {
                     </thead>
                     {% for n in worklist %}
                     <tbody>
-                    <tr id="row_{{loop.index}}">
+                    <tr id="row_{{loop.index}}" tabindex="{{loop.index + sub_cat_qty}}" onkeypress="this.click();">
                         <td>{{n['date_received']}} {{n['time_received']}}</td>
                         <td>
                             {% if n['application_type'] == 'WO(B)' %}
