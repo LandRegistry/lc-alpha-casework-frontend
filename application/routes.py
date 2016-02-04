@@ -942,6 +942,14 @@ def get_counties():
     else:
         params = "?welsh=no"
 
-    url = app.config['BANKRUPTCY_DATABASE_URL'] + '/counties' + params
+    url = app.config['CASEWORK_API_URL'] + '/counties' + params
     data = requests.get(url)
     return Response(data, status=200, mimetype='application/json')
+
+
+def get_translated_county(county_name):
+
+    url = app.config['CASEWORK_API_URL'] + '/county/' + county_name
+    response = requests.get(url)
+
+    return response.json()
