@@ -692,6 +692,7 @@ def start_rectification():
 
 @app.route('/land_charge_capture', methods=['POST'])
 def land_charge_capture():
+
     result = validate_land_charge(request.form)
     entered_fields = build_lc_inputs(request.form)
     entered_fields['class'] = result['class']
@@ -746,8 +747,14 @@ def conveyancer_fee_info():
 @app.route('/lc_process_application', methods=['POST'])
 def lc_process_application():
     customer_fee_details = build_customer_fee_inputs(request.form)
-    status_code = submit_lc_registration(customer_fee_details)
-    return redirect('/confirmation', code=status_code, Response=None)
+    response = submit_lc_registration(customer_fee_details)
+    if response.status_code != 200:
+        err = 'Failed to submit land charges registration application id:%s - Error code: %s' \
+              % (session['worklist_id'], str(response.status_code))
+        logging.error(err)
+        return render_template('error.html', error_msg=err), response.status_code
+    else:
+        return redirect('/confirmation', code=response.status_code, Response=None)
 
 
 # ============== Common routes =====================

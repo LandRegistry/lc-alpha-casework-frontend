@@ -16,7 +16,8 @@ def build_lc_inputs(data):
                                'other': ''},
               'estate_owner_ind': '',
               'occupation': '',
-              'additional_info': ''}
+              'additional_info': '',
+              'priority_notice': ''}
 
     if len(data) > 0:
         if type_of_form == 'K1':
@@ -26,6 +27,7 @@ def build_lc_inputs(data):
             result['estate_owner_ind'] = get_eo_ind(data['estateOwnerTypes'])
             result['occupation'] = data['occupation']
             result['additional_info'] = data['addl_info']
+            result['priority_notice'] = data['priority_notice']
 
             add_counties(result, data)
 
@@ -122,13 +124,8 @@ def submit_lc_registration(cust_fee_data):
         for item in data['new_registrations']:
             reg_list.append(item)
         session['regn_no'] = reg_list
-        #return redirect('/confirmation', code=302, Response=None)
-        return response.status_code
-    else:
-        # error = response.status_code
-        # logging.error(error)
-        # return render_template('error.html', error_msg=error), 500
-        return response.status_code
+
+    return response
 
 
 # def convert_estate_owner_ind(data):
