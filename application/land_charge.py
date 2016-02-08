@@ -8,7 +8,7 @@ import json
 
 def build_lc_inputs(data):
     type_of_form = session['application_dict']['form']
-    result = {'class': 'C(I)', 'county': [], 'district': '', 'short_description': '',
+    result = {'class': '', 'county': [], 'district': '', 'short_description': '',
               'estate_owner': {'private': {'forenames': [], 'surname': ''},
                                'company': '',
                                'local': {'name': '', 'area': ''},
@@ -20,7 +20,7 @@ def build_lc_inputs(data):
               'priority_notice': ''}
 
     if len(data) > 0:
-        if type_of_form == 'K1':
+        if type_of_form in ['K1', 'K2', 'K3', 'K4']:
             result['class'] = data['class']
             result['district'] = data['district']
             result['short_description'] = data['short_desc']

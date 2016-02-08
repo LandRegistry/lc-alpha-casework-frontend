@@ -1,0 +1,59 @@
+        {% if data.form == 'K2' %}
+            <h2 class="text-24-bold">Particulars of dwelling-house</h2>
+        {% else %}
+            <h2 class="text-24-bold">Particulars of land affected</h2>
+        {% endif %}
+
+        <div class="spacer-10"></div>
+
+        <div class="form">
+            {% if 'county' in errors %}
+                <label class="error-text form-label" for="county_0">X County or unitary authority area</label>
+            {% else %}
+                <label class="form-label" for="county_0">County or unitary authority area</label>
+            {% endif %}
+            {% if curr_data.county|length > 0 %}
+                {% for rows in curr_data.county %}
+                <input class="form-textfield" type="text" id="county_{{loop.index-1}}" name="county_{{loop.index-1}}"
+                       value="{{rows}}"/>
+                <div class="spacer-10"></div>
+                {% endfor %}
+            {% else %}
+                <input class="form-textfield" type="text" id="county_0" name="county_0"/>
+                <div class="spacer-10"></div>
+            {% endif %}
+        </div>
+
+        <div><a href="#here" onclick="countyClick(this)" class="link-16" id="addcounty">Add additional county or unitary authority</a></div>
+
+        <div class="spacer-10"></div>
+
+        <div class="form">
+            {% if 'district' in errors %}
+                <label class="error-text form-label" for="district">X District</label>
+            {% else %}
+                <label class="form-label" for="district">District</label>
+            {% endif %}
+            <input class="form-textfield" type="text" id="district" name="district"
+                   required aria-required="true" value="{{curr_data.district}}"/>
+        </div>
+
+        <div class="form">
+            {% if 'short_desc' in errors %}
+                {% if data.form == 'K2' %}
+                    <label class="error-text form-label" for="short_desc">X Known as</label>
+                {% else %}
+                    <label class="error-text form-label" for="short_desc">X Short description</label>
+                {% endif %}
+            {% else %}
+                {% if data.form == 'K2' %}
+                    <label class="form-label" for="short_desc">Known as</label>
+                {% else %}
+                    <label class="form-label" for="short_desc">Short description</label>
+                {% endif %}
+            {% endif %}
+            <textarea class="form-textarea-short" id="short_desc" name="short_desc"
+                      required aria-required="true">{{curr_data.short_description}}</textarea>
+        </div>
+
+        <div class="spacer-30"></div>

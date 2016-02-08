@@ -1,11 +1,6 @@
 {% extends "/page_template/base.html" %}
 {% block page_specific_head %}
 
-<link href="http://code.jquery.com/ui/1.10.2/themes/smoothness/jquery-ui.css" rel="stylesheet"/>
-<script src="http://code.jquery.com/ui/1.10.2/jquery-ui.js" ></script>
-<script src="/static/js/jquery.modal.js"></script>
-<link href="/static/css/jquery.modal.css" rel="stylesheet"/>
-
 {% include 'includes/lc_regn_head.html' %}
 {% endblock %}
 
@@ -33,20 +28,7 @@
         <div class="spacer-20"></div>
 
         <!-- LAND INFO -->
-
-        
-
-        <div class="form">
-            {% if 'short_desc' in errors %}
-                <label class="error-text form-label" for="short_desc">X Short description</label>
-            {% else %}
-                <label class="form-label" for="short_desc">Short description</label>
-            {% endif %}
-            <textarea class="form-textarea-short" id="short_desc" name="short_desc"
-                      required aria-required="true">{{curr_data.short_description}}</textarea>
-        </div>
-
-        <div class="spacer-30"></div>
+        {% include 'includes/particulars.html' %}
 
         {% include 'includes/estate_owner.html' %}
 
@@ -72,11 +54,17 @@
 
 <script>
 
+
+
     jQuery(document).ready(function(){
-        jQuery("#estateOwnerTypes").val("{{curr_data.estate_owner_ind}}");
+        {% if curr_data.estate_owner_ind == '' %}
+            jQuery("#estateOwnerTypes").val("{{curr_data.estate_owner_ind}}");
+        {% endif %}
         showFields();
         setupCountyAutocomplete("#county_0");
     });
+
+
 
 
 </script>

@@ -3,9 +3,10 @@ import os
 
 class Config(object):
     DEBUG = False
+    APPLICATION_NAME = 'lc-casework-frontend'
 
 
-class DevelopmentConfig(object):
+class DevelopmentConfig(Config):
     DEBUG = True
     CASEWORK_FRONTEND_URL = "http://localhost:5010"
     CASEWORK_API_URL = "http://localhost:5006"

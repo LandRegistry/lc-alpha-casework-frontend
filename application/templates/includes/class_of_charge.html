@@ -9,28 +9,47 @@
             {% else %}
                 <label class="form-label" for="class">Class and subclass</label><br/>
             {% endif %}
-           <select class="form-select width-50" id="class" name="class" required aria-required="true" autofocus>
-                <option id="C1" value="C(I)">C1</option>
-                <option id="C2" value="C(II)">C2</option>
-                <option id="C3" value="C(III)">C3</option>
-                <option id="C4" value="C(IV)">C4</option>
-                <option id="D1" value="D(I)">D1</option>
-                <option id="D2" value="D(II)">D2</option>
-                <option id="D3" value="D(III)">D3</option>
-                <option id="A" value="A">A</option>
-                <option id="B" value="B">B</option>
-                <option id="E" value="E">E</option>
-                <option id="F" value="F">F</option>
-                <option id="PA" value="PA">PA</option>
-                <option id="WO" value="WO">WO</option>
-                <option id="DA" value="DA">DA</option>
-                <option id="ANN" value="ANN">ANN</option>
-                <option id="LC" value="LC">LC</option>
-            </select>
+
+            {% if data.form == 'K1' %}
+                <select class="form-select width-50" id="class" name="class" required aria-required="true" autofocus>
+                    <option id="C1" value="C(I)">C1</option>
+                    <option id="C2" value="C(II)">C2</option>
+                    <option id="C3" value="C(III)">C3</option>
+                    <option id="C4" value="C(IV)">C4</option>
+                    <option id="D1" value="D(I)">D1</option>
+                    <option id="D2" value="D(II)">D2</option>
+                    <option id="D3" value="D(III)">D3</option>
+                    <option id="A" value="A">A</option>
+                    <option id="B" value="B">B</option>
+                    <option id="E" value="E">E</option>
+                    <option id="F" value="F">F</option>
+                    <option id="PA" value="PA">PA</option>
+                    <option id="WO" value="WO">WO</option>
+                    <option id="DA" value="DA">DA</option>
+                    <option id="ANN" value="ANN">ANN</option>
+                    <option id="LC" value="LC">LC</option>
+                </select>
+            {% elif data.form == 'K2' %}
+                <input type="text" class="form-textfield width-50" disabled id="class_display" value="F" name="class"/>
+                <input type="hidden" id="class" value="F" name="class"/>
+            {% elif data.form == 'K3' %}
+                <input type="text" class="form-textfield width-50" disabled id="class_display" value="PA" name="class"/>
+                <input type="hidden" id="class" value="PA" name="class"/>
+            {% elif data.form == 'K4' %}
+                <input type="text" class="form-textfield width-50" disabled id="class_display" value="WO" name="class"/>
+                <input type="hidden" id="class" value="WO" name="class"/>
+            {% endif %}
+
+
+            <input type="hidden" id="hd_class" value="{{curr_data.class}}"/>
         </div>
 
         <div class="spacer-10"></div>
 
         <script>
-            $('#class').val('{{curr_data.class}}');
+            var el = document.getElementById('hd_class');
+            var coc = el.value;
+            if(coc) {
+                document.getElementById('class').value = coc;
+            }
         </script>

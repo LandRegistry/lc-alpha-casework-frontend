@@ -16,6 +16,20 @@ from application.search import process_search_criteria
 #     return render_template('error.html', error_msg=str(err)), 500
 
 
+@app.before_request
+def before_request():
+    logging.info("BEGIN %s %s [%s] (%s)",
+                 request.method, request.url, request.remote_addr, request.__hash__())
+
+
+@app.after_request
+def after_request(response):
+    logging.info('END %s %s [%s] (%s) -- %s',
+                 request.method, request.url, request.remote_addr, request.__hash__(),
+                 response.status)
+    return response
+
+
 @app.route('/', methods=["GET"])
 def index():
     if 'worklist_id' in session:
@@ -693,9 +707,13 @@ def start_rectification():
 @app.route('/land_charge_capture', methods=['POST'])
 def land_charge_capture():
 
+    logging.info(request.form)
+
     result = validate_land_charge(request.form)
     entered_fields = build_lc_inputs(request.form)
     entered_fields['class'] = result['class']
+
+    logging.info(entered_fields)
 
     if len(result['error']) == 0:
         # return get_list_of_applications("lc_regn", "")
@@ -887,10 +905,10 @@ def get_totals():
 def page_required(appn_type, sub_type=''):
     if appn_type == 'lc_regn':
         page = {
-            'K1': 'k1.html',
-            'K2': 'k2.html',
-            'K3': 'k3.html',
-            'K4': 'k4.html',
+            'K1': 'k1234.html',
+            'K2': 'k1234.html',
+            'K3': 'k1234.html',
+            'K4': 'k1234.html',
         }
         return page[sub_type]
 
