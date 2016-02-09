@@ -91,8 +91,8 @@ def process_search_criteria(data, search_type):
             result = response.json()
 
             for item in result:
-                search_item['name']['complex_variations'].append({'complex_name': item['name'],
-                                                                  'complex_number': int(item['number'])})
+                search_item['name']['complex_variations'].append({'name': item['name'],
+                                                                  'number': int(item['number'])})
             name_extracted = True
 
         elif data[name_type] == 'other' and data['other_name_{}'.format(counter)] != '':
