@@ -1,0 +1,117 @@
+{% extends "/page_template/base.html" %}
+{% block page_specific_head %}
+
+{% include 'includes/lc_pn_head.html' %}
+{% endblock %}
+
+{% block maincontent %}
+
+{% include 'includes/lc_nav_title.html' %}
+
+<div class="grid-row">
+    <div class="col four" id="form_panel">
+    <!-- ///////////////////////////////// data entry form ///////////////////////////////// -->
+    <form action="/land_charge_capture" method="POST">
+        {% if errors|length > 0 %}
+        <div class="error-text">
+            <h3>Information missing or incorrect. Please amend as applicable.</h3>
+        </div>
+        {% endif %}
+
+        <h2 class="text-24-bold">Particulars of intended registration</h2>
+
+        <div class="spacer-10"></div>
+
+        <div class="form">
+            <label class="block_label" for="lc">
+                {% if curr_data.priority_notice_reg == 'lc' %}
+                <input id="lc" type="radio" name="pn_reg" value="lc" checked>
+                {% else %}
+                <input id="lc" type="radio" name="pn_reg" value="lc">
+                {% endif %}
+                Land charges
+            </label>
+            <label class="block_label" for="pa">
+                {% if curr_data.priority_notice_reg == 'pa' %}
+                <input id="pa" type="radio" name="pn_reg" value="pa" checked>
+                {% else %}
+                <input id="pa" type="radio" name="pn_reg" value="pa">
+                {% endif %}
+                Pending action
+            </label>
+            <label class="block_label" for="wo">
+                {% if curr_data.priority_notice_reg == 'wo' %}
+                <input id="wo" type="radio" name="pn_reg" value="wo" checked>
+                {% else %}
+                <input id="wo" type="radio" name="pn_reg" value="wo">
+                {% endif %}
+                Writs or orders
+            </label>
+        </div>
+
+        <div class="spacer-10"></div>
+
+        <div id="class_charge">
+            {% include 'includes/class_of_charge.html' %}
+            <div class="spacer-10"></div>
+        </div>
+
+        <!-- LAND INFO -->
+        {% include 'includes/particulars.html' %}
+
+        {% include 'includes/estate_owner.html' %}
+
+        {% include 'includes/additional_info.html' %}
+
+        <div>
+            <input id="continue" type="submit" value="Continue" class="form-button"/>
+        </div>
+
+        <a href="/get_list?appn=lc_regn" class="link-16">Return to this application later</a>
+
+    </form>
+    </div>
+
+    <!-- ///////////////////////////////// end of data entry form ///////////////////////////////// -->
+    <div class="col one"><p></p></div>
+    <!-- /////////////////////////////////  Include image tool ///////////////////////////////// -->
+
+    <div class="col seven">
+    {% include 'includes/image_view_body.html' %}
+    </div>
+    <!-- ///////////////////////////////// End of image tool ///////////////////////////////// -->
+
+<script>
+
+
+
+    jQuery(document).ready(function(){
+        {% if curr_data.estate_owner_ind == '' %}
+            jQuery("#estateOwnerTypes").val("{{curr_data.estate_owner_ind}}");
+        {% endif %}
+        showFields();
+        setupCountyAutocomplete("#county_0");
+    });
+
+    jQuery(document).ready(function(){
+        jQuery("#class_charge").hide();
+        jQuery("#pa").click(function(){
+            jQuery("#class_charge").hide();
+            jQuery("#class").val("PA");
+
+        });
+        jQuery("#wo").click(function(){
+            jQuery("#class_charge").hide();
+            jQuery("#class").val("WO");
+
+        });
+        jQuery("#lc").click(function(){
+            jQuery("#class_charge").show();
+        });
+    });
+
+</script>
+
+</div>
+
+{% endblock %}

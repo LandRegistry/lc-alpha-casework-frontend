@@ -10,7 +10,7 @@
                 <label class="form-label" for="class">Class and subclass</label><br/>
             {% endif %}
 
-            {% if data.form == 'K1' %}
+            {% if ( (data.form == 'K1') or (data.form == 'K6') ) %}
                 <select class="form-select width-50" id="class" name="class" required aria-required="true" autofocus>
                     <option id="C1" value="C(I)">C1</option>
                     <option id="C2" value="C(II)">C2</option>
