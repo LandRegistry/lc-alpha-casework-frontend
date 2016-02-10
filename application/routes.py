@@ -712,10 +712,6 @@ def land_charge_capture():
 @app.route('/land_charge_capture', methods=['GET'])
 def get_land_charge_capture():
     # For returning from verification screen
-    logging.info(session)
-    logging.info(session['application_dict'])
-    logging.info(session['application_type'])
-
     # session['page_template']
     return render_template(session['page_template'],
                            application_type=session['application_type'],
