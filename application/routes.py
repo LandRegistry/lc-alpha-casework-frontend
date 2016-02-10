@@ -7,7 +7,7 @@ import json
 from application.form_validation import validate_land_charge
 from application.land_charge import build_lc_inputs, build_customer_fee_inputs, submit_lc_registration
 from application.search import process_search_criteria
-from application.rectification import convert_response_data
+from application.rectification import convert_response_data, submit_lc_rectification
 
 #
 # @app.errorhandler(Exception)
@@ -113,6 +113,7 @@ def application_start(application_type, appn_id, form):
 
     # Lock application if not in session otherwise assume user has refreshed the browser after select an application
     if 'worklist_id' not in session:
+        print('LOCK APPLICATION')
         url = app.config['CASEWORK_API_URL'] + '/applications/' + appn_id + '/lock'
         response = requests.post(url)
         if response.status_code == 404:
@@ -154,6 +155,7 @@ def application_start(application_type, appn_id, form):
         curr_data = build_lc_inputs({})
 
     session['page_template'] = template  # Might need this later
+
 
     return render_template(template, application_type=application_type, data=application_json,
                            images=images, application=application, years=years,
@@ -646,6 +648,7 @@ def start_rectification():
     session['application_type'] = "rectify"
     return render_template('rect_retrieve.html')
 
+
 @app.route('/get_details', methods=["POST"])
 def get_registration_details():
     application_type = session['application_type']
@@ -663,6 +666,7 @@ def get_registration_details():
         error_msg = "Registration not found please re-enter"
     else:
         application_json = response.json()
+
         if application_json['status'] == 'cancelled' or application_json['status'] == 'superseded':
             error_msg = "Application has been cancelled or amended - please re-enter"
 
@@ -709,7 +713,41 @@ def rectification_capture():
         return render_template('rectification_amend.html', application_type=session['application_type'],
                                images=session['images'], application=session['application_dict'],
                                current_page=0, errors=result['error'], curr_data=entered_fields,
-                               screen='capture')
+                               screen='capture', data=session['application_dict'])
+
+@app.route('/rectification_capture', methods=['GET'])
+def return_to_rectification_amend():
+    # For returning from check rectification screen
+    return render_template('rectification_amend.html',
+                           application_type=session['application_type'],
+                           data=session['application_dict'],
+                           images=session['images'],
+                           application=session['application_dict'],
+                           current_page=0,
+                           errors=[],
+                           curr_data=session['rectification_details'])
+
+
+@app.route('/rectification_customer', methods=['GET'])
+def rectification_capture_customer():
+    logging.info('rectification_capture_customer')
+    return render_template('rectification_customer.html', images=session['images'], application=session['application_dict'],
+                           application_type=session['application_type'], current_page=0,
+                           backend_uri=app.config['CASEWORK_API_URL'])
+
+
+@app.route('/submit_rectification', methods=['POST'])
+def submit_rectification():
+    logging.info('Entering submit_rectification')
+    response = submit_lc_rectification(request.form)
+
+    if response.status_code != 200:
+        err = 'Failed to submit land charges rectification application id:%s - Error code: %s' \
+              % (session['worklist_id'], str(response.status_code))
+        logging.error(err)
+        return render_template('error.html', error_msg=err), response.status_code
+    else:
+        return redirect('/get_list?appn=lc_rect', code=302, Response=None)
 
 # end of rectification routes
 
