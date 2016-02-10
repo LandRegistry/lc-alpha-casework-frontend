@@ -7,7 +7,6 @@ import json
 
 
 def build_lc_inputs(data):
-    type_of_form = session['application_dict']['form']
     result = {'class': '', 'county': [], 'district': '', 'short_description': '',
               'estate_owner': {'private': {'forenames': [], 'surname': ''},
                                'company': '',
@@ -20,18 +19,23 @@ def build_lc_inputs(data):
               'priority_notice': ''}
 
     if len(data) > 0:
-        if type_of_form in ['K1', 'K2', 'K3', 'K4']:
-            result['class'] = data['class']
-            result['district'] = data['district']
-            result['short_description'] = data['short_desc']
-            result['estate_owner_ind'] = get_eo_ind(data['estateOwnerTypes'])
-            result['occupation'] = data['occupation']
-            result['additional_info'] = data['addl_info']
+
+        result['class'] = data['class']
+
+        result['district'] = data['district']
+        result['short_description'] = data['short_desc']
+
+        result['estate_owner_ind'] = get_eo_ind(data['estateOwnerTypes'])
+
+        result['occupation'] = data['occupation']
+
+        result['additional_info'] = data['addl_info']
+        if 'priority_notice' in data:
             result['priority_notice'] = data['priority_notice']
 
-            add_counties(result, data)
+        add_counties(result, data)
 
-            add_estate_owner_details(result, data)
+        add_estate_owner_details(result, data)
 
     return result
 
