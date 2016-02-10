@@ -126,8 +126,8 @@ def submit_lc_registration(cust_fee_data):
         data = response.json()
         reg_list = []
         for item in data['new_registrations']:
-            reg_list.append(item)
-        session['regn_no'] = reg_list
+            reg_list.append(item['number'])
+        session['confirmation'] = {'reg_no': reg_list}
 
     return response
 

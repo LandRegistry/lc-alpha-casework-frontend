@@ -265,3 +265,18 @@ body {
 .hide {
     display: none;
 }
+
+.confirmation{
+    font-family: Roboto;
+    font-weight: 700;
+    color: #3c763d;
+    text-align: left;
+    background-color: #dff0d8;
+    border-color: #d6e9c6;
+    padding-top: 15px;
+    padding-left: 10px;
+    margin-bottom: 15px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    height: 100%;
+}

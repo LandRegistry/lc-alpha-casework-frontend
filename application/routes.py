@@ -47,15 +47,22 @@ def index():
 
 @app.route('/get_list', methods=["GET"])
 def get_list():
+    # check if confirmation message is required
+    if 'confirmation' in session:
+        result = session['confirmation']
+        del(session['confirmation'])
+    else:
+        result = {}
+
     if 'worklist_id' in session:
         url = app.config['CASEWORK_API_URL'] + '/applications/' + session['worklist_id'] + '/lock'
         requests.delete(url)
         del(session['worklist_id'])
 
-    return get_list_of_applications(request.args.get('appn'), "")
+    return get_list_of_applications(request.args.get('appn'), result, "")
 
 
-def get_list_of_applications(requested_worklist, error_msg):
+def get_list_of_applications(requested_worklist, result, error_msg):
     url = app.config['CASEWORK_API_URL'] + '/applications?type=' + requested_worklist
     response = requests.get(url)
     work_list_json = response.json()
@@ -98,7 +105,7 @@ def get_list_of_applications(requested_worklist, error_msg):
                                data=app_totals, error_msg=error_msg)
     else:
         return render_template(return_page, worklist=appn_list, requested_list=requested_worklist,
-                               data=app_totals, error_msg=error_msg)
+                               data=app_totals, error_msg=error_msg, result=result)
 
 
 @app.route('/application_start/<application_type>/<appn_id>/<form>', methods=["GET"])
@@ -111,7 +118,8 @@ def application_start(application_type, appn_id, form):
         if response.status_code == 404:
             error_msg = "This application is being processed by another member of staff, " \
                         "please select a different application."
-            return get_list_of_applications(application_type, error_msg)
+            result = {}
+            return get_list_of_applications(application_type, result, error_msg)
 
     url = app.config['CASEWORK_API_URL'] + '/applications/' + appn_id
 
@@ -307,9 +315,9 @@ def process_registration():
         data = response.json()
         reg_list = []
         for item in data['new_registrations']:
-            reg_list.append(item)
-        session['regn_no'] = reg_list
-        return redirect('/confirmation', code=302, Response=None)
+            reg_list.append(item['number'])
+        session['confirmation'] = {'reg_no': reg_list}
+        return redirect('/get_list?appn=bank_regn', code=302, Response=None)
     else:
         error = response.status_code
         logging.error(error)
@@ -500,17 +508,21 @@ def submit_amendment():
     if response.status_code == 200:
         data = response.json()
         reg_list = []
-        for item in data['new_registrations']:
-            reg_list.append(item)
+        # for item in data['new_registrations']:
+        #     reg_list.append(item)
 
-        session['regn_no'] = reg_list
+        # session['regn_no'] = reg_list
+        # reg_list = []
+        for item in data['new_registrations']:
+            reg_list.append(item['number'])
+        session['confirmation'] = {'reg_no': reg_list}
         delete_from_worklist(session['worklist_id'])
     else:
         err = response.status_code
         logging.error(err)
         return render_template('error.html', error_msg=err), 500
 
-    return redirect('/confirmation', code=302, Response=None)
+    return redirect('/get_list?appn=amend', code=302, Response=None)
 # end of amendment routes
 
 
@@ -523,12 +535,12 @@ def submit_cancellation():
     headers = {'Content-Type': 'application/json'}
     response = requests.delete(url, data=json.dumps(data), headers=headers)
     if response.status_code == 200:
-        session['regn_no'] = []
+        session['confirmation'] = {'reg_no': []}
         data = response.json()
         for item in data['cancelled']:
-            session['regn_no'].append(item)
+            session['confirmation']['reg_no'].append(item)
         delete_from_worklist(session['worklist_id'])
-        return redirect('/confirmation', code=302, Response=None)
+        return redirect('/get_list?appn=cancel', code=302, Response=None)
     else:
         err = response.status_code
         logging.error(err)
@@ -546,8 +558,6 @@ def process_search_name(application_type):
     request_data = {}
     for k in request.form:
         request_data[k] = request.form[k]
-
-    print(request_data)
 
     return render_template('search_customer.html', images=session['images'], application=session['application_dict'],
                            application_type=session['application_type'], current_page=0,
@@ -582,7 +592,6 @@ def submit_search():
     }
 
     session['search_data'] = search_data
-    print(search_data)
     url = app.config['CASEWORK_API_URL'] + '/searches'
     headers = {'Content-Type': 'application/json'}
     response = requests.post(url, data=json.dumps(search_data), headers=headers)
@@ -598,7 +607,12 @@ def submit_search():
         logging.error('Unexpected return code: %d', response.status_code)
         return render_template('error.html')
 
-    return redirect('/confirmation', code=302, Response=None)
+    session['confirmation'] = {'reg_no': []}
+
+    if session['application_dict']['search_criteria']['search_type'] == 'full':
+        return redirect('/get_list?appn=search_full', code=302, Response=None)
+    else:
+        return redirect('/get_list?appn=search_bank', code=302, Response=None)
 
 
 @app.route('/search_result', methods=['GET'])
@@ -720,19 +734,21 @@ def land_charge_capture():
     else:
         page = "%s.html" % (session['application_dict']['form'])
         return render_template(page, application_type=session['application_type'],
-                               images=session['images'], application=session['application_dict'],
-                               current_page=0, errors=result['error'], curr_data=entered_fields,
+                               images=session['images'],
+                               application=session['application_dict'],
+                               current_page=0,
+                               errors=result['error'],
+                               curr_data=entered_fields,
                                screen='capture')
 
 
 @app.route('/land_charge_capture', methods=['GET'])
 def get_land_charge_capture():
     # For returning from verification screen
-
     # session['page_template']
     return render_template(session['page_template'],
                            application_type=session['application_type'],
-                           # data=application_json,
+                           data=session['application_dict'],
                            images=session['images'],
                            application=session['application_dict'],
                            current_page=0,
@@ -770,7 +786,7 @@ def lc_process_application():
         logging.error(err)
         return render_template('error.html', error_msg=err), response.status_code
     else:
-        return redirect('/confirmation', code=response.status_code, Response=None)
+        return redirect('/get_list?appn=lc_regn', code=302, Response=None)
 
 
 # ============== Common routes =====================

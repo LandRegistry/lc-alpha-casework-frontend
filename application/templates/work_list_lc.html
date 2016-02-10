@@ -68,6 +68,12 @@ $(document).ready(function() {
     <div class="col nine" style="min-width:800px;">
         <div class="spacer-10"></div>
         <h1 class="title-36">Land Charge</h1>
+
+        <!-- Confirmation -->
+        {% if 'reg_no' in result %}
+            {% include 'includes/confirmation.html' %}
+        {% endif %}
+
         <div class="spacer-20"></div>
         <!-- Totals -->
         {% set sub_cat_qty = 5 %}
