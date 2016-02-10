@@ -1,0 +1,214 @@
+{% extends "/page_template/base.html" %}
+
+{% block page_specific_head %}
+{% endblock %}
+{% block maincontent %}
+
+
+<div class="spacer-10"></div>
+
+<h1 class="title-36">Rectification</h1>
+
+<div class="spacer-5"></div>
+
+<div class="text-16-gray">
+    1. Retrieve original &nbsp;&nbsp;
+    <span class="text-16-bold">2. View and amend original</span> &nbsp;&nbsp;
+    3. Check details &nbsp;&nbsp;
+    4. Conveyancer and fees &nbsp;&nbsp;
+</div>
+
+<div class="grid-row">
+    <div class="col four" id="form_panel">
+        <!-- ///////////////////////////////// data entry form ///////////////////////////////// -->
+        <form id="rectify_form" action="/get_details" method="POST">
+            <div class="spacer-40"></div>
+            <h2 class="text-24-bold">Original registration details</h2>
+            <p class="text-indent">Please rectify information by over-keying as necessary</p>
+            <div class="spacer-10"></div>
+            {% if error_msg|length > 0 %}
+            <p class="error"><strong>{{error_msg}}</strong></p>
+            {% endif %}
+            <!-- CHARGE -->
+            <h2 class="text-24-bold">Class of charge</h2>
+
+            <div class="spacer-10"></div>
+
+            <div class="form">
+                <label class="form-label" for="class">Class and subclass</label><br/>
+                <select class="form-select width-50" id="class" name="class" required aria-required="true" autofocus>
+                    <option value="C(I)" >C1</option>
+                    <option value="C(II)">C2</option>
+                    <option value="C(III)">C3</option>
+                    <option value="C(IV)">C4</option>
+                    <option value="D(I)">D1</option>
+                    <option value="D(II)">D2</option>
+                    <option value="D(III)">D3</option>
+                    <option value="A">A</option>
+                    <option value="B">B</option>
+                    <option value="E">E</option>
+                    <option value="F">F</option>
+                    <option value="PA">PA</option>
+                    <option value="WO">WO</option>
+                    <option value="DA">DA</option>
+                    <option value="ANN">ANN</option>
+                    <option value="LC">LC</option>
+                </select>
+            </div>
+
+            <script>$('#class').val('{{curr_data.class}}');</script>
+            <div class="spacer-10"></div>
+
+            {% include 'includes/particulars.html' %}
+            <div class="spacer-10"></div>
+
+            <!-- ESTATE OWNER -->
+            <h2 class="text-24-bold">Estate owner details</h2>
+
+            <div class="spacer-10"></div>
+
+            <div class="form">
+                {% if 'estate_owner' in errors %}
+                <label class="error-text">X Estate owner</label>
+                {% endif %}
+
+                <p class="text-indent">Please select the type of estate owner from the list</p>
+                <select name="estateOwnerTypes" id="estateOwnerTypes" onchange="javascript:showFields();" class="form-select width-50">
+
+
+
+                    {% if curr_data.estate_owner_ind == 'Private Individual' %}
+                    <option value="privateIndividual" selected="selected">Private individual</option>
+                    {% else %}
+                    <option value="privateIndividual">Private individual</option>
+                    {% endif %}
+
+                    {% if curr_data.estate_owner_ind == 'County Council' %}
+                    <option value="countyCouncil" selected="selected">County Council or Greater London or Manchester Council</option>
+                    {% else %}
+                    <option value="countyCouncil">County Council or Greater London or Manchester Council</option>
+                    {% endif %}
+
+                    {% if curr_data.estate_owner_ind == 'Parish Council' %}
+                    <option value="parishCouncil" selected="selected">Parish, Town or Community Council</option>
+                    {% else %}
+                    <option value="parishCouncil">Parish, Town or Community Council</option>
+                    {% endif %}
+
+                    {% if curr_data.estate_owner_ind == 'Other Council' %}
+                    <option value="otherCouncil" selected="selected">Other Council</option>
+                    {% else %}
+                    <option value="otherCouncil">Other Council</option>
+                    {% endif %}
+
+                    {% if curr_data.estate_owner_ind == 'Development Corporation' %}
+                    <option value="developmentCorporation" selected="selected">Development Corporation</option>
+                    {% else %}
+                    <option value="developmentCorporation">Development Corporation</option>
+                    {% endif %}
+
+                    {% if curr_data.estate_owner_ind == 'Limited Company' %}
+                    <option value="limitedCompany" selected="selected">Limited company</option>
+                    {% else %}
+                    <option value="limitedCompany">Limited company</option>
+                    {% endif %}
+
+                    {% if curr_data.estate_owner_ind == 'Complex Name' %}
+                    <option value="complexName" selected="selected">Complex Name</option>
+                    {% else %}
+                    <option value="complexName">Complex Name</option>
+                    {% endif %}
+
+                    {% if curr_data.estate_owner_ind == 'Other' %}
+                    <option value="other" selected="selected">Other</option>
+                    {% else %}
+                    <option value="other">Other</option>
+                    {% endif %}
+
+                </select>
+            </div>
+
+            <div id="private">
+                <div class="form">
+                    <label class="form-label" for="forename">Forename(s)</label>
+                    <input class="form-textfield" type="text" id="forename" autocomplete="off" name="forename" value="{{curr_data.estate_owner.private.forenames|join(' ')}}"/>
+                </div>
+
+                <div class="form">
+                    <label class="form-label" for="surname">Surname</label>
+                    <input class="form-textfield" type="text" id="surname" autocomplete="off" name="surname" value="{{curr_data.estate_owner.private.surname}}"/>
+                </div>
+            </div>
+
+            <div id="limited">
+                <div class="form">
+                    <label class="form-label" for="company">Company name</label>
+                    <input class="form-textfield" type="text" id="company" autocomplete="off" name="company" value="{{curr_data.estate_owner.company}}"/>
+                </div>
+            </div>
+
+            <div id="local">
+                <div class="form">
+                    <label class="form-label" for="loc_auth">Local authority full name</label>
+                    <input class="form-textfield" type="text" id="loc_auth" autocomplete="off" name="loc_auth" value="{{curr_data.estate_owner.local.name}}"/>
+                </div>
+                <div class="form">
+                    <label class="form-label" for="loc_auth_area">Local authority area</label>
+                    <p class="text-indent">This is the area the local authority affects</p>
+                    <input class="form-textfield" type="text" id="loc_auth_area" autocomplete="off" name="loc_auth_area" value="{{curr_data.estate_owner.local.area}}"/>
+                </div>
+            </div>
+            <div id="complex">
+                <div class="form">
+                    <label class="form-label" for="complex_name_field">Complex name</label>
+                    <input class="form-textfield" type="text" id="complex_name_field" autocomplete="off" value="{{curr_data.estate_owner.complex.name}}"/>
+                    <div class="spacer-5"></div>
+                    <a href="#here" id="name_lookup_link" onclick="showComplexNameModal();" class="link-14-right">Look up complex name</a>
+                    <div id="complex_result_modal" role="dialog" aria-labelledby="myDialog" style="display: none;">
+                        <p id="modal_message" class="text-16"></p>
+                        <div class="spacer-15"></div>
+                        <div id="complex_result"></div>
+                        <div class="spacer-15"></div>
+                        <div style="float:right">
+                            <input id="close" type="button" class="form-button" onclick="closeComplexNameModal();" value="Close"/>
+                        </div>
+                    </div>
+                    <div class="spacer-15"></div>
+                    <div id="selected_name"></div>
+                    <input type="hidden" id="complex_name" name="complex_name" value=""/>
+                    <input type="hidden" id="complex_number" name="complex_number" value=""/>
+                </div>
+            </div>
+
+
+            <div id="other">
+                <div class="form">
+                    <label class="form-label" for="other_name">Name</label>
+                    <input class="form-textfield" type="text" id="other_name" name="other_name" autocomplete="off" value="{{curr_data.estate_owner.other}}"/>
+                </div>
+            </div>
+
+            <div class="form">
+                <label class="form-label" for="occupation">Trade, title or profession</label>
+                <input class="form-textfield" type="text" id="occupation" autocomplete="off" name="occupation" value="{{curr_data.occupation}}"/>
+            </div>
+            <div class="spacer-40"></div>
+            <input id="continue" type="submit" value="Continue" class="form-button"/>
+            <div class="spacer-40"></div>
+        </form>
+    </div>
+    <!-- ///////////////////////////////// end of data entry form ///////////////////////////////// -->
+    <div class="col one"><p></p></div>
+    <!-- /////////////////////////////////  Include image tool ///////////////////////////////// -->
+
+    <div class="col seven">
+        <div class="spacer-40"></div>
+        {% include 'includes/image_view_body.html' %}
+    </div>
+    <!-- ///////////////////////////////// End of image tool ///////////////////////////////// -->
+
+</div>
+
+
+
+{% endblock %}

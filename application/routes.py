@@ -7,6 +7,7 @@ import json
 from application.form_validation import validate_land_charge
 from application.land_charge import build_lc_inputs, build_customer_fee_inputs, submit_lc_registration
 from application.search import process_search_criteria
+from application.registration import convert_response_data
 
 #
 # @app.errorhandler(Exception)
@@ -160,10 +161,13 @@ def application_start(application_type, appn_id, form):
 
 
 @app.route('/get_details', methods=["POST"])
-def get_bankruptcy_details():
+def get_registration_details():
     application_type = session['application_type']
     session['regn_no'] = request.form['reg_no']
-    session['reg_date'] = '%s-%s-%s' % (request.form['reg_year'], request.form['reg_month'], request.form['reg_day'])
+
+    date_as_list = request.form['reg_date'].split("/")  # dd/mm/yyyy
+
+    session['reg_date'] = '%s-%s-%s' % (date_as_list[2], date_as_list[1], date_as_list[0])
 
     url = app.config['BANKRUPTCY_DATABASE_URL'] + '/registrations/' + session['reg_date'] + '/' + session['regn_no']
 
@@ -180,51 +184,26 @@ def get_bankruptcy_details():
 
     if error_msg is not None:
         template = 'regn_retrieve.html'
-        if application_type == 'rectify':
-            template = 'rect_retrieve.html'
+        if application_type == 'lc_rect':
+            template = 'rectification_retrieve.html'
 
         return render_template(template, application_type=application_type,
-                               error_msg=error_msg, images=session['images'], current_page=0)
-
-    original_image_data = "none"
-
-    if application_json['document_id'] is not None and application_json['document_id'] is not '0':
-        document_id = application_json['document_id']
-
-        doc_response = requests.get(app.config["DOCUMENT_URL"] + "/forms/" + str(document_id))
-        original_image_data = doc_response.json()
-
-        images = []
-        for image in original_image_data['images']:
-            images.append(app.config["DOCUMENT_URL"] + image)
-        original_image_data = images
-
-        set_session_variables({'document_id': document_id})
-        if application_type == 'rectify':
-            session['images'] = images
-
-    set_session_variables({
-        'original_image_data': original_image_data,
-        'application_dict': application_json
-    })
-
-    return redirect('/process_application/' + application_type, code=302, Response=None)
-
-
-@app.route('/process_application/<application_type>', methods=['GET'])
-def process_application(application_type):
-    if application_type == 'rectify':
-        template = 'rect_amend.html'
-    elif application_type == 'amend':
-        template = 'regn_amend.html'
+                               error_msg=error_msg, images=session['images'], current_page=0,
+                               reg_no=request.form['reg_no'], reg_date=request.form['reg_date'])
     else:
-        template = 'regn_cancel.html'
-    if 'data_amended' not in session:
-        session['data_amended'] = 'false'
+        if application_type == 'lc_rect':
+            template = 'rectification_amend.html'
+        elif application_type == 'amend':
+            template = 'regn_amend.html'
+        else:
+            template = 'regn_cancel.html'
 
-    return render_template(template, application_type=application_type, data=session['application_dict'],
-                           images=session['images'], current_page=0, original_image_data=session['original_image_data'],
-                           data_amended=session['data_amended'])
+        data = convert_response_data(application_json)
+
+        print(data)
+
+        return render_template(template, application_type=application_type, data=session['application_dict'],
+                               images=session['images'], current_page=0, curr_data=data)
 
 
 @app.route('/retrieve_new_reg', methods=["GET"])
@@ -736,19 +715,21 @@ def land_charge_capture():
     else:
         page = "%s.html" % (session['application_dict']['form'])
         return render_template(page, application_type=session['application_type'],
-                               images=session['images'], application=session['application_dict'],
-                               current_page=0, errors=result['error'], curr_data=entered_fields,
+                               images=session['images'],
+                               application=session['application_dict'],
+                               current_page=0,
+                               errors=result['error'],
+                               curr_data=entered_fields,
                                screen='capture')
 
 
 @app.route('/land_charge_capture', methods=['GET'])
 def get_land_charge_capture():
     # For returning from verification screen
-
     # session['page_template']
     return render_template(session['page_template'],
                            application_type=session['application_type'],
-                           # data=application_json,
+                           data=session['application_dict'],
                            images=session['images'],
                            application=session['application_dict'],
                            current_page=0,
@@ -933,7 +914,8 @@ def page_required(appn_type, sub_type=''):
             "bank_regn": "application.html",
             "search_full": "search_info.html",
             "search_bank": "search_info.html",
-            "oc": "regn_retrieve.html"
+            "oc": "regn_retrieve.html",
+            "lc_rect": "rectification_retrieve.html"
         }
         return html_page.get(appn_type)
 
