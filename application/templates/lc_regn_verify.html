@@ -107,6 +107,26 @@
 
         {% elif details.estate_owner_ind == 'Complex Name' %}
 
+        <div id="eo_validation">
+            <div class="grid-row">
+                <div class="text-19-gray col ten">Estate owner details</div>
+                <div class="col two"><a href="land_charge_capture">Change</a></div>
+            </div>
+            <div class="grid-row-padded-line">
+                <span class="text-16-bold col four">Name</span>
+                <span class="text-16-bold col six">{{details.estate_owner.complex.number}}</span>
+            </div>
+            <div class="grid-row-padded-line">
+                <span class="text-16-bold col four">Number</span>
+                <span class="text-16-bold col six">{{details.estate_owner.complex.name}}</span>
+            </div>
+            <div class="grid-row-padded-line bottom-line">
+                <span class="text-16-bold col four">Title, trade or profession</span>
+                <span class="text-16-bold col six">{{details.occupation}}</span>
+            </div>
+        </div>
+
+
         {% endif %}
 
         <div id="coc_validation">

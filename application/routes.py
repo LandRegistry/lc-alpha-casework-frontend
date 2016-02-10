@@ -701,19 +701,25 @@ def land_charge_capture():
     else:
         page = "%s.html" % (session['application_dict']['form'])
         return render_template(page, application_type=session['application_type'],
-                               images=session['images'], application=session['application_dict'],
-                               current_page=0, errors=result['error'], curr_data=entered_fields,
+                               images=session['images'],
+                               application=session['application_dict'],
+                               current_page=0,
+                               errors=result['error'],
+                               curr_data=entered_fields,
                                screen='capture')
 
 
 @app.route('/land_charge_capture', methods=['GET'])
 def get_land_charge_capture():
     # For returning from verification screen
+    logging.info(session)
+    logging.info(session['application_dict'])
+    logging.info(session['application_type'])
 
     # session['page_template']
     return render_template(session['page_template'],
                            application_type=session['application_type'],
-                           # data=application_json,
+                           data=session['application_dict'],
                            images=session['images'],
                            application=session['application_dict'],
                            current_page=0,
