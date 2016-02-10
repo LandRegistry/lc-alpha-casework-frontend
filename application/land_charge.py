@@ -13,13 +13,12 @@ def build_lc_inputs(data):
                                'local': {'name': '', 'area': ''},
                                'complex': {"name": '', "number": ''},
                                'other': ''},
-              'estate_owner_ind': '',
+              'estate_owner_ind': 'Private Individual',
               'occupation': '',
               'additional_info': '',
               'priority_notice': ''}
 
     if len(data) > 0:
-
         result['class'] = data['class']
 
         result['district'] = data['district']
@@ -33,10 +32,12 @@ def build_lc_inputs(data):
         if 'priority_notice' in data:
             result['priority_notice'] = data['priority_notice']
 
+        if session['application_dict']['form'] == 'K6':
+            result['priority_notice_reg'] = data['pn_reg']
+
         add_counties(result, data)
 
         add_estate_owner_details(result, data)
-
     return result
 
 
@@ -94,10 +95,10 @@ def add_counties(result, data):
 
 
 def build_customer_fee_inputs(data):
-    customer_fee_details = {'key_number': '244095',
-                            'customer_name': 'Mr Conveyancer',
-                            'customer_address': '2 New Street',
-                            'application_reference': 'reference 11'}
+    customer_fee_details = {'key_number': data['key_number'],
+                            'customer_name': data['customer_name'],
+                            'customer_address': data['customer_address'],
+                            'application_reference': data['customer_ref']}
 
     return customer_fee_details
 

@@ -162,6 +162,7 @@
             </div>
         </div>
 
+        {% if application.application_type != 'K6' %}
         <div class="grid-row">
             <div class="text-19-gray col ten">Priority Notice</div>
             <div class="col two"><a href="land_charge_capture">Change</a></div>
@@ -170,6 +171,7 @@
             <span class="text-16-bold col four">PN Number</span>
             <span class="text-16-bold col six">{{details.priority_notice}}</span>
         </div>
+        {% endif %}
 
         <div class="grid-row">
             <div class="text-19-gray col ten">Particulars of land affected</div>

@@ -266,7 +266,7 @@ body {
     display: none;
 }
 
-.confirmation{
+.confirmation_banner{
     font-family: Roboto;
     font-weight: 700;
     color: #3c763d;
@@ -275,8 +275,23 @@ body {
     border-color: #d6e9c6;
     padding-top: 15px;
     padding-left: 10px;
+    padding-bottom: 15px;
     margin-bottom: 15px;
     border: 1px solid transparent;
     border-radius: 4px;
     height: 100%;
 }
+
+.block_label {
+    font-family: Roboto;
+    font-size: 16px;
+    background-color: #dee0e2;
+    padding-top: 5px;
+    padding-left: 10px;
+    padding-bottom: 5px;
+    margin-bottom: 15px;
+    border: 1px solid transparent;
+    display: block;
+    width: 30%;
+}
+

@@ -770,14 +770,16 @@ def land_charge_capture():
         session['register_details'] = entered_fields
         return redirect('/land_charge_verification', code=302, Response=None)
     else:
-        page = "%s.html" % (session['application_dict']['form'])
+        # page = "%s.html" % (session['application_dict']['form'])
+        page = session['page_template']
         return render_template(page, application_type=session['application_type'],
                                images=session['images'],
                                application=session['application_dict'],
                                current_page=0,
                                errors=result['error'],
                                curr_data=entered_fields,
-                               screen='capture')
+                               screen='capture',
+                               data=session['application_dict'])
 
 
 @app.route('/land_charge_capture', methods=['GET'])
@@ -804,14 +806,14 @@ def land_charge_verification():
 
 @app.route('/lc_verify_details', methods=['POST'])
 def lc_verify_details():
-    return redirect('/conveyancer_fee_info', code=302, Response=None)
+    return redirect('/conveyancer_and_fees', code=302, Response=None)
 
 
-@app.route('/conveyancer_fee_info', methods=['GET'])
-def conveyancer_fee_info():
-    return render_template('conveyancer_fee.html', application_type=session['application_type'], data={},
+@app.route('/conveyancer_and_fees', methods=['GET'])
+def conveyancer_and_fees():
+    return render_template('lc_regn_customer.html', application_type=session['application_type'], data={},
                            images=session['images'], application=session['application_dict'],
-                           current_page=0)
+                           screen='customer', backend_uri=app.config['CASEWORK_API_URL'], current_page=0)
 
 
 @app.route('/lc_process_application', methods=['POST'])
@@ -824,7 +826,7 @@ def lc_process_application():
         logging.error(err)
         return render_template('error.html', error_msg=err), response.status_code
     else:
-        return redirect('/get_list?appn=lc_regn', code=302, Response=None)
+        return redirect('/get_list?appn=' + session['application_type'], code=302, Response=None)
 
 
 # ============== Common routes =====================
@@ -972,7 +974,8 @@ def page_required(appn_type, sub_type=''):
             "search_full": "search_info.html",
             "search_bank": "search_info.html",
             "oc": "regn_retrieve.html",
-            "lc_rect": "rectification_retrieve.html"
+            "lc_rect": "rectification_retrieve.html",
+            "lc_pn": "priority_notice_capture.html"
         }
         return html_page.get(appn_type)
 

@@ -1,0 +1,33 @@
+{% extends "/page_template/base.html" %}
+{% block page_specific_head %}
+{% include 'includes/customer_head.html' %}
+
+{% endblock %}
+{% block maincontent %}
+
+{% include 'includes/lc_nav_title.html' %}
+
+<div class="grid-row">
+    <div class="col four" id="form_panel">
+        <!-- ///////////////////////////////// data entry form ///////////////////////////////// -->
+        <form action="/lc_process_application" method="POST">
+            <div class="spacer-20"></div>
+            {% set customer_type = 'Conveyancer' %}
+            {% include 'includes/customer_fields.html' %}
+
+            <input id="submit" type="submit" class="form-button" value="Complete"/>
+
+        </form>
+    </div>
+    <!-- ///////////////////////////////// end of data entry form ///////////////////////////////// -->
+    <div class="col one"><p></p></div>
+    <!-- /////////////////////////////////  Include image tool ///////////////////////////////// -->
+
+    <div class="col seven">
+        {% include 'includes/image_view_body.html' %}
+    </div>
+    <!-- ///////////////////////////////// End of image tool ///////////////////////////////// -->
+</div>
+
+
+{% endblock %}
