@@ -7,7 +7,7 @@ import json
 from application.form_validation import validate_land_charge
 from application.land_charge import build_lc_inputs, build_customer_fee_inputs, submit_lc_registration
 from application.search import process_search_criteria
-from application.registration import convert_response_data
+from application.rectification import convert_response_data
 
 #
 # @app.errorhandler(Exception)
@@ -158,53 +158,6 @@ def application_start(application_type, appn_id, form):
     return render_template(template, application_type=application_type, data=application_json,
                            images=images, application=application, years=years,
                            current_page=0, errors=[], curr_data=curr_data)
-
-
-@app.route('/get_details', methods=["POST"])
-def get_registration_details():
-    application_type = session['application_type']
-    session['regn_no'] = request.form['reg_no']
-
-    date_as_list = request.form['reg_date'].split("/")  # dd/mm/yyyy
-
-    session['reg_date'] = '%s-%s-%s' % (date_as_list[2], date_as_list[1], date_as_list[0])
-
-    url = app.config['BANKRUPTCY_DATABASE_URL'] + '/registrations/' + session['reg_date'] + '/' + session['regn_no']
-
-    response = requests.get(url)
-
-    error_msg = None
-
-    if response.status_code == 404:
-        error_msg = "Registration not found please re-enter"
-    else:
-        application_json = response.json()
-        if application_json['status'] == 'cancelled' or application_json['status'] == 'superseded':
-            error_msg = "Application has been cancelled or amended - please re-enter"
-
-    if error_msg is not None:
-        template = 'regn_retrieve.html'
-        if application_type == 'lc_rect':
-            template = 'rectification_retrieve.html'
-
-        return render_template(template, application_type=application_type,
-                               error_msg=error_msg, images=session['images'], current_page=0,
-                               reg_no=request.form['reg_no'], reg_date=request.form['reg_date'])
-    else:
-        if application_type == 'lc_rect':
-            template = 'rectification_amend.html'
-        elif application_type == 'amend':
-            template = 'regn_amend.html'
-        else:
-            template = 'regn_cancel.html'
-
-        data = convert_response_data(application_json)
-
-        print(data)
-
-        return render_template(template, application_type=application_type, data=session['application_dict'],
-                               images=session['images'], current_page=0, curr_data=data)
-
 
 @app.route('/retrieve_new_reg', methods=["GET"])
 def retrieve_new_reg():
@@ -692,6 +645,72 @@ def search_result():
 def start_rectification():
     session['application_type'] = "rectify"
     return render_template('rect_retrieve.html')
+
+@app.route('/get_details', methods=["POST"])
+def get_registration_details():
+    application_type = session['application_type']
+    session['regn_no'] = request.form['reg_no']
+
+    session['reg_date']  = request.form['reg_date']  # yyyy-mm-dd
+
+    url = app.config['BANKRUPTCY_DATABASE_URL'] + '/registrations/' + session['reg_date'] + '/' + session['regn_no']
+
+    response = requests.get(url)
+
+    error_msg = None
+
+    if response.status_code == 404:
+        error_msg = "Registration not found please re-enter"
+    else:
+        application_json = response.json()
+        if application_json['status'] == 'cancelled' or application_json['status'] == 'superseded':
+            error_msg = "Application has been cancelled or amended - please re-enter"
+
+    if error_msg is not None:
+        template = 'regn_retrieve.html'
+        if application_type == 'lc_rect':
+            template = 'rectification_retrieve.html'
+
+        return render_template(template, application_type=application_type,
+                               error_msg=error_msg, images=session['images'], current_page=0,
+                               reg_no=request.form['reg_no'], reg_date=request.form['reg_date'])
+    else:
+        if application_type == 'lc_rect':
+            template = 'rectification_amend.html'
+        elif application_type == 'amend':
+            template = 'regn_amend.html'
+        else:
+            template = 'regn_cancel.html'
+
+        data = convert_response_data(application_json)
+
+        return render_template(template,  data=session['application_dict'],
+                               images=session['images'], current_page=0, curr_data=data)
+
+@app.route('/rectification_capture', methods=['POST'])
+def rectification_capture():
+
+    logging.info(request.form)
+
+    result = validate_land_charge(request.form)
+    entered_fields = build_lc_inputs(request.form)
+
+    entered_fields['class'] = result['class']
+
+    logging.info(entered_fields)
+
+    if len(result['error']) == 0:
+        session['rectification_details'] = entered_fields
+        return render_template('rectification_check.html', application_type=session['application_type'], data={},
+                        images=session['images'], application=session['application_dict'],
+                        details=session['rectification_details'], screen='verify',
+                        current_page=0)
+    else:
+        return render_template('rectification_amend.html', application_type=session['application_type'],
+                               images=session['images'], application=session['application_dict'],
+                               current_page=0, errors=result['error'], curr_data=entered_fields,
+                               screen='capture')
+
 # end of rectification routes
 
 
