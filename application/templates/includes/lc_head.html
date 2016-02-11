@@ -93,6 +93,18 @@
         getComplexName();
     }
 
+    function addComplexNameModal() {
+        $("#add_complex_modal").dialog({
+            modal:true,
+            show: true,
+            title:"Complex name addition",
+            hide:true,
+            width: 600,
+            maxHeight: 500
+        });
+    }
+
+
     function updateComplexName(obj){
         compNameStr = obj.value;
         name = compNameStr.substring(0,compNameStr.indexOf('*'));
@@ -107,12 +119,37 @@
     function closeComplexNameModal(){
         $('body').removeClass('stop-scrolling');
         $('#complex_result_modal').dialog('close');
+        $('#add_complex_modal').dialog('close');
     }
     function clearPreviousResults(){
         jQuery('#name_results').remove();
         jQuery('#selected_name').empty();
         jQuery('#complex_name').val("");
         jQuery('#complex_number').val("");
+        jQuery('#complex_name_addition').val("");
+        jQuery('#complex_number_addition').val("");
+        jQuery('#modal_add').replaceWith($('<p id="modal_add" class="text-16"></p>'));
+
+    }
+
+    function addComplexName(){
+        var insertName = document.getElementById("complex_name_addition").value;
+        var insertNumber = document.getElementById("complex_number_addition").value;
+        jQuery.ajax( {
+            url: '{{config.CASEWORK_API_URL}}/complex_names/' + insertName + '/' + insertNumber,
+            type: 'POST',
+            data: {},
+            success: function( data ) {
+                jQuery('#modal_add').replaceWith($('<p id="modal_add" class="text-16">Complex name added please close.</p>'));
+                var add_name = {};
+                add_name.value = insertName + '*' + insertNumber;
+                updateComplexName(add_name);
+            },
+            error: function( data) {
+                jQuery('#modal_add').replaceWith($('<p id="modal_add" class="text-16">Error - please add the name using LCNU, close this box and look up the Complex name again.</p>'));
+
+            }
+        } );
     }
 
     function getComplexName(){
