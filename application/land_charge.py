@@ -32,9 +32,6 @@ def build_lc_inputs(data):
         if 'priority_notice' in data:
             result['priority_notice'] = data['priority_notice']
 
-        if session['application_dict']['form'] == 'K6':
-            result['priority_notice_reg'] = data['pn_reg']
-
         add_counties(result, data)
 
         add_estate_owner_details(result, data)
@@ -115,6 +112,13 @@ def submit_lc_registration(cust_fee_data):
     application['residence_withheld'] = False
     application['date_of_birth'] = "1980-01-01"  # TODO: what are we doing about the DOB??
     application['document_id'] = session['document_id']
+
+    if session['application_dict']['form'] == 'K6':
+        application['priority_notice_ind'] = True
+        result_string = 'priority_notices'
+    else:
+        result_string = 'new_registrations'
+
     session['register_details']['estate_owner']['estate_owner_ind'] = session['register_details']['estate_owner_ind']
     #     convert_estate_owner_ind(session['register_details']['estate_owner_ind'])
     application['lc_register_details'] = session['register_details']
@@ -126,7 +130,8 @@ def submit_lc_registration(cust_fee_data):
         logging.info("200 response here")
         data = response.json()
         reg_list = []
-        for item in data['new_registrations']:
+
+        for item in data[result_string]:
             reg_list.append(item['number'])
         session['confirmation'] = {'reg_no': reg_list}
 
