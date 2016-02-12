@@ -1034,3 +1034,10 @@ def get_translated_county(county_name):
     response = requests.get(url)
 
     return response.json()
+
+@app.route('/reprint', methods=['GET'])
+def reprint():
+    curr_data={'reprint_selected': True,
+               'estate_owner': {'private':{"forenames":[],"surname":""},
+                                'local':{'name':"","area":""},"complex":{"name":""}}}
+    return render_template('reprint.html', curr_data=curr_data)

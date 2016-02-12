@@ -609,6 +609,15 @@ td.custom-3 {
   -moz-box-sizing: border-box;
   box-sizing: border-box; }
 
+.column-form-60 {
+  float: left;
+  vertical-align:top;
+  width: 60%;
+  padding: 0 15px;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box; }
+
 #side-nav {
   list-style-type: none;
   margin: 0;
