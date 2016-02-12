@@ -1,0 +1,326 @@
+{% extends "/page_template/base.html" %}
+{% block maincontent %}
+
+{% set page_title = 'Reprint' %}
+{% set reprint_selected = 'selected' %}
+
+<script>
+    function showFields() {
+        var type = document.getElementById("estateOwnerTypes").value;
+        document.getElementById("private").style.display = 'none';
+        document.getElementById("limited").style.display = 'none';
+        document.getElementById("local").style.display = 'none';
+        document.getElementById("complex").style.display = 'none';
+        document.getElementById("other").style.display = 'none';
+
+        if (type == "limitedCompany") {
+            document.getElementById("limited").style.display = 'block';
+            jQuery("#forename, #surname, #loc_auth, #loc_auth_area, #complex_name, #other_name").val('');
+
+        } else if (type == "countyCouncil" || type == "parishCouncil" || type == "otherCouncil") {
+            document.getElementById("local").style.display = 'block';
+            jQuery("#forename, #surname, #company, #complex_name, #other_name").val('');
+
+        }else if (type == "complexName") {
+            document.getElementById("complex").style.display = 'block';
+            jQuery("#forename, #surname, #company, #loc_auth, #loc_auth_area, #other_name").val('');
+
+        } else if (type == "other" || type == "developmentCorporation" ) {
+            document.getElementById("other").style.display = 'block';
+            jQuery("#forename, #surname, #company, #loc_auth, #loc_auth_area, #complex_name").val('');
+
+        } else {
+            document.getElementById("private").style.display = 'block';
+            jQuery("#company, #loc_auth, #loc_auth_area, #complex_name, #other_name").val('');
+        }
+    }
+
+    jQuery(document).ready(function(){
+        {% if curr_data.estate_owner_ind == '' %}
+            jQuery("#estateOwnerTypes").val("{{curr_data.estate_owner_ind}}");
+        {% endif %}
+        showFields();
+        setupCountyAutocomplete("#county_0");
+    });
+</script>
+
+<div class="breadcrumb">
+    <ol>
+        <li><a href="/">Home</a></li>
+        {% if requested_list == "bank" %}
+        <li class="breadcrumb-no-arrow"><span>Bankruptcy</span></li>
+        {% else %}
+        <li><a href="/get_list?appn=bank">Bankruptcy</a></li>
+        <li class="breadcrumb-no-arrow"><span>{{page_title}}</span></li>
+        {% endif %}
+    </ol>
+</div>
+
+<div class="spacer-5"></div>
+<div class="grid-row" >
+
+    <!-- Side Navigation -->
+    <div class="col three">
+        <ul id="side-nav">
+            <li><a href="/">Home</a></li>
+            <li><a  href="/get_list?appn=bank">Bankruptcy Applications</a></li>
+            <li><a href="/get_list?appn=lc">Land Charge Applications</a></li>
+            <li><a href="/get_list?appn=search">Searches</a></li>
+            <li><a href="/get_list?appn=cancel">Cancellations</a></li>
+            <li><a href="/get_list?appn=search">Office Copies</a></li>
+            <li><a class="active" href="uc">Enquiries</a></li>
+            <li><a href="uc">Image management</a></li>
+            <li><a href="uc">General Information</a></li>
+        </ul>
+    </div>
+
+    <!-- Content -->
+    <div class="col nine text-19">
+        <div class="spacer-10"></div>
+        <div class="grid-row" >
+            <h1 class="title-36">Enquiries</h1>
+            </div>
+            <div class="col eleven">
+                <div class="spacer-10"></div>
+
+            </div>
+
+        </div>
+        <div class="subservice-box">
+                <a class="no-link-style {{enquiries_selected}}" tabindex="2" href="/get_list?appn=bank_amend">
+                <div class="spacer-20"></div>
+                <p class="text-16-bold">Enquiries</p>
+                <div class="spacer-30"></div>
+                <div class="indicator" id="enquiries">
+                    <span class="indicator-middle-2"></span>
+                </div>
+                </a>
+            </div>
+        <div class="subservice-box">
+                <a class="no-link-style {{historical_selected}}" tabindex="2" href="/get_list?appn=bank_amend">
+                <div class="spacer-20"></div>
+                <p class="text-16-bold">Historical View</p>
+                <div class="spacer-30"></div>
+                <div class="indicator" id="historical">
+                    <span class="indicator-middle-2"></span>
+                </div>
+                </a>
+            </div>
+        <div class="subservice-box">
+                <a class="no-link-style {{unidentified_selected}}" tabindex="2" href="/get_list?appn=bank_amend">
+                <div class="spacer-20"></div>
+                <p class="text-16-bold">Unidentified</p>
+                <div class="spacer-30"></div>
+                <div class="indicator" id="unidentified">
+                    <span class="indicator-middle-2"></span>
+                </div>
+                </a>
+            </div>
+        <div class="subservice-box">
+                <a class="no-link-style {{reprint_selected}}" tabindex="2" href="/get_list?appn=bank_amend">
+                <div class="spacer-20"></div>
+                <p class="text-16-bold">Reprint</p>
+                <div class="spacer-30"></div>
+                <div class="indicator" id="reprint">
+                    <span class="indicator-middle-2"></span>
+                </div>
+                </a>
+            </div>
+        <!-- K22 and K17/18 reprint inputs -->
+
+    <div class="col nine text-19"><div class="spacer-20"></div>
+    <table border="0"><tr><td>
+        <h2 class="text-24-bold"> &nbsp;&nbsp;K22 reprint</h2>
+        <form id="page_form" action="/process_court_details" method="POST">
+        <div class="column-form-60" id="K22_form_panel">
+
+            <div class="spacer-20"></div>
+
+            <div class="form">
+                <label class="form-label" for="registration_no">Registration number</label>
+                <input class="form-textfield" id="k22_reg_no" name="k22_reg_no" type="text" autofocus>
+            </div>
+
+            <div class="form">
+                <label class="form-label" for="registration_date">Date of registration</label>
+                <input class="form-textfield" id="k22_reg_date" name="k22_reg_date" type="text" value="dd/mm/yyyy">
+            </div>
+
+            <div class="spacer-15"></div>
+
+            <div class="spacer-30"></div>
+
+            <div>
+                <table>
+                    <tr>
+                        <td width="50%" class="no-line">
+                            <input id="continue" type="submit" value="Search" class="form-button">
+                        </td>
+
+                    </tr>
+                </table>
+            </div>
+
+        </div>
+    </form>
+    </div>
+    </td><td>
+        <h2 class="text-24-bold"> &nbsp;&nbsp;K17/K18 reprint</h2>
+        <form id="page_form" action="/process_court_details" method="POST">
+        <div class="column-form-60" id="K18_form_panel">
+            <div class="spacer-20"></div>
+            <div class="form">
+                <label class="form-label" for="registration_no">Key number</label>
+                <input class="form-textfield" id="keyno" name="k18_key_no" type="text" autofocus>
+            </div>
+
+            <div class="form">
+                <table>
+                    <TR>
+                        <td>
+                            <label class="form-label" for="from_date">Date from</label>
+                            <input class="form-textfield" id="court" name="k18_reg_date" type="text" value="dd/mm/yyyy">
+                        </td>
+                        <td>
+                            <label class="form-label" for="to_date">Date to</label>
+                            <input class="form-textfield" id="court" name="k18_reg_date" type="text" value="dd/mm/yyyy">
+                        </td>
+                    </TR>
+                </table>
+            </div>
+
+
+
+
+            <p class="text-indent">Please select the type of name from the list</p>
+            <select name="estateOwnerTypes" id="estateOwnerTypes" onchange="javascript:showFields();" class="form-select width-50">
+
+                {% if curr_data.estate_owner_ind == 'Private Individual' %}
+                <option value="privateIndividual" selected="selected">Private individual</option>
+                {% else %}
+                <option value="privateIndividual">Private individual</option>
+                {% endif %}
+
+                {% if curr_data.estate_owner_ind == 'County Council' %}
+                <option value="countyCouncil" selected="selected">County Council or Greater London or Manchester Council</option>
+                {% else %}
+                <option value="countyCouncil">County Council or Greater London or Manchester Council</option>
+                {% endif %}
+
+                {% if curr_data.estate_owner_ind == 'Parish Council' %}
+                <option value="parishCouncil" selected="selected">Parish, Town or Community Council</option>
+                {% else %}
+                <option value="parishCouncil">Parish, Town or Community Council</option>
+                {% endif %}
+
+                {% if curr_data.estate_owner_ind == 'Other Council' %}
+                <option value="otherCouncil" selected="selected">Other Council</option>
+                {% else %}
+                <option value="otherCouncil">Other Council</option>
+                {% endif %}
+
+                {% if curr_data.estate_owner_ind == 'Development Corporation' %}
+                <option value="developmentCorporation" selected="selected">Development Corporation</option>
+                {% else %}
+                <option value="developmentCorporation">Development Corporation</option>
+                {% endif %}
+
+                {% if curr_data.estate_owner_ind == 'Limited Company' %}
+                <option value="limitedCompany" selected="selected">Limited company</option>
+                {% else %}
+                <option value="limitedCompany">Limited company</option>
+                {% endif %}
+
+                {% if curr_data.estate_owner_ind == 'Complex Name' %}
+                <option value="complexName" selected="selected">Complex Name</option>
+                {% else %}
+                <option value="complexName">Complex Name</option>
+                {% endif %}
+
+                {% if curr_data.estate_owner_ind == 'Other' %}
+                <option value="other" selected="selected">Other</option>
+                {% else %}
+                <option value="other">Other</option>
+                {% endif %}
+
+            </select>
+        <div id="private">
+            <div class="form">
+                <label class="form-label" for="forename">Forename(s)</label>
+                <input class="form-textfield" type="text" id="forename" autocomplete="off" name="forename" value="{{curr_data.estate_owner.private.forenames|join(' ')}}"/>
+            </div>
+
+            <div class="form">
+                <label class="form-label" for="surname">Surname</label>
+                <input class="form-textfield" type="text" id="surname" autocomplete="off" name="surname" value="{{curr_data.estate_owner.private.surname}}"/>
+            </div>
+        </div>
+
+        <div id="limited">
+            <div class="form">
+                <label class="form-label" for="company">Company name</label>
+                <input class="form-textfield" type="text" id="company" autocomplete="off" name="company" value="{{curr_data.estate_owner.company}}"/>
+            </div>
+        </div>
+
+        <div id="local">
+            <div class="form">
+                <label class="form-label" for="loc_auth">Local authority full name</label>
+                <input class="form-textfield" type="text" id="loc_auth" autocomplete="off" name="loc_auth" value="{{curr_data.estate_owner.local.name}}"/>
+            </div>
+            <div class="form">
+                <label class="form-label" for="loc_auth_area">Local authority area</label>
+                <p class="text-indent">This is the area the local authority affects</p>
+                <input class="form-textfield" type="text" id="loc_auth_area" autocomplete="off" name="loc_auth_area" value="{{curr_data.estate_owner.local.area}}"/>
+            </div>
+        </div>
+        <div id="complex">
+            <div class="form">
+                <label class="form-label" for="complex_name_field">Complex name</label>
+                <input class="form-textfield" type="text" id="complex_name_field" autocomplete="off" value="{{curr_data.estate_owner.complex.name}}"/>
+                <div class="spacer-5"></div>
+                <a href="#here" id="name_lookup_link" onclick="showComplexNameModal();" class="link-14-right">Look up complex name</a>
+                <div id="complex_result_modal" role="dialog" aria-labelledby="myDialog" style="display: none;">
+                    <p id="modal_message" class="text-16"></p>
+                    <div class="spacer-15"></div>
+                    <div id="complex_result"></div>
+                    <div class="spacer-15"></div>
+                    <div style="float:right">
+                        <input id="close" type="button" class="form-button" onclick="closeComplexNameModal();" value="Close"/>
+                    </div>
+                </div>
+                <div class="spacer-15"></div>
+                <div id="selected_name"></div>
+                <input type="hidden" id="complex_name" name="complex_name" value="{{curr_data.estate_owner.complex.name}}"/>
+                <input type="hidden" id="complex_number" name="complex_number" value="{{curr_data.estate_owner.complex.number}}"/>
+            </div>
+        </div>
+
+
+        <div id="other">
+            <div class="form">
+                <label class="form-label" for="other_name">Name</label>
+                <input class="form-textfield" type="text" id="other_name" name="other_name" autocomplete="off" value="{{curr_data.estate_owner.other}}"/>
+            </div>
+        </div>
+            <div class="spacer-15"></div>
+
+            <div class="spacer-30"></div>
+
+            <div>
+                <table>
+                    <tr>
+                        <td width="50%" class="no-line">
+                            <input id="continue" type="submit" value="Search" class="form-button">
+                        </td>
+
+                    </tr>
+                </table>
+            </div>
+
+        </div>
+    </form>
+    </td></tr>
+    </table>
+</div>
+{% endblock %}
