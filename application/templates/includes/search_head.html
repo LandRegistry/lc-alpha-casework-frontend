@@ -38,11 +38,10 @@ function showComplexNameModal(ctr) {
     getComplexName(ctr);
 }
 
-function addComplexNameModal() {
-    $("#add_complex_modal").dialog({
+function addComplexNameModal(ctr) {
+    $("#add_complex_modal_"+ctr).dialog({
         modal:true,
         show: true,
-        title:"Complex name addition",
         hide:true,
         width: 600,
         maxHeight: 500
@@ -63,33 +62,33 @@ function updateComplexName(obj, ctr){
 function closeComplexNameModal(ctr){
     $('body').removeClass('stop-scrolling');
     $('#complex_result_modal_' + ctr).dialog('close');
-    $('#add_complex_modal').dialog('close');
+    $('#add_complex_modal_'+ ctr).dialog('close');
 }
 function clearPreviousResults(ctr){
     jQuery('#name_results_' + ctr).remove();
     jQuery('#selected_name_' + ctr).empty();
     jQuery('#complex_name_' + ctr).val("");
     jQuery('#complex_number_' + ctr).val("");
-    jQuery('#complex_name_addition').val("");
-    jQuery('#complex_number_addition').val("");
-    jQuery('#modal_add').replaceWith($('<p id="modal_add" class="text-16"></p>'));
+    jQuery('#complex_name_addition_'+ ctr).val("");
+    jQuery('#complex_number_addition_'+ ctr).val("");
+    jQuery('#modal_add_'+ctr).replaceWith($('<p id="modal_add_'+ctr+'" class="text-16"></p>'));
 }
 
-function addComplexName(){
-    var insertName = document.getElementById("complex_name_addition").value;
-    var insertNumber = document.getElementById("complex_number_addition").value;
+function addComplexName(ctr){
+    var insertName = document.getElementById("complex_name_addition_"+ctr).value;
+    var insertNumber = document.getElementById("complex_number_addition_"+ctr).value;
     jQuery.ajax( {
         url: '{{config.CASEWORK_API_URL}}/complex_names/' + insertName + '/' + insertNumber,
         type: 'POST',
         data: {},
         success: function( data ) {
-            jQuery('#modal_add').replaceWith($('<p id="modal_add" class="text-16">Complex name added please close.</p>'));
+            jQuery('#modal_add_'+ ctr).replaceWith($('<p id="modal_add_'+ctr+'" class="text-16">Complex name added please close.</p>'));
             var add_name = {};
             add_name.value = insertName + '*' + insertNumber;
-            updateComplexName(add_name);
+            updateComplexName(add_name,ctr);
         },
         error: function( data) {
-            jQuery('#modal_add').replaceWith($('<p id="modal_add" class="text-16">Error - please add the name using LCNU, close this box and look up the Complex name again.</p>'));
+            jQuery('#modal_add_'+ctr).replaceWith($('<p id="modal_add_'+ctr+'" class="text-16">Error - please add the name using LCNU, close this box and look up the Complex name again.</p>'));
 
         }
     } );
@@ -100,6 +99,7 @@ function getComplexName(ctr){
     $('body').addClass('stop-scrolling');
     var enteredName = jQuery('#complex_name_field_'+ctr).val().trim();
     clearPreviousResults(ctr);
+    var apos = "'"
     if (enteredName.length > 3){
         jQuery.ajax( {
             url: '{{config.CASEWORK_API_URL}}/complex_names/' + enteredName,
@@ -107,7 +107,7 @@ function getComplexName(ctr){
             data: {},
             success: function( data ) {
                 jQuery('#modal_message_'+ ctr).replaceWith($('<p id="modal_message_'+ctr+'" class="text-16">Please select a complex name from the list</p>'));
-                jQuery('#add_complex_name').replaceWith($('<a href="#here" id="add_complex_name" data-dismiss="modal" onclick="addComplexNameModal();" class="link-14-right">Add a complex name</a>'));
+                // jQuery('#add_complex_name_'+ctr).replaceWith($('<a href="#here" id="add_complex_name'+ctr+'" data-dismiss="modal" onclick="addComplexNameModal('+apos+'{{id_count}}'+apos+');" class="link-14-right">Add a complex name</a>'));
                 if (data.length > 0 ){
                     resultHTML = jQuery('<table id="name_results_'+ctr+'"></table');
                     for ( var i = 0; i < data.length; i++) {
@@ -123,7 +123,7 @@ function getComplexName(ctr){
                 } else {
                     jQuery('#modal_message_'+ ctr).replaceWith('<p id="modal_message_'+ctr+'" class="text-16">No match found for the name entered.'+
                     '<br/><br/>Please check the details entered and if correct then create a new complex name using LCNU.</p>');
-                    jQuery('#add_complex_name').replaceWith($('<p id="add_complex_name" class="text-16"></p>'));
+                    jQuery('#add_complex_name_'+ctr).replaceWith($('<p id="add_complex_name_'+ctr+'" class="text-16"></p>'));
                 }
 
             }
@@ -131,7 +131,7 @@ function getComplexName(ctr){
     } else {
         jQuery('#modal_message_'+ ctr).replaceWith('<p id="modal_message_'+ ctr + '" class="text-16">The system is unable to retrieve a list '+
                     'of complex names due to the name entered was less than 4 characters, please try again.</p>');
-        jQuery('#add_complex_name').replaceWith($('<p id="add_complex_name" class="text-16"></p>'));
+        jQuery('#add_complex_name_'+ctr).replaceWith($('<p id="add_complex_name'+ctr+'" class="text-16"></p>'));
     }
 }
 
