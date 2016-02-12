@@ -83,8 +83,30 @@
                     <div class="spacer-15"></div>
                     <div id="complex_result_{{id_count}}"></div>
                     <div class="spacer-15"></div>
-                    <div style="float:right">
-                        <input id="close_{{id_count}}" type="button" class="form-button" onclick="closeComplexNameModal('{{id_count}}');" value="Close"/>
+                    <div>
+                        <div style="float: left">
+                            <a href="#here" id="add_complex_name" data-dismiss="modal" onclick="addComplexNameModal();" class="link-14-right">Add a complex name</a>
+                            <div id="add_complex_modal" role="dialog" style="display: none;">
+                                <div id="complex_addition"></div>
+                                <div class="spacer-10"></div>
+                                <label class="form-label" for="complex_name_addition">Name</label>
+                                <input class="form-textfield" type="text" id="complex_name_addition"/>
+                                <label class="form-label" for="complex_number_addition">Number</label>
+                                <input class="form-textfield" type="text" id="complex_number_addition"/>
+                                <div class="spacer-15"></div>
+                                <p id="modal_add" class="text-16"></p>
+                                <div class="spacer-15"></div>
+                                <div style="float:left">
+                                    <input id="add" type="button" class="form-button" onclick="addComplexName();" value="Add name"/>
+                                </div>
+                                <div style="float:right">
+                                    <input id="close_add" type="button" class="form-button" onclick="closeComplexNameModal();" value="Close"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="float:right">
+                            <input id="close_{{id_count}}" type="button" class="form-button" onclick="closeComplexNameModal('{{id_count}}');" value="Close"/>
+                        </div>
                     </div>
                 </div>
                 <div class="spacer-15"></div>
