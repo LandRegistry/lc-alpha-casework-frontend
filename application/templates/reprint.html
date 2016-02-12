@@ -6,23 +6,22 @@
         <!-- K22 and K17/18 reprint inputs -->
 
     <div class="col nine text-19"><div class="spacer-20"></div>
-    <table><tr><td valign="top">
+    <table border="0"><tr><td valign="top">
         <h2 class="text-24-bold"> &nbsp;&nbsp;K22 reprint</h2>
         <form id="page_form" action="/process_court_details" method="POST">
-        <div class="column-form-60" id="K22_form_panel">
+        <div class="column-form width-75" id="K22_form_panel">
 
             <div class="spacer-20"></div>
 
             <div class="form">
-                <label class="form-label" for="registration_no">Registration number</label>
+                <label class="form-label" for="k22_reg_no">Registration number</label>
                 <input class="form-textfield" id="k22_reg_no" name="k22_reg_no" type="text" autofocus>
             </div>
-
             <div class="form">
-                <label class="form-label" for="registration_date">Date of registration</label>
-                <input class="form-textfield" id="k22_reg_date" name="k22_reg_date" type="text" value="dd/mm/yyyy">
+                <label class="form-label" for="k22_reg_date">Date of registration</label><br/>
+                <input class="form-textfield width-75"  required  aria-required="true" type="date"
+                       placeholder="dd/mm/yyyy" id="k22_reg_date" name="k22_reg_date" value="{{k22_reg_date}}"/>
             </div>
-
             <div class="spacer-15"></div>
 
             <div class="spacer-30"></div>
@@ -41,26 +40,30 @@
         </div>
     </form>
     </div>
-    </td><td>&nbsp;</td><td>
+    </td><td>
         <h2 class="text-24-bold"> &nbsp;&nbsp;K17/K18 reprint</h2>
         <form id="page_form" action="/process_court_details" method="POST">
-        <div class="column-form-60" id="K18_form_panel">
+        <div class="column-form width-75" id="K18_form_panel">
             <div class="spacer-20"></div>
             <div class="form">
-                <label class="form-label" for="registration_no">Key number</label>
-                <input class="form-textfield" id="keyno" name="k18_key_no" type="text" autofocus>
+                <label class="form-label" for="k18_key_no">Key number</label>
+                <input class="form-textfield width-75" id="k18_key_no" name="k18_key_no" type="text" autofocus>
             </div>
 
             <div class="form">
                 <table>
                     <TR>
                         <td>
-                            <label class="form-label" for="from_date">Date from</label>
-                            <input class="form-textfield" id="court" name="k18_reg_date" type="text" value="dd/mm/yyyy">
+                            <label class="form-label" for="k18_from_date">Date from</label><br/>
+                            <input class="form-textfield"  required  aria-required="true" type="date"
+                                   placeholder="dd/mm/yyyy" id="k18_from_date" name="k18_from_date"
+                                   value="{{k18_from_date}}"/>
                         </td>
                         <td>
-                            <label class="form-label" for="to_date">Date to</label>
-                            <input class="form-textfield" id="court" name="k18_reg_date" type="text" value="dd/mm/yyyy">
+                            <label class="form-label" for="k18_to_date">Date to</label><br/>
+                            <input class="form-textfield"  required  aria-required="true" type="date"
+                                   placeholder="dd/mm/yyyy" id="k18_to_date" name="k18_to_date"
+                                   value="{{k18_to_date}}"/>
                         </td>
                     </TR>
                 </table>
