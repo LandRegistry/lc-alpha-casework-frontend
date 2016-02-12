@@ -1,0 +1,126 @@
+{% extends "/page_template/base.html" %}
+{% block maincontent %}
+
+{% set page_title = 'Enquiries' %}
+{% set reprint_selected = 'selected' %}
+
+<script>
+    function showFields() {
+        var type = document.getElementById("estateOwnerTypes").value;
+        document.getElementById("private").style.display = 'none';
+        document.getElementById("limited").style.display = 'none';
+        document.getElementById("local").style.display = 'none';
+        document.getElementById("complex").style.display = 'none';
+        document.getElementById("other").style.display = 'none';
+
+        if (type == "limitedCompany") {
+            document.getElementById("limited").style.display = 'block';
+            jQuery("#forename, #surname, #loc_auth, #loc_auth_area, #complex_name, #other_name").val('');
+
+        } else if (type == "countyCouncil" || type == "parishCouncil" || type == "otherCouncil") {
+            document.getElementById("local").style.display = 'block';
+            jQuery("#forename, #surname, #company, #complex_name, #other_name").val('');
+
+        }else if (type == "complexName") {
+            document.getElementById("complex").style.display = 'block';
+            jQuery("#forename, #surname, #company, #loc_auth, #loc_auth_area, #other_name").val('');
+
+        } else if (type == "other" || type == "developmentCorporation" ) {
+            document.getElementById("other").style.display = 'block';
+            jQuery("#forename, #surname, #company, #loc_auth, #loc_auth_area, #complex_name").val('');
+
+        } else {
+            document.getElementById("private").style.display = 'block';
+            jQuery("#company, #loc_auth, #loc_auth_area, #complex_name, #other_name").val('');
+        }
+    }
+
+    jQuery(document).ready(function(){
+        {% if curr_data.estate_owner_ind == '' %}
+            jQuery("#estateOwnerTypes").val("{{curr_data.estate_owner_ind}}");
+        {% endif %}
+        showFields();
+    });
+</script>
+
+
+<div class="breadcrumb">
+    <ol>
+        <li><a href="/">Home</a></li>
+        {% if requested_list == "bank" %}
+        <li class="breadcrumb-no-arrow"><span>Bankruptcy</span></li>
+        {% else %}
+        <li><a href="/get_list?appn=bank">Bankruptcy</a></li>
+        <li class="breadcrumb-no-arrow"><span>{{page_title}}</span></li>
+        {% endif %}
+    </ol>
+</div>
+
+<div class="spacer-5"></div>
+<div class="grid-row" >
+
+    <!-- Side Navigation -->
+    <div class="col three">
+        <ul id="side-nav">
+            <li><a href="/">Home</a></li>
+            <li><a  href="/get_list?appn=bank">Bankruptcy Applications</a></li>
+            <li><a href="/get_list?appn=lc">Land Charge Applications</a></li>
+            <li><a href="/get_list?appn=search">Searches</a></li>
+            <li><a href="/get_list?appn=cancel">Cancellations</a></li>
+            <li><a href="/get_list?appn=search">Office Copies</a></li>
+            <li><a class="active" href="/enquiries">Enquiries</a></li>
+            <li><a href="uc">Image management</a></li>
+            <li><a href="uc">General Information</a></li>
+        </ul>
+    </div>
+
+    <!-- Content -->
+    <div class="col nine text-19">
+        <div class="grid-row" >
+            <h1 class="title-36">Enquiries</h1>
+            </div>
+            <div class="col eleven">
+                <div class="spacer-10"></div>
+
+            </div>
+
+        </div>
+        <div class="subservice-box">
+                <a class="no-link-style {{enquiries_selected}}" tabindex="2" href="/get_list?appn=bank_amend">
+                <div class="spacer-20"></div>
+                <p class="text-16-bold">Enquiries</p>
+                <div class="spacer-30"></div>
+
+                </a>
+            </div>
+        <div class="subservice-box">
+                <a class="no-link-style {{historical_selected}}" tabindex="2" href="/get_list?appn=bank_amend">
+                <div class="spacer-20"></div>
+                <p class="text-16-bold">Historical View</p>
+                <div class="spacer-30"></div>
+
+                </a>
+            </div>
+        <div class="subservice-box">
+                <a class="no-link-style {{unidentified_selected}}" tabindex="2" href="/get_list?appn=bank_amend">
+                <div class="spacer-20"></div>
+                <p class="text-16-bold">Unidentified</p>
+                <div class="spacer-30"></div>
+                <div class="indicator" id="unidentified">
+                    <span class="indicator-middle-2"></span>
+                </div>
+                </a>
+            </div>
+        <div class="subservice-box">
+                <a class="no-link-style {{reprint_selected}}" tabindex="2" href="/reprint">
+                <div class="spacer-20"></div>
+                <p class="text-16-bold">Reprint</p>
+                <div class="spacer-30"></div>
+                </a>
+            </div>
+        <!-- K22 and K17/18 reprint inputs -->
+
+    <div class="col nine text-19"><div class="spacer-20"></div>
+
+</div>
+{% endblock %}
