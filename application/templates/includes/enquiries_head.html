@@ -59,20 +59,7 @@
 <div class="spacer-5"></div>
 <div class="grid-row" >
 
-    <!-- Side Navigation -->
-    <div class="col three">
-        <ul id="side-nav">
-            <li><a href="/">Home</a></li>
-            <li><a  href="/get_list?appn=bank">Bankruptcy Applications</a></li>
-            <li><a href="/get_list?appn=lc">Land Charge Applications</a></li>
-            <li><a href="/get_list?appn=search">Searches</a></li>
-            <li><a href="/get_list?appn=cancel">Cancellations</a></li>
-            <li><a href="/get_list?appn=search">Office Copies</a></li>
-            <li><a class="active" href="/enquiries">Enquiries</a></li>
-            <li><a href="uc">Image management</a></li>
-            <li><a href="uc">General Information</a></li>
-        </ul>
-    </div>
+   {% include "includes/side_nav.html" %}
 
     <!-- Content -->
     <div class="col nine text-19">
