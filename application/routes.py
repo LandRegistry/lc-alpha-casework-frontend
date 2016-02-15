@@ -132,7 +132,7 @@ def application_start(application_type, appn_id, form):
     images = []
     image_data = json.loads(doc_response[0])
     for page in image_data['images']:
-        url = app.config["CASEWORK_FRONTEND_URL"] + "/images/" + str(document_id) + '/' + str(page)
+        url = app.config["CASEWORK_FRONTEND_URL"] + "/images/" + str(document_id) + '/' + str(page['page'])
         images.append(url)
     template = page_required(application_type, form)
     application_json['form'] = form
