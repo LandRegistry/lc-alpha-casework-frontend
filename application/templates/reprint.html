@@ -1,6 +1,6 @@
 {% block maincontent %}
 
-{% set page_title = 'Reprint' %}
+{% set page_title = 'Reprints' %}
 {% set reprint_selected = 'selected' %}
 {% include 'includes/enquiries_head.html' %}
         <!-- K22 and K17/18 reprint inputs -->
@@ -8,7 +8,7 @@
     <div class="col nine text-19"><div class="spacer-20"></div>
     <table border="0"><tr><td valign="top">
         <h2 class="text-24-bold"> &nbsp;&nbsp;K22 reprint</h2>
-        <form id="page_form_K22" action="/reprint" method="POST">
+        <form id="page_form_K22" action="/reprints" method="POST">
             <input type="hidden" id="reprint_type" name="reprint_type" value="k22"/>
         <div class="column-form width-75" id="K22_form_panel">
 
@@ -43,7 +43,7 @@
     </div>
     </td><td>
         <h2 class="text-24-bold"> &nbsp;&nbsp;K17/K18 reprint</h2>
-        <form id="page_form_K18" action="/reprint" method="POST">
+        <form id="page_form_K18" action="/reprints" method="POST">
             <input type="hidden" id="reprint_type" name="reprint_type" value="k18"/>
         <div class="column-form width-75" id="K18_form_panel">
             <div class="spacer-20"></div>
