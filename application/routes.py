@@ -1044,16 +1044,16 @@ def enquiries():
     return render_template('enquiries.html', curr_data=curr_data)
 
 
-@app.route('/reprint', methods=['GET'])
-def reprint():
+@app.route('/reprints', methods=['GET'])
+def reprints():
     curr_data = {'reprint_selected': True,
                  'estate_owner': {'private': {"forenames": [], "surname": ""},
                                   'local': {'name': "", "area": ""}, "complex": {"name": ""}}}
     return render_template('reprint.html', curr_data=curr_data)
 
 
-@app.route('/reprint', methods=['POST'])
-def generate_reprint():
+@app.route('/reprints', methods=['POST'])
+def generate_reprints():
     curr_data = {'reprint_selected': True,
                  'estate_owner': {'private': {"forenames": [], "surname": ""},
                                   'local': {'name': "", "area": ""}, "complex": {"name": ""}}}
@@ -1080,7 +1080,7 @@ def generate_reprint():
         curr_data['k18_reg_no'] = request.form["k18_reg_no"]
     if 'k18_reg_date' in request.form:
         curr_data['k18_reg_date'] = request.form["k18_reg_date"]
-    url = app.config['CASEWORK_API_URL'] + '/reprint/'
+    url = app.config['CASEWORK_API_URL'] + '/reprints/'
     if reprint_type == 'k22':
         registration_no = request.form["k22_reg_no"]
         registration_date = request.form["k22_reg_date"]
