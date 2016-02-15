@@ -122,9 +122,10 @@ def submit_lc_rectification(form):
                    'parties': [get_party_name(rect_details)],
                    'particulars': {'counties': rect_details['county'], 'district': rect_details['district'],
                                    'description': rect_details['short_description']},
-                   'class_of_charge': convert_class_of_charge(rect_details['class'])}
-
-
+                   'class_of_charge': convert_class_of_charge(rect_details['class']),
+                   'regn_no': session['regn_no'],
+                   'registration': {'date': session['reg_date']},
+                   'document_id': session['document_id']}
 
     url = app.config['CASEWORK_API_URL'] + '/applications/' + session['worklist_id'] + '?action=rectify'
     headers = {'Content-Type': 'application/json'}

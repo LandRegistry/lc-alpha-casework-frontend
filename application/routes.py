@@ -132,7 +132,7 @@ def application_start(application_type, appn_id, form):
     images = []
     image_data = json.loads(doc_response[0])
     for page in image_data['images']:
-        url = app.config["CASEWORK_FRONTEND_URL"] + "/images/" + str(document_id) + '/' + str(page)
+        url = app.config["CASEWORK_FRONTEND_URL"] + "/images/" + str(document_id) + '/' + str(page['page'])
         images.append(url)
     template = page_required(application_type, form)
     application_json['form'] = form
@@ -155,7 +155,6 @@ def application_start(application_type, appn_id, form):
         curr_data = build_lc_inputs({})
 
     session['page_template'] = template  # Might need this later
-
 
     return render_template(template, application_type=application_type, data=application_json,
                            images=images, application=application, years=years,
@@ -706,9 +705,9 @@ def rectification_capture():
     if len(result['error']) == 0:
         session['rectification_details'] = entered_fields
         return render_template('rectification_check.html', application_type=session['application_type'], data={},
-                        images=session['images'], application=session['application_dict'],
-                        details=session['rectification_details'], screen='verify',
-                        current_page=0)
+                               images=session['images'], application=session['application_dict'],
+                               details=session['rectification_details'], screen='verify',
+                               current_page=0)
     else:
         return render_template('rectification_amend.html', application_type=session['application_type'],
                                images=session['images'], application=session['application_dict'],
