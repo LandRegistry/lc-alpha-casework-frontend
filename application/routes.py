@@ -9,7 +9,7 @@ from application.land_charge import build_lc_inputs, build_customer_fee_inputs, 
 from application.search import process_search_criteria
 from application.rectification import convert_response_data, submit_lc_rectification
 
-#
+
 # @app.errorhandler(Exception)
 # def error_handler(err):
 #     logging.error('========== Error Caught ===========')
@@ -159,6 +159,7 @@ def application_start(application_type, appn_id, form):
     return render_template(template, application_type=application_type, data=application_json,
                            images=images, application=application, years=years,
                            current_page=0, errors=[], curr_data=curr_data)
+
 
 @app.route('/retrieve_new_reg', methods=["GET"])
 def retrieve_new_reg():
@@ -324,24 +325,6 @@ def process_registration():
         error = response.status_code
         logging.error(error)
         return render_template('error.html', error_msg=error), 500
-    # url = app.config['BANKRUPTCY_DATABASE_URL'] + '/registrations'
-    # headers = {'Content-Type': 'application/json'}
-    # response = requests.post(url, data=json.dumps(application), headers=headers)
-    #
-    # if response.status_code == 200:
-    #     data = response.json()
-    #     reg_list = []
-    #     for item in data['new_registrations']:
-    #         reg_list.append(item)
-    #     session['regn_no'] = reg_list
-    #     delete_from_worklist(session['worklist_id'])
-    #
-    #     return redirect('/confirmation', code=302, Response=None)
-    # else:
-    #     error = response.status_code
-    #     logging.error(error)
-    #     return render_template('error.html', error_msg=error), 500
-# end of registration routes
 
 
 # Amendment routes
@@ -531,6 +514,7 @@ def submit_amendment():
 # Cancellation routes
 @app.route('/submit_cancellation', methods=["POST"])
 def submit_cancellation():
+    # TODO: remove ref to land-charges
     url = app.config['BANKRUPTCY_DATABASE_URL'] + '/registrations/' + session['reg_date'] + '/' + session['regn_no']
     # TODO: pass empty dict for now, ian mentioned about doc id needed?
     data = {}
@@ -655,8 +639,9 @@ def get_registration_details():
     application_type = session['application_type']
     session['regn_no'] = request.form['reg_no']
 
-    session['reg_date']  = request.form['reg_date']  # yyyy-mm-dd
+    session['reg_date'] = request.form['reg_date']  # yyyy-mm-dd
 
+    # TODO: this isn't right; should go to casework-api & there convert the data format
     url = app.config['BANKRUPTCY_DATABASE_URL'] + '/registrations/' + session['reg_date'] + '/' + session['regn_no']
 
     response = requests.get(url)
@@ -687,10 +672,12 @@ def get_registration_details():
         else:
             template = 'regn_cancel.html'
 
+        # TODO: see todo above
         data = convert_response_data(application_json)
 
-        return render_template(template,  data=session['application_dict'],
+        return render_template(template, data=session['application_dict'],
                                images=session['images'], current_page=0, curr_data=data)
+
 
 @app.route('/rectification_capture', methods=['POST'])
 def rectification_capture():
@@ -715,6 +702,7 @@ def rectification_capture():
                                images=session['images'], application=session['application_dict'],
                                current_page=0, errors=result['error'], curr_data=entered_fields,
                                screen='capture', data=session['application_dict'])
+
 
 @app.route('/rectification_capture', methods=['GET'])
 def return_to_rectification_amend():
@@ -743,8 +731,9 @@ def submit_rectification():
     response = submit_lc_rectification(request.form)
 
     if response.status_code != 200:
-        err = 'Failed to submit land charges rectification application id:%s - Error code: %s' \
-              % (session['worklist_id'], str(response.status_code))
+        err = 'Failed to submit land charges rectification application id:%s - Error code: %s'.format(
+            session['worklist_id'],
+            str(response.status_code))
         logging.error(err)
         return render_template('error.html', error_msg=err), response.status_code
     else:
