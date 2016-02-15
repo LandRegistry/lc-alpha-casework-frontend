@@ -221,8 +221,9 @@ def complex_name():
 
 
 @app.route('/complex_retrieve', methods=['POST'])
-def complex_name_retrieve():
+def complex_name_retrieve():  # TODO: remove this (card added to backlog)
     logging.info('Entering complex name retrieval')
+    logging.error('METHOD DEPRECTATED -- THIS SHOULD NOT BE USED')
     complex_search = {"name": request.form['complex_name']}
 
     url = app.config['LEGACY_URL'] + '/complex_names/search'
@@ -606,7 +607,8 @@ def submit_search():
         delete_from_worklist(session['worklist_id'])
     else:
         logging.error('Unexpected return code: %d', response.status_code)
-        return render_template('error.html')
+        logging.error(response.text)
+        return render_template('error.html', error_msg=response.text)
 
     session['confirmation'] = {'reg_no': []}
 
