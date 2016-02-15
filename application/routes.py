@@ -1,5 +1,5 @@
 from application import app
-from flask import Response, request, render_template, session, redirect, url_for
+from flask import Response, request, render_template, session, redirect, url_for, send_file
 import requests
 from datetime import datetime
 import logging
@@ -8,6 +8,7 @@ from application.form_validation import validate_land_charge
 from application.land_charge import build_lc_inputs, build_customer_fee_inputs, submit_lc_registration
 from application.search import process_search_criteria
 from application.rectification import convert_response_data, submit_lc_rectification
+from io import BytesIO
 
 #
 # @app.errorhandler(Exception)
@@ -655,7 +656,7 @@ def get_registration_details():
     application_type = session['application_type']
     session['regn_no'] = request.form['reg_no']
 
-    session['reg_date']  = request.form['reg_date']  # yyyy-mm-dd
+    session['reg_date'] = request.form['reg_date']  # yyyy-mm-dd
 
     url = app.config['BANKRUPTCY_DATABASE_URL'] + '/registrations/' + session['reg_date'] + '/' + session['regn_no']
 
@@ -716,6 +717,7 @@ def rectification_capture():
                                current_page=0, errors=result['error'], curr_data=entered_fields,
                                screen='capture', data=session['application_dict'])
 
+
 @app.route('/rectification_capture', methods=['GET'])
 def return_to_rectification_amend():
     # For returning from check rectification screen
@@ -732,7 +734,8 @@ def return_to_rectification_amend():
 @app.route('/rectification_customer', methods=['GET'])
 def rectification_capture_customer():
     logging.info('rectification_capture_customer')
-    return render_template('rectification_customer.html', images=session['images'], application=session['application_dict'],
+    return render_template('rectification_customer.html', images=session['images'],
+                           application=session['application_dict'],
                            application_type=session['application_type'], current_page=0,
                            backend_uri=app.config['CASEWORK_API_URL'])
 
@@ -1057,8 +1060,8 @@ def generate_reprints():
     curr_data = {'reprint_selected': True,
                  'estate_owner': {'private': {"forenames": [], "surname": ""},
                                   'local': {'name': "", "area": ""}, "complex": {"name": ""}}}
-    #   build contents into json before submitting
     error = False
+    reprint_type = ''
     if 'reprint_type' not in request.form:
         error = True
     else:
@@ -1095,4 +1098,5 @@ def generate_reprints():
         return render_template('reprint.html', curr_data=curr_data)
     print("url =", url)
     response = requests.get(url)
-    return Response(response, status=200)
+    return send_file(BytesIO(response.content), as_attachment=False, attachment_filename='reprint.pdf',
+                     mimetype='application/pdf')
