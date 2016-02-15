@@ -1,5 +1,5 @@
 from application import app
-from flask import Response, request, render_template, session, redirect, url_for
+from flask import Response, request, render_template, session, redirect, url_for, send_file
 import requests
 from datetime import datetime
 import logging
@@ -8,6 +8,7 @@ from application.form_validation import validate_land_charge
 from application.land_charge import build_lc_inputs, build_customer_fee_inputs, submit_lc_registration
 from application.search import process_search_criteria
 from application.rectification import convert_response_data, submit_lc_rectification
+from io import BytesIO
 
 
 # @app.errorhandler(Exception)
@@ -720,7 +721,8 @@ def return_to_rectification_amend():
 @app.route('/rectification_customer', methods=['GET'])
 def rectification_capture_customer():
     logging.info('rectification_capture_customer')
-    return render_template('rectification_customer.html', images=session['images'], application=session['application_dict'],
+    return render_template('rectification_customer.html', images=session['images'],
+                           application=session['application_dict'],
                            application_type=session['application_type'], current_page=0,
                            backend_uri=app.config['CASEWORK_API_URL'])
 
@@ -1028,15 +1030,61 @@ def get_translated_county(county_name):
 
 @app.route('/enquiries', methods=['GET'])
 def enquiries():
-    curr_data={'reprint_selected': True,
-               'estate_owner': {'private':{"forenames":[],"surname":""},
-                                'local':{'name':"","area":""},"complex":{"name":""}}}
+    curr_data = {'reprint_selected': True, 'estate_owner': {'private': {"forenames": [], "surname": ""},
+                                                            'local': {'name': "", "area": ""}, "complex": {"name": ""}}}
     return render_template('enquiries.html', curr_data=curr_data)
 
 
-@app.route('/reprint', methods=['GET'])
-def reprint():
-    curr_data={'reprint_selected': True,
-               'estate_owner': {'private':{"forenames":[],"surname":""},
-                                'local':{'name':"","area":""},"complex":{"name":""}}}
+@app.route('/reprints', methods=['GET'])
+def reprints():
+    curr_data = {'reprint_selected': True,
+                 'estate_owner': {'private': {"forenames": [], "surname": ""},
+                                  'local': {'name': "", "area": ""}, "complex": {"name": ""}}}
     return render_template('reprint.html', curr_data=curr_data)
+
+
+@app.route('/reprints', methods=['POST'])
+def generate_reprints():
+    curr_data = {'reprint_selected': True,
+                 'estate_owner': {'private': {"forenames": [], "surname": ""},
+                                  'local': {'name': "", "area": ""}, "complex": {"name": ""}}}
+    error = False
+    reprint_type = ''
+    if 'reprint_type' not in request.form:
+        error = True
+    else:
+        reprint_type = request.form["reprint_type"]
+
+    if 'forename' in request.form:
+        curr_data["estate_owner"]["private"]["forenames"] = request.form['forename'].split()
+    if 'surname' in request.form:
+        curr_data["estate_owner"]["private"]["surname"] = request.form['surname']
+    if 'local_auth' in request.form:
+        curr_data["estate_owner"]["local"]["name"] = request.form['loc_auth']
+    if 'local_auth_area' in request.form:
+        curr_data["estate_owner"]["local"]["area"] = request.form['loc_auth_area']
+    if 'k22_reg_no' in request.form:
+        curr_data['k22_reg_no'] = request.form["k22_reg_no"]
+    if 'k22_reg_date' in request.form:
+        curr_data['k22_reg_date'] = request.form["k22_reg_date"]
+    if 'k18_reg_no' in request.form:
+        curr_data['k18_reg_no'] = request.form["k18_reg_no"]
+    if 'k18_reg_date' in request.form:
+        curr_data['k18_reg_date'] = request.form["k18_reg_date"]
+    url = app.config['CASEWORK_API_URL'] + '/reprints/'
+    if reprint_type == 'k22':
+        registration_no = request.form["k22_reg_no"]
+        registration_date = request.form["k22_reg_date"]
+        url += 'registration/' + registration_no + '/' + registration_date
+    else:
+        registration_no = request.form["k18_reg_no"]
+        registration_date = request.form["k18_reg_date"]
+        url += 'search/' + registration_no + '/' + registration_date
+    print("data", curr_data)
+
+    if error:
+        return render_template('reprint.html', curr_data=curr_data)
+    print("url =", url)
+    response = requests.get(url)
+    return send_file(BytesIO(response.content), as_attachment=False, attachment_filename='reprint.pdf',
+                     mimetype='application/pdf')
