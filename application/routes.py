@@ -156,7 +156,6 @@ def application_start(application_type, appn_id, form):
 
     session['page_template'] = template  # Might need this later
 
-
     return render_template(template, application_type=application_type, data=application_json,
                            images=images, application=application, years=years,
                            current_page=0, errors=[], curr_data=curr_data)
@@ -706,9 +705,9 @@ def rectification_capture():
     if len(result['error']) == 0:
         session['rectification_details'] = entered_fields
         return render_template('rectification_check.html', application_type=session['application_type'], data={},
-                        images=session['images'], application=session['application_dict'],
-                        details=session['rectification_details'], screen='verify',
-                        current_page=0)
+                               images=session['images'], application=session['application_dict'],
+                               details=session['rectification_details'], screen='verify',
+                               current_page=0)
     else:
         return render_template('rectification_amend.html', application_type=session['application_type'],
                                images=session['images'], application=session['application_dict'],
