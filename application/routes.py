@@ -1039,15 +1039,60 @@ def get_translated_county(county_name):
 
 @app.route('/enquiries', methods=['GET'])
 def enquiries():
-    curr_data={'reprint_selected': True,
-               'estate_owner': {'private':{"forenames":[],"surname":""},
-                                'local':{'name':"","area":""},"complex":{"name":""}}}
+    curr_data = {'reprint_selected': True, 'estate_owner': {'private': {"forenames": [], "surname": ""},
+                                                            'local': {'name': "", "area": ""}, "complex": {"name": ""}}}
     return render_template('enquiries.html', curr_data=curr_data)
 
 
 @app.route('/reprint', methods=['GET'])
 def reprint():
-    curr_data={'reprint_selected': True,
-               'estate_owner': {'private':{"forenames":[],"surname":""},
-                                'local':{'name':"","area":""},"complex":{"name":""}}}
+    curr_data = {'reprint_selected': True,
+                 'estate_owner': {'private': {"forenames": [], "surname": ""},
+                                  'local': {'name': "", "area": ""}, "complex": {"name": ""}}}
     return render_template('reprint.html', curr_data=curr_data)
+
+
+@app.route('/reprint', methods=['POST'])
+def generate_reprint():
+    curr_data = {'reprint_selected': True,
+                 'estate_owner': {'private': {"forenames": [], "surname": ""},
+                                  'local': {'name': "", "area": ""}, "complex": {"name": ""}}}
+    #   build contents into json before submitting
+    error = False
+    if 'reprint_type' not in request.form:
+        error = True
+    else:
+        reprint_type = request.form["reprint_type"]
+
+    if 'forename' in request.form:
+        curr_data["estate_owner"]["private"]["forenames"] = request.form['forename'].split()
+    if 'surname' in request.form:
+        curr_data["estate_owner"]["private"]["surname"] = request.form['surname']
+    if 'local_auth' in request.form:
+        curr_data["estate_owner"]["local"]["name"] = request.form['loc_auth']
+    if 'local_auth_area' in request.form:
+        curr_data["estate_owner"]["local"]["area"] = request.form['loc_auth_area']
+    if 'k22_reg_no' in request.form:
+        curr_data['k22_reg_no'] = request.form["k22_reg_no"]
+    if 'k22_reg_date' in request.form:
+        curr_data['k22_reg_date'] = request.form["k22_reg_date"]
+    if 'k18_reg_no' in request.form:
+        curr_data['k18_reg_no'] = request.form["k18_reg_no"]
+    if 'k18_reg_date' in request.form:
+        curr_data['k18_reg_date'] = request.form["k18_reg_date"]
+    url = app.config['CASEWORK_API_URL'] + '/reprint/'
+    if reprint_type == 'k22':
+        registration_no = request.form["k22_reg_no"]
+        registration_date = request.form["k22_reg_date"]
+        url += 'registration/' + registration_no + '/' + registration_date
+    else:
+        registration_no = request.form["k18_reg_no"]
+        registration_date = request.form["k18_reg_date"]
+        url += 'search/' + registration_no + '/' + registration_date
+    print("data", curr_data)
+
+    if error:
+        return render_template('reprint.html', curr_data=curr_data)
+    print("url =", url)
+    response = requests.get(url)
+    return Response(response, status=200)
