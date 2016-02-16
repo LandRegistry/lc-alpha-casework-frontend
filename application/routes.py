@@ -1042,11 +1042,11 @@ def reprints():
     curr_data = {'reprint_selected': True,
                  'estate_owner': {'private': {"forenames": [], "surname": ""},
                                   'local': {'name': "", "area": ""}, "complex": {"name": ""}}}
-    if 'request_id' in request.args:  # request id passed, generate pdf
-        request_no = request.args["request_id"]
+    if 'request_id' in request.args:  # search request id passed, generate pdf
+        request_id = request.args["request_id"]
 
-        url = app.config['CASEWORK_API_URL'] + '/reprints/'
-        url += 'registration/' + request_no
+        url = app.config['CASEWORK_API_URL'] + '/reprints/search?request_id=' + request_id
+        print("url -- ", url)
         response = requests.get(url)
         return send_file(BytesIO(response.content), as_attachment=False, attachment_filename='reprint.pdf',
                          mimetype='application/pdf')
@@ -1093,7 +1093,7 @@ def generate_reprints():
     if reprint_type == 'k22':
         registration_no = request.form["k22_reg_no"]
         registration_date = request.form["k22_reg_date"]
-        url += 'registration/' + registration_no + '/' + registration_date
+        url += 'registration?registration_no=' + registration_no + '&registration_date=' + registration_date
         response = requests.get(url)
         return send_file(BytesIO(response.content), as_attachment=False, attachment_filename='reprint.pdf',
                          mimetype='application/pdf')
@@ -1102,7 +1102,9 @@ def generate_reprints():
     data = json.loads(response.content.decode('utf-8'))
     results = {'results': []}
     for result in data['results']:
-        res = {'request_id': result['request_id'], 'search_timestamp': result['search_timestamp']}
+        search_time = result['search_timestamp']
+        search_time = search_time[0:16]
+        res = {'request_id': result['request_id'], 'search_timestamp': search_time}
         if result['name_type'] == 'Private Individual':
             res['name'] = result['estate_owner']['private']['forenames'] + ' ' + \
                           result['estate_owner']['private']['surname']
