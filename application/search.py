@@ -25,7 +25,6 @@ def process_search_criteria(data, search_type):
         name_extracted = False
 
         if data[name_type] == 'privateIndividual' \
-                and data['forename_{}'.format(counter)] != '' \
                 and data['surname_{}'.format(counter)] != '':
 
             forename = 'forename_{}'.format(counter)
