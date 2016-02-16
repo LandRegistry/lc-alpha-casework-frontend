@@ -1,0 +1,68 @@
+{% extends "/page_template/base.html" %}
+{% block page_specific_head %}
+<link href="/static/datatables/css/jquery.dataTables.css" rel="stylesheet" />
+<link href="/static/datatables/css/dataTables.responsive.css" rel="stylesheet" />
+<script type="text/javascript" src="/static/datatables/js/jquery.dataTables.js"></script>
+<script>
+ HOST = window.location.protocol + "//" + window.location.hostname;
+
+$(document).ready(function() {
+    $("#refresh").hide();
+    display_list = $('#requested_list').val();
+    setInterval(function(){ location.href="/get_list?appn=" + display_list;}, 30000);
+    $('#work-list').DataTable({info: false, paging: false, searching: false, ordering:false});
+
+    // make table row clickable link to child href
+    $('#work-list tbody tr').click(function() {
+        var href = $(this).find("a").attr("href");
+        if(href) {
+            window.location = href;
+        }
+    });
+} );
+
+</script>
+{% endblock %}
+{% block maincontent %}
+{% set page_title = 'Reprint K17 K18' %}
+
+
+
+
+    <!-- K22 and K17/18 reprint inputs -->
+    <div class="col nine text-19"><div class="spacer-20"></div>
+    <table border="0"><tr><td valign="top">
+        <h2 class="text-24-bold"> &nbsp;&nbsp;K18 reprint</h2>
+
+    </td></tr>
+    </table>
+     <div class="col nine no-margin">
+                <table id="work-list" class="hover">
+                    <thead>
+                    <tr>
+                        <th class="table-text-black">Request Id <a href="#"></a></th>
+                        <th class="table-text-black">Name Searched <a href="#"></a></th>
+                        <th class="table-text-black">Search Time <a href="#"></a></th>
+                    </tr>
+                    </thead>
+                    results: {{ curr_data['results']|count }}
+                    {% for n in curr_data['results'] %}
+                    <tbody>
+                    <tr id="row_{{loop.index}}" tabindex="{{loop.index}}" onkeypress="this.click();">
+                        <td>{{n['request_id']}} {{n['name']}}</td>
+                        <td>
+
+                            {{n['name']}}
+
+                            <a class="hide" id="appn_type{{loop.index}}" href="/reprint?request_id={{n['request_id']}}">
+                                link required for clickable table row
+                            </a>
+                        </td>
+                        <td>{{n['search_timestamp']}}</td>
+                    </tr>
+                    </tbody>
+                    {% endfor %}
+                </table>
+            </div>
+</div>
+{% endblock %}

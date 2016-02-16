@@ -1040,6 +1040,14 @@ def reprints():
     curr_data = {'reprint_selected': True,
                  'estate_owner': {'private': {"forenames": [], "surname": ""},
                                   'local': {'name': "", "area": ""}, "complex": {"name": ""}}}
+    if 'request_id' in request.args:  # request id passed, generate pdf
+        request_no = request.args["request_id"]
+
+        url = app.config['CASEWORK_API_URL'] + '/reprints/'
+        url += 'registration/' + request_no
+        response = requests.get(url)
+        return send_file(BytesIO(response.content), as_attachment=False, attachment_filename='reprint.pdf',
+                         mimetype='application/pdf')
     return render_template('reprint.html', curr_data=curr_data)
 
 
@@ -1073,10 +1081,10 @@ def generate_reprints():
         curr_data['k18_reg_date'] = request.form["k18_reg_date"]
     if 'key_number' in request.form:
         curr_data['key_number'] = request.form["key_number"]
-    if 'year_from' in request.form:
-        curr_data['year_from'] = request.form["year_from"]
-    if 'year_to' in request.form:
-        curr_data['year_to'] = request.form["year_to"]
+    if 'date_from' in request.form:
+        curr_data['date_from'] = request.form["date_from"]
+    if 'date_to' in request.form:
+        curr_data['date_to'] = request.form["date_to"]
     if error:
         return render_template('reprint.html', curr_data=curr_data)
     url = app.config['CASEWORK_API_URL'] + '/reprints/'
@@ -1089,5 +1097,14 @@ def generate_reprints():
                          mimetype='application/pdf')
     url = app.config['CASEWORK_API_URL'] + '/reprints/search'
     response = requests.post(url, data=json.dumps(curr_data))
-    data = response.content.decode('utf-8')
-    return Response(json.dumps(data), status=200, mimetype="application/json")
+    data = json.loads(response.content.decode('utf-8'))
+    results = {'results': []}
+    for result in data['results']:
+        res = {'request_id': result['request_id'], 'search_timestamp': result['search_timestamp']}
+        if result['name_type'] == 'Private Individual':
+            res['name'] = result['estate_owner']['private']['forenames'] + ' ' + \
+                          result['estate_owner']['private']['surname']
+        results['results'].append(res)
+    # return Response(json.dumps(data), status=200, mimetype="application/json")
+    # return Response(json.dumps(results), status=200, mimetype="application/json")
+    return render_template('reprint_k18_results.html', curr_data=results)
