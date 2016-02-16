@@ -82,7 +82,7 @@
                 {% else %}
                 <option value="privateIndividual">Private individual</option>
                 {% endif %}
-
+<!--
                 {% if curr_data.estate_owner_ind == 'County Council' %}
                 <option value="countyCouncil" selected="selected">County Council or Greater London or Manchester Council</option>
                 {% else %}
@@ -106,6 +106,13 @@
                 {% else %}
                 <option value="developmentCorporation">Development Corporation</option>
                 {% endif %}
+-->
+                {% if curr_data.estate_owner_ind == 'Local Authority' %}
+                <option value="countyCouncil" selected="selected">Local Authority</option>
+                {% else %}
+                <option value="countyCouncil">Local authority</option>
+                {% endif %}
+
 
                 {% if curr_data.estate_owner_ind == 'Limited Company' %}
                 <option value="limitedCompany" selected="selected">Limited company</option>

@@ -1055,10 +1055,17 @@ def reprints():
 
 @app.route('/reprints', methods=['POST'])
 def generate_reprints():
-    curr_data = {'reprint_selected': True, 'estate_owner_ind': 'private',
+    curr_data = {'reprint_selected': True,
                  'estate_owner': {'private': {"forenames": [], "surname": ""},
                                   'local': {'name': "", "area": ""}, "complex": {"name": ""}}}
     error = False
+
+
+    if 'estateOwnerTypes' in request.form:
+        curr_data['estate_owner_ind'] = request.form["estateOwnerTypes"]
+        print("estateOwnerTypes: ", curr_data['estate_owner_ind'])
+    else:
+        print("couldnt find estateOwnerTypes")
     reprint_type = ''
     if 'reprint_type' not in request.form:
         error = True
@@ -1069,18 +1076,14 @@ def generate_reprints():
         curr_data["estate_owner"]["private"]["forenames"] = request.form['forename'].split()
     if 'surname' in request.form:
         curr_data["estate_owner"]["private"]["surname"] = request.form['surname']
-    if 'local_auth' in request.form:
+    if 'loc_auth' in request.form:
         curr_data["estate_owner"]["local"]["name"] = request.form['loc_auth']
-    if 'local_auth_area' in request.form:
+    if 'loc_auth_area' in request.form:
         curr_data["estate_owner"]["local"]["area"] = request.form['loc_auth_area']
     if 'k22_reg_no' in request.form:
         curr_data['k22_reg_no'] = request.form["k22_reg_no"]
     if 'k22_reg_date' in request.form:
         curr_data['k22_reg_date'] = request.form["k22_reg_date"]
-    if 'k18_reg_no' in request.form:
-        curr_data['k18_reg_no'] = request.form["k18_reg_no"]
-    if 'k18_reg_date' in request.form:
-        curr_data['k18_reg_date'] = request.form["k18_reg_date"]
     if 'key_number' in request.form:
         curr_data['key_number'] = request.form["key_number"]
     if 'date_from' in request.form:
