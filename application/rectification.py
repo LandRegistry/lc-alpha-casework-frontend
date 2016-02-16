@@ -133,10 +133,13 @@ def submit_lc_rectification(form):
     if response.status_code == 200:
         logging.info("200 response here")
         data = response.json()
-        print(data)
-        # reg_list = []
-        # for item in data['new_registrations']:
-        #     reg_list.append(item['number'])
-        # session['confirmation'] = {'reg_no': reg_list}
+
+        if 'new_registrations' in data:
+            reg_list = []
+            for item in data['new_registrations']:
+                reg_list.append(item['number'])
+            session['confirmation'] = {'reg_no': reg_list}
+        else:
+            session['confirmation'] = {'reg_no': []}
 
     return Response(status=200)
