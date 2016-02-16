@@ -75,12 +75,18 @@
         <div class="spacer-5"></div>
         <div class="grid-row">
             <div class="col three">
-                <label class="form-label" for="year_from">From</label>
-                <input class="form-textfield width-75" type="text" id="year_from" maxlength="4" name="year_from" value="yyyy"/>
+                <!-- <label class="form-label" for="year_from">From</label>
+                <input class="form-textfield width-75" type="text" id="year_from" maxlength="4" name="year_from" value="yyyy"/> -->
+                <label class="form-label" for="date_from">Date from</label><br/>
+                            <input class="form-textfield"  required  aria-required="true" type="date"
+                                   placeholder="yyyy" id="date_from" name="date_from" value="{{date_from}}"/>
             </div>
             <div class="col three">
-                <label class="form-label"  for="year_to">To</label>
-                <input class="form-textfield width-75" type="text" id="year_to" maxlength="4" name="year_to" value="yyyy"/>
+                <label class="form-label" for="date_to">Date from</label><br/>
+                            <input class="form-textfield"  required  aria-required="true" type="date"
+                                   placeholder="yyyy" id="date_to" name="date_to" value="{{date_to}}"/>
+                <!-- <label class="form-label"  for="year_to">To</label>
+                <input class="form-textfield width-75" type="text" id="year_to" maxlength="4" name="year_to" value="yyyy"/> -->
             </div>
             </div>
         </div>
@@ -193,7 +199,8 @@
         <div id="other">
             <div class="form">
                 <label class="form-label" for="other_name">Name</label>
-                <input class="form-textfield" type="text" id="other_name" name="other_name" autocomplete="off" value="{{curr_data.estate_owner.other}}"/>
+                <input class="form-textfield" type="text" id="other_name" name="other_name" autocomplete="off"
+                       value="{{curr_data.estate_owner.other}}"/>
             </div>
         </div>
             <div class="spacer-15"></div>
