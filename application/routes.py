@@ -640,7 +640,9 @@ def get_registration_details():
     application_type = session['application_type']
     session['regn_no'] = request.form['reg_no']
 
-    session['reg_date'] = request.form['reg_date']  # yyyy-mm-dd
+    date_as_list = request.form['reg_date'].split("/")  # dd/mm/yyyy
+
+    session['reg_date'] = '%s-%s-%s' % (date_as_list[2], date_as_list[1], date_as_list[0])
 
     # TODO: this isn't right; should go to casework-api & there convert the data format
     url = app.config['BANKRUPTCY_DATABASE_URL'] + '/registrations/' + session['reg_date'] + '/' + session['regn_no']
