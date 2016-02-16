@@ -48,32 +48,43 @@
         <div class="column-form width-75" id="K18_form_panel">
             <div class="spacer-20"></div>
             <div class="form">
-                <label class="form-label" for="k18_key_no">Key number</label>
-                <input class="form-textfield width-75" id="k18_key_no" name="k18_key_no" type="text" autofocus>
+                <label class="form-label" for="key_number">Key number</label>
+                <input class="form-textfield width-75" id="key_number" name="key_number" type="text" autofocus>
             </div>
 
             <div class="form">
-                <table>
+                <!--<table>
                     <TR>
                         <td>
                             <label class="form-label" for="k18_from_date">Date from</label><br/>
                             <input class="form-textfield"  required  aria-required="true" type="date"
-                                   placeholder="dd/mm/yyyy" id="k18_from_date" name="k18_from_date"
-                                   value="{{k18_from_date}}"/>
+                                   placeholder="yyyy" id="k18_from_date" name="k18_from_year"
+                                   value="{{k18_from_year}}"/>
                         </td>
                         <td>
                             <label class="form-label" for="k18_to_date">Date to</label><br/>
                             <input class="form-textfield"  required  aria-required="true" type="date"
-                                   placeholder="dd/mm/yyyy" id="k18_to_date" name="k18_to_date"
-                                   value="{{k18_to_date}}"/>
+                                   placeholder="yyyy" id="k18_to_date" name="k18_to_year"
+                                   value="{{k18_to_year}}"/>
                         </td>
                     </TR>
-                </table>
+                </table>-->
             </div>
-
-
-
-
+            <div id="search_date_1">
+        <h2 class="text-24-bold">Search period</h2>
+        <div class="spacer-5"></div>
+        <div class="grid-row">
+            <div class="col three">
+                <label class="form-label" for="year_from">From</label>
+                <input class="form-textfield width-75" type="text" id="year_from" maxlength="4" name="year_from" value="yyyy"/>
+            </div>
+            <div class="col three">
+                <label class="form-label"  for="year_to">To</label>
+                <input class="form-textfield width-75" type="text" id="year_to" maxlength="4" name="year_to" value="yyyy"/>
+            </div>
+            </div>
+        </div>
+        <div class="spacer-5"></div>
             <p class="text-indent">Please select the type of name from the list</p>
             <select name="estateOwnerTypes" id="estateOwnerTypes" onchange="javascript:showFields();" class="form-select width-50">
 

@@ -1045,7 +1045,7 @@ def reprints():
 
 @app.route('/reprints', methods=['POST'])
 def generate_reprints():
-    curr_data = {'reprint_selected': True,
+    curr_data = {'reprint_selected': True, 'estate_owner_ind': 'private',
                  'estate_owner': {'private': {"forenames": [], "surname": ""},
                                   'local': {'name': "", "area": ""}, "complex": {"name": ""}}}
     error = False
@@ -1071,20 +1071,23 @@ def generate_reprints():
         curr_data['k18_reg_no'] = request.form["k18_reg_no"]
     if 'k18_reg_date' in request.form:
         curr_data['k18_reg_date'] = request.form["k18_reg_date"]
+    if 'key_number' in request.form:
+        curr_data['key_number'] = request.form["key_number"]
+    if 'year_from' in request.form:
+        curr_data['year_from'] = request.form["year_from"]
+    if 'year_to' in request.form:
+        curr_data['year_to'] = request.form["year_to"]
+    if error:
+        return render_template('reprint.html', curr_data=curr_data)
     url = app.config['CASEWORK_API_URL'] + '/reprints/'
     if reprint_type == 'k22':
         registration_no = request.form["k22_reg_no"]
         registration_date = request.form["k22_reg_date"]
         url += 'registration/' + registration_no + '/' + registration_date
-    else:
-        registration_no = request.form["k18_reg_no"]
-        registration_date = request.form["k18_reg_date"]
-        url += 'search/' + registration_no + '/' + registration_date
-    print("data", curr_data)
-
-    if error:
-        return render_template('reprint.html', curr_data=curr_data)
-    print("url =", url)
-    response = requests.get(url)
-    return send_file(BytesIO(response.content), as_attachment=False, attachment_filename='reprint.pdf',
-                     mimetype='application/pdf')
+        response = requests.get(url)
+        return send_file(BytesIO(response.content), as_attachment=False, attachment_filename='reprint.pdf',
+                         mimetype='application/pdf')
+    url = app.config['CASEWORK_API_URL'] + '/reprints/search'
+    response = requests.post(url, data=json.dumps(curr_data))
+    data = response.content.decode('utf-8')
+    return Response(json.dumps(data), status=200, mimetype="application/json")
