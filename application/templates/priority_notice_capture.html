@@ -22,39 +22,8 @@
 
         <div class="spacer-10"></div>
 
-        <div class="form">
-            <label class="block_label" for="lc">
-                {% if curr_data.priority_notice_reg == 'lc' %}
-                <input id="lc" type="radio" name="pn_reg" value="lc" checked>
-                {% else %}
-                <input id="lc" type="radio" name="pn_reg" value="lc">
-                {% endif %}
-                Land charges
-            </label>
-            <label class="block_label" for="pa">
-                {% if curr_data.priority_notice_reg == 'pa' %}
-                <input id="pa" type="radio" name="pn_reg" value="pa" checked>
-                {% else %}
-                <input id="pa" type="radio" name="pn_reg" value="pa">
-                {% endif %}
-                Pending action
-            </label>
-            <label class="block_label" for="wo">
-                {% if curr_data.priority_notice_reg == 'wo' %}
-                <input id="wo" type="radio" name="pn_reg" value="wo" checked>
-                {% else %}
-                <input id="wo" type="radio" name="pn_reg" value="wo">
-                {% endif %}
-                Writs or orders
-            </label>
-        </div>
-
+        {% include 'includes/class_of_charge.html' %}
         <div class="spacer-10"></div>
-
-        <div id="class_charge">
-            {% include 'includes/class_of_charge.html' %}
-            <div class="spacer-10"></div>
-        </div>
 
         <!-- LAND INFO -->
         {% include 'includes/particulars.html' %}
@@ -83,8 +52,6 @@
 
 <script>
 
-
-
     jQuery(document).ready(function(){
         {% if curr_data.estate_owner_ind == '' %}
             jQuery("#estateOwnerTypes").val("{{curr_data.estate_owner_ind}}");
@@ -93,22 +60,6 @@
         setupCountyAutocomplete("#county_0");
     });
 
-    jQuery(document).ready(function(){
-        jQuery("#class_charge").hide();
-        jQuery("#pa").click(function(){
-            jQuery("#class_charge").hide();
-            jQuery("#class").val("PA");
-
-        });
-        jQuery("#wo").click(function(){
-            jQuery("#class_charge").hide();
-            jQuery("#class").val("WO");
-
-        });
-        jQuery("#lc").click(function(){
-            jQuery("#class_charge").show();
-        });
-    });
 
 </script>
 
