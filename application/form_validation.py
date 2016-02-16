@@ -17,9 +17,10 @@ def validate_land_charge(data):
     # check that any entered counties are valid
     response = requests.get(app.config['CASEWORK_API_URL'] + '/counties')
     counties = json.loads(response.content.decode('utf-8'))
+    counties_upper = [county.upper() for county in counties]
     cntr = 0
     while 'county_' + str(cntr) in data:
-        if data['county_' + str(cntr)] not in counties:
+        if data['county_' + str(cntr)].upper() not in counties_upper:
             errors.append('county')
         cntr += 1
 
