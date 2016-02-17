@@ -1023,10 +1023,8 @@ def get_counties():
 
 
 def get_translated_county(county_name):
-
     url = app.config['CASEWORK_API_URL'] + '/county/' + county_name
     response = requests.get(url)
-
     return response.json()
 
 
@@ -1039,7 +1037,7 @@ def enquiries():
 
 @app.route('/reprints', methods=['GET'])
 def reprints():
-    curr_data = {'reprint_selected': True,
+    curr_data = {'reprint_selected': True, 'estate_owner_ind': 'Private Individual',
                  'estate_owner': {'private': {"forenames": [], "surname": ""},
                                   'local': {'name': "", "area": ""}, "complex": {"name": ""}}}
     if 'request_id' in request.args:  # search request id passed, generate pdf
@@ -1055,51 +1053,39 @@ def reprints():
 
 @app.route('/reprints', methods=['POST'])
 def generate_reprints():
-    curr_data = {'reprint_selected': True,
-                 'estate_owner': {'private': {"forenames": [], "surname": ""},
-                                  'local': {'name': "", "area": ""}, "complex": {"name": ""}}}
-    error = False
+    curr_data = {"reprint_selected": True,
+                 "estate_owner": {"private": {"forenames": [], "surname": ""}, "company": "",
+                                  "local": {'name': "", "area": ""}, "complex": {"name": ""}}}
 
+    if 'estateOwnerTypes' not in request.form:
+        return Response('no estate owner type supplied', status=400)
 
-    if 'estateOwnerTypes' in request.form:
-        curr_data['estate_owner_ind'] = request.form["estateOwnerTypes"]
-        print("estateOwnerTypes: ", curr_data['estate_owner_ind'])
-    else:
-        print("couldnt find estateOwnerTypes")
-    reprint_type = ''
+    curr_data['estate_owner_ind'] = request.form["estateOwnerTypes"]
+
     if 'reprint_type' not in request.form:
-        error = True
-    else:
-        reprint_type = request.form["reprint_type"]
+        return Response('no reprint type supplied', status=400)
+    reprint_type = request.form["reprint_type"]
 
-    if 'forename' in request.form:
-        curr_data["estate_owner"]["private"]["forenames"] = request.form['forename'].split()
-    if 'surname' in request.form:
-        curr_data["estate_owner"]["private"]["surname"] = request.form['surname']
-    if 'loc_auth' in request.form:
-        curr_data["estate_owner"]["local"]["name"] = request.form['loc_auth']
-    if 'loc_auth_area' in request.form:
-        curr_data["estate_owner"]["local"]["area"] = request.form['loc_auth_area']
-    if 'k22_reg_no' in request.form:
-        curr_data['k22_reg_no'] = request.form["k22_reg_no"]
-    if 'k22_reg_date' in request.form:
-        curr_data['k22_reg_date'] = request.form["k22_reg_date"]
-    if 'key_number' in request.form:
-        curr_data['key_number'] = request.form["key_number"]
-    if 'date_from' in request.form:
-        curr_data['date_from'] = request.form["date_from"]
-    if 'date_to' in request.form:
-        curr_data['date_to'] = request.form["date_to"]
-    if error:
-        return render_template('reprint.html', curr_data=curr_data)
-    url = app.config['CASEWORK_API_URL'] + '/reprints/'
     if reprint_type == 'k22':
         registration_no = request.form["k22_reg_no"]
         registration_date = request.form["k22_reg_date"]
+        url = app.config['CASEWORK_API_URL'] + '/reprints/'
         url += 'registration?registration_no=' + registration_no + '&registration_date=' + registration_date
         response = requests.get(url)
         return send_file(BytesIO(response.content), as_attachment=False, attachment_filename='reprint.pdf',
                          mimetype='application/pdf')
+    elif reprint_type == 'k18':
+        curr_data["estate_owner"]["private"]["forenames"] = request.form['forename'].split()
+        curr_data["estate_owner"]["private"]["surname"] = request.form['surname']
+        curr_data["estate_owner"]["local"]["name"] = request.form['loc_auth']
+        curr_data["estate_owner"]["local"]["area"] = request.form['loc_auth_area']
+        curr_data['key_number'] = request.form['key_number']
+        curr_data['date_from'] = request.form['date_from']
+        curr_data['date_to'] = request.form['date_to']
+        curr_data['estate_owner']['company'] = request.form['company']
+        curr_data['estate_owner']['complex']['name'] = request.form['complex_name']
+        curr_data['estate_owner']['complex']['number'] = request.form['complex_number']
+        curr_data['estate_owner']['other'] = request.form['other_name']
     url = app.config['CASEWORK_API_URL'] + '/reprints/search'
     response = requests.post(url, data=json.dumps(curr_data))
     data = json.loads(response.content.decode('utf-8'))
@@ -1111,7 +1097,16 @@ def generate_reprints():
         if result['name_type'] == 'Private Individual':
             res['name'] = result['estate_owner']['private']['forenames'] + ' ' + \
                           result['estate_owner']['private']['surname']
+        elif result['name_type'] == 'Local Authority':
+            res['name'] = result['estate_owner']['local']['name'] + ' ' + \
+                          result['estate_owner']['local']['area']
+        elif result['name_type'] == 'Company':
+            res['name'] = result['estate_owner']['company']
+        elif result['name_type'] == 'Complex':
+            res['name'] = result['estate_owner']['complex']['name']
+        elif result['name_type'] == 'Other':
+            res['name'] = result['estate_owner']['other']
         results['results'].append(res)
-    # return Response(json.dumps(data), status=200, mimetype="application/json")
-    # return Response(json.dumps(results), status=200, mimetype="application/json")
+    #  return Response(json.dumps(data), status=200, mimetype="application/json")
+    #  return Response(json.dumps(results), status=200, mimetype="application/json")
     return render_template('reprint_k18_results.html', curr_data=results)
