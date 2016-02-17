@@ -159,7 +159,7 @@ def application_start(application_type, appn_id, form):
 
     return render_template(template, application_type=application_type, data=application_json,
                            images=images, application=application, years=years,
-                           current_page=0, errors=[], curr_data=curr_data)
+                           current_page=0, screen='capture', errors=[], curr_data=curr_data)
 
 
 @app.route('/retrieve_new_reg', methods=["GET"])
@@ -1062,7 +1062,9 @@ def generate_reprints():
 
     if reprint_type == 'k22':
         registration_no = request.form["k22_reg_no"]
-        registration_date = request.form["k22_reg_date"]
+        reg_date = request.form["k22_reg_date"].split("/")  # dd/mm/yyyy
+        registration_date = '%s-%s-%s' % (reg_date[2], reg_date[1], reg_date[0])
+        print('reg date***', registration_date)
         url = app.config['CASEWORK_API_URL'] + '/reprints/'
         url += 'registration?registration_no=' + registration_no + '&registration_date=' + registration_date
         response = requests.get(url)
@@ -1077,8 +1079,10 @@ def generate_reprints():
         curr_data["estate_owner"]["local"]["name"] = request.form['loc_auth']
         curr_data["estate_owner"]["local"]["area"] = request.form['loc_auth_area']
         curr_data['key_number'] = request.form['key_number']
-        curr_data['date_from'] = request.form['date_from']
-        curr_data['date_to'] = request.form['date_to']
+        date_from = request.form['date_from'].split("/")  # dd/mm/yyyy
+        curr_data['date_from'] = '%s-%s-%s' % (date_from[2], date_from[1], date_from[0])
+        date_to = request.form['date_to'].split("/")  # dd/mm/yyyy
+        curr_data['date_to'] = '%s-%s-%s' % (date_to[2], date_to[1], date_to[0])
         curr_data['estate_owner']['company'] = request.form['company']
         curr_data['estate_owner']['complex']['name'] = request.form['complex_name']
         curr_data['estate_owner']['complex']['number'] = request.form['complex_number']
