@@ -31,7 +31,18 @@
         <div class="grid-row-padded-line bottom-line">
             <span class="text-16-bold col four">Class and subclass</span>
             <span class="col two">&nbsp;</span>
-            <span class="text-16 col six">{{details.class}}</span>
+            <span class="text-16 col six">
+            {% if details.class == 'C(I)' %} C1
+            {% elif details.class == 'C(II)' %} C2
+            {% elif details.class == 'C(III)' %} C3
+            {% elif details.class == 'C(IV)' %} C4
+            {% elif details.class == 'D(I)' %} D1
+            {% elif details.class == 'D(II)' %} D2
+            {% elif details.class == 'D(III)' %} D3
+            {% else %}
+                {{details.class}}
+            {% endif %}
+            </span>
         </div>
 
         <div class="grid-row">
