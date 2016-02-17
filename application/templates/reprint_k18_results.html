@@ -17,6 +17,7 @@ $(document).ready(function() {
 } );
 
 </script>
+
 {% endblock %}
 {% block maincontent %}
 {% set page_title = 'Reprint K17 K18' %}
@@ -26,26 +27,30 @@ $(document).ready(function() {
 
     <!-- K22 and K17/18 reprint inputs -->
     <div class="col nine text-19"><div class="spacer-20"></div>
-    <table border="0"><tr><td valign="top">
-        <h2 class="text-24-bold"> &nbsp;&nbsp;K18 reprint</h2>
+        <h1 class="title-36"> &nbsp;&nbsp;K18 reprint</h1>
+   <!-- <table border="1"><tr><td valign="top">
 
+        <BR>
+    <h2 class="text-24-bold"> &nbsp;&nbsp;Which result would you like?</h2>
     </td></tr>
-    </table>
+    </table> -->
+         <BR>
+    <h2 class="text-24-bold"> &nbsp;&nbsp;Which result would you like?</h2>
+        <BR>
      <div class="col nine no-margin">
                 <table id="work-list" class="hover">
-                    <thead>
+                     <tbody>
                     <tr>
-                        <th class="table-text-black">Request Id <a href="#"></a></th>
-                        <th class="table-text-black">Name Searched <a href="#"></a></th>
-                        <th class="table-text-black">Search Time <a href="#"></a></th>
+                        <td>
+                        </td>
+                        <td></td>
                     </tr>
-                    </thead>
+                    </tbody>
                     {% for n in curr_data['results'] %}
                     <tbody>
                     <tr id="row_{{loop.index}}" tabindex="{{loop.index}}" onkeypress="this.click();">
-                        <td>{{n['request_id']}}</td>
-                        <td>
-
+                        <td><input type="hidden" value="{{n['request_id']}}">
+                            &nbsp;&nbsp;&nbsp;&nbsp;
                             {{n['name']}}
 
                             <a class="hide" id="appn_type{{loop.index}}" href="/reprints?request_id={{n['request_id']}}">
@@ -57,6 +62,9 @@ $(document).ready(function() {
                     </tbody>
                     {% endfor %}
                 </table>
-            </div>
+            <BR>
+         <div class="spacer-5"></div>
+         <a href="/reprints" class="link-14-right">Search for another</a>
+     </div>
 </div>
 {% endblock %}
