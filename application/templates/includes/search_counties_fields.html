@@ -5,14 +5,14 @@
 <div class="grid-row">
     <div class="col four form-control-div">
         <label class="form-label" for="all_counties">
-            <input id="all_counties" type="checkbox" name="all_counties" value="yes">
+            <input id="all_counties" type="checkbox" name="all_counties" onclick="allCountyClick()"  value="yes">
             All county search
         </label>
     </div>
     <div class="col one" style="padding:5px;"><label class="form-label">or</label></div>
 </div>
 <div class="spacer-10"></div>
-<div class="grid-row">
+<div class="grid-row" id="specified_counties">
 <div class="form">
     {% if 'county' in errors %}
     <label class="error-text form-label" for="county_0">X County or unitary authority area</label>

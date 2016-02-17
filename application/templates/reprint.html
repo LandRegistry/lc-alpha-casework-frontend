@@ -1,12 +1,26 @@
+{% set reprint_selected = 'selected' %}
+
+{% extends "/page_template/base.html" %}
+{% block page_specific_head %}
+
+{% include 'includes/lc_head.html' %}
+{% endblock %}
+
 {% block maincontent %}
 
-{% set page_title = 'Reprints' %}
-{% set reprint_selected = 'selected' %}
-{% include 'includes/enquiries_head.html' %}
+{% include "includes/side_nav.html" %}
+<script>
+    jQuery(document).ready(function(){
+        {% if curr_data.estate_owner_ind == '' %}
+            jQuery("#estateOwnerTypes").val("{{curr_data.estate_owner_ind}}");
+        {% endif %}
+        showFields();
+    });
+</script>
         <!-- K22 and K17/18 reprint inputs -->
 
     <div class="col nine text-19"><div class="spacer-20"></div>
-    <table border="0"><tr><td valign="top">
+    <table><tr><td valign="top">
         <h2 class="text-24-bold"> &nbsp;&nbsp;K22 reprint</h2>
         <form id="page_form_K22" action="/reprints" method="POST">
             <input type="hidden" id="reprint_type" name="reprint_type" value="k22"/>
@@ -82,56 +96,26 @@
                 {% else %}
                 <option value="privateIndividual">Private individual</option>
                 {% endif %}
-<!--
-                {% if curr_data.estate_owner_ind == 'County Council' %}
-                <option value="countyCouncil" selected="selected">County Council or Greater London or Manchester Council</option>
-                {% else %}
-                <option value="countyCouncil">County Council or Greater London or Manchester Council</option>
-                {% endif %}
-
-                {% if curr_data.estate_owner_ind == 'Parish Council' %}
-                <option value="parishCouncil" selected="selected">Parish, Town or Community Council</option>
-                {% else %}
-                <option value="parishCouncil">Parish, Town or Community Council</option>
-                {% endif %}
-
-                {% if curr_data.estate_owner_ind == 'Other Council' %}
-                <option value="otherCouncil" selected="selected">Other Council</option>
-                {% else %}
-                <option value="otherCouncil">Other Council</option>
-                {% endif %}
-
-                {% if curr_data.estate_owner_ind == 'Development Corporation' %}
-                <option value="developmentCorporation" selected="selected">Development Corporation</option>
-                {% else %}
-                <option value="developmentCorporation">Development Corporation</option>
-                {% endif %}
--->
                 {% if curr_data.estate_owner_ind == 'Local Authority' %}
                 <option value="countyCouncil" selected="selected">Local Authority</option>
                 {% else %}
                 <option value="countyCouncil">Local authority</option>
                 {% endif %}
-
-
                 {% if curr_data.estate_owner_ind == 'Limited Company' %}
                 <option value="limitedCompany" selected="selected">Limited company</option>
                 {% else %}
                 <option value="limitedCompany">Limited company</option>
                 {% endif %}
-
                 {% if curr_data.estate_owner_ind == 'Complex Name' %}
                 <option value="complexName" selected="selected">Complex Name</option>
                 {% else %}
                 <option value="complexName">Complex Name</option>
                 {% endif %}
-
                 {% if curr_data.estate_owner_ind == 'Other' %}
                 <option value="other" selected="selected">Other</option>
                 {% else %}
                 <option value="other">Other</option>
                 {% endif %}
-
             </select>
         <div id="private">
             <div class="form">
@@ -163,19 +147,41 @@
                 <input class="form-textfield" type="text" id="loc_auth_area" autocomplete="off" name="loc_auth_area" value="{{curr_data.estate_owner.local.area}}"/>
             </div>
         </div>
-        <div id="complex">
+            <div id="complex">
             <div class="form">
                 <label class="form-label" for="complex_name_field">Complex name</label>
                 <input class="form-textfield" type="text" id="complex_name_field" autocomplete="off" value="{{curr_data.estate_owner.complex.name}}"/>
                 <div class="spacer-5"></div>
                 <a href="#here" id="name_lookup_link" onclick="showComplexNameModal();" class="link-14-right">Look up complex name</a>
-                <div id="complex_result_modal" role="dialog" aria-labelledby="myDialog" style="display: none;">
+                <div id="complex_result_modal" role="dialog" aria-labelledby="complex_result_modal" style="display: none;">
                     <p id="modal_message" class="text-16"></p>
                     <div class="spacer-15"></div>
                     <div id="complex_result"></div>
                     <div class="spacer-15"></div>
-                    <div style="float:right">
-                        <input id="close" type="button" class="form-button" onclick="closeComplexNameModal();" value="Close"/>
+                    <div>
+                        <div style="float: left">
+                            <a href="#here" id="add_complex_name" data-dismiss="modal" onclick="addComplexNameModal();" class="link-14-right">Add a complex name</a>
+                            <div id="add_complex_modal" role="dialog" style="display: none;">
+                                <div id="complex_addition"></div>
+                                <div class="spacer-10"></div>
+                                <label class="form-label" for="complex_name_addition">Name</label>
+                                <input class="form-textfield" type="text" id="complex_name_addition"/>
+                                <label class="form-label" for="complex_number_addition">Number</label>
+                                <input class="form-textfield" type="text" id="complex_number_addition"/>
+                                <div class="spacer-15"></div>
+                                <p id="modal_add" class="text-16"></p>
+                                <div class="spacer-15"></div>
+                                <div style="float:left">
+                                    <input id="add" type="button" class="form-button" onclick="addComplexName();" value="Add name"/>
+                                </div>
+                                <div style="float:right">
+                                    <input id="close_add" type="button" class="form-button" onclick="closeComplexNameModal();" value="Close"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="float:right">
+                            <input id="close" type="button" class="form-button" onclick="closeComplexNameModal();" value="Close"/>
+                        </div>
                     </div>
                 </div>
                 <div class="spacer-15"></div>
@@ -210,7 +216,11 @@
 
         </div>
     </form>
-    </td></tr>
+    </td>
+    </tr>
     </table>
 </div>
+
+
+
 {% endblock %}
