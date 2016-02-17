@@ -1097,10 +1097,10 @@ def generate_reprints():
         res = {'request_id': result['request_id'], 'search_timestamp': search_time}
         if result['name_type'] == 'Private Individual':
             res['name'] = result['estate_owner']['private']['forenames'] + ' ' + \
-                          result['estate_owner']['private']['surname']
+                result['estate_owner']['private']['surname']
         elif result['name_type'] == 'Local Authority':
             res['name'] = result['estate_owner']['local']['name'] + ' - ' + \
-                          result['estate_owner']['local']['area']
+                result['estate_owner']['local']['area']
         elif result['name_type'] == 'Company':
             res['name'] = result['estate_owner']['company']
         elif result['name_type'] == 'Complex':
