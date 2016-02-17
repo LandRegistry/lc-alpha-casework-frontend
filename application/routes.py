@@ -159,7 +159,7 @@ def application_start(application_type, appn_id, form):
 
     return render_template(template, application_type=application_type, data=application_json,
                            images=images, application=application, years=years,
-                           current_page=0, errors=[], curr_data=curr_data)
+                           current_page=0, screen='capture', errors=[], curr_data=curr_data)
 
 
 @app.route('/retrieve_new_reg', methods=["GET"])
