@@ -1056,12 +1056,6 @@ def generate_reprints():
     curr_data = {"reprint_selected": True,
                  "estate_owner": {"private": {"forenames": [], "surname": ""}, "company": "",
                                   "local": {'name': "", "area": ""}, "complex": {"name": ""}}}
-
-    if 'estateOwnerTypes' not in request.form:
-        return Response('no estate owner type supplied', status=400)
-
-    curr_data['estate_owner_ind'] = request.form["estateOwnerTypes"]
-
     if 'reprint_type' not in request.form:
         return Response('no reprint type supplied', status=400)
     reprint_type = request.form["reprint_type"]
@@ -1075,6 +1069,9 @@ def generate_reprints():
         return send_file(BytesIO(response.content), as_attachment=False, attachment_filename='reprint.pdf',
                          mimetype='application/pdf')
     elif reprint_type == 'k18':
+        if 'estateOwnerTypes' not in request.form:
+            return Response('no estate owner type supplied', status=400)
+        curr_data['estate_owner_ind'] = request.form["estateOwnerTypes"]
         curr_data["estate_owner"]["private"]["forenames"] = request.form['forename'].split()
         curr_data["estate_owner"]["private"]["surname"] = request.form['surname']
         curr_data["estate_owner"]["local"]["name"] = request.form['loc_auth']
@@ -1098,7 +1095,7 @@ def generate_reprints():
             res['name'] = result['estate_owner']['private']['forenames'] + ' ' + \
                           result['estate_owner']['private']['surname']
         elif result['name_type'] == 'Local Authority':
-            res['name'] = result['estate_owner']['local']['name'] + ' ' + \
+            res['name'] = result['estate_owner']['local']['name'] + ' - ' + \
                           result['estate_owner']['local']['area']
         elif result['name_type'] == 'Company':
             res['name'] = result['estate_owner']['company']
