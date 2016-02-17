@@ -222,28 +222,47 @@ function setupCountyAutocomplete(element) {
 
 
 function countyClick(sender){
-    var fldnam = "county_" + n;
-    jQuery('<input class="form-textfield" type="text" id="' + fldnam + '" name="' + fldnam+ '"> \
-            <div class="spacer-10"><div>').insertBefore("#addcounty");
-    n ++;
+    if (jQuery("#all_counties").is(':checked') != true) {
+        var fldnam = "county_" + n;
+        jQuery('<input class="form-textfield" type="text" id="' + fldnam + '" name="' + fldnam+ '"> \
+                <div class="spacer-10"><div>').insertBefore("#addcounty");
+        n ++;
 
-    jQuery.ajax({
-    'async': false,
-    url: '{{config.CASEWORK_FRONTEND_URL}}/counties?welsh=yes',
-    type: 'GET',
-    counties: {},
-    success: function( counties ) {
-        jQuery("#"+fldnam).autocomplete({
-          source: function( request, response ) {
-            var matcher = new RegExp( "^" + jQuery.ui.autocomplete.escapeRegex( request.term ), "i" );
-            response( jQuery.grep( counties, function( item ){
-                  return matcher.test( item );
-                }) );
+        jQuery.ajax({
+        'async': false,
+        url: '{{config.CASEWORK_FRONTEND_URL}}/counties?welsh=yes',
+        type: 'GET',
+        counties: {},
+        success: function( counties ) {
+            jQuery("#"+fldnam).autocomplete({
+              source: function( request, response ) {
+                var matcher = new RegExp( "^" + jQuery.ui.autocomplete.escapeRegex( request.term ), "i" );
+                response( jQuery.grep( counties, function( item ){
+                      return matcher.test( item );
+                    }) );
+                }
+                });
             }
-            });
-        }
-    });
+        });
+    }
 };
+
+function allCountyClick(){
+    if (jQuery("#all_counties").is(':checked')) {
+        jQuery("#specified_counties :input").attr("disabled", true);
+        jQuery("#specified_counties :input").val("");
+        jQuery("#specified_counties label").css('color','#dddddd');
+        jQuery("#specified_counties :input").css('background-color','#dddddd');
+        jQuery("#addcounty").removeAttr('href');
+        jQuery("#addcounty").css('color','#dddddd');
+    } else {
+        jQuery("#specified_counties :input").attr("disabled", false);
+        jQuery("#specified_counties label").css('color','#000000');
+        jQuery("#specified_counties :input").css('background-color','#ffffff');
+        jQuery("#addcounty").css('color','##005ea5');
+        jQuery("#addcounty").addAttr('href','#here' );
+    }
+}
 
 function validateFields(){
     if ($('#all_counties').is(':checked') == false && $('#county_0').val() == "") {
