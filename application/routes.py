@@ -286,14 +286,19 @@ def court_details():
                            charge=session['application_dict']['form'])
 
 
-@app.route('/process_court_details', methods=["POST"])
-def process_court_details():
-    application = session['application_dict']
-    application["legal_body"] = request.form['court']
-    application["legal_body_ref"] = '%s of %s' % (request.form['court_no'], request.form['court_year'])
-    application["key_number"] = request.form['keyno']
+@app.route('/check_court_details', methods=["POST"])
+def check_court_details():
 
-    return redirect('/verify_registration', code=302, Response=None)
+    application = {"legal_body":  request.form['court'],
+                   "legal_body_ref_num": request.form['ref_num'],
+                   "legal_body_ref_year": request.form['ref_year']}
+
+    # application["key_number"] = request.form['keyno']
+    #  call api to see if registration already exists
+    set_session_variables({'application_dict': application})
+
+    return render_template('bank_regn_court.html', images=session['images'], current_page=0,
+                           data=session['application_dict'])
 
 
 @app.route('/verify_registration', methods=['GET'])
@@ -964,7 +969,7 @@ def page_required(appn_type, sub_type=''):
         html_page = {
             "bank_amend": "regn_retrieve.html",
             "cancel": "regn_retrieve.html",
-            "bank_regn": "application.html",
+            "bank_regn": "bank_regn_court.html",
             "search_full": "search_info.html",
             "search_bank": "search_info.html",
             "oc": "regn_retrieve.html",

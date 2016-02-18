@@ -1,0 +1,68 @@
+{% extends "/page_template/base.html" %}
+
+{% block page_specific_head %}
+{% endblock %}
+{% block maincontent %}
+
+
+<div class="spacer-10"></div>
+
+<h1 class="title-36">Bankruptcy registration</h1>
+
+<div class="spacer-5"></div>
+
+<div class="text-16-gray">
+    <span class="text-16-bold">1. Input court details</span> &nbsp;&nbsp;
+    2. Input debtor details &nbsp;&nbsp;
+    3. Check and verify details &nbsp;&nbsp;
+    4. Key number &nbsp;&nbsp;
+</div>
+
+<div class="grid-row">
+    <div class="col four" id="form_panel">
+        <!-- ///////////////////////////////// data entry form ///////////////////////////////// -->
+        <form id="rectify_form" action="/check_court_details" method="POST">
+            <div class="spacer-40"></div>
+            <h2 class="text-24-bold">Particulars of court</h2>
+            <div class="spacer-10"></div>
+            {% if error_msg|length > 0 %}
+            <p class="error"><strong>{{error_msg}}</strong></p>
+            {% endif %}
+            <div class="form">
+                <label class="form-label" for="court">Name</label><br/>
+                <input class="form-textfield width-50" required  aria-required="true" type="text" id="court" name="court" value="{{data.court}}"/>
+            </div>
+            <div class="spacer-20"></div>
+            <h3 class="text-19-bold">Court reference</h3>
+            <div class="spacer-20"></div>
+            <div class="form col five">
+                <label class="form-label" for="ref_num">Number</label><br/>
+                <input class="form-textfield width-75"  required  aria-required="true" type="text" id="ref_num" name="ref_num" value="{{ref_num}}"/>
+                <span class="form-label pd-left-10 ">of</span>
+            </div>
+            <div class="form col five">
+                <label class="form-label" for="ref_year">Year</label><br/>
+                <input class="form-textfield width-25"  required  aria-required="true" type="text" id="ref_year" name="ref_year" value="{{ref_year}}"/>
+            </div>
+            <div class="spacer-40"></div>
+            <input id="continue" type="submit" value="Continue" class="form-button"/>
+            <div class="spacer-20"></div>
+            <a href="/get_list?appn=bank_regn" class="link-16">Return to this application later</a>
+            <div class="spacer-40"></div>
+        </form>
+    </div>
+    <!-- ///////////////////////////////// end of data entry form ///////////////////////////////// -->
+    <div class="col one"><p></p></div>
+    <!-- /////////////////////////////////  Include image tool ///////////////////////////////// -->
+
+    <div class="col seven">
+        <div class="spacer-40"></div>
+        {% include 'includes/image_view_body.html' %}
+    </div>
+    <!-- ///////////////////////////////// End of image tool ///////////////////////////////// -->
+
+</div>
+
+
+
+{% endblock %}

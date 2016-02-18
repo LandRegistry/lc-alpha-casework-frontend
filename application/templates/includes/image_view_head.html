@@ -1,159 +1,70 @@
+<script type="text/javascript" src="/static/js/imagepan.js"></script>
+<script>
+    var page = 0;
+    var numpages = {{images|length}};
+    var $window = null;
+    var $stickyEl = null;
+    var elTop = null;
+    var $thumbs = null;
+    var tLeft = null;
 
-<style scoped>
-
-        #image_area {
-            position: relative;
-            overflow: hidden;
-            width: 100%; /* TODO: rubbish with non-fullscreen windows */
-            border:1px solid black;
-            margin-bottom: 50px;
-
-        }
-
-        .thumbnail{
-            border:1px solid #B3B3B3;
-            max-width:100px;
-            margin-right:5px;
-        }
-        .thumbnail:hover{
-            cursor:pointer
-        }
-        .active_thumbnail {
-            border:1px solid #0000ff;
-        }
-
-        .panned_image {
-            width:100%;
-           /* max-width: none; */
-        }
-
-        #nav_bar {
-            height: 30px;
-            width: 100%;
-        }
-
-        #zoom_button_caption {
-            float: left;
-            font-family: Roboto;
-            color: #666;
-            margin-top: 3px;
-        }
-
-        #page_nav {
-            float: right;
-            font-family: Roboto;
-            color: #666;
-            margin-top: 10px;
-        }
-
-        #zoom_button {
-            float: left;
-            width: 170px;
-            height: 30px;
-            background-size: 15% 100%;
-            background-repeat: no-repeat;
-            padding-left: 30px;
-            font-family: Roboto;
-            color: #666;
-        }
-
-        .zoom_button_in {
-            background-image: url('/static/images/MGlass_1.png');
-        }
-
-        .zoom_button_in::after {
-            content: "Zoom In";
-        }
-
-        .zoom_button_out::after {
-            content: "Zoom Out";
-        }
-
-        .zoom_button_out {
-            background-image: url('/static/images/MGlass_2.png');
-        }
-
-        .sticky {
-            position: fixed;
-            top: 0;
-        }
-
-        #sticky_div {
-            width:750px;
-        }
+    function updateNav() {
+        document.getElementById('page_nav_text').textContent = "Page " + ( page + 1 ) + " of";
+    }
 
 
-    </style>
-    <script type="text/javascript" src="/static/js/imagepan.js"></script>
-    <script>
-        var page = 0;
-        var numpages = {{images|length}};
-        var $window = null;
-        var $stickyEl = null;
-        var elTop = null;
-        var $thumbs = null;
-        var tLeft = null;
+    function imgClick(sender, index) {
+        jQuery('.thumbnail').removeClass('active_thumbnail');
+        sender.classList.add('active_thumbnail');
+        PannerControl.showImage(index);
+        page = index;
+        updateNav();
+    }
 
-        function updateNav() {
-            document.getElementById('page_nav_text').textContent = "Page " + ( page + 1 ) + " of";
-        }
+    function clickNext() {
+        jQuery('.thumbnail').removeClass('active_thumbnail');
+        page += 1;
+        if( page >= numpages ) { page = 0; }
+        document.getElementById('thumbnail' + (page + 1)).classList.add('active_thumbnail');
+        PannerControl.showImage(page)
+        updateNav()
 
+    }
 
+    window.onload = function(e) {
+        jQuery("#image_area").height(1.4 * jQuery("#image_area").width() );
+        $window = jQuery(window);
+        $stickyEl = jQuery('#sticky_div');
+        elTop = $stickyEl.offset().top;
 
+        $window.scroll(function() {
 
+            if (isScrolledIntoView(jQuery("#form_panel"))){
+                $stickyEl.toggleClass('sticky', $window.scrollTop() > elTop );
 
-        function imgClick(sender, index) {
-            jQuery('.thumbnail').removeClass('active_thumbnail');
-            sender.classList.add('active_thumbnail');
-            PannerControl.showImage(index);
-            page = index;
-            updateNav();
-        }
-
-        function clickNext() {
-            jQuery('.thumbnail').removeClass('active_thumbnail');
-            page += 1;
-            if( page >= numpages ) { page = 0; }
-            document.getElementById('thumbnail' + (page + 1)).classList.add('active_thumbnail');
-            PannerControl.showImage(page)
-            updateNav()
-
-        }
-
-        window.onload = function(e) {
-            jQuery("#image_area").height(1.4 * jQuery("#image_area").width() );
-            $window = jQuery(window);
-            $stickyEl = jQuery('#sticky_div');
-            elTop = $stickyEl.offset().top;
-
-            $window.scroll(function() {
-
-                if (isScrolledIntoView(jQuery("#form_panel"))){
-                    $stickyEl.toggleClass('sticky', $window.scrollTop() > elTop );
-
-                }
-            });
-
-            PannerControl.init(document.getElementById('image_container'),
-                               document.getElementById('zoom_button'));
-        };
-
-        jQuery(window).resize(function() {
-            jQuery("#image_area").height(1.4 * jQuery("#image_area").width() );
+            }
         });
 
+        PannerControl.init(document.getElementById('image_container'),
+                           document.getElementById('zoom_button'));
+    };
 
-        function isScrolledIntoView(elem)
-        {
-            var elem = $(elem);
-            var window = $(window);
+    jQuery(window).resize(function() {
+        jQuery("#image_area").height(1.4 * jQuery("#image_area").width() );
+    });
 
-            var docViewTop = $window.scrollTop();
-            var docViewBottom = docViewTop + $window.height();
 
-            var elemTop = elem.offset().top;
-            var elemBottom = elemTop + elem.height();
+    function isScrolledIntoView(elem)
+    {
+        var elem = $(elem);
+        var window = $(window);
 
-            return (elemBottom + 100 > docViewBottom);
-        }
-    </script>
+        var docViewTop = $window.scrollTop();
+        var docViewBottom = docViewTop + $window.height();
+
+        var elemTop = elem.offset().top;
+        var elemBottom = elemTop + elem.height();
+
+        return (elemBottom + 100 > docViewBottom);
+    }
+</script>

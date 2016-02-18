@@ -295,3 +295,86 @@ body {
     width: 30%;
 }
 
+.pd-left-10 { padding-left: 10px; }
+
+#image_area {
+    position: relative;
+    overflow: hidden;
+    width: 100%; /* TODO: rubbish with non-fullscreen windows */
+    border:1px solid black;
+    margin-bottom: 50px;
+
+}
+
+.thumbnail{
+    border:1px solid #B3B3B3;
+    max-width:100px;
+    margin-right:5px;
+}
+.thumbnail:hover{
+    cursor:pointer
+}
+.active_thumbnail {
+    border:1px solid #0000ff;
+}
+
+.panned_image {
+    width:100%;
+   /* max-width: none; */
+}
+
+#nav_bar {
+    height: 30px;
+    width: 100%;
+}
+
+#zoom_button_caption {
+    float: left;
+    font-family: Roboto;
+    color: #666;
+    margin-top: 3px;
+}
+
+#page_nav {
+    float: right;
+    font-family: Roboto;
+    color: #666;
+    margin-top: 10px;
+}
+
+#zoom_button {
+    float: left;
+    width: 170px;
+    height: 30px;
+    background-size: 15% 100%;
+    background-repeat: no-repeat;
+    padding-left: 30px;
+    font-family: Roboto;
+    color: #666;
+}
+
+.zoom_button_in {
+    background-image: url('/static/images/MGlass_1.png');
+}
+
+.zoom_button_in::after {
+    content: "Zoom In";
+}
+
+.zoom_button_out::after {
+    content: "Zoom Out";
+}
+
+.zoom_button_out {
+    background-image: url('/static/images/MGlass_2.png');
+}
+
+.sticky {
+    position: fixed;
+    top: 0;
+}
+
+#sticky_div {
+    width:750px;
+}
+
