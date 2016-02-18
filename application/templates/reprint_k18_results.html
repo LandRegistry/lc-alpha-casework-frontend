@@ -44,6 +44,7 @@ $(document).ready(function() {
                         <td>
                         </td>
                         <td></td>
+                        <td></td>
                     </tr>
                     </tbody>
                     {% for n in curr_data['results'] %}
@@ -58,6 +59,7 @@ $(document).ready(function() {
                             </a>
                         </td>
                         <td>{{n['search_timestamp']}}</td>
+                        <td><img src="/static/images/pdf_sm.png" alt="View Document"></td>
                     </tr>
                     </tbody>
                     {% endfor %}
