@@ -8,6 +8,7 @@ from application.form_validation import validate_land_charge
 from application.land_charge import build_lc_inputs, build_customer_fee_inputs, submit_lc_registration
 from application.search import process_search_criteria
 from application.rectification import convert_response_data, submit_lc_rectification
+from application.banks import get_debtor_details
 from io import BytesIO
 
 
@@ -293,12 +294,40 @@ def check_court_details():
                    "legal_body_ref_num": request.form['ref_num'],
                    "legal_body_ref_year": request.form['ref_year']}
 
-    # application["key_number"] = request.form['keyno']
-    #  call api to see if registration already exists
-    set_session_variables({'application_dict': application})
+    session['application_dict'] = application
 
-    return render_template('bank_regn_court.html', images=session['images'], current_page=0,
-                           data=session['application_dict'])
+    #  call api to see if registration already exists
+    # TODO: should this be ajax call on screen???
+    url = app.config['CASEWORK_API_URL'] + '/court_check/' + application['legal_body'] + '/' + \
+        application['legal_body_ref_num'] + '/' + application['legal_body_ref_year']
+    response = requests.get(url)
+    if response.status_code == 200:
+        logging.info("200 response here")
+        session['current_registrations'] = response.text
+        return render_template('bank_regn_court.html', images=session['images'], current_page=0,
+                               data=session)
+    elif response.status_code == 404:
+        session['current_registrations'] = []
+        return render_template('bank_regn_court.html', images=session['images'], current_page=0,
+                               data=session)
+    else:
+        error = response.status_code
+        logging.error(error)
+        return render_template('error.html', error_msg=error), 500
+
+
+@app.route('/process_debtor_details', methods=['POST'])
+def process_debtor_details():
+    logging.info('processing debtor details')
+    # TODO: this is temp until screen there - can be called by postman
+    data = request.get_json(force=True)
+    # session['parties'] = get_debtor_details(request.form)
+    result = get_debtor_details(data)
+    print('result', result)
+    return Response(json.dumps(result), status=200, mimetype='application/json')
+
+    # return render_template('?????.html', images=session['images'], current_page=0,
+    #                       data=session)
 
 
 @app.route('/verify_registration', methods=['GET'])
