@@ -31,19 +31,19 @@
             {% endif %}
             <div class="form">
                 <label class="form-label" for="court">Name</label><br/>
-                <input class="form-textfield width-50" required  aria-required="true" type="text" id="court" name="court" value="{{data.court}}"/>
+                <input class="form-textfield width-50" required  aria-required="true" type="text" id="court" name="court" value="{{data.legal_body}}"/>
             </div>
             <div class="spacer-20"></div>
             <h3 class="text-19-bold">Court reference</h3>
             <div class="spacer-20"></div>
             <div class="form col five">
                 <label class="form-label" for="ref_num">Number</label><br/>
-                <input class="form-textfield width-75"  required  aria-required="true" type="text" id="ref_num" name="ref_num" value="{{ref_num}}"/>
+                <input class="form-textfield width-75"  required  aria-required="true" type="text" id="ref_num" name="ref_num" value="{{data.legal_body_ref_num}}"/>
                 <span class="form-label pd-left-10 ">of</span>
             </div>
             <div class="form col five">
                 <label class="form-label" for="ref_year">Year</label><br/>
-                <input class="form-textfield width-25"  required  aria-required="true" type="text" id="ref_year" name="ref_year" value="{{ref_year}}"/>
+                <input class="form-textfield width-25"  required  aria-required="true" type="text" id="ref_year" name="ref_year" value="{{data.legal_body_ref_year}}"/>
             </div>
             <div class="spacer-40"></div>
             <input id="continue" type="submit" value="Continue" class="form-button"/>

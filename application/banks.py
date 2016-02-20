@@ -65,3 +65,51 @@ def get_debtor_details(data):
     ]
 
     return parties
+
+
+def register_bankruptcy(key_number):
+    url = app.config['CASEWORK_API_URL'] + '/keyholders/' + key_number
+    response = requests.get(url)
+    if response.status_code == 200:
+        cust_address = ' '.join(response.text['address']['address_line']) + ' ' + response.text['address']['postcode']
+        cust_name = ' '.join(response.text['name'])
+        applicant = {'name': cust_name,
+                     'address': cust_address,
+                     'key_number': key_number,
+                     'reference': ' '}
+    else:
+        err = 'Failed to submit land charges registration application id:%s - Error code: %s' \
+              % (session['worklist_id'], str(response.status_code))
+        logging.error(err)
+        return render_template('error.html', error_msg=err), response.status_code
+
+    # TODO: why is class_of_charge still application type??
+    if session['application_type'] == 'PA(B)':
+        class_of_charge = 'PAB'
+    elif session['application_type'] == 'WO(B)':
+        class_of_charge = 'WOB'
+    else:
+        class_of_charge = session['application_type']
+
+    registration = {'parties': session['parties'],
+                    'class_of_charge': class_of_charge,
+                    'applicant': applicant
+                    }
+    url = app.config['CASEWORK_API_URL'] + '/applications/' + session['worklist_id'] + '?action=complete'
+    headers = {'Content-Type': 'application/json'}
+    response = requests.put(url, data=json.dumps(registration), headers=headers)
+    if response.status_code == 200:
+        logging.info("200 response here")
+        data = response.json()
+        reg_list = []
+
+        for item in data['new_registrations']:
+            reg_list.append(item['number'])
+        session['confirmation'] = {'reg_no': reg_list}
+    else:
+        err = 'Failed to submit land charges registration application id:%s - Error code: %s' \
+              % (session['worklist_id'], str(response.status_code))
+        logging.error(err)
+        return render_template('error.html', error_msg=err), response.status_code
+
+    return response

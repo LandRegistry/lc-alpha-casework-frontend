@@ -8,7 +8,7 @@ from application.form_validation import validate_land_charge
 from application.land_charge import build_lc_inputs, build_customer_fee_inputs, submit_lc_registration
 from application.search import process_search_criteria
 from application.rectification import convert_response_data, submit_lc_rectification
-from application.banks import get_debtor_details
+from application.banks import get_debtor_details, register_bankruptcy
 from io import BytesIO
 
 
@@ -177,8 +177,7 @@ def check_court_details():
     application = {"legal_body":  request.form['court'],
                    "legal_body_ref_num": request.form['ref_num'],
                    "legal_body_ref_year": request.form['ref_year']}
-
-    session['application_dict'] = application
+    session['court_info'] = application
 
     #  call api to see if registration already exists
     # TODO: should this be ajax call on screen???
@@ -189,15 +188,16 @@ def check_court_details():
         logging.info("200 response here")
         session['current_registrations'] = response.text
         return render_template('bank_regn_court.html', images=session['images'], current_page=0,
-                               data=session)
+                               data=session['court_info'], application=session)
     elif response.status_code == 404:
         session['current_registrations'] = []
         return render_template('bank_regn_court.html', images=session['images'], current_page=0,
-                               data=session)
+                               data=session['court_info'], application=session)
     else:
-        error = response.status_code
-        logging.error(error)
-        return render_template('error.html', error_msg=error), 500
+        err = 'Failed to process bankruptcy registration application id:%s - Error code: %s' \
+              % (session['worklist_id'], str(response.status_code))
+        logging.error(err)
+        return render_template('error.html', error_msg=err), response.status_code
 
 
 @app.route('/process_debtor_details', methods=['POST'])
@@ -212,6 +212,19 @@ def process_debtor_details():
 
     # return render_template('?????.html', images=session['images'], current_page=0,
     #                       data=session)
+
+
+@app.route('/submit_banks_registration', methods=['POST'])
+def submit_banks_registration():
+    logging.info('submitting banks registration')
+    # key_number = request.form['key_number']
+    # TODO: this is temp until screen there - can be called by postman
+    data = request.get_json(force=True)
+    key_number = data['key_number']
+    result = register_bankruptcy(key_number)
+    # get the address details from the key number
+
+    return Response(result, status=200, mimetype='application/json')
 
 
 # =============== Amendment routes ======================
