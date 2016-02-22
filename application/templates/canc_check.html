@@ -1,0 +1,150 @@
+{% extends "/page_template/base.html" %}
+{% block page_specific_head %}
+
+<script>
+</script>
+
+{% endblock %}
+
+{% block maincontent %}
+
+<div class="spacer-10"></div>
+
+<h1 class="title-36">Cancellation</h1>
+
+<div class="spacer-5"></div>
+
+<div class="text-16-gray">
+    1. Retrieve original &nbsp;&nbsp;
+    <span class="text-16-bold">2. View and cancel</span> &nbsp;&nbsp;
+    3. Conveyancer and fees &nbsp;&nbsp;
+</div>
+<div class="spacer-40"></div>
+<div class="grid-row">
+    <div class="col four">
+
+        <div class="grid-row">
+            <div class="text-19-gray col ten">Class of charge</div>
+        </div>
+        <div class="grid-row-padded-line bottom-line">
+            <span class="text-16-bold col four">Class and subclass</span>
+            <span class="col two">&nbsp;</span>
+            <span class="text-16 col six">
+            {% if curr_data.class == 'C(I)' %} C1
+            {% elif curr_data.class == 'C(II)' %} C2
+            {% elif curr_data.class == 'C(III)' %} C3
+            {% elif curr_data.class == 'C(IV)' %} C4
+            {% elif curr_data.class == 'D(I)' %} D1
+            {% elif curr_data.class == 'D(II)' %} D2
+            {% elif curr_data.class == 'D(III)' %} D3
+            {% else %}
+                {{curr_data.class}}
+            {% endif %}
+            </span>
+        </div>
+
+        <div class="grid-row">
+            <div class="text-19-gray col ten">Particulars of land affected</div>
+        </div>
+        <div class="grid-row-padded-line">
+            <span class="text-16-bold col four">County or unitary authority area</span>
+            <span class="col two">&nbsp;</span>
+            <span class="text-16 col six">{{curr_data.county|join(', ')}}</span>
+        </div>
+        <div class="grid-row-padded-line">
+            <span class="text-16-bold col four">District</span>
+            <span class="col two">&nbsp;</span>
+            <span class="text-16 col six">{{curr_data.district}}</span>
+        </div>
+        <div class="grid-row-padded-line bottom-line">
+            <span class="text-16-bold col four">Short description</span>
+            <span class="col two">&nbsp;</span>
+            <span class="text-16 col six">{{curr_data.short_description}}</span>
+        </div>
+
+        <div>
+            <div class="grid-row">
+                <div class="text-19-gray col ten">Estate owner details</div>
+            </div>
+            {% if curr_data.estate_owner_ind == 'Private Individual' %}
+                <div class="grid-row-padded-line">
+                    <span class="text-16-bold col four">Forename</span>
+                    <span class="col two">&nbsp;</span>
+                    <span class="text-16 col six">{{curr_data.estate_owner.private.forenames|join(' ')}}</span>
+                </div>
+                <div class="grid-row-padded-line">
+                    <span class="text-16-bold col four">Surname</span>
+                    <span class="col two">&nbsp;</span>
+                    <span class="text-16 col six">{{curr_data.estate_owner.private.surname}}</span>
+                </div>
+            {% elif curr_data.estate_owner_ind == 'County Council' or
+            curr_data.estate_owner_ind == 'Parish Council' or
+            curr_data.estate_owner_ind == 'Other Council' %}
+                <div class="grid-row-padded-line">
+                    <label for="fullname" class="text-16-bold col four">Full Name</label>
+                    <input type="text" autofocus id="fullname" class="col six form-textfield-verify"/>
+                </div>
+                <div class="grid-row-padded-line">
+                    <label for="area" class="text-16-bold col four">Area</label>
+                    <input type="text" class="col six form-textfield-verify" id="area"/>
+                </div>
+            {% elif curr_data.estate_owner_ind == 'Development Corporation' or
+            curr_data.estate_owner_ind == 'Other' %}
+                <div class="grid-row-padded-line">
+                    <label for="corpname" class="text-16-bold col four">Name</label>
+                    <input type="text" autofocus id="corpname" class="col six form-textfield-verify"/>
+                </div>
+            {% elif curr_data.estate_owner_ind == 'Limited Company' %}
+                <div class="grid-row-padded-line">
+                    <label for="company" class="text-16-bold col four">Company Name</label>
+                    <input type="text" autofocus id="company" class="col six form-textfield-verify"/>
+                </div>
+            {% elif curr_data.estate_owner_ind == 'Complex Name' %}
+                <div class="grid-row-padded-line">
+                    <span class="text-16-bold col four">Name</span>
+                    <span class="col two">&nbsp;</span>
+                    <span class="text-16-bold col four">{{curr_data.estate_owner.complex.name}}</span>
+                </div>
+                <div class="grid-row-padded-line">
+                    <span class="text-16-bold col four">Number</span>
+                    <span class="col two">&nbsp;</span>
+                    <span class="text-16-bold col six">{{curr_data.estate_owner.complex.number}}</span>
+                </div>
+            {% endif %}
+            <div class="grid-row-padded-line bottom-line">
+                <span class="text-16-bold col five">Title, trade or profession</span>
+                <span class="col one">&nbsp;</span>
+                <span class="text-16 col six">{{curr_data.occupation}}</span>
+            </div>
+        </div>
+        <div class="grid-row">
+            <div class="text-19-gray col ten">Additional information</div>
+        </div>
+        <div class="grid-row-padded-line bottom-line">
+            <span class="text-16-bold col four">Information</span>
+            <span class="col two">&nbsp;</span>
+            <span class="text-16 col six">{{curr_data.additional_info}}</span>
+        </div>
+        {% if curr_data.full_cans == 'no' %}
+            <div class="spacer-30"></div>
+
+            {% include 'includes/additional_info.html' %}
+        {% endif %}
+        <div class="spacer-30"></div>
+        <div>
+            <a href="cancellation_customer" id="continue" class="form-button no-link-style">Continue</a>
+        </div>
+    </div>
+
+    <!-- ///////////////////////////////// end of data entry form ///////////////////////////////// -->
+    <div class="col one"><p></p></div>
+    <!-- /////////////////////////////////  Include image tool ///////////////////////////////// -->
+    <div class="col seven">
+    {% include 'includes/image_view_body.html' %}
+
+    <!-- ///////////////////////////////// End of image tool ///////////////////////////////// -->
+    </div>
+
+</div>
+
+{% endblock %}
