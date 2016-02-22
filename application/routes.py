@@ -8,6 +8,7 @@ from application.form_validation import validate_land_charge
 from application.land_charge import build_lc_inputs, build_customer_fee_inputs, submit_lc_registration
 from application.search import process_search_criteria
 from application.rectification import convert_response_data, submit_lc_rectification
+from application.cancellation import submit_lc_cancellation
 from application.banks import get_debtor_details, register_bankruptcy
 from io import BytesIO
 
@@ -437,31 +438,6 @@ def submit_amendment():
 # end of amendment routes
 
 
-# ====== Cancellation routes ===========
-@app.route('/submit_cancellation', methods=["POST"])
-def submit_cancellation():
-    # TODO: remove ref to land-charges
-    url = app.config['BANKRUPTCY_DATABASE_URL'] + '/registrations/' + session['reg_date'] + '/' + session['regn_no']
-    # TODO: pass empty dict for now, ian mentioned about doc id needed?
-    data = {}
-    headers = {'Content-Type': 'application/json'}
-    response = requests.delete(url, data=json.dumps(data), headers=headers)
-    if response.status_code == 200:
-        session['confirmation'] = {'reg_no': []}
-        data = response.json()
-        for item in data['cancelled']:
-            session['confirmation']['reg_no'].append(item)
-        delete_from_worklist(session['worklist_id'])
-        return redirect('/get_list?appn=cancel', code=302, Response=None)
-    else:
-        err = response.status_code
-        logging.error(err)
-        return render_template('error.html', error_msg=err), 500
-# end of cancellation routes
-
-
-# =========== Search routes =============
-
 @app.route('/process_search_name/<application_type>', methods=['POST'])
 def process_search_name(application_type):
     logging.info('Entering search name')
@@ -572,13 +548,17 @@ def get_registration_details():
     else:
         if application_type == 'lc_rect':
             template = 'rectification_amend.html'
+            # TODO: see todo above
+            data = convert_response_data(application_json)
         elif application_type == 'amend':
             template = 'regn_amend.html'
+            # TODO: see todo above
+            data = convert_response_data(application_json)
         else:
-            template = 'regn_cancel.html'
 
-        # TODO: see todo above
-        data = convert_response_data(application_json)
+            data = application_json
+            data['full_cans'] = request.form['full_cans']
+            template = 'canc_check.html'
 
         return render_template(template, data=session['application_dict'],
                                images=session['images'], current_page=0, curr_data=data)
@@ -647,6 +627,32 @@ def submit_rectification():
 
 # end of rectification routes
 
+# ============== Cancellation Routes ===============
+
+@app.route('/cancellation_customer', methods=['GET'])
+def cancellation_capture_customer():
+    logging.info('cancellation_capture_customer')
+    return render_template('canc_customer.html', images=session['images'],
+                           application=session['application_dict'],
+                           application_type=session['application_type'], current_page=0,
+                           backend_uri=app.config['CASEWORK_API_URL'])
+
+
+@app.route('/submit_cancellation', methods=['POST'])
+def submit_cancellation():
+    logging.info('Entering submit_cancellation')
+    response = submit_lc_cancellation(request.form)
+
+    if response.status_code != 200:
+        err = 'Failed to submit cancellation application id:%s - Error code: %s'.format(
+            session['worklist_id'],
+            str(response.status_code))
+        logging.error(err)
+        return render_template('error.html', error_msg=err), response.status_code
+    else:
+        return redirect('/get_list?appn=cancel', code=302, Response=None)
+
+# end of rectification routes
 
 # ============== Land Charges routes ===============
 
@@ -865,7 +871,7 @@ def page_required(appn_type, sub_type=''):
     else:
         html_page = {
             "bank_amend": "regn_retrieve.html",
-            "cancel": "regn_retrieve.html",
+            "cancel": "canc_retrieve.html",
             "bank_regn": "bank_regn_court.html",
             "search_full": "search_info.html",
             "search_bank": "search_info.html",
