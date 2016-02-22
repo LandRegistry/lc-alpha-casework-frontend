@@ -191,7 +191,7 @@ def check_court_details():
                                data=session['court_info'], application=session)
     elif response.status_code == 404:
         session['current_registrations'] = []
-        return render_template('bank_regn_court.html', images=session['images'], current_page=0,
+        return render_template('bank_regn_details.html', images=session['images'], current_page=0,
                                data=session['court_info'], application=session)
     else:
         err = 'Failed to process bankruptcy registration application id:%s - Error code: %s' \
@@ -205,13 +205,33 @@ def process_debtor_details():
     logging.info('processing debtor details')
     # TODO: this is temp until screen there - can be called by postman
     data = request.get_json(force=True)
-    # session['parties'] = get_debtor_details(request.form)
+    # session['parties'], session['counties'] = get_debtor_details(request.form)
     result = get_debtor_details(data)
     print('result', result)
     return Response(json.dumps(result), status=200, mimetype='application/json')
 
     # return render_template('?????.html', images=session['images'], current_page=0,
     #                       data=session)
+
+
+@app.route('/bankruptcy_capture/<page>', methods=['GET'])
+def bankruptcy_capture(page):
+    # For returning from verification screen
+    # session['page_template']
+    # TODO: not sure how this will work until screens are there
+    print('session is********', session)
+    if page == 'court':
+        page_template = 'bank_regn_court.html'
+    else:
+        page_template = 'bank_regn_details.html'
+    return render_template(page_template,
+                           application_type=session['application_type'],
+                           data=session['court_info'],
+                           images=session['images'],
+                           # application=session['application_dict'],
+                           current_page=0,
+                           errors=[],
+                           curr_data=session['parties'])
 
 
 @app.route('/submit_banks_registration', methods=['POST'])
@@ -228,6 +248,11 @@ def submit_banks_registration():
 
 
 # =============== Amendment routes ======================
+
+@app.route('/get_original_details', methods=['POST'])
+def get_original_details():
+
+    return
 
 @app.route('/amend_name', methods=["GET"])
 def show_name():

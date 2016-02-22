@@ -20,7 +20,7 @@ def get_debtor_details(data):
         else:
             break
         counter += 1
-
+    counties = []
     counter = 1
     addresses = []
     # TODO: what if the residence is witheld????
@@ -47,6 +47,8 @@ def get_debtor_details(data):
             address['address_lines'].append(data[addr5_counter])
 
         address['county'] = data[county_counter]
+        if data[county_counter] != ' ':
+            counties.append(data[county_counter])
         address['postcode'] = data[postcode_counter]
         address['type'] = 'Residence'
         address['address_string'] = ' '.join(address['address_lines']) + ' ' + data[county_counter] + ' ' + \
@@ -54,13 +56,24 @@ def get_debtor_details(data):
         addresses.append(address)
         counter += 1
 
+    # case_reference = session['court_info']['legal_body'] + ' ' + session['court_info']['legal_body_ref_num'] + \
+    #     ' of ' + session['court_info']['legal_body_ref_year']
+    case_reference = 'Plympton County Court 111 of 2016'
+
     parties = [
         {
             'type': 'Debtor',
             'names': names,
             'addresses': addresses,
             'occupation': data['occupation'],
-            'residence_witheld': False
+            'residence_withheld': False,
+            'trading_name': ' ',
+            'case_reference': case_reference,
+            'legal_body': session['court_info']['legal_body'],
+            'legal_body_ref_no': session['court_info']['legal_body_ref_num'],
+            'legal_body_ref_year': session['court_info']['legal_body_ref_year'],
+            'counties': counties
+
         }
     ]
 
