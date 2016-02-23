@@ -189,11 +189,11 @@ def check_court_details():
         logging.info("200 response here")
         session['current_registrations'] = response.text
         return render_template('bank_regn_court.html', images=session['images'], current_page=0,
-                               data=session['court_info'], application=session)
+                               data=session['court_info'], application=session, screen='capture')
     elif response.status_code == 404:
         session['current_registrations'] = []
         return render_template('bank_regn_details.html', images=session['images'], current_page=0,
-                               data=session['court_info'], application=session)
+                               data=session['court_info'], application=session, screen='debtor')
     else:
         err = 'Failed to process bankruptcy registration application id:%s - Error code: %s' \
               % (session['worklist_id'], str(response.status_code))
@@ -232,7 +232,8 @@ def bankruptcy_capture(page):
                            # application=session['application_dict'],
                            current_page=0,
                            errors=[],
-                           curr_data=session['parties'])
+                           curr_data=session['parties'],
+                           screen='verify')
 
 
 @app.route('/submit_banks_registration', methods=['POST'])
