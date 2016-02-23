@@ -125,15 +125,17 @@
             <span class="col two">&nbsp;</span>
             <span class="text-16 col six">{{curr_data.additional_info}}</span>
         </div>
-        {% if curr_data.full_cans == 'no' %}
+        <form id="cancel_form" action="/cancellation_customer" method="POST">
+            {% if curr_data.full_cans == 'no' %}
             <div class="spacer-30"></div>
-
             {% include 'includes/additional_info.html' %}
-        {% endif %}
-        <div class="spacer-30"></div>
-        <div>
-            <a href="cancellation_customer" id="continue" class="form-button no-link-style">Continue</a>
-        </div>
+            {% endif %}
+            <div class="spacer-30"></div>
+            <div class="spacer-40"></div>
+            <input id="continue" type="submit" value="Continue" class="form-button"/>
+            <div class="spacer-40"></div>
+            </form>
+
     </div>
 
     <!-- ///////////////////////////////// end of data entry form ///////////////////////////////// -->
