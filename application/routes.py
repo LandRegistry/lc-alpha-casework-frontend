@@ -42,10 +42,7 @@ def index():
         del(session['worklist_id'])
 
     data = get_totals()
-    if app.config['DEMONSTRATION_VIEW']:
-        return render_template('totals_demo.html', data=data)
-    else:
-        return render_template('totals.html', data=data)
+    return render_template('totals.html', data=data)
 
 
 @app.route('/get_list', methods=["GET"])
@@ -102,13 +99,8 @@ def get_list_of_applications(requested_worklist, result, error_msg):
             appn_list.append(application)
 
     app_totals = get_totals()
-
-    if app.config['DEMONSTRATION_VIEW']:
-        return render_template('sub_list_demo.html', worklist=appn_list, requested_list=requested_worklist,
-                               data=app_totals, error_msg=error_msg)
-    else:
-        return render_template(return_page, worklist=appn_list, requested_list=requested_worklist,
-                               data=app_totals, error_msg=error_msg, result=result)
+    return render_template(return_page, worklist=appn_list, requested_list=requested_worklist,
+                           data=app_totals, error_msg=error_msg, result=result)
 
 
 @app.route('/application_start/<application_type>/<appn_id>/<form>', methods=["GET"])
