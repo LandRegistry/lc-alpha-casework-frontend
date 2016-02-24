@@ -15,6 +15,69 @@ def get_original_data(number, date):
     return json.loads(response.text), response.status_code
 
 
+def build_original_data(data):
+    wob_originals = []
+    pab_originals = []
+    if data['wob_ref'] != ' ':
+        wob_date_as_list = data['wob_date'].split("/")  # dd/mm/yyyy
+        number = data['wob_ref']
+        date = '%s-%s-%s' % (wob_date_as_list[2], wob_date_as_list[1], wob_date_as_list[0])
+        wob_data, wob_status_code = get_original_data(number, date)
+        if wob_status_code == 200:
+            wob_originals = wob_data['parties'][0]['names']
+    else:
+        wob_data = {}
+        wob_status_code = 200
+
+    if data['pab_ref'] != ' ':
+        pab_date_as_list = data['pab_date'].split("/")  # dd/mm/yyyy
+        number = data['pab_ref']
+        date = '%s-%s-%s' % (pab_date_as_list[2], pab_date_as_list[1], pab_date_as_list[0])
+        pab_data, pab_status_code = get_original_data(number, date)
+        if pab_status_code == 200:
+            pab_originals = pab_data['parties'][0]['names']
+    else:
+        pab_data = {}
+        pab_status_code = 200
+
+    if len(wob_data) > 0:
+        session['original_regns'] = wob_data
+    else:
+        session['original_regns'] = pab_data
+
+    curr_data = {'wob': {'ref': data['wob_date'],
+                         'number': data['wob_ref'],
+                         'originals': wob_originals},
+                 'pab': {'ref': data['pab_date'],
+                         'number': data['pab_ref'],
+                         'originals': pab_originals}
+                 }
+    fatal = False
+    error_msg = ' '
+    status_code = wob_status_code
+
+    if wob_status_code == 200 and pab_status_code == 200:
+        error_msg = ' '
+    elif wob_status_code == 404 and pab_status_code == 404:
+        error_msg = 'No details held for the PAB and WOB entered, please check and re-key.'
+    elif wob_status_code == 404:
+        if pab_status_code == 200:
+            error_msg = 'No details held for WOB entered, please check and re-key.'
+        else:
+            fatal = True
+            status_code = pab_status_code
+    elif pab_status_code == 404:
+        if wob_status_code == 200:
+            error_msg = 'No details held for PAB entered, please check and re-key.'
+        else:
+            fatal = True
+            status_code = wob_status_code
+    else:
+        fatal = True
+
+    return curr_data, error_msg, status_code, fatal
+
+
 def get_debtor_details(data):
     print("Start of get debtor details " + json.dumps(data))
     counter = 1
