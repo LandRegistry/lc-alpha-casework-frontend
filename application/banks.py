@@ -158,10 +158,7 @@ def register_bankruptcy(key_number):
                      'key_number': key_number,
                      'reference': ' '}
     else:
-        err = 'Failed to submit land charges registration application id:%s - Error code: %s' \
-              % (session['worklist_id'], str(response.status_code))
-        logging.error(err)
-        return render_template('error.html', error_msg=err), response.status_code
+        return response
 
     # TODO: why is class_of_charge still application type??
     if session['application_type'] == 'PA(B)':

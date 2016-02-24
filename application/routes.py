@@ -229,15 +229,16 @@ def bankruptcy_capture(page):
 @app.route('/submit_banks_registration', methods=['POST'])
 def submit_banks_registration():
     logging.info('submitting banks registration')
-    # key_number = request.form['key_number']
-    # TODO: this is temp until screen there - can be called by postman
-    data = request.get_json(force=True)
-    key_number = data['key_number']
-    result = register_bankruptcy(key_number)
-    # get the address details from the key number
+    key_number = request.form['key_number']
+    response = register_bankruptcy(key_number)
 
-    # return Response(result, status=200, mimetype='application/json')
-    return redirect('/get_list?appn=bank_regn', code=302, Response=None)
+    if response.status_code != 200:
+        err = 'Failed to submit bankruptcy registration application id:%s - Error code: %s' \
+              % (session['worklist_id'], str(response.status_code))
+        logging.error(err)
+        return render_template('error.html', error_msg=err), response.status_code
+    else:
+        return redirect('/get_list?appn=bank_regn', code=302, Response=None)
 
 
 # =============== Amendment routes ======================
@@ -309,17 +310,18 @@ def amendment_capture(page):
 
 
 @app.route('/submit_banks_amendment', methods=['POST'])
-def submit_banks_registration():
+def submit_banks_amendment():
     logging.info('submitting banks amendment')
-    # key_number = request.form['key_number']
-    # TODO: this is temp until screen there - can be called by postman
-    data = request.get_json(force=True)
-    key_number = data['key_number']
-    result = register_bankruptcy(key_number)
-    # get the address details from the key number
+    key_number = request.form['key_number']
+    response = register_bankruptcy(key_number)
 
-    # return Response(result, status=200, mimetype='application/json')
-    return redirect('/get_list?appn=amend', code=302, Response=None)
+    if response.status_code != 200:
+        err = 'Failed to submit bankruptcy amendment application id:%s - Error code: %s' \
+              % (session['worklist_id'], str(response.status_code))
+        logging.error(err)
+        return render_template('error.html', error_msg=err), response.status_code
+    else:
+        return redirect('/get_list?appn=amend', code=302, Response=None)
 
 # ===== end of amendment routes  ===========
 
