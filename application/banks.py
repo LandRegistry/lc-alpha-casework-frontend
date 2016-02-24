@@ -6,6 +6,15 @@ import logging
 import json
 
 
+def get_original_data(number, date):
+    originals = {"date": date,
+                 "number": number}
+    url = app.config['CASEWORK_API_URL'] + '/original'
+    headers = {'Content-Type': 'application/json'}
+    response = requests.post(url, data=json.dumps(originals), headers=headers)
+    return json.loads(response.text), response.status_code
+
+
 def get_debtor_details(data):
     print("Start of get debtor details " + json.dumps(data))
     counter = 1

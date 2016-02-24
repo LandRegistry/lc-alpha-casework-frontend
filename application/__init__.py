@@ -4,7 +4,7 @@ import os
 
 
 app = Flask(__name__)
-app.config.from_object(os.environ.get('SETTINGS'))
+app.config.from_object('config.Config')
 app.secret_key = '123456passwordmonkeyletmein'
 
 setup_logging(app.config)

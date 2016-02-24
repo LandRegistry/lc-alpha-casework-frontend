@@ -9,7 +9,7 @@ from application.land_charge import build_lc_inputs, build_customer_fee_inputs, 
 from application.search import process_search_criteria
 from application.rectification import convert_response_data, submit_lc_rectification
 from application.cancellation import submit_lc_cancellation
-from application.banks import get_debtor_details, register_bankruptcy
+from application.banks import get_debtor_details, register_bankruptcy, get_original_data
 from io import BytesIO
 
 
@@ -42,10 +42,7 @@ def index():
         del(session['worklist_id'])
 
     data = get_totals()
-    if app.config['DEMONSTRATION_VIEW']:
-        return render_template('totals_demo.html', data=data)
-    else:
-        return render_template('totals.html', data=data)
+    return render_template('totals.html', data=data)
 
 
 @app.route('/get_list', methods=["GET"])
@@ -102,13 +99,8 @@ def get_list_of_applications(requested_worklist, result, error_msg):
             appn_list.append(application)
 
     app_totals = get_totals()
-
-    if app.config['DEMONSTRATION_VIEW']:
-        return render_template('sub_list_demo.html', worklist=appn_list, requested_list=requested_worklist,
-                               data=app_totals, error_msg=error_msg)
-    else:
-        return render_template(return_page, worklist=appn_list, requested_list=requested_worklist,
-                               data=app_totals, error_msg=error_msg, result=result)
+    return render_template(return_page, worklist=appn_list, requested_list=requested_worklist,
+                           data=app_totals, error_msg=error_msg, result=result)
 
 
 @app.route('/application_start/<application_type>/<appn_id>/<form>', methods=["GET"])
@@ -188,7 +180,7 @@ def check_court_details():
         logging.info("200 response here")
         session['current_registrations'] = response.text
         return render_template('bank_regn_court.html', images=session['images'], current_page=0,
-                               data=session['court_info'], application=session)
+                               data=session['court_info'], application=session, screen='capture')
     elif response.status_code == 404:
         session['current_registrations'] = []
         return render_template('bank_regn_debtor.html', images=session['images'], current_page=0, data=session)
@@ -233,6 +225,7 @@ def bankruptcy_capture(page):
                            errors=[], from_verify=True)
 
 
+
 @app.route('/submit_banks_registration', methods=['POST'])
 def submit_banks_registration():
     logging.info('submitting banks registration')
@@ -248,15 +241,75 @@ def submit_banks_registration():
 
 # =============== Amendment routes ======================
 
-@app.route('/get_original_details', methods=['POST'])
+@app.route('/get_original_bankruptcy', methods=['POST'])
 def get_original_details():
+    if request.form['wob_ref'] != ' ':
+        wob_date_as_list = request.form['wob_date'].split("/")  # dd/mm/yyyy
+        number = request.form['wob_ref']
+        date = '%s-%s-%s' % (wob_date_as_list[2], wob_date_as_list[1], wob_date_as_list[0])
+        wob_data, wob_status_code = get_original_data(number, date)
+    else:
+        wob_data = {}
+        wob_status_code = 200
 
-    return
+    if request.form['pab_ref'] != ' ':
+        pab_date_as_list = request.form['pab_date'].split("/")  # dd/mm/yyyy
+        number = request.form['pab_ref']
+        date = '%s-%s-%s' % (pab_date_as_list[2], pab_date_as_list[1], pab_date_as_list[0])
+        pab_data, pab_status_code = get_original_data(number, date)
+    else:
+        pab_data = {}
+        pab_status_code = 200
+
+    session['original_regns'] = {'wob': wob_data, 'pab': pab_data}
+    curr_data = {'wob': {'ref': request.form['wob_date'],
+                         'number': request.form['wob_ref']},
+                 'pab': {'ref': request.form['pab_date'],
+                         'number': request.form['pab_ref']}}
+    fatal = False
+    error_msg = ' '
+    status_code = wob_status_code
+
+    if wob_status_code == 200 and pab_status_code == 200:
+        error_msg = ' '
+    elif wob_status_code == 404 and pab_status_code == 404:
+        error_msg = 'No details held for the PAB and WOB entered, please check and re-key.'
+    elif wob_status_code == 404:
+        if pab_status_code == 200:
+            error_msg = 'No details held for WOB entered, please check and re-key.'
+        else:
+            fatal = True
+            status_code = pab_status_code
+    elif pab_status_code == 404:
+        if wob_status_code == 200:
+            error_msg = 'No details held for PAB entered, please check and re-key.'
+        else:
+            fatal = True
+            status_code = wob_status_code
+    else:
+        fatal = True
+
+    if fatal:
+        err = 'Failed to process bankruptcy registration application id:%s - Error code: %s' \
+              % (session['worklist_id'], str(status_code))
+        logging.error(err)
+        return render_template('error.html', error_msg=err), status_code
+    else:
+        return render_template('bank_amend_retrieve.html', images=session['images'], current_page=0,
+                               data=session['original_regns'], curr_data=curr_data, application=session,
+                               screen='capture', error=error_msg)
+
+
+@app.route('/view_original_details', methods=['GET'])
+def view_original_details():
+    return render_template('bank_amend_details.html', images=session['images'], current_page=0,
+                           data=session['original_regns'], application=session, screen='capture')
+
 
 @app.route('/amend_name', methods=["GET"])
 def show_name():
     return render_template('regn_name.html', application_type=session['application_type'],
-                           data=session['application_dict'], images=session['images'], current_page=0)
+                           data=session[''], images=session['images'], current_page=0)
 
 
 @app.route('/remove_alias_name/<int:name>', methods=["GET"])
@@ -520,8 +573,7 @@ def get_registration_details():
 
     session['reg_date'] = '%s-%s-%s' % (date_as_list[2], date_as_list[1], date_as_list[0])
 
-    # TODO: this isn't right; should go to casework-api & there convert the data format
-    url = app.config['BANKRUPTCY_DATABASE_URL'] + '/registrations/' + session['reg_date'] + '/' + session['regn_no']
+    url = app.config['CASEWORK_API_URL'] + '/registrations/' + session['reg_date'] + '/' + session['regn_no']
 
     response = requests.get(url)
 
@@ -531,33 +583,31 @@ def get_registration_details():
         error_msg = "Registration not found please re-enter"
     else:
         application_json = response.json()
-
         if application_json['status'] == 'cancelled' or application_json['status'] == 'superseded':
             error_msg = "Application has been cancelled or amended - please re-enter"
 
+    # check if part cans has been selected for a bankruptcy
+
     if error_msg is not None:
-        template = 'regn_retrieve.html'
         if application_type == 'lc_rect':
             template = 'rectification_retrieve.html'
-
+        elif application_type == 'cancel':
+            template = 'canc_retrieve.html'
+        else:
+            template = 'regn_retrieve.html'
         return render_template(template, application_type=application_type,
                                error_msg=error_msg, images=session['images'], current_page=0,
                                reg_no=request.form['reg_no'], reg_date=request.form['reg_date'])
     else:
+        data = response.json()
+        template = ''
         if application_type == 'lc_rect':
             template = 'rectification_amend.html'
-            # TODO: see todo above
-            data = convert_response_data(application_json)
         elif application_type == 'amend':
             template = 'regn_amend.html'
-            # TODO: see todo above
-            data = convert_response_data(application_json)
-        else:
-
-            data = application_json
+        elif application_type == 'cancel':
             data['full_cans'] = request.form['full_cans']
             template = 'canc_check.html'
-
         return render_template(template, data=session['application_dict'],
                                images=session['images'], current_page=0, curr_data=data)
 
@@ -627,9 +677,14 @@ def submit_rectification():
 
 # ============== Cancellation Routes ===============
 
-@app.route('/cancellation_customer', methods=['GET'])
+
+@app.route('/cancellation_customer', methods=['POST'])
 def cancellation_capture_customer():
-    logging.info('cancellation_capture_customer')
+    if 'addl_info' in request.form:
+        logging.debug('found addl info')
+        session["addl_info"] = request.form["addl_info"]
+    else:
+        logging.debug('no addl info')
     return render_template('canc_customer.html', images=session['images'],
                            application=session['application_dict'],
                            application_type=session['application_type'], current_page=0,
@@ -638,9 +693,8 @@ def cancellation_capture_customer():
 
 @app.route('/submit_cancellation', methods=['POST'])
 def submit_cancellation():
-    logging.info('Entering submit_cancellation')
+    logging.info('Entering submit_cancellation', str(request.form))
     response = submit_lc_cancellation(request.form)
-
     if response.status_code != 200:
         err = 'Failed to submit cancellation application id:%s - Error code: %s'.format(
             session['worklist_id'],
@@ -650,9 +704,10 @@ def submit_cancellation():
     else:
         return redirect('/get_list?appn=cancel', code=302, Response=None)
 
-# end of rectification routes
+# end of cancellation routes
 
 # ============== Land Charges routes ===============
+
 
 @app.route('/land_charge_capture', methods=['POST'])
 def land_charge_capture():
