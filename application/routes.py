@@ -245,11 +245,15 @@ def submit_banks_registration():
 
 @app.route('/get_original_bankruptcy', methods=['POST'])
 def get_original_details():
+    wob_originals = []
+    pab_originals = []
     if request.form['wob_ref'] != ' ':
         wob_date_as_list = request.form['wob_date'].split("/")  # dd/mm/yyyy
         number = request.form['wob_ref']
         date = '%s-%s-%s' % (wob_date_as_list[2], wob_date_as_list[1], wob_date_as_list[0])
         wob_data, wob_status_code = get_original_data(number, date)
+        if wob_status_code == 200:
+            wob_originals = wob_data['parties'][0]['names']
     else:
         wob_data = {}
         wob_status_code = 200
@@ -259,15 +263,24 @@ def get_original_details():
         number = request.form['pab_ref']
         date = '%s-%s-%s' % (pab_date_as_list[2], pab_date_as_list[1], pab_date_as_list[0])
         pab_data, pab_status_code = get_original_data(number, date)
+        if pab_status_code == 200:
+            pab_originals = pab_data['parties'][0]['names']
     else:
         pab_data = {}
         pab_status_code = 200
 
-    session['original_regns'] = {'wob': wob_data, 'pab': pab_data}
+    if len(wob_data) > 0:
+        session['original_regns'] = wob_data
+    else:
+        session['original_regns'] = pab_data
+
     curr_data = {'wob': {'ref': request.form['wob_date'],
-                         'number': request.form['wob_ref']},
+                         'number': request.form['wob_ref'],
+                         'originals': wob_originals},
                  'pab': {'ref': request.form['pab_date'],
-                         'number': request.form['pab_ref']}}
+                         'number': request.form['pab_ref'],
+                         'originals': pab_originals}
+                 }
     fatal = False
     error_msg = ' '
     status_code = wob_status_code
@@ -306,6 +319,28 @@ def get_original_details():
 def view_original_details():
     return render_template('bank_amend_details.html', images=session['images'], current_page=0,
                            data=session['original_regns'], application=session, screen='capture')
+
+
+@app.route('/remove_address/<int:addr>', methods=["GET"])
+def remove_address(addr):
+    del session['original_regns']['parties']['addresses'][addr]
+    session['data_amended'] = 'true'
+
+    return redirect('/view_original_details', code=302, Response=None)
+
+
+@app.route('/process_amended_details', methods=['POST'])
+def process_amended_details():
+    logging.info('processing amended details')
+    # TODO: this is temp until screen there - can be called by postman
+    # data = request.get_json(force=True)
+    session['parties'] = get_debtor_details(request.form)
+    # result = get_debtor_details(data)
+    # print('result', result)
+    # return Response(json.dumps(result), status=200, mimetype='application/json')
+
+    return render_template('?????.html', images=session['images'], current_page=0,
+                           data='???')
 
 
 @app.route('/amend_name', methods=["GET"])
@@ -383,13 +418,13 @@ def show_address():
                            data=session['application_dict'], images=session['images'], current_page=0,
                            focus_on_address=len(session['application_dict']['residence']))
 
-
+"""
 @app.route('/remove_address/<int:addr>', methods=["GET"])
 def remove_address(addr):
     del session['application_dict']['residence'][addr]
     session['data_amended'] = 'true'
 
-    return redirect('/amend_address', code=302, Response=None)
+    return redirect('/amend_address', code=302, Response=None)"""
 
 
 @app.route('/update_address', methods=["POST"])
