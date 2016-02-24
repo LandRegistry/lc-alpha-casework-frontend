@@ -153,7 +153,7 @@ def application_start(application_type, appn_id, form):
 
     return render_template(template, application_type=application_type, data=application_json,
                            images=images, application=application, years=years,
-                           current_page=0, screen='capture', errors=[], curr_data=curr_data)
+                           current_page=0, errors=[], curr_data=curr_data)
 
 
 @app.route('/retrieve_new_reg', methods=["GET"])
@@ -183,7 +183,11 @@ def check_court_details():
                                data=session['court_info'], application=session, screen='capture')
     elif response.status_code == 404:
         session['current_registrations'] = []
-        return render_template('bank_regn_debtor.html', images=session['images'], current_page=0, data=session)
+        if 'return_to_verify' in request.form:
+            return render_template('bank_regn_verify.html', images=session['images'], current_page=0,
+                                   court_data=session['court_info'], party_data=session['parties'])
+        else:
+            return render_template('bank_regn_debtor.html', images=session['images'], current_page=0, data=session)
     else:
         err = 'Failed to process bankruptcy registration application id:%s - Error code: %s' \
               % (session['worklist_id'], str(response.status_code))
@@ -196,8 +200,6 @@ def process_debtor_details():
     logging.info('processing debtor details')
 
     session['parties'] = get_debtor_details(request.form)
-
-    print(json.dumps(session['parties']))
 
     return render_template('bank_regn_verify.html', images=session['images'], current_page=0,
                            court_data=session['court_info'], party_data=session['parties'])
@@ -215,7 +217,7 @@ def bankruptcy_capture(page):
         data = session['court_info']
     else:
         page_template = 'bank_regn_debtor.html'
-        data = session['parties']
+        data = session['parties'][0]
 
     return render_template(page_template,
                            application_type=session['application_type'],
@@ -228,17 +230,34 @@ def bankruptcy_capture(page):
 
 @app.route('/submit_banks_registration', methods=['POST'])
 def submit_banks_registration():
+
     logging.info('submitting banks registration')
     key_number = request.form['key_number']
-    response = register_bankruptcy(key_number)
+
+    # Check key_number is valid
+    url = app.config['CASEWORK_API_URL'] + '/keyholders/' + key_number
+    response = requests.get(url)
 
     if response.status_code != 200:
-        err = 'Failed to submit bankruptcy registration application id:%s - Error code: %s' \
-              % (session['worklist_id'], str(response.status_code))
-        logging.error(err)
-        return render_template('error.html', error_msg=err), response.status_code
+        err = 'This Key number is invalid please re-enter'
+        return render_template('bank_regn_key_no.html',
+                               application_type=session['application_type'],
+                               data=request.form,
+                               images=session['images'],
+                               current_page=0,
+                               error_msg=err)
     else:
-        return redirect('/get_list?appn=bank_regn', code=302, Response=None)
+
+        response = register_bankruptcy(key_number)
+
+        if response.status_code != 200:
+            err = 'Failed to submit bankruptcy registration application id:%s - Error code: %s' \
+                  % (session['worklist_id'], str(response.status_code))
+            logging.error(err)
+            return render_template('error.html', error_msg=err), response.status_code
+        else:
+            return redirect('/get_list?appn=bank_regn', code=302, Response=None)
+
 
 
 # =============== Amendment routes ======================

@@ -22,6 +22,7 @@
     <div class="col four" id="form_panel">
         <!-- ///////////////////////////////// data entry form ///////////////////////////////// -->
         <form id="rectify_form" action="/check_court_details" method="POST">
+            {% if from_verify == True %} <input type="hidden" name="return_to_verify" value="true" />{% endif %}
             <div class="spacer-40"></div>
             <h2 class="text-24-bold">Particulars of court</h2>
             <div class="spacer-10"></div>
