@@ -12,40 +12,29 @@
 <div class="spacer-5"></div>
 
 <div class="text-16-gray">
-    <span class="text-16-bold">1. Input court details</span> &nbsp;&nbsp;
+    1. Input court details &nbsp;&nbsp;
     2. Input debtor details &nbsp;&nbsp;
     3. Check and verify details &nbsp;&nbsp;
-    4. Key number &nbsp;&nbsp;
+    <span class="text-16-bold">4. Key number</span> &nbsp;&nbsp;
 </div>
 
 <div class="grid-row">
     <div class="col four" id="form_panel">
         <!-- ///////////////////////////////// data entry form ///////////////////////////////// -->
-        <form id="rectify_form" action="/check_court_details" method="POST">
+        <form id="rectify_form" action="/submit_banks_registration" method="POST">
             <div class="spacer-40"></div>
-            <h2 class="text-24-bold">Particulars of court</h2>
+            <h2 class="text-24-bold">Court</h2>
             <div class="spacer-10"></div>
             {% if error_msg|length > 0 %}
             <p class="error"><strong>{{error_msg}}</strong></p>
             {% endif %}
             <div class="form">
-                <label class="form-label" for="court">Name</label><br/>
-                <input class="form-textfield width-50" required  aria-required="true" type="text" id="court" name="court" value="{{data.legal_body}}"/>
+                <label class="form-label" for="key_number">Key number</label><br/>
+                <input class="form-textfield width-50" required  aria-required="true" type="text" id="key_number" name="key_number" value=""/>
             </div>
-            <div class="spacer-20"></div>
-            <h3 class="text-19-bold">Court reference</h3>
-            <div class="spacer-20"></div>
-            <div class="form col five">
-                <label class="form-label" for="ref_no">Number</label><br/>
-                <input class="form-textfield width-75"  required  aria-required="true" type="text" id="ref_no" name="ref_no" value="{{data.legal_body_ref_no}}"/>
-                <span class="form-label pd-left-10 ">of</span>
-            </div>
-            <div class="form col five">
-                <label class="form-label" for="ref_year">Year</label><br/>
-                <input class="form-textfield width-25"  required  aria-required="true" type="text" id="ref_year" name="ref_year" value="{{data.legal_body_ref_year}}"/>
-            </div>
+
             <div class="spacer-40"></div>
-            <input id="continue" type="submit" value="Continue" class="form-button"/>
+            <input id="continue" type="submit" value="Complete" class="form-button"/>
             <div class="spacer-20"></div>
             <a href="/get_list?appn=bank_regn" class="link-16">Return to this application later</a>
             <div class="spacer-40"></div>

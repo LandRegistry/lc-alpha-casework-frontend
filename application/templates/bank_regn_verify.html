@@ -1,0 +1,186 @@
+{% extends "/page_template/base.html" %}
+{% block page_specific_head %}
+
+<script>
+
+function validatePrivateInd() {
+    var origForename = document.getElementById('orig_forename').value;
+    var origSurname = document.getElementById('orig_surname').value;
+    var enteredForename = document.getElementById('forename_1').value;
+    var enteredSurname = document.getElementById('surname_1').value;
+    var errorBlock = document.getElementById('name_validation');
+    var errorText = document.getElementById('name_error');
+
+    errors = false;
+    errorMsg = ""
+    if(origForename !== enteredForename && origSurname !== enteredSurname) {
+        errors = true;
+        errorMsg = 'The names do not match the previously entered names. Please re-key or select to change the original.';
+    } else if(origForename !== enteredForename) {
+        errors = true;
+        errorMsg = 'The forename does not match the previously entered forename. Please re-key or select to change the original.';
+    } else if(origSurname !== enteredSurname) {
+        errors = true;
+        errorMsg = 'The surname does not match the previously entered surname. Please re-key or select to change the original.';
+    }
+
+    if(errors) {
+        errorBlock.classList.add('error_block');
+        errorText.textContent = errorMsg;
+        errorText.classList.add('error_text');
+        errorText.classList.remove('hide');
+        return false;
+    } else {
+        errorBlock.classList.remove('error_block');
+        errorText.classList.remove('error_text');
+        errorText.classList.add('hide');
+        return true;
+    }
+}
+
+
+function validate(sender) {
+    var allOK = true;
+
+    var origCourt = document.getElementById('orig_court').value;
+    var enteredCourt = document.getElementById('court_name').value;
+
+    allOK = validatePrivateInd();
+
+    if(origCourt !== enteredCourt) {
+        var errorBlock = document.getElementById('court_validation');
+        errorBlock.classList.add('error_block');
+
+        var errorText = document.getElementById('court_error');
+        errorText.classList.add('error_text');
+        errorText.textContent = 'The court name does not match the previously entered court name. Please re-key or select to change the original.';
+        errorText.classList.remove('hide');
+        allOK = false;
+
+    } else {
+        var errorBlock = document.getElementById('court_validation');
+        errorBlock.classList.remove('error_block');
+
+        var errorText = document.getElementById('court_error');
+        errorText.classList.remove('error_text');
+        errorText.classList.add('hide');
+    }
+
+    return allOK;
+}
+
+</script>
+
+{% endblock %}
+
+{% block maincontent %}
+
+<div class="spacer-10"></div>
+
+<h1 class="title-36">Bankruptcy registration</h1>
+
+<div class="spacer-5"></div>
+
+<div class="text-16-gray">
+    1. Input court details &nbsp;&nbsp;
+    2. Input debtor details &nbsp;&nbsp;
+    <span class="text-16-bold">3. Check and verify details</span> &nbsp;&nbsp;
+    4. Key number &nbsp;&nbsp;
+</div>
+
+<div class="grid-row">
+    <div class="col four" id="form_panel">
+    <!-- ///////////////////////////////// data entry form ///////////////////////////////// -->
+    <form action="/bankruptcy_capture/key_no" method="GET" onsubmit="return validate(this);">
+        <div class="spacer-40"></div>
+        <div id="name_validation">
+            <input type="hidden" id="orig_forename" value="{{party_data[0].names[0].private.forenames[0]}}"/>
+            <input type="hidden" id="orig_surname" value="{{party_data[0].names[0].private.surname}}"/>
+
+            <span id="name_error" class="hide">[placeholder]</span>
+            <div class="grid-row">
+                <div class="text-19-gray col ten">Re-key debtor details</div>
+                <div class="col two"><a href="bankruptcy_capture/debtor" id="change_debtor">Change</a></div>
+            </div>
+            <div class="grid-row-padded-line">
+                <label for="forename_1" class="text-16-bold col five">Forename</label>
+                <input type="text" autofocus id="forename_1" class="col six form-textfield-verify"/>
+            </div>
+            <div class="grid-row-padded-line">
+                <label for="surname_1" class="text-16-bold col five">Surname</label>
+                <input type="text" class="col six form-textfield-verify" id="surname_1"/>
+            </div>
+            {% if party_data[0].names|length > 1 %}
+            <div class="grid-row-padded-line">
+                {% for name in party_data[0].names %}
+                    {% if loop.index > 1 %}
+                    <span class="text-16-bold col five">{% if loop.index == 2 %}AKA{% else %}&nbsp;{% endif %}</span>
+                    <span class="text-16 col seven" id="aka_name_{{loop.index}}">{{name.private.forenames[0]}} {{name.private.surname}}</span>
+                    {% endif %}
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <div class="grid-row-padded-line">
+                {% for address in party_data[0].addresses %}
+                <span class="text-16-bold col five">{% if loop.index == 1 %}Address{% else %}&nbsp;{% endif %}</span>
+                <span class="text-16 col seven" id="address_{{loop.index}}">
+                    {% for line in address.address_lines %}
+                        {{line}}<br/>
+                    {% endfor %}
+                    {{ address.county }}<br/>
+                    {{ address.postcode }}
+                    {% if loop.index < party_data[0].addresses|length %}<hr>{% endif %}
+                </span>
+                {% endfor %}
+            </div>
+
+            <div class="grid-row-padded-line bottom-line">
+                <span class="text-16-bold col five">Occupation</span>
+                <span class="text-16 col seven" id="occupation" >{{party_data[0].occupation}}</span>
+            </div>
+        </div>
+        <div id="court_validation">
+            <span id="court_error" class="hide">[placeholder]</span>
+            <div class="grid-row">
+                <div class="text-19-gray col ten">Particulars of court</div>
+                <div class="col two"><a href="bankruptcy_capture/court" id="change_court">Change</a></div>
+            </div>
+            <input type="hidden" id="orig_court" value="{{court_data.legal_body}}"/>
+            <div class="grid-row-padded-line">
+                <label for="court_name" class="text-16-bold col five">Court name</label>
+                <input type="text" id="court_name" class="col six form-textfield-verify"/>
+            </div>
+            <div class="grid-row-padded-line">
+                <span class="text-16-bold col five">Court reference no.</span>
+                <span class="text-16 col seven" id="court_no">{{court_data.legal_body_ref_no}}</span>
+            </div>
+            <div class="grid-row-padded-line">
+                <span class="text-16-bold col five">Year</span>
+                <span class="text-16 col seven" id="court_year">{{court_data.legal_body_ref_year}}</span>
+            </div>
+        </div>
+
+
+        <div class="spacer-30"></div>
+        <div>
+            <input id="continue" type="submit" value="Continue" class="form-button"/>
+        </div>
+    </form>
+    </div>
+
+    <!-- ///////////////////////////////// end of data entry form ///////////////////////////////// -->
+    <div class="col one"><p></p></div>
+    <!-- /////////////////////////////////  Include image tool ///////////////////////////////// -->
+
+    <div class="col seven">
+        <div class="spacer-40"></div>
+        {% include 'includes/image_view_body.html' %}
+    </div>
+    <!-- ///////////////////////////////// End of image tool ///////////////////////////////// -->
+
+</div>
+
+</div>
+
+{% endblock %}
