@@ -22,6 +22,8 @@ def build_original_data(data):
         wob_date_as_list = data['wob_date'].split("/")  # dd/mm/yyyy
         number = data['wob_ref']
         date = '%s-%s-%s' % (wob_date_as_list[2], wob_date_as_list[1], wob_date_as_list[0])
+        session['wob_entered'] = {'date': date,
+                                  'number': number}
         wob_data, wob_status_code = get_original_data(number, date)
         if wob_status_code == 200:
             wob_originals = wob_data['parties'][0]['names']
@@ -33,6 +35,8 @@ def build_original_data(data):
         pab_date_as_list = data['pab_date'].split("/")  # dd/mm/yyyy
         number = data['pab_ref']
         date = '%s-%s-%s' % (pab_date_as_list[2], pab_date_as_list[1], pab_date_as_list[0])
+        session['pab_entered'] = {'date': date,
+                                  'number': number}
         pab_data, pab_status_code = get_original_data(number, date)
         if pab_status_code == 200:
             pab_originals = pab_data['parties'][0]['names']
@@ -45,10 +49,10 @@ def build_original_data(data):
     else:
         session['original_regns'] = pab_data
 
-    curr_data = {'wob': {'ref': data['wob_date'],
+    curr_data = {'wob': {'date': data['wob_date'],
                          'number': data['wob_ref'],
                          'originals': wob_originals},
-                 'pab': {'ref': data['pab_date'],
+                 'pab': {'date': data['pab_date'],
                          'number': data['pab_ref'],
                          'originals': pab_originals}
                  }
@@ -150,9 +154,10 @@ def get_debtor_details(data):
 def register_bankruptcy(key_number):
     url = app.config['CASEWORK_API_URL'] + '/keyholders/' + key_number
     response = requests.get(url)
+    text = json.loads(response.text)
     if response.status_code == 200:
-        cust_address = ' '.join(response.text['address']['address_line']) + ' ' + response.text['address']['postcode']
-        cust_name = ' '.join(response.text['name'])
+        cust_address = ' '.join(text['address']['address_lines']) + ' ' + text['address']['postcode']
+        cust_name = ' '.join(text['name'])
         applicant = {'name': cust_name,
                      'address': cust_address,
                      'key_number': key_number,
@@ -160,21 +165,33 @@ def register_bankruptcy(key_number):
     else:
         return response
 
-    # TODO: why is class_of_charge still application type??
-    if session['application_type'] == 'PA(B)':
+    if session['application_dict']['form'] == 'PA(B)' or session['application_dict']['form'] == 'PA(B) Amend':
         class_of_charge = 'PAB'
-    elif session['application_type'] == 'WO(B)':
+    elif session['application_dict']['form'] == 'WO(B)' or session['application_dict']['form'] == 'WO(B) Amend':
         class_of_charge = 'WOB'
     else:
-        class_of_charge = session['application_type']
+        class_of_charge = session['application_dict']['form']
 
     registration = {'parties': session['parties'],
                     'class_of_charge': class_of_charge,
                     'applicant': applicant
                     }
-    url = app.config['CASEWORK_API_URL'] + '/applications/' + session['worklist_id'] + '?action=complete'
+
+    application = {'registration': registration,
+                   'application_data': session['application_dict']['application_data'],
+                   'form': session['application_dict']['form']}
+    print('*****session*******', session)
+    if 'Amend' in session['application_dict']['form']:
+        application['registration']['update_registration'] = {'type': 'Amendment'}
+        if 'wob_entered' in session:
+            application['wob_original'] = session['wob_entered']
+        if 'pab_entered' in session:
+            application['pab_original'] = session['pab_entered']
+        url = app.config['CASEWORK_API_URL'] + '/applications/' + session['worklist_id'] + '?action=amend'
+    else:
+        url = app.config['CASEWORK_API_URL'] + '/applications/' + session['worklist_id'] + '?action=complete'
     headers = {'Content-Type': 'application/json'}
-    response = requests.put(url, data=json.dumps(registration), headers=headers)
+    response = requests.put(url, data=json.dumps(application), headers=headers)
     if response.status_code == 200:
         logging.info("200 response here")
         data = response.json()
@@ -183,10 +200,5 @@ def register_bankruptcy(key_number):
         for item in data['new_registrations']:
             reg_list.append(item['number'])
         session['confirmation'] = {'reg_no': reg_list}
-    else:
-        err = 'Failed to submit land charges registration application id:%s - Error code: %s' \
-              % (session['worklist_id'], str(response.status_code))
-        logging.error(err)
-        return render_template('error.html', error_msg=err), response.status_code
 
     return response
