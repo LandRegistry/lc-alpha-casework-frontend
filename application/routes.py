@@ -9,7 +9,7 @@ from application.land_charge import build_lc_inputs, build_customer_fee_inputs, 
 from application.search import process_search_criteria
 from application.rectification import convert_response_data, submit_lc_rectification
 from application.cancellation import submit_lc_cancellation
-from application.banks import get_debtor_details, register_bankruptcy, get_original_data
+from application.banks import get_debtor_details, register_bankruptcy, get_original_data, build_original_data
 from io import BytesIO
 
 
@@ -234,9 +234,10 @@ def submit_banks_registration():
     logging.info('submitting banks registration')
     key_number = request.form['key_number']
 
-    # Check keynumber is valid
+    # Check key_number is valid
     url = app.config['CASEWORK_API_URL'] + '/keyholders/' + key_number
     response = requests.get(url)
+
     if response.status_code != 200:
         err = 'This Key number is invalid please re-enter'
         return render_template('bank_regn_key_no.html',
@@ -247,67 +248,25 @@ def submit_banks_registration():
                                error_msg=err)
     else:
 
-        # TODO: this is temp until screen there - can be called by postman
-        data = request.get_json(force=True)
-        key_number = data['key_number']
-        result = register_bankruptcy(key_number)
-        # get the address details from the key number
+        response = register_bankruptcy(key_number)
 
-        return Response(result, status=200, mimetype='application/json')
+        if response.status_code != 200:
+            err = 'Failed to submit bankruptcy registration application id:%s - Error code: %s' \
+                  % (session['worklist_id'], str(response.status_code))
+            logging.error(err)
+            return render_template('error.html', error_msg=err), response.status_code
+        else:
+            return redirect('/get_list?appn=bank_regn', code=302, Response=None)
+
 
 
 # =============== Amendment routes ======================
 
 @app.route('/get_original_bankruptcy', methods=['POST'])
-def get_original_details():
-    if request.form['wob_ref'] != ' ':
-        wob_date_as_list = request.form['wob_date'].split("/")  # dd/mm/yyyy
-        number = request.form['wob_ref']
-        date = '%s-%s-%s' % (wob_date_as_list[2], wob_date_as_list[1], wob_date_as_list[0])
-        wob_data, wob_status_code = get_original_data(number, date)
-    else:
-        wob_data = {}
-        wob_status_code = 200
-
-    if request.form['pab_ref'] != ' ':
-        pab_date_as_list = request.form['pab_date'].split("/")  # dd/mm/yyyy
-        number = request.form['pab_ref']
-        date = '%s-%s-%s' % (pab_date_as_list[2], pab_date_as_list[1], pab_date_as_list[0])
-        pab_data, pab_status_code = get_original_data(number, date)
-    else:
-        pab_data = {}
-        pab_status_code = 200
-
-    session['original_regns'] = {'wob': wob_data, 'pab': pab_data}
-    curr_data = {'wob': {'ref': request.form['wob_date'],
-                         'number': request.form['wob_ref']},
-                 'pab': {'ref': request.form['pab_date'],
-                         'number': request.form['pab_ref']}}
-    fatal = False
-    error_msg = ' '
-    status_code = wob_status_code
-
-    if wob_status_code == 200 and pab_status_code == 200:
-        error_msg = ' '
-    elif wob_status_code == 404 and pab_status_code == 404:
-        error_msg = 'No details held for the PAB and WOB entered, please check and re-key.'
-    elif wob_status_code == 404:
-        if pab_status_code == 200:
-            error_msg = 'No details held for WOB entered, please check and re-key.'
-        else:
-            fatal = True
-            status_code = pab_status_code
-    elif pab_status_code == 404:
-        if wob_status_code == 200:
-            error_msg = 'No details held for PAB entered, please check and re-key.'
-        else:
-            fatal = True
-            status_code = wob_status_code
-    else:
-        fatal = True
-
+def get_original_banks_details():
+    curr_data, error_msg, status_code, fatal = build_original_data(request.form)
     if fatal:
-        err = 'Failed to process bankruptcy registration application id:%s - Error code: %s' \
+        err = 'Failed to process bankruptcy amendment application id:%s - Error code: %s' \
               % (session['worklist_id'], str(status_code))
         logging.error(err)
         return render_template('error.html', error_msg=err), status_code
@@ -323,187 +282,67 @@ def view_original_details():
                            data=session['original_regns'], application=session, screen='capture')
 
 
-@app.route('/amend_name', methods=["GET"])
-def show_name():
-    return render_template('regn_name.html', application_type=session['application_type'],
-                           data=session[''], images=session['images'], current_page=0)
-
-
-@app.route('/remove_alias_name/<int:name>', methods=["GET"])
-def remove_alias_name(name):
-    # del session['application_dict']['debtor_alternative_name'][name]
-    del session['application_dict']['debtor_names'][name]
-    session['data_amended'] = 'true'
-
-    return redirect('/amend_name', code=302, Response=None)
-
-
-@app.route('/update_name', methods=["POST"])
-def update_name_details():
-    application_dict = session['application_dict']
-
-    forenames = request.form['forenames'].strip()
-    surname = request.form['surname'].strip()
-    occupation = request.form['occupation'].strip()
-
-    new_debtor_name = {
-        'forenames': forenames.split(),
-        'surname': surname
-    }
-
-    alt_name = {"forenames": [],
-                "surname": ""
-                }
-
-    application_dict['debtor_alternative_name'] = []
-    forename_var = "aliasforename"
-    surname_var = "aliassurname"
-    counter = 0
-    while True:
-        forename_counter = forename_var + str(counter)
-        surname_counter = surname_var + str(counter)
-        try:
-            alt_forenames = request.form[forename_counter]
-            alt_surname = request.form[surname_counter]
-        except KeyError:
-            break
-
-        for i in alt_forenames.split():
-            alt_name['forenames'].append(i)
-
-        alt_name['surname'] = alt_surname
-        if alt_forenames != '' and alt_surname != '':
-            application_dict['debtor_alternative_name'].append(alt_name)
-
-        alt_name = {"forenames": [], "surname": ""}
-        counter += 1
-
-    application_dict['debtor_name'] = new_debtor_name
-    application_dict['debtor_names'] = []
-    application_dict['debtor_names'].append(new_debtor_name)
-    for name in application_dict['debtor_alternative_name']:
-        application_dict['debtor_names'].append(name)
-    application_dict['occupation'] = occupation
-    session['data_amended'] = 'true'
-
-    if session['application_type'] == 'bank_regn':
-        return redirect('/verify_registration', code=302, Response=None)
-    else:
-        return redirect('/process_application/' + session['application_type'], code=302, Response=None)
-
-
-@app.route('/amend_address', methods=["GET"])
-def show_address():
-    return render_template('regn_address.html', application_type=session['application_type'],
-                           data=session['application_dict'], images=session['images'], current_page=0,
-                           focus_on_address=len(session['application_dict']['residence']))
-
-
 @app.route('/remove_address/<int:addr>', methods=["GET"])
 def remove_address(addr):
-    del session['application_dict']['residence'][addr]
+    del session['original_regns']['parties']['addresses'][addr]
     session['data_amended'] = 'true'
 
-    return redirect('/amend_address', code=302, Response=None)
+    return redirect('/view_original_details', code=302, Response=None)
 
 
-@app.route('/update_address', methods=["POST"])
-def update_address_details():
-    application_dict = session['application_dict']
-    amended_addresses = []
-    address_no = 1
+@app.route('/process_amended_details', methods=['POST'])
+def process_amended_details():
+    logging.info('processing amended details')
+    # TODO: this is temp until screen there - can be called by postman
+    # data = request.get_json(force=True)
+    session['parties'] = get_debtor_details(request.form)
+    # result = get_debtor_details(data)
+    # print('result', result)
+    # return Response(json.dumps(result), status=200, mimetype='application/json')
 
-    # update dictionary with any address amendments
-    while 'address_{:s}'.format(str(address_no)) in request.form:
+    return render_template('bank_amend_verify.html', images=session['images'], current_page=0,
+                           data=session['parties'])
 
-        address = {'address_lines': []}
-        address['address_lines'].append(request.form['add_{:s}_line1'.format(str(address_no))])
-        address['address_lines'].append(request.form['add_{:s}_line2'.format(str(address_no))])
-        address['address_lines'].append(request.form['add_{:s}_line3'.format(str(address_no))])
-        address['county'] = request.form['add_{:s}_county'.format(str(address_no))]
-        address['postcode'] = request.form['add_{:s}_postcode'.format(str(address_no))]
 
-        if address['address_lines'][0] != '' and address['county'] != '' and address['postcode'] != '':
-            amended_addresses.append(address)
+# TODO: need some routing route here for amendments for navigation from verify screen - will wait till screens available
+# TODO: I think it will be something like...
+@app.route('/amendment_capture/<page>', methods=['GET'])
+def amendment_capture(page):
+    # For returning from verification screen
 
-        address_no += 1
-
-    application_dict['residence'] = amended_addresses
-    session['data_amended'] = 'true'
-
-    # check if user wants to enter and additional address
-    if request.form['add_address'] == 'yes':
-        new_address = {'county': '', 'postcode': '', 'address_lines': []}
-        application_dict['residence'].append(new_address)
-        return redirect('/amend_address', code=302, Response=None)
+    if page == 'key_no':
+        page_template = 'bank_amend_key_no.html'
+        data = session
+    elif page == 'court':
+        page_template = 'bank_amend_court.html'
+        data = session['court_info']
     else:
-        if session['application_type'] == 'bank_regn':
-            return redirect('/verify_registration', code=302, Response=None)
-        else:
-            return redirect('/process_application/' + session['application_type'], code=302, Response=None)
+        page_template = 'bank_amend_debtor.html'
+        data = session['parties']
+
+    return render_template(page_template,
+                           application_type=session['application_type'],
+                           data=data,
+                           images=session['images'],
+                           current_page=0,
+                           errors=[], from_verify=True)
 
 
-@app.route('/amend_court', methods=["GET"])
-def show_court():
-    return render_template('regn_court.html', application_type=session['application_type'],
-                           data=session['application_dict'], images=session['images'], current_page=0)
+@app.route('/submit_banks_amendment', methods=['POST'])
+def submit_banks_amendment():
+    logging.info('submitting banks amendment')
+    key_number = request.form['key_number']
+    response = register_bankruptcy(key_number)
 
-
-@app.route('/update_court', methods=["POST"])
-def update_court():
-    application_dict = session['application_dict']
-
-    application_dict['key_number'] = request.form['key_no'].strip()
-    application_dict['legal_body'] = request.form['court'].strip()
-    application_dict['legal_body_ref'] = request.form['ref'].strip()
-
-    session['data_amended'] = 'true'
-
-    if session['application_type'] == 'bank_regn':
-        return redirect('/verify_registration', code=302, Response=None)
-    else:
-        return redirect('/process_application/' + session['application_type'], code=302, Response=None)
-
-
-@app.route('/submit_amendment', methods=["POST"])
-def submit_amendment():
-    application_dict = session['application_dict']
-
-    if 'Reject' in request.form:
-        return render_template('rejection.html', application_type=session['application_type'])
-
-    # TODO: these are needed at the moment for registration but are not captured on the form
-    application_dict["key_number"] = "2244095"  # TODO: is design changing to add key_number??
-    application_dict["application_ref"] = " "  # TODO: customer ref needed??
-    today = datetime.now().strftime('%Y-%m-%d')
-    application_dict["date"] = today
-    application_dict["residence_withheld"] = False
-    application_dict['date_of_birth'] = "1980-01-01"  # TODO: DOB still needed??
-    application_dict['regn_no'] = session['regn_no']
-    application_dict["document_id"] = session['document_id']
-
-    url = app.config['CASEWORK_API_URL'] + '/applications/' + session['regn_no'] + '?action=amend'
-    headers = {'Content-Type': 'application/json'}
-    response = requests.put(url, json.dumps(application_dict), headers=headers)
-    if response.status_code == 200:
-        data = response.json()
-        reg_list = []
-        # for item in data['new_registrations']:
-        #     reg_list.append(item)
-
-        # session['regn_no'] = reg_list
-        # reg_list = []
-        for item in data['new_registrations']:
-            reg_list.append(item['number'])
-        session['confirmation'] = {'reg_no': reg_list}
-        delete_from_worklist(session['worklist_id'])
-    else:
-        err = response.status_code
+    if response.status_code != 200:
+        err = 'Failed to submit bankruptcy amendment application id:%s - Error code: %s' \
+              % (session['worklist_id'], str(response.status_code))
         logging.error(err)
-        return render_template('error.html', error_msg=err), 500
+        return render_template('error.html', error_msg=err), response.status_code
+    else:
+        return redirect('/get_list?appn=amend', code=302, Response=None)
 
-    return redirect('/get_list?appn=amend', code=302, Response=None)
-# end of amendment routes
+# ===== end of amendment routes  ===========
 
 
 @app.route('/process_search_name/<application_type>', methods=['POST'])
