@@ -249,9 +249,9 @@ def get_original_details():
         wob_date_as_list = request.form['wob_date'].split("/")  # dd/mm/yyyy
         number = request.form['wob_ref']
         date = '%s-%s-%s' % (wob_date_as_list[2], wob_date_as_list[1], wob_date_as_list[0])
-        session['wob_data'], wob_status_code = get_original_data(number, date)
+        wob_data, wob_status_code = get_original_data(number, date)
     else:
-        session['wob_data'] = {}
+        wob_data = {}
         wob_status_code = 200
 
     if request.form['pab_ref'] != ' ':
@@ -260,38 +260,52 @@ def get_original_details():
         date = '%s-%s-%s' % (pab_date_as_list[2], pab_date_as_list[1], pab_date_as_list[0])
         pab_data, pab_status_code = get_original_data(number, date)
     else:
-        session['pab_data'] = {}
+        pab_data = {}
         pab_status_code = 200
 
+    session['original_regns'] = {'wob': wob_data, 'pab': pab_data}
+    curr_data = {'wob': {'ref': request.form['wob_date'],
+                         'number': request.form['wob_ref']},
+                 'pab': {'ref': request.form['pab_date'],
+                         'number': request.form['pab_ref']}}
+    fatal = False
+    error_msg = ' '
+    status_code = wob_status_code
+
     if wob_status_code == 200 and pab_status_code == 200:
-        return render_template('bank_amend_retrieve.html', images=session['images'], current_page=0,
-                               data=session['wob_data'], curr_data=session['pab_data'], application=session,
-                               screen='capture')
-
-
-    """
-    if response.status_code == 200:
-        logging.info("200 response here")
-        session['original_regns'] = response.text
-        return render_template('bank_amend_retrieve.html', images=session['images'], current_page=0,
-                               data=session['original_regns'], application=session, screen='capture')
-    elif response.status_code == 404:
-        error_msg = 'Registrations not found, please check and re-key.'
-        return render_template('bank_amend_retrieve.html', images=session['images'], current_page=0,
-                               data=session['original_regns'], application=session, screen='debtor', error=error_msg)
+        error_msg = ' '
+    elif wob_status_code == 404 and pab_status_code == 404:
+        error_msg = 'No details held for the PAB and WOB entered, please check and re-key.'
+    elif wob_status_code == 404:
+        if pab_status_code == 200:
+            error_msg = 'No details held for WOB entered, please check and re-key.'
+        else:
+            fatal = True
+            status_code = pab_status_code
+    elif pab_status_code == 404:
+        if wob_status_code == 200:
+            error_msg = 'No details held for PAB entered, please check and re-key.'
+        else:
+            fatal = True
+            status_code = wob_status_code
     else:
+        fatal = True
+
+    if fatal:
         err = 'Failed to process bankruptcy registration application id:%s - Error code: %s' \
-              % (session['worklist_id'], str(response.status_code))
+              % (session['worklist_id'], str(status_code))
         logging.error(err)
-        return render_template('error.html', error_msg=err), response.status_code"""
+        return render_template('error.html', error_msg=err), status_code
+    else:
+        return render_template('bank_amend_retrieve.html', images=session['images'], current_page=0,
+                               data=session['original_regns'], curr_data=curr_data, application=session,
+                               screen='capture', error=error_msg)
 
 
 @app.route('/view_original_details', methods=['GET'])
 def view_original_details():
     return render_template('bank_amend_details.html', images=session['images'], current_page=0,
                            data=session['original_regns'], application=session, screen='capture')
-
-
 
 
 @app.route('/amend_name', methods=["GET"])
