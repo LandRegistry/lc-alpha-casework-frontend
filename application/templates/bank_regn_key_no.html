@@ -25,12 +25,15 @@
             <div class="spacer-40"></div>
             <h2 class="text-24-bold">Court</h2>
             <div class="spacer-10"></div>
-            {% if error_msg|length > 0 %}
-            <p class="error"><strong>{{error_msg}}</strong></p>
-            {% endif %}
+
+            <div id="errorBlock" {% if error_msg|length > 0 %}class="error_block"{% endif %}>
+                {% if error_msg|length > 0 %}
+                    <span id="key_no_error" class="error_text">{{error_msg}}</span>
+                {% endif %}
             <div class="form">
                 <label class="form-label" for="key_number">Key number</label><br/>
-                <input class="form-textfield width-50" required  aria-required="true" type="text" id="key_number" name="key_number" value=""/>
+                <input class="form-textfield width-50" required  aria-required="true" autofocus type="text" id="key_number" name="key_number" value="{{data.key_number}}"/>
+            </div>
             </div>
 
             <div class="spacer-40"></div>
