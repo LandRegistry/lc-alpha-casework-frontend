@@ -176,14 +176,13 @@ def retrieve_new_reg():
 def check_court_details():
 
     application = {"legal_body":  request.form['court'],
-                   "legal_body_ref_num": request.form['ref_num'],
+                   "legal_body_ref_no": request.form['ref_no'],
                    "legal_body_ref_year": request.form['ref_year']}
     session['court_info'] = application
 
     #  call api to see if registration already exists
-    # TODO: should this be ajax call on screen???
     url = app.config['CASEWORK_API_URL'] + '/court_check/' + application['legal_body'] + '/' + \
-        application['legal_body_ref_num'] + '/' + application['legal_body_ref_year']
+        application['legal_body_ref_no'] + '/' + application['legal_body_ref_year']
     response = requests.get(url)
     if response.status_code == 200:
         logging.info("200 response here")
@@ -192,8 +191,7 @@ def check_court_details():
                                data=session['court_info'], application=session)
     elif response.status_code == 404:
         session['current_registrations'] = []
-        return render_template('bank_regn_details.html', images=session['images'], current_page=0,
-                               data=session['court_info'], application=session)
+        return render_template('bank_regn_debtor.html', images=session['images'], current_page=0, data=session)
     else:
         err = 'Failed to process bankruptcy registration application id:%s - Error code: %s' \
               % (session['worklist_id'], str(response.status_code))
@@ -204,35 +202,35 @@ def check_court_details():
 @app.route('/process_debtor_details', methods=['POST'])
 def process_debtor_details():
     logging.info('processing debtor details')
-    # TODO: this is temp until screen there - can be called by postman
-    data = request.get_json(force=True)
-    # session['parties'], session['counties'] = get_debtor_details(request.form)
-    result = get_debtor_details(data)
-    print('result', result)
-    return Response(json.dumps(result), status=200, mimetype='application/json')
 
-    # return render_template('?????.html', images=session['images'], current_page=0,
-    #                       data=session)
+    session['parties'] = get_debtor_details(request.form)
+
+    print(json.dumps(session['parties']))
+
+    return render_template('bank_regn_verify.html', images=session['images'], current_page=0,
+                           court_data=session['court_info'], party_data=session['parties'])
 
 
 @app.route('/bankruptcy_capture/<page>', methods=['GET'])
 def bankruptcy_capture(page):
     # For returning from verification screen
-    # session['page_template']
-    # TODO: not sure how this will work until screens are there
-    print('session is********', session)
-    if page == 'court':
+
+    if page == 'key_no':
+        page_template = 'bank_regn_key_no.html'
+        data = session
+    elif page == 'court':
         page_template = 'bank_regn_court.html'
+        data = session['court_info']
     else:
-        page_template = 'bank_regn_details.html'
+        page_template = 'bank_regn_debtor.html'
+        data = session['parties']
+
     return render_template(page_template,
                            application_type=session['application_type'],
-                           data=session['court_info'],
+                           data=data,
                            images=session['images'],
-                           # application=session['application_dict'],
                            current_page=0,
-                           errors=[],
-                           curr_data=session['parties'])
+                           errors=[], from_verify=True)
 
 
 @app.route('/submit_banks_registration', methods=['POST'])

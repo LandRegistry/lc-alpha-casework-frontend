@@ -295,8 +295,6 @@ body {
     width: 30%;
 }
 
-.pd-left-10 { padding-left: 10px; }
-
 #image_area {
     position: relative;
     overflow: hidden;
@@ -378,3 +376,5 @@ body {
     width:750px;
 }
 
+.pd-left-10 { padding-left: 10px; }
+.mr-btm-10 { margin-bottom: 10px; }
