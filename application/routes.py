@@ -167,21 +167,16 @@ def retrieve_new_reg():
 @app.route('/check_court_details', methods=["POST"])
 def check_court_details():
 
-    application = {"legal_body":  request.form['court'],
-                   "legal_body_ref_no": request.form['ref_no'],
-                   "legal_body_ref_year": request.form['ref_year']}
-    session['court_info'] = application
+    if request.form['submit_btn'] == 'No':
+        # TODO: Need to save images somewhere, separate story promised
+        delete_from_worklist(session['worklist_id'])
+        return redirect('/get_list?appn=bank_regn', code=302, Response=None)
 
-    #  call api to see if registration already exists
-    url = app.config['CASEWORK_API_URL'] + '/court_check/' + application['legal_body'] + '/' + \
-        application['legal_body_ref_no'] + '/' + application['legal_body_ref_year']
-    response = requests.get(url)
-    if response.status_code == 200:
-        logging.info("200 response here")
-        session['current_registrations'] = response.text
-        return render_template('bank_regn_court.html', images=session['images'], current_page=0,
-                               data=session['court_info'], application=session, screen='capture')
-    elif response.status_code == 404:
+    elif request.form['submit_btn'] == 'Yes' and \
+        session['court_info']['legal_body'] == request.form['court'] and \
+        session['court_info']['legal_body_ref_no'] == request.form['ref_no'] and \
+            session['court_info']['legal_body_ref_year'] == request.form['ref_year']:
+
         session['current_registrations'] = []
         if 'return_to_verify' in request.form:
             return render_template('bank_regn_verify.html', images=session['images'], current_page=0,
@@ -189,10 +184,35 @@ def check_court_details():
         else:
             return render_template('bank_regn_debtor.html', images=session['images'], current_page=0, data=session)
     else:
-        err = 'Failed to process bankruptcy registration application id:%s - Error code: %s' \
-              % (session['worklist_id'], str(response.status_code))
-        logging.error(err)
-        return render_template('error.html', error_msg=err), response.status_code
+
+        application = {"legal_body":  request.form['court'],
+                       "legal_body_ref_no": request.form['ref_no'],
+                       "legal_body_ref_year": request.form['ref_year']}
+        session['court_info'] = application
+
+        #  call api to see if registration already exists
+        url = app.config['CASEWORK_API_URL'] + '/court_check/' + application['legal_body'] + '/' + \
+            application['legal_body_ref_no'] + '/' + application['legal_body_ref_year']
+        response = requests.get(url)
+        if response.status_code == 200:
+            logging.info("200 response here")
+            session['current_registrations'] = json.loads(response.text)
+            return render_template('bank_regn_court.html', images=session['images'], current_page=0,
+                                   data=session['court_info'], application=session,
+                                   current_registrations=session['current_registrations'])
+        elif response.status_code == 404:
+            session['current_registrations'] = []
+            if 'return_to_verify' in request.form:
+                return render_template('bank_regn_verify.html', images=session['images'], current_page=0,
+                                       court_data=session['court_info'], party_data=session['parties'])
+            else:
+                return render_template('bank_regn_debtor.html', images=session['images'], current_page=0, data=session)
+        else:
+            err = 'Failed to process bankruptcy registration application id:%s - Error code: %s' \
+                  % (session['worklist_id'], str(response.status_code))
+            logging.error(err)
+            return render_template('error.html', error_msg=err), response.status_code
+
 
 
 @app.route('/process_debtor_details', methods=['POST'])
