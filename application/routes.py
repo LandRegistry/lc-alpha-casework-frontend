@@ -217,6 +217,7 @@ def check_court_details():
 
 @app.route('/process_debtor_details', methods=['POST'])
 def process_debtor_details():
+    print('request****', request.form)
     logging.info('processing debtor details')
 
     session['parties'] = get_debtor_details(request.form)
@@ -277,7 +278,6 @@ def submit_banks_registration():
             return render_template('error.html', error_msg=err), response.status_code
         else:
             return redirect('/get_list?appn=bank_regn', code=302, Response=None)
-
 
 
 # =============== Amendment routes ======================
