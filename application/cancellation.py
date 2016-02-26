@@ -1,7 +1,3 @@
-cancellation.py
-
-
-
 from application import app
 from flask import session
 import requests
