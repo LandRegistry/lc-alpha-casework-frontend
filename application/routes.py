@@ -288,7 +288,6 @@ def get_original_banks_details():
     else:
         curr_data, error_msg, status_code, fatal = build_original_data(request.form)
         session['curr_data'] = curr_data
-
         if fatal:
             err = 'Failed to process bankruptcy amendment application id:%s - Error code: %s' \
                   % (session['worklist_id'], str(status_code))

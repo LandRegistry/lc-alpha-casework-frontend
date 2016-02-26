@@ -27,7 +27,7 @@ def build_original_data(data):
                                   'number': number}
         wob_data, wob_status_code = get_original_data(number, date)
         if wob_status_code == 200:
-            if data['class_of_charge'] != 'WOB':
+            if wob_data['class_of_charge'] != 'WOB':
                 wob_status_code = 404
                 wob_data = {}
             else:
@@ -46,12 +46,14 @@ def build_original_data(data):
 
         pab_data, pab_status_code = get_original_data(number, date)
         if pab_status_code == 200:
-            if data['class_of_charge'] != 'PAB':
+            if pab_data['class_of_charge'] != 'PAB':
                 pab_status_code = 404
                 pab_data = {}
             else:
                 pab_originals = pab_data['parties'][0]['names']
+
     else:
+
         pab_data = {}
         pab_status_code = 200
 
@@ -67,6 +69,7 @@ def build_original_data(data):
                          'number': data['pab_ref'],
                          'originals': pab_originals}
                  }
+
 
     fatal = False
     error_msg = ''
