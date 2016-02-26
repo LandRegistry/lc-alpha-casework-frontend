@@ -53,6 +53,8 @@ def get_eo_ind(eo_type_string):
         return "Limited Company"
     elif eo_type_string.lower() == "complexname":
         return "Complex Name"
+    elif eo_type_string.lower() == "codedname":
+        return "Coded Name"
     elif eo_type_string.lower() == "other":
         return "Other"
     else:
