@@ -44,7 +44,7 @@
                 </div>
                 <div class="form">
                     <label class="form-label" for="wob_date">Date of registration</label><br/>
-                    <input class="form-textfield width-50"  aria-required="true" type="text" placeholder="dd/mm/yyyy" id="wob_date" name="wob_date" value="{% if 'wob' in data%}{{data.wob.date}}{% endif %}"/>
+                    <input class="form-textfield width-50 dateEntry"  aria-required="true" type="text" placeholder="dd/mm/yyyy" id="wob_date" name="wob_date" value="{% if 'wob' in data%}{{data.wob.date}}{% endif %}"/>
                 </div>
                 <div class="spacer-40"></div>
                 <div class="form">
@@ -53,7 +53,7 @@
                 </div>
                 <div class="form">
                     <label class="form-label" for="pab_date">Date of registration</label><br/>
-                    <input class="form-textfield width-50"   aria-required="true" type="text" placeholder="dd/mm/yyyy" id="pab_date" name="pab_date" value="{% if 'pab' in data%}{{data.pab.date}}{% endif %}"/>
+                    <input class="form-textfield width-50 dateEntry"   aria-required="true" type="text" placeholder="dd/mm/yyyy" id="pab_date" name="pab_date" value="{% if 'pab' in data%}{{data.pab.date}}{% endif %}"/>
                 </div>
             </div>
             <div class="spacer-40"></div>
@@ -72,7 +72,28 @@
     <!-- ///////////////////////////////// End of image tool ///////////////////////////////// -->
 
 </div>
-
+<script>
+    $(document).ready(function () {
+    //called when key is down
+        $(".dateEntry").bind("keydown", function (event) {
+            if ( event.keyCode == 46 || event.keyCode == 8 || event.keyCode == 9 || event.keyCode == 27 || event.keyCode == 13 ||
+                // Allow: Ctrl+A
+                (event.keyCode == 65 && event.ctrlKey === true) ||
+                // Allow: home, end, left, right
+                (event.keyCode >= 35 && event.keyCode <= 39) ||
+                // allow forward slash
+                (event.keyCode == 191)) {
+                // let it happen, don't do anything
+                return;
+            } else {
+                // Ensure that it is a number and stop the keypress
+                if (event.shiftKey || (event.keyCode < 48 || event.keyCode > 57) && (event.keyCode < 96 || event.keyCode > 105 )) {
+                    event.preventDefault();
+                }
+            }
+        });
+    });
+</script>
 
 
 {% endblock %}

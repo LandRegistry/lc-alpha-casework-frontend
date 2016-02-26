@@ -283,8 +283,9 @@ def submit_banks_registration():
 @app.route('/get_original_bankruptcy', methods=['POST'])
 def get_original_banks_details():
 
+    curr_data = []
     if request.form['wob_ref'] == '' and request.form['pab_ref'] == '':
-        error_msg = 'No registration details entered'
+        error_msg = 'A registration number must be entered'
     else:
         curr_data, error_msg, status_code, fatal = build_original_data(request.form)
         session['curr_data'] = curr_data
@@ -316,14 +317,15 @@ def re_enter_registration():
 
 @app.route('/view_original_details', methods=['GET'])
 def view_original_details():
-    print(json.dumps(session['original_regns']))
+
     return render_template('bank_amend/amend_details.html', images=session['images'], current_page=0,
                            data=session['original_regns'], application=session, screen='capture')
 
 
 @app.route('/remove_address/<int:addr>', methods=["GET"])
 def remove_address(addr):
-    del session['original_regns']['parties']['addresses'][addr]
+    print("Address ID = " + str(addr))
+    del session['original_regns']['parties'][0]['addresses'][addr]
     session['data_amended'] = 'true'
 
     return redirect('/view_original_details', code=302, Response=None)
@@ -338,6 +340,7 @@ def process_amended_details():
     # result = get_debtor_details(data)
     # print('result', result)
     # return Response(json.dumps(result), status=200, mimetype='application/json')
+    print(json.dumps(session['parties']))
 
     return render_template('bank_amend/check.html', images=session['images'], current_page=0,
                            data=session['parties'])
