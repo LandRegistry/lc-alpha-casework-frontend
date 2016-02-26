@@ -333,60 +333,69 @@ def view_original_details():
 
 @app.route('/remove_address/<int:addr>', methods=["GET"])
 def remove_address(addr):
-    del session['original_regns']['parties'][0]['addresses'][addr]
-    session['data_amended'] = 'true'
+    if addr < len(session['original_regns']['parties'][0]['addresses']):
+        del session['original_regns']['parties'][0]['addresses'][addr]
+        session['data_amended'] = 'true'
 
     return redirect('/view_original_details', code=302, Response=None)
 
 
 @app.route('/process_amended_details', methods=['POST'])
 def process_amended_details():
-    # TODO: this is temp until screen there - can be called by postman
-    # data = request.get_json(force=True)
     session['parties'] = get_debtor_details(request.form)
-    # result = get_debtor_details(data)
-    # print('result', result)
-    # return Response(json.dumps(result), status=200, mimetype='application/json')
-    print(json.dumps(session['parties']))
-
     return render_template('bank_amend/check.html', images=session['images'], current_page=0,
                            data=session['parties'])
 
 
-# TODO: need some routing route here for amendments for navigation from verify screen - will wait till screens available
-# TODO: I think it will be something like...
-@app.route('/amendment_capture/<page>', methods=['GET'])
-def amendment_capture(page):
-    # For returning from verification screen
+@app.route('/amendment_capture', methods=['GET'])
+def amendment_capture():
+    # For returning from check screen
+    party_data = {'parties': session['parties']}
 
-    if page == 'key_no':
-        page_template = 'bank_amend/key_no.html'
-        data = session
-    else:
-        page_template = 'bank_amend/amend_details.html'
-        data = session['parties']
-
-    return render_template(page_template,
+    return render_template('bank_amend/amend_details.html',
                            application_type=session['application_type'],
-                           data=data,
+                           data=party_data,
                            images=session['images'],
                            current_page=0,
-                           errors=[], from_verify=True)
+                           errors=[])
+
+@app.route('/amendment_key_no', methods=['GET'])
+def amendment_key_no():
+    return render_template('bank_amend/key_no.html',
+                           application_type=session['application_type'],
+                           data={},
+                           images=session['images'],
+                           current_page=0,
+                           errors=[])
 
 
 @app.route('/submit_banks_amendment', methods=['POST'])
 def submit_banks_amendment():
     logging.info(format_message('submitting banks amendment'))
     key_number = request.form['key_number']
-    response = register_bankruptcy(key_number)
+
+    # Check key_number is valid
+    url = app.config['CASEWORK_API_URL'] + '/keyholders/' + key_number
+    response = requests.get(url)
 
     if response.status_code != 200:
-        err = 'Failed to submit bankruptcy amendment application id:%s - Error code: %s' \
-              % (session['worklist_id'], str(response.status_code))
-        logging.error(err)
-        return render_template('error.html', error_msg=err), response.status_code
+        err = 'This Key number is invalid please re-enter'
+        return render_template('bank_amend/key_no.html',
+                               application_type=session['application_type'],
+                               data=request.form,
+                               images=session['images'],
+                               current_page=0,
+                               error_msg=err)
     else:
-        return redirect('/get_list?appn=amend', code=302, Response=None)
+        response = register_bankruptcy(key_number)
+
+        if response.status_code != 200:
+            err = 'Failed to submit bankruptcy amendment application id:%s - Error code: %s' \
+                  % (session['worklist_id'], str(response.status_code))
+            logging.error(err)
+            return render_template('error.html', error_msg=err), response.status_code
+        else:
+            return redirect('/get_list?appn=amend', code=302, Response=None)
 
 # ===== end of amendment routes  ===========
 
