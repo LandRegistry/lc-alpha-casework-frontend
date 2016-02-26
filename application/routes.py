@@ -214,7 +214,6 @@ def check_court_details():
             return render_template('error.html', error_msg=err), response.status_code
 
 
-
 @app.route('/process_debtor_details', methods=['POST'])
 def process_debtor_details():
     print('request****', request.form)
@@ -246,7 +245,6 @@ def bankruptcy_capture(page):
                            images=session['images'],
                            current_page=0,
                            errors=[], from_verify=True)
-
 
 
 @app.route('/submit_banks_registration', methods=['POST'])
@@ -444,26 +442,28 @@ def start_rectification():
 def get_registration_details():
     application_type = session['application_type']
     session['regn_no'] = request.form['reg_no']
-
     date_as_list = request.form['reg_date'].split("/")  # dd/mm/yyyy
-
     session['reg_date'] = '%s-%s-%s' % (date_as_list[2], date_as_list[1], date_as_list[0])
-
     url = app.config['CASEWORK_API_URL'] + '/registrations/' + session['reg_date'] + '/' + session['regn_no']
-
     response = requests.get(url)
-
     error_msg = None
-
     if response.status_code == 404:
         error_msg = "Registration not found please re-enter"
+    elif response.status_code == 500:
+        error_msg = "An error occured: 500"
     else:
         application_json = response.json()
         if application_json['status'] == 'cancelled' or application_json['status'] == 'superseded':
             error_msg = "Application has been cancelled or amended - please re-enter"
 
-    # check if part cans has been selected for a bankruptcy
-
+    #  check if part cans has been selected for a bankruptcy
+    application_json = response.json()
+    print("json", str(application_json))
+    if application_type == 'cancel':
+        if request.form['full_cans'] == 'false':
+            class_of_charge = application_json['class']
+            if class_of_charge in ['WO', 'PA', 'WOB', 'PAB', 'PA(B)', 'WO(B)']:
+                error_msg = "You cannot part cancel a bankruptcy registration"
     if error_msg is not None:
         if application_type == 'lc_rect':
             template = 'rectification_retrieve.html'

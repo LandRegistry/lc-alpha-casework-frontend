@@ -126,7 +126,7 @@
             <span class="text-16 col six">{{curr_data.additional_info}}</span>
         </div>
         <form id="cancel_form" action="/cancellation_customer" method="POST">
-            {% if curr_data.full_cans == 'no' %}
+            {% if curr_data.full_cans == 'false' %}
             <div class="spacer-30"></div>
             {% include 'includes/additional_info.html' %}
             {% endif %}
