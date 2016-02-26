@@ -202,16 +202,18 @@ def register_bankruptcy(key_number):
                    'form': session['application_dict']['form']}
 
     if 'Amend' in session['application_dict']['form']:
+        # TODO: update registration added twice to get around bad structure for rectifications which needs changing!
         application['update_registration'] = {'type': 'Amendment'}
+        application['registration']['update_registration'] = {'type': 'Amendment'}
         if 'wob_entered' in session:
             application['wob_original'] = session['wob_entered']
         if 'pab_entered' in session:
             application['pab_original'] = session['pab_entered']
-        print('amend application is ****', application)
+        print('amend application is ****', json.dumps(application))
         url = app.config['CASEWORK_API_URL'] + '/applications/' + session['worklist_id'] + '?action=amend'
     else:
         url = app.config['CASEWORK_API_URL'] + '/applications/' + session['worklist_id'] + '?action=complete'
-        print('reg application is ****', application)
+        print('reg application is ****', json.dumps(application))
 
     headers = {'Content-Type': 'application/json'}
     response = requests.put(url, data=json.dumps(application), headers=headers)
