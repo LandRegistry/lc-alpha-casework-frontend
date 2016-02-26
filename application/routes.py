@@ -558,10 +558,7 @@ def submit_rectification():
 @app.route('/cancellation_customer', methods=['POST'])
 def cancellation_capture_customer():
     if 'addl_info' in request.form:
-        logging.debug('found addl info')
         session["addl_info"] = request.form["addl_info"]
-    else:
-        logging.debug('no addl info')
     return render_template('canc_customer.html', images=session['images'],
                            application=session['application_dict'],
                            application_type=session['application_type'], current_page=0,

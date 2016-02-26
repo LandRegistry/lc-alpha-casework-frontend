@@ -81,34 +81,38 @@
             curr_data.estate_owner_ind == 'Parish Council' or
             curr_data.estate_owner_ind == 'Other Council' %}
                 <div class="grid-row-padded-line">
-                    <label for="fullname" class="text-16-bold col four">Full Name</label>
-                    <input type="text" autofocus id="fullname" class="col six form-textfield-verify"/>
+                    <span class="text-16-bold col four">Full Name</span>
+                    <span class="col two">&nbsp;</span>
+                    <span class="text-16 col six">{{curr_data.estate_owner.local.name}}</span>
                 </div>
                 <div class="grid-row-padded-line">
-                    <label for="area" class="text-16-bold col four">Area</label>
-                    <input type="text" class="col six form-textfield-verify" id="area"/>
+                    <span class="text-16-bold col four">Area</span>
+                    <span class="col two">&nbsp;</span>
+                    <span class="text-16 col six">{{curr_data.estate_owner.local.area}}</span>
                 </div>
             {% elif curr_data.estate_owner_ind == 'Development Corporation' or
             curr_data.estate_owner_ind == 'Other' %}
                 <div class="grid-row-padded-line">
-                    <label for="corpname" class="text-16-bold col four">Name</label>
-                    <input type="text" autofocus id="corpname" class="col six form-textfield-verify"/>
+                    <span class="text-16-bold col four">Name</span>
+                    <span class="col two">&nbsp;</span>
+                    <span class="text-16 col six">{{curr_data.estate_owner.other}}</span>
                 </div>
             {% elif curr_data.estate_owner_ind == 'Limited Company' %}
                 <div class="grid-row-padded-line">
-                    <label for="company" class="text-16-bold col four">Company Name</label>
-                    <input type="text" autofocus id="company" class="col six form-textfield-verify"/>
+                    <span class="text-16-bold col four">Company Name</span>
+                    <span class="col two">&nbsp;</span>
+                    <span class="text-16 col six">{{curr_data.estate_owner.company}}</span>
                 </div>
             {% elif curr_data.estate_owner_ind == 'Complex Name' %}
-                <div class="grid-row-padded-line">
+             <div class="grid-row-padded-line">
                     <span class="text-16-bold col four">Name</span>
                     <span class="col two">&nbsp;</span>
-                    <span class="text-16-bold col four">{{curr_data.estate_owner.complex.name}}</span>
+                    <span class="text-16 col six">{{curr_data.estate_owner.complex.name}}</span>
                 </div>
                 <div class="grid-row-padded-line">
                     <span class="text-16-bold col four">Number</span>
                     <span class="col two">&nbsp;</span>
-                    <span class="text-16-bold col six">{{curr_data.estate_owner.complex.number}}</span>
+                    <span class="text-16 col six">{{curr_data.estate_owner.complex.number}}</span>
                 </div>
             {% endif %}
             <div class="grid-row-padded-line bottom-line">
