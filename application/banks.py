@@ -26,7 +26,11 @@ def build_original_data(data):
                                   'number': number}
         wob_data, wob_status_code = get_original_data(number, date)
         if wob_status_code == 200:
-            wob_originals = wob_data['parties'][0]['names']
+            if data['class_of_charge'] != 'WOB':
+                wob_status_code = 404
+                wob_data = {}
+            else:
+                wob_originals = wob_data['parties'][0]['names']
     else:
         wob_data = {}
         wob_status_code = 200
@@ -39,7 +43,11 @@ def build_original_data(data):
                                   'number': number}
         pab_data, pab_status_code = get_original_data(number, date)
         if pab_status_code == 200:
-            pab_originals = pab_data['parties'][0]['names']
+            if data['class_of_charge'] != 'PAB':
+                pab_status_code = 404
+                pab_data = {}
+            else:
+                pab_originals = pab_data['parties'][0]['names']
     else:
         pab_data = {}
         pab_status_code = 200
@@ -182,11 +190,13 @@ def register_bankruptcy(key_number):
                    'form': session['application_dict']['form']}
 
     if 'Amend' in session['application_dict']['form']:
-        application['registration']['update_registration'] = {'type': 'Amendment'}
+        application['update_registration'] = {'type': 'Amendment'}
         if 'wob_entered' in session:
             application['wob_original'] = session['wob_entered']
-        if 'pab_entered' in session:
-            application['pab_original'] = session['pab_entered']
+        # if 'pab_entered' in session:
+            # application['pab_original'] = session['pab_entered']
+        application['pab_original'] = {'number': '1000',
+                                       'date': '2016-02-26'}
         url = app.config['CASEWORK_API_URL'] + '/applications/' + session['worklist_id'] + '?action=amend'
     else:
         url = app.config['CASEWORK_API_URL'] + '/applications/' + session['worklist_id'] + '?action=complete'
