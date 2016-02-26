@@ -458,9 +458,10 @@ def get_registration_details():
 
     #  check if part cans has been selected for a bankruptcy
     application_json = response.json()
-    print("json", str(application_json))
-    if application_type == 'cancel':
+    if (error_msg is None) and (application_type == 'cancel'):
+        session['cancellation_type'] = 'Cancellation'
         if request.form['full_cans'] == 'false':
+            session['cancellation_type'] = 'Part Cancellation'
             class_of_charge = application_json['class']
             if class_of_charge in ['WO', 'PA', 'WOB', 'PAB', 'PA(B)', 'WO(B)']:
                 error_msg = "You cannot part cancel a bankruptcy registration"

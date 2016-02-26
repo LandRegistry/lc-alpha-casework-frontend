@@ -1,3 +1,7 @@
+cancellation.py
+
+
+
 from application import app
 from flask import session
 import requests
@@ -18,6 +22,8 @@ def submit_lc_cancellation(data):
                    'registration': {'date': session['reg_date']}}
     if 'addl_info' in session:
             application['additional_information'] = session['addl_info']
+    if 'cancellation_type' in session:
+            application['update_registration'] = {'type': session['cancellation_type']}
     url = app.config['CASEWORK_API_URL'] + '/applications/' + session['worklist_id'] + '?action=cancel'
     headers = {'Content-Type': 'application/json'}
     response = requests.put(url, data=json.dumps(application), headers=headers)
