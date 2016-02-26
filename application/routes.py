@@ -214,9 +214,9 @@ def check_court_details():
             return render_template('error.html', error_msg=err), response.status_code
 
 
-
 @app.route('/process_debtor_details', methods=['POST'])
 def process_debtor_details():
+    print('request****', request.form)
     logging.info('processing debtor details')
 
     session['parties'] = get_debtor_details(request.form)
@@ -245,7 +245,6 @@ def bankruptcy_capture(page):
                            images=session['images'],
                            current_page=0,
                            errors=[], from_verify=True)
-
 
 
 @app.route('/submit_banks_registration', methods=['POST'])
@@ -277,7 +276,6 @@ def submit_banks_registration():
             return render_template('error.html', error_msg=err), response.status_code
         else:
             return redirect('/get_list?appn=bank_regn', code=302, Response=None)
-
 
 
 # =============== Amendment routes ======================
@@ -463,26 +461,29 @@ def start_rectification():
 def get_registration_details():
     application_type = session['application_type']
     session['regn_no'] = request.form['reg_no']
-
     date_as_list = request.form['reg_date'].split("/")  # dd/mm/yyyy
-
     session['reg_date'] = '%s-%s-%s' % (date_as_list[2], date_as_list[1], date_as_list[0])
-
     url = app.config['CASEWORK_API_URL'] + '/registrations/' + session['reg_date'] + '/' + session['regn_no']
-
     response = requests.get(url)
-
     error_msg = None
-
     if response.status_code == 404:
         error_msg = "Registration not found please re-enter"
+    elif response.status_code == 500:
+        error_msg = "An error occured: 500"
     else:
         application_json = response.json()
         if application_json['status'] == 'cancelled' or application_json['status'] == 'superseded':
             error_msg = "Application has been cancelled or amended - please re-enter"
 
-    # check if part cans has been selected for a bankruptcy
-
+    #  check if part cans has been selected for a bankruptcy
+    application_json = response.json()
+    if (error_msg is None) and (application_type == 'cancel'):
+        session['cancellation_type'] = 'Cancellation'
+        if request.form['full_cans'] == 'false':
+            session['cancellation_type'] = 'Part Cancellation'
+            class_of_charge = application_json['class']
+            if class_of_charge in ['WO', 'PA', 'WOB', 'PAB', 'PA(B)', 'WO(B)']:
+                error_msg = "You cannot part cancel a bankruptcy registration"
     if error_msg is not None:
         if application_type == 'lc_rect':
             template = 'rectification/retrieve.html'
@@ -576,10 +577,7 @@ def submit_rectification():
 @app.route('/cancellation_customer', methods=['POST'])
 def cancellation_capture_customer():
     if 'addl_info' in request.form:
-        logging.debug('found addl info')
         session["addl_info"] = request.form["addl_info"]
-    else:
-        logging.debug('no addl info')
     return render_template('canc_customer.html', images=session['images'],
                            application=session['application_dict'],
                            application_type=session['application_type'], current_page=0,
@@ -671,8 +669,8 @@ def lc_process_application():
     customer_fee_details = build_customer_fee_inputs(request.form)
     response = submit_lc_registration(customer_fee_details)
     if response.status_code != 200:
-        err = 'Failed to submit land charges registration application id:%s - Error code: %s' \
-              % (session['worklist_id'], str(response.status_code))
+        err = 'Failed to submit land charges registration application id:%s - Error code: %s; %s' \
+              % (session['worklist_id'], str(response.status_code), response.text)
         logging.error(err)
         return render_template('error.html', error_msg=err), response.status_code
     else:

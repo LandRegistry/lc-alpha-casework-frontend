@@ -7,6 +7,7 @@ import json
 
 
 def process_search_criteria(data, search_type):
+    logging.debug('process search data')
     counties = []
     parameters = {
         'counties': counties,
@@ -61,6 +62,16 @@ def process_search_criteria(data, search_type):
                 'name': {
                     'local_authority_name': data[loc_auth],
                     'local_authority_area': data[loc_auth_area]
+                }
+            }
+            name_extracted = True
+
+        elif data[name_type] == 'codedName' and data['other_name_{}'.format(counter)] != '':
+            other_name = 'other_name_{}'.format(counter)
+            search_item = {
+                'name_type': 'Coded Name',
+                'name': {
+                    'other_name': data[other_name]
                 }
             }
             name_extracted = True
@@ -130,6 +141,7 @@ def process_search_criteria(data, search_type):
 
 
 def add_counties(result, data):
+    logging.debug('add counties')
     counter = 0
     counties = []
     while True:

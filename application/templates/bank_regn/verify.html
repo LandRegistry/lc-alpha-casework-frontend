@@ -94,7 +94,7 @@ function validate(sender) {
     <form action="/bankruptcy_capture/key_no" method="GET" onsubmit="return validate(this);">
         <div class="spacer-40"></div>
         <div id="name_validation">
-            <input type="hidden" id="orig_forename" value="{{party_data[0].names[0].private.forenames[0]}}"/>
+            <input type="hidden" id="orig_forename" value="{{party_data[0].names[0].private.forenames|join(' ')}}"/>
             <input type="hidden" id="orig_surname" value="{{party_data[0].names[0].private.surname}}"/>
 
             <span id="name_error" class="hide">[placeholder]</span>
