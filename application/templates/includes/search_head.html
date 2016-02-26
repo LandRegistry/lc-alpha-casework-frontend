@@ -178,7 +178,7 @@ function filterNameFields(i) {
         jQuery("#limited_" + i + " :input").attr("disabled", false);
         jQuery("#forename_" + i + ", #surname_" + i + ", #loc_auth_" + i + ", #loc_auth_area_" + i +
         ", #complex_name_" + i + ", #other_name_" + i + "").val('');
-    } else if (type == "localAuthority") {
+    } else if (type == "countyCouncil" || type == "parishCouncil" || type == "otherCouncil" || type == "ruralCouncil" ) {
         jQuery("#local_" + i).show();
         jQuery("#local_" + i + " :input").attr("disabled", false);
         jQuery("#forename_" + i + ", #surname_" + i + ", #company_" + i + ", #complex_name_" + i +
@@ -188,7 +188,7 @@ function filterNameFields(i) {
         jQuery("#complex_" + i + " :input").attr("disabled", false);
         jQuery("#forename_" + i + ", #surname_" + i + ", #company_" + i + ", #loc_auth_" + i +
         ", #loc_auth_area_" + i + ", #other_name_" + i + "").val('');
-    } else if (type == "other") {
+    } else if (type == "other" || type == "developmentCorporation" || type == "codedName" ) {
         jQuery("#other_" + i).show();
         jQuery("#other_" + i + " :input").attr("disabled", false);
         jQuery("#forename_" + i + ", #surname_" + i + ", #company_" + i + ", #loc_auth_" + i +

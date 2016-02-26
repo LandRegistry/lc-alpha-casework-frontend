@@ -632,8 +632,8 @@ def lc_process_application():
     customer_fee_details = build_customer_fee_inputs(request.form)
     response = submit_lc_registration(customer_fee_details)
     if response.status_code != 200:
-        err = 'Failed to submit land charges registration application id:%s - Error code: %s' \
-              % (session['worklist_id'], str(response.status_code))
+        err = 'Failed to submit land charges registration application id:%s - Error code: %s; %s' \
+              % (session['worklist_id'], str(response.status_code), response.text)
         logging.error(err)
         return render_template('error.html', error_msg=err), response.status_code
     else:
