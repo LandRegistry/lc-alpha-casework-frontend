@@ -145,6 +145,11 @@ def get_debtor_details(data):
         addresses.append(address)
         counter += 1
 
+    if 'court_info' not in session:
+        session['court_info'] = {'legal_body': request.form['court'],
+                                 'legal_body_ref_no': request.form['ref_no'],
+                                 'legal_body_ref_year': request.form['ref_year']}
+
     case_reference = session['court_info']['legal_body'] + ' ' + session['court_info']['legal_body_ref_no'] + \
         ' of ' + session['court_info']['legal_body_ref_year']
 
@@ -200,13 +205,14 @@ def register_bankruptcy(key_number):
         application['update_registration'] = {'type': 'Amendment'}
         if 'wob_entered' in session:
             application['wob_original'] = session['wob_entered']
-        # if 'pab_entered' in session:
-            # application['pab_original'] = session['pab_entered']
-        application['pab_original'] = {'number': '1000',
-                                       'date': '2016-02-26'}
+        if 'pab_entered' in session:
+            application['pab_original'] = session['pab_entered']
+        print('amend application is ****', application)
         url = app.config['CASEWORK_API_URL'] + '/applications/' + session['worklist_id'] + '?action=amend'
     else:
         url = app.config['CASEWORK_API_URL'] + '/applications/' + session['worklist_id'] + '?action=complete'
+        print('reg application is ****', application)
+
     headers = {'Content-Type': 'application/json'}
     response = requests.put(url, data=json.dumps(application), headers=headers)
     if response.status_code == 200:
