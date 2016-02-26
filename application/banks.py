@@ -145,10 +145,10 @@ def get_debtor_details(data):
         addresses.append(address)
         counter += 1
 
-    if 'court_info' not in session:
-        session['court_info'] = {'legal_body': request.form['court'],
-                                 'legal_body_ref_no': request.form['ref_no'],
-                                 'legal_body_ref_year': request.form['ref_year']}
+    if 'court' in data:
+        session['court_info'] = {'legal_body': data['court'],
+                                 'legal_body_ref_no': data['ref_no'],
+                                 'legal_body_ref_year': data['ref_year']}
 
     case_reference = session['court_info']['legal_body'] + ' ' + session['court_info']['legal_body_ref_no'] + \
         ' of ' + session['court_info']['legal_body_ref_year']
