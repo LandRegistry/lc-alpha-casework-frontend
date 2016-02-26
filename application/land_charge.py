@@ -1,4 +1,5 @@
 from application import app
+from application.logformat import format_message
 from flask import Response, request, render_template, session, redirect, url_for
 import requests
 from datetime import datetime
@@ -126,10 +127,10 @@ def submit_lc_registration(cust_fee_data):
     application['lc_register_details'] = session['register_details']
 
     url = app.config['CASEWORK_API_URL'] + '/applications/' + session['worklist_id'] + '?action=complete'
-    headers = {'Content-Type': 'application/json'}
+    headers = {'Content-Type': 'application/json', 'X-Transaction-ID': session['transaction_id']}
     response = requests.put(url, data=json.dumps(application), headers=headers)
     if response.status_code == 200:
-        logging.info("200 response here")
+        logging.info(format_message("Registration submitted to CASEWORK_API"))
         data = response.json()
         reg_list = []
 

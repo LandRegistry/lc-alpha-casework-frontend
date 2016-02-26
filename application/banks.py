@@ -1,4 +1,5 @@
 from application import app
+from application.logformat import format_message
 from flask import Response, request, render_template, session, redirect, url_for
 import requests
 from datetime import datetime
@@ -10,7 +11,7 @@ def get_original_data(number, date):
     originals = {"date": date,
                  "number": number}
     url = app.config['CASEWORK_API_URL'] + '/original'
-    headers = {'Content-Type': 'application/json'}
+    headers = {'Content-Type': 'application/json', 'X-Transaction-ID': session['transaction_id']}
     response = requests.post(url, data=json.dumps(originals), headers=headers)
     return json.loads(response.text), response.status_code
 
@@ -98,7 +99,7 @@ def build_original_data(data):
 
 
 def get_debtor_details(data):
-    print("Start of get debtor details " + json.dumps(data))
+    logging.debug("Start of get debtor details " + json.dumps(data))
     counter = 1
     names = []
     while True:
@@ -173,7 +174,7 @@ def get_debtor_details(data):
 
 def register_bankruptcy(key_number):
     url = app.config['CASEWORK_API_URL'] + '/keyholders/' + key_number
-    response = requests.get(url)
+    response = requests.get(url, headers={'X-Transaction-ID': session['transaction_id']})
     text = json.loads(response.text)
     if response.status_code == 200:
         cust_address = ' '.join(text['address']['address_lines']) + ' ' + text['address']['postcode']
@@ -213,10 +214,10 @@ def register_bankruptcy(key_number):
         url = app.config['CASEWORK_API_URL'] + '/applications/' + session['worklist_id'] + '?action=complete'
         print('reg application is ****', application)
 
-    headers = {'Content-Type': 'application/json'}
+    headers = {'Content-Type': 'application/json', 'X-Transaction-ID': session['transaction_id']}
     response = requests.put(url, data=json.dumps(application), headers=headers)
     if response.status_code == 200:
-        logging.info("200 response here")
+        logging.info(format_message("Registration (bank) submitted to CASEWORK_API"))
         data = response.json()
         reg_list = []
 
