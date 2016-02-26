@@ -180,7 +180,7 @@ def register_bankruptcy(key_number):
     application = {'registration': registration,
                    'application_data': session['application_dict']['application_data'],
                    'form': session['application_dict']['form']}
-    print('*****session*******', session)
+
     if 'Amend' in session['application_dict']['form']:
         application['registration']['update_registration'] = {'type': 'Amendment'}
         if 'wob_entered' in session:

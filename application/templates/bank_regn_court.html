@@ -39,17 +39,34 @@
             <div class="form col five">
                 <label class="form-label" for="ref_no">Number</label><br/>
                 <input class="form-textfield width-75"  required  aria-required="true" type="text" id="ref_no" name="ref_no" value="{{data.legal_body_ref_no}}"/>
-                <span class="form-label pd-left-10 ">of</span>
+                <span class="form-label width-25 ">of</span>
             </div>
             <div class="form col five">
                 <label class="form-label" for="ref_year">Year</label><br/>
-                <input class="form-textfield width-25"  required  aria-required="true" type="text" id="ref_year" name="ref_year" value="{{data.legal_body_ref_year}}"/>
+                <input class="form-textfield width-25 numberOnly"  required  aria-required="true" type="text" id="ref_year" name="ref_year" value="{{data.legal_body_ref_year}}"/>
             </div>
             <div class="spacer-40"></div>
-            <input id="continue" type="submit" value="Continue" class="form-button"/>
+            {% if current_registrations|length >0 %}
+            <div class="alert-box" id="registration_alert">
+                <p class="text-19-bold">The particulars of court have already been used to register:</p><br/>
+                {% for registration in current_registrations %}
+                <p class="text-16" id="alert_{{loop.index}}">{{registration.name}}</p>
+                {% endfor %}
+            </div>
+            <div class="spacer-30"></div>
+            <p class="text-19-bold">Do you want to continue with this registration?</p>
+            <div class="spacer-20"></div>
+            <input id="yes" type="submit" name="submit_btn" value="Yes" class="form-button"/>
+            <input id="no" type="submit" name="submit_btn" value="No" class="form-button-no"/>
             <div class="spacer-20"></div>
             <a href="/get_list?appn=bank_regn" class="link-16">Return to this application later</a>
             <div class="spacer-40"></div>
+            {% else %}
+            <input id="continue" type="submit" name="submit_btn" value="Continue" class="form-button"/>
+            <div class="spacer-20"></div>
+            <a href="/get_list?appn=bank_regn" class="link-16">Return to this application later</a>
+            <div class="spacer-40"></div>
+            {% endif %}
         </form>
     </div>
     <!-- ///////////////////////////////// end of data entry form ///////////////////////////////// -->
@@ -64,6 +81,25 @@
 
 </div>
 
-
+<script>
+    $(document).ready(function () {
+    //called when key is down
+        $(".numberOnly").bind("keydown", function (event) {
+            if ( event.keyCode == 46 || event.keyCode == 8 || event.keyCode == 9 || event.keyCode == 27 || event.keyCode == 13 ||
+                // Allow: Ctrl+A
+                (event.keyCode == 65 && event.ctrlKey === true) ||
+                // Allow: home, end, left, right
+                (event.keyCode >= 35 && event.keyCode <= 39)) {
+                // let it happen, don't do anything
+                return;
+            } else {
+                // Ensure that it is a number and stop the keypress
+                if (event.shiftKey || (event.keyCode < 48 || event.keyCode > 57) && (event.keyCode < 96 || event.keyCode > 105 )) {
+                    event.preventDefault();
+                }
+            }
+        });
+    });
+</script>
 
 {% endblock %}
