@@ -42,7 +42,7 @@ def index():
         del(session['worklist_id'])
 
     data = get_totals()
-    return render_template('totals.html', data=data)
+    return render_template('work_list/totals.html', data=data)
 
 
 @app.route('/get_list', methods=["GET"])
@@ -68,13 +68,13 @@ def get_list_of_applications(requested_worklist, result, error_msg):
     work_list_json = response.json()
     return_page = ''
     if requested_worklist.startswith('bank'):
-        return_page = 'work_list_bank.html'
+        return_page = 'work_list/bank.html'
     elif requested_worklist.startswith('lc'):
-        return_page = 'work_list_lc.html'
+        return_page = 'work_list/lc.html'
     elif requested_worklist.startswith('search'):
-        return_page = 'work_list_search.html'
+        return_page = 'work_list/search.html'
     elif requested_worklist.startswith('canc'):
-        return_page = 'work_list_cancel.html'
+        return_page = 'work_list/cancel.html'
 
     appn_list = []
 
@@ -143,7 +143,7 @@ def application_start(application_type, appn_id, form):
              "year_to": datetime.now().strftime('%Y')
              }
 
-    # land charge input data required for validation on lc_regn_capture.html
+    # land charge input data required for validation on lc_regn/capture.html
     if 'register_details' in session:
         curr_data = session['register_details']
     else:
@@ -179,10 +179,10 @@ def check_court_details():
 
         session['current_registrations'] = []
         if 'return_to_verify' in request.form:
-            return render_template('bank_regn_verify.html', images=session['images'], current_page=0,
+            return render_template('bank_regn/verify.html', images=session['images'], current_page=0,
                                    court_data=session['court_info'], party_data=session['parties'])
         else:
-            return render_template('bank_regn_debtor.html', images=session['images'], current_page=0, data=session)
+            return render_template('bank_regn/debtor.html', images=session['images'], current_page=0, data=session)
     else:
 
         application = {"legal_body":  request.form['court'],
@@ -197,16 +197,16 @@ def check_court_details():
         if response.status_code == 200:
             logging.info("200 response here")
             session['current_registrations'] = json.loads(response.text)
-            return render_template('bank_regn_court.html', images=session['images'], current_page=0,
+            return render_template('bank_regn/court.html', images=session['images'], current_page=0,
                                    data=session['court_info'], application=session,
                                    current_registrations=session['current_registrations'])
         elif response.status_code == 404:
             session['current_registrations'] = []
             if 'return_to_verify' in request.form:
-                return render_template('bank_regn_verify.html', images=session['images'], current_page=0,
+                return render_template('bank_regn/verify.html', images=session['images'], current_page=0,
                                        court_data=session['court_info'], party_data=session['parties'])
             else:
-                return render_template('bank_regn_debtor.html', images=session['images'], current_page=0, data=session)
+                return render_template('bank_regn/debtor.html', images=session['images'], current_page=0, data=session)
         else:
             err = 'Failed to process bankruptcy registration application id:%s - Error code: %s' \
                   % (session['worklist_id'], str(response.status_code))
@@ -221,7 +221,7 @@ def process_debtor_details():
 
     session['parties'] = get_debtor_details(request.form)
 
-    return render_template('bank_regn_verify.html', images=session['images'], current_page=0,
+    return render_template('bank_regn/verify.html', images=session['images'], current_page=0,
                            court_data=session['court_info'], party_data=session['parties'])
 
 
@@ -230,13 +230,13 @@ def bankruptcy_capture(page):
     # For returning from verification screen
 
     if page == 'key_no':
-        page_template = 'bank_regn_key_no.html'
+        page_template = 'bank_regn/key_no.html'
         data = session
     elif page == 'court':
-        page_template = 'bank_regn_court.html'
+        page_template = 'bank_regn/court.html'
         data = session['court_info']
     else:
-        page_template = 'bank_regn_debtor.html'
+        page_template = 'bank_regn/debtor.html'
         data = session['parties'][0]
 
     return render_template(page_template,
@@ -260,7 +260,7 @@ def submit_banks_registration():
 
     if response.status_code != 200:
         err = 'This Key number is invalid please re-enter'
-        return render_template('bank_regn_key_no.html',
+        return render_template('bank_regn/key_no.html',
                                application_type=session['application_type'],
                                data=request.form,
                                images=session['images'],
@@ -284,21 +284,43 @@ def submit_banks_registration():
 
 @app.route('/get_original_bankruptcy', methods=['POST'])
 def get_original_banks_details():
-    curr_data, error_msg, status_code, fatal = build_original_data(request.form)
-    if fatal:
-        err = 'Failed to process bankruptcy amendment application id:%s - Error code: %s' \
-              % (session['worklist_id'], str(status_code))
-        logging.error(err)
-        return render_template('error.html', error_msg=err), status_code
+
+    if request.form['wob_ref'] == '' and request.form['pab_ref'] == '':
+        error_msg = 'No registration details entered'
     else:
-        return render_template('bank_amend_retrieve.html', images=session['images'], current_page=0,
-                               data=session['original_regns'], curr_data=curr_data, application=session,
-                               screen='capture', error=error_msg)
+        curr_data, error_msg, status_code, fatal = build_original_data(request.form)
+        session['curr_data'] = curr_data
+
+        if fatal:
+            err = 'Failed to process bankruptcy amendment application id:%s - Error code: %s' \
+                  % (session['worklist_id'], str(status_code))
+            logging.error(err)
+            return render_template('error.html', error_msg=err), status_code
+
+    if error_msg != '':
+        return render_template('bank_amend/retrieve.html', images=session['images'], current_page=0,
+                               data=curr_data, application=session, error_msg=error_msg)
+    else:
+        if request.form['wob_ref'] == '' or request.form['pab_ref'] == '':
+
+            return redirect('/view_original_details')
+        else:
+
+            return render_template('bank_amend/retrieve_with_data.html', images=session['images'], current_page=0,
+                                   data=session['original_regns'], curr_data=curr_data, application=session,
+                                   screen='capture', error=error_msg)
+
+
+@app.route('/re_enter_registration', methods=['GET'])
+def re_enter_registration():
+    return render_template('bank_amend/retrieve.html', images=session['images'], current_page=0,
+                           data=session['curr_data'], application=session)
 
 
 @app.route('/view_original_details', methods=['GET'])
 def view_original_details():
-    return render_template('bank_amend_details.html', images=session['images'], current_page=0,
+    print(json.dumps(session['original_regns']))
+    return render_template('bank_amend/amend_details.html', images=session['images'], current_page=0,
                            data=session['original_regns'], application=session, screen='capture')
 
 
@@ -320,7 +342,7 @@ def process_amended_details():
     # print('result', result)
     # return Response(json.dumps(result), status=200, mimetype='application/json')
 
-    return render_template('bank_amend_verify.html', images=session['images'], current_page=0,
+    return render_template('bank_amend/check.html', images=session['images'], current_page=0,
                            data=session['parties'])
 
 
@@ -331,13 +353,10 @@ def amendment_capture(page):
     # For returning from verification screen
 
     if page == 'key_no':
-        page_template = 'bank_amend_key_no.html'
+        page_template = 'bank_amend/key_no.html'
         data = session
-    elif page == 'court':
-        page_template = 'bank_amend_court.html'
-        data = session['court_info']
     else:
-        page_template = 'bank_amend_debtor.html'
+        page_template = 'bank_amend/amend_details.html'
         data = session['parties']
 
     return render_template(page_template,
@@ -375,7 +394,7 @@ def process_search_name(application_type):
     for k in request.form:
         request_data[k] = request.form[k]
 
-    return render_template('search_customer.html', images=session['images'], application=session['application_dict'],
+    return render_template('searches/customer.html', images=session['images'], application=session['application_dict'],
                            application_type=session['application_type'], current_page=0,
                            backend_uri=app.config['CASEWORK_API_URL'], data=request_data)
 
@@ -384,7 +403,7 @@ def process_search_name(application_type):
 def back_to_search_name():
     logging.info('Entering search name')
 
-    return render_template('search_info.html', images=session['images'], application=session['application_dict'],
+    return render_template('searches/info.html', images=session['images'], application=session['application_dict'],
                            application_type=session['application_type'], current_page=0,
                            backend_uri=app.config['CASEWORK_API_URL'])
 
@@ -437,7 +456,7 @@ def submit_search():
 @app.route('/start_rectification', methods=["GET"])
 def start_rectification():
     session['application_type'] = "rectify"
-    return render_template('rect_retrieve.html')
+    return render_template('rectification/retrieve.html')
 
 
 @app.route('/get_details', methods=["POST"])
@@ -466,7 +485,7 @@ def get_registration_details():
 
     if error_msg is not None:
         if application_type == 'lc_rect':
-            template = 'rectification_retrieve.html'
+            template = 'rectification/retrieve.html'
         elif application_type == 'cancel':
             template = 'canc_retrieve.html'
         else:
@@ -478,7 +497,7 @@ def get_registration_details():
         data = response.json()
         template = ''
         if application_type == 'lc_rect':
-            template = 'rectification_amend.html'
+            template = 'rectification/amend.html'
         elif application_type == 'amend':
             template = 'regn_amend.html'
         elif application_type == 'cancel':
@@ -502,12 +521,12 @@ def rectification_capture():
 
     if len(result['error']) == 0:
         session['rectification_details'] = entered_fields
-        return render_template('rectification_check.html', application_type=session['application_type'], data={},
+        return render_template('rectification/check.html', application_type=session['application_type'], data={},
                                images=session['images'], application=session['application_dict'],
                                details=session['rectification_details'], screen='verify',
                                current_page=0)
     else:
-        return render_template('rectification_amend.html', application_type=session['application_type'],
+        return render_template('rectification/amend.html', application_type=session['application_type'],
                                images=session['images'], application=session['application_dict'],
                                current_page=0, errors=result['error'], curr_data=entered_fields,
                                screen='capture', data=session['application_dict'])
@@ -516,7 +535,7 @@ def rectification_capture():
 @app.route('/rectification_capture', methods=['GET'])
 def return_to_rectification_amend():
     # For returning from check rectification screen
-    return render_template('rectification_amend.html',
+    return render_template('rectification/amend.html',
                            application_type=session['application_type'],
                            data=session['application_dict'],
                            images=session['images'],
@@ -529,7 +548,7 @@ def return_to_rectification_amend():
 @app.route('/rectification_customer', methods=['GET'])
 def rectification_capture_customer():
     logging.info('rectification_capture_customer')
-    return render_template('rectification_customer.html', images=session['images'],
+    return render_template('rectification/customer.html', images=session['images'],
                            application=session['application_dict'],
                            application_type=session['application_type'], current_page=0,
                            backend_uri=app.config['CASEWORK_API_URL'])
@@ -629,7 +648,7 @@ def get_land_charge_capture():
 
 @app.route('/land_charge_verification', methods=['GET'])
 def land_charge_verification():
-    return render_template('lc_regn_verify.html', application_type=session['application_type'], data={},
+    return render_template('lc_regn/verify.html', application_type=session['application_type'], data={},
                            images=session['images'], application=session['application_dict'],
                            details=session['register_details'], screen='verify',
                            current_page=0)
@@ -642,7 +661,7 @@ def lc_verify_details():
 
 @app.route('/conveyancer_and_fees', methods=['GET'])
 def conveyancer_and_fees():
-    return render_template('lc_regn_customer.html', application_type=session['application_type'], data={},
+    return render_template('lc_regn/customer.html', application_type=session['application_type'], data={},
                            images=session['images'], application=session['application_dict'],
                            screen='customer', backend_uri=app.config['CASEWORK_API_URL'], current_page=0)
 
@@ -790,22 +809,22 @@ def get_totals():
 def page_required(appn_type, sub_type=''):
     if appn_type == 'lc_regn':
         page = {
-            'K1': 'k1234.html',
-            'K2': 'k1234.html',
-            'K3': 'k1234.html',
-            'K4': 'k1234.html',
+            'K1': 'lc_regn/k1234.html',
+            'K2': 'lc_regn/k1234.html',
+            'K3': 'lc_regn/k1234.html',
+            'K4': 'lc_regn/k1234.html',
         }
         return page[sub_type]
 
     else:
         html_page = {
-            "bank_amend": "regn_retrieve.html",
+            "bank_amend": "bank_amend/retrieve.html",
             "cancel": "canc_retrieve.html",
-            "bank_regn": "bank_regn_court.html",
-            "search_full": "search_info.html",
-            "search_bank": "search_info.html",
+            "bank_regn": "bank_regn/court.html",
+            "search_full": "searches/info.html",
+            "search_bank": "searches/info.html",
             "oc": "regn_retrieve.html",
-            "lc_rect": "rectification_retrieve.html",
+            "lc_rect": "rectification/retrieve.html",
             "lc_pn": "priority_notice_capture.html"
         }
         return html_page.get(appn_type)

@@ -18,7 +18,8 @@ def get_original_data(number, date):
 def build_original_data(data):
     wob_originals = []
     pab_originals = []
-    if data['wob_ref'] != ' ':
+    print(data)
+    if data['wob_ref'] != '':
         wob_date_as_list = data['wob_date'].split("/")  # dd/mm/yyyy
         number = data['wob_ref']
         date = '%s-%s-%s' % (wob_date_as_list[2], wob_date_as_list[1], wob_date_as_list[0])
@@ -27,19 +28,23 @@ def build_original_data(data):
         wob_data, wob_status_code = get_original_data(number, date)
         if wob_status_code == 200:
             wob_originals = wob_data['parties'][0]['names']
+
     else:
         wob_data = {}
         wob_status_code = 200
 
-    if data['pab_ref'] != ' ':
+    if data['pab_ref'] != '':
+
         pab_date_as_list = data['pab_date'].split("/")  # dd/mm/yyyy
         number = data['pab_ref']
         date = '%s-%s-%s' % (pab_date_as_list[2], pab_date_as_list[1], pab_date_as_list[0])
         session['pab_entered'] = {'date': date,
                                   'number': number}
+
         pab_data, pab_status_code = get_original_data(number, date)
         if pab_status_code == 200:
             pab_originals = pab_data['parties'][0]['names']
+
     else:
         pab_data = {}
         pab_status_code = 200
@@ -56,12 +61,13 @@ def build_original_data(data):
                          'number': data['pab_ref'],
                          'originals': pab_originals}
                  }
+
     fatal = False
-    error_msg = ' '
+    error_msg = ''
     status_code = wob_status_code
 
     if wob_status_code == 200 and pab_status_code == 200:
-        error_msg = ' '
+        error_msg = ''
     elif wob_status_code == 404 and pab_status_code == 404:
         error_msg = 'No details held for the PAB and WOB entered, please check and re-key.'
     elif wob_status_code == 404:

@@ -1,0 +1,151 @@
+{% extends "/page_template/base.html" %}
+{% block page_specific_head %}
+
+<script>
+</script>
+
+{% endblock %}
+
+{% block maincontent %}
+
+<div class="spacer-10"></div>
+
+<h1 class="title-36">Rectification</h1>
+
+<div class="spacer-5"></div>
+
+<div class="text-16-gray">
+    1. Retrieve original &nbsp;&nbsp;
+    2. View and amend original &nbsp;&nbsp;
+    <span class="text-16-bold">3. Check details</span> &nbsp;&nbsp;
+    4. Conveyancer and fees &nbsp;&nbsp;
+</div>
+<div class="spacer-40"></div>
+<div class="grid-row">
+    <div class="col four">
+
+        <div class="grid-row">
+            <div class="text-19-gray col ten">Class of charge</div>
+            <div class="col two"><a href="rectification_capture" id="change_class">Change</a></div>
+        </div>
+        <div class="grid-row-padded-line bottom-line">
+            <span class="text-16-bold col four">Class and subclass</span>
+            <span class="col two">&nbsp;</span>
+            <span class="text-16 col six">
+            {% if details.class == 'C(I)' %} C1
+            {% elif details.class == 'C(II)' %} C2
+            {% elif details.class == 'C(III)' %} C3
+            {% elif details.class == 'C(IV)' %} C4
+            {% elif details.class == 'D(I)' %} D1
+            {% elif details.class == 'D(II)' %} D2
+            {% elif details.class == 'D(III)' %} D3
+            {% else %}
+                {{details.class}}
+            {% endif %}
+            </span>
+        </div>
+
+        <div class="grid-row">
+            <div class="text-19-gray col ten">Particulars of land affected</div>
+            <div class="col two"><a href="rectification_capture" id="change_particulars">Change</a></div>
+        </div>
+        <div class="grid-row-padded-line">
+            <span class="text-16-bold col four">County or unitary authority area</span>
+            <span class="col two">&nbsp;</span>
+            <span class="text-16 col six">{{details.county|join(', ')}}</span>
+        </div>
+        <div class="grid-row-padded-line">
+            <span class="text-16-bold col four">District</span>
+            <span class="col two">&nbsp;</span>
+            <span class="text-16 col six">{{details.district}}</span>
+        </div>
+        <div class="grid-row-padded-line bottom-line">
+            <span class="text-16-bold col four">Short description</span>
+            <span class="col two">&nbsp;</span>
+            <span class="text-16 col six">{{details.short_description}}</span>
+        </div>
+
+        <div>
+            <div class="grid-row">
+                <div class="text-19-gray col ten">Estate owner details</div>
+                <div class="col two"><a href="rectification_capture" id="change_name">Change</a></div>
+            </div>
+            {% if details.estate_owner_ind == 'Private Individual' %}
+                <div class="grid-row-padded-line">
+                    <span class="text-16-bold col four">Forename</span>
+                    <span class="col two">&nbsp;</span>
+                    <span class="text-16 col six">{{details.estate_owner.private.forenames|join(' ')}}</span>
+                </div>
+                <div class="grid-row-padded-line">
+                    <span class="text-16-bold col four">Surname</span>
+                    <span class="col two">&nbsp;</span>
+                    <span class="text-16 col six">{{details.estate_owner.private.surname}}</span>
+                </div>
+            {% elif details.estate_owner_ind == 'County Council' or
+            details.estate_owner_ind == 'Parish Council' or
+            details.estate_owner_ind == 'Other Council' %}
+                <div class="grid-row-padded-line">
+                    <label for="fullname" class="text-16-bold col four">Full Name</label>
+                    <input type="text" autofocus id="fullname" class="col six form-textfield-verify"/>
+                </div>
+                <div class="grid-row-padded-line">
+                    <label for="area" class="text-16-bold col four">Area</label>
+                    <input type="text" class="col six form-textfield-verify" id="area"/>
+                </div>
+            {% elif details.estate_owner_ind == 'Development Corporation' or
+            details.estate_owner_ind == 'Other' %}
+                <div class="grid-row-padded-line">
+                    <label for="corpname" class="text-16-bold col four">Name</label>
+                    <input type="text" autofocus id="corpname" class="col six form-textfield-verify"/>
+                </div>
+            {% elif details.estate_owner_ind == 'Limited Company' %}
+                <div class="grid-row-padded-line">
+                    <label for="company" class="text-16-bold col four">Company Name</label>
+                    <input type="text" autofocus id="company" class="col six form-textfield-verify"/>
+                </div>
+            {% elif details.estate_owner_ind == 'Complex Name' %}
+                <div class="grid-row-padded-line">
+                    <span class="text-16-bold col four">Name</span>
+                    <span class="col two">&nbsp;</span>
+                    <span class="text-16-bold col four">{{details.estate_owner.complex.name}}</span>
+                </div>
+                <div class="grid-row-padded-line">
+                    <span class="text-16-bold col four">Number</span>
+                    <span class="col two">&nbsp;</span>
+                    <span class="text-16-bold col six">{{details.estate_owner.complex.number}}</span>
+                </div>
+            {% endif %}
+            <div class="grid-row-padded-line bottom-line">
+                <span class="text-16-bold col five">Title, trade or profession</span>
+                <span class="col one">&nbsp;</span>
+                <span class="text-16 col six">{{details.occupation}}</span>
+            </div>
+        </div>
+        <div class="grid-row">
+            <div class="text-19-gray col ten">Additional information</div>
+            <div class="col two"><a href="rectification_capture" id="change_addl_info">Change</a></div>
+        </div>
+        <div class="grid-row-padded-line bottom-line">
+            <span class="text-16-bold col four">Information</span>
+            <span class="col two">&nbsp;</span>
+            <span class="text-16 col six">{{details.additional_info}}</span>
+        </div>
+
+        <div class="spacer-30"></div>
+        <div>
+            <a href="rectification_customer" id="continue" class="form-button no-link-style">Continue</a>
+        </div>
+    </div>
+
+    <!-- ///////////////////////////////// end of data entry form ///////////////////////////////// -->
+    <div class="col one"><p></p></div>
+    <!-- /////////////////////////////////  Include image tool ///////////////////////////////// -->
+    <div class="col seven">
+    {% include 'includes/image_view_body.html' %}
+
+    <!-- ///////////////////////////////// End of image tool ///////////////////////////////// -->
+    </div>
+
+</div>
+
+{% endblock %}

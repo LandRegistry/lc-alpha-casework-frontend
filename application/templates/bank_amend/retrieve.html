@@ -1,0 +1,78 @@
+{% extends "/page_template/base.html" %}
+
+{% block page_specific_head %}
+{% endblock %}
+{% block maincontent %}
+
+{% if 'wob' in curr_data %}
+    {% set wob_date = curr_data.wob.date %}
+    {% set wob_number = curr_data.wob.number %}
+{% endif %}
+{% if 'pab' in curr_data %}
+    {% set pab_date = curr_data.pab.date %}
+    {% set pab_number = curr_data.pab.number %}
+{% endif %}
+
+
+<div class="spacer-10"></div>
+
+<h1 class="title-36">Bankruptcy amendment</h1>
+
+<div class="spacer-5"></div>
+
+<div class="text-16-gray">
+    <span class="text-16-bold">1. Retrieve original</span> &nbsp;&nbsp;
+    2. View and amend &nbsp;&nbsp;
+    3. Check details &nbsp;&nbsp;
+    4. Key number &nbsp;&nbsp;
+</div>
+
+<div class="grid-row">
+    <div class="col four" id="form_panel">
+        <!-- ///////////////////////////////// data entry form ///////////////////////////////// -->
+        <form id="rectify_form" action="/get_original_bankruptcy" method="POST">
+            <div class="spacer-40"></div>
+            <h2 class="text-24-bold">Retrieve original(s)</h2>
+            <div class="spacer-10"></div>
+            <div id="errorBlock" {% if error_msg|length > 0 %}class="error_block"{% endif %}>
+                {% if error_msg|length > 0 %}
+                <span id="key_no_error" class="error_text">{{error_msg}}</span>
+                {% endif %}
+                <div class="form">
+                    <label class="form-label" for="wob_ref">WOB reference number</label><br/>
+                    <input class="form-textfield width-50"  aria-required="true" type="text" id="wob_ref" name="wob_ref" value="{% if 'wob' in data %}{{data.wob.number}}{% endif %}"/>
+                </div>
+                <div class="form">
+                    <label class="form-label" for="wob_date">Date of registration</label><br/>
+                    <input class="form-textfield width-50"  aria-required="true" type="text" placeholder="dd/mm/yyyy" id="wob_date" name="wob_date" value="{% if 'wob' in data%}{{data.wob.date}}{% endif %}"/>
+                </div>
+                <div class="spacer-40"></div>
+                <div class="form">
+                    <label class="form-label" for="pab_ref">PAB reference number</label><br/>
+                    <input class="form-textfield width-50"  aria-required="true" type="text" id="pab_ref" name="pab_ref" value="{% if 'pab' in data%}{{data.pab.number}}{% endif %}"/>
+                </div>
+                <div class="form">
+                    <label class="form-label" for="pab_date">Date of registration</label><br/>
+                    <input class="form-textfield width-50"   aria-required="true" type="text" placeholder="dd/mm/yyyy" id="pab_date" name="pab_date" value="{% if 'pab' in data%}{{data.pab.date}}{% endif %}"/>
+                </div>
+            </div>
+            <div class="spacer-40"></div>
+            <input id="continue" type="submit" value="Continue" class="form-button"/>
+            <div class="spacer-40"></div>
+        </form>
+    </div>
+    <!-- ///////////////////////////////// end of data entry form ///////////////////////////////// -->
+    <div class="col one"><p></p></div>
+    <!-- /////////////////////////////////  Include image tool ///////////////////////////////// -->
+
+    <div class="col seven">
+        <div class="spacer-40"></div>
+        {% include 'includes/image_view_body.html' %}
+    </div>
+    <!-- ///////////////////////////////// End of image tool ///////////////////////////////// -->
+
+</div>
+
+
+
+{% endblock %}
