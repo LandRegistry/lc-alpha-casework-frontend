@@ -387,3 +387,7 @@ body {
 
 .pd-left-10 { padding-left: 10px; }
 .mr-btm-10 { margin-bottom: 10px; }
+
+.right {
+    float: right;
+}
