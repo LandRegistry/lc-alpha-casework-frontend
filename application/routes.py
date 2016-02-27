@@ -216,7 +216,6 @@ def check_court_details():
 
 @app.route('/process_debtor_details', methods=['POST'])
 def process_debtor_details():
-    print('request****', request.form)
     logging.info('processing debtor details')
 
     session['parties'] = get_debtor_details(request.form)
@@ -317,7 +316,6 @@ def re_enter_registration():
 
 @app.route('/view_original_details', methods=['GET'])
 def view_original_details():
-
     return render_template('bank_amend/amend_details.html', images=session['images'], current_page=0,
                            data=session['original_regns'], application=session, screen='capture')
 
@@ -389,7 +387,7 @@ def submit_banks_amendment():
             logging.error(err)
             return render_template('error.html', error_msg=err), response.status_code
         else:
-            return redirect('/get_list?appn=amend', code=302, Response=None)
+            return redirect('/get_list?appn=bank_amend', code=302, Response=None)
 
 # ===== end of amendment routes  ===========
 

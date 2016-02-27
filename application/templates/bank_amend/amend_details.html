@@ -101,7 +101,6 @@
                 <input class="form-textfield" type="text" id="surname_1" required name="surname_1" value="{{data.parties[0].names[0].private.surname}}">
             </div>
 
-
             {% for name in data.parties[0].names %}
             {% if loop.index > 1 %}
             <div class="spacer-20"></div>
@@ -196,7 +195,9 @@
 <script>
 
     jQuery(document).ready(function(){
-        setupCountyAutocomplete("#county_1");
+        for (i = 1; i <= {{data.parties[0].addresses|length }}; i++) {
+            setupCountyAutocomplete("#county_" + i);
+        }
     });
 
 
