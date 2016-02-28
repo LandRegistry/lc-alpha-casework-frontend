@@ -360,6 +360,7 @@ def amendment_capture():
                            current_page=0,
                            errors=[])
 
+
 @app.route('/amendment_key_no', methods=['GET'])
 def amendment_key_no():
     return render_template('bank_amend/key_no.html',
@@ -489,6 +490,9 @@ def get_registration_details():
         application_json = response.json()
         if application_json['status'] == 'cancelled' or application_json['status'] == 'superseded':
             error_msg = "Application has been cancelled or amended - please re-enter"
+        elif 'amends_registration' in application_json:
+            if application_json['amends_registration']['type'] == 'Cancellation':
+                error_msg = "Registration has been cancelled - please re-eneter"
 
     #  check if part cans has been selected for a bankruptcy
     application_json = response.json()
