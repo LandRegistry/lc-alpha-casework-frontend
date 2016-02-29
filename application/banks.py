@@ -19,7 +19,6 @@ def get_original_data(number, date):
 def build_original_data(data):
     wob_originals = []
     pab_originals = []
-    print(data)
     if data['wob_ref'] != '':
         wob_date_as_list = data['wob_date'].split("/")  # dd/mm/yyyy
         number = data['wob_ref']
@@ -62,6 +61,8 @@ def build_original_data(data):
         session['original_regns'] = wob_data
     else:
         session['original_regns'] = pab_data
+        # form type needs to be set to PAB to ensure class of charge set correctly.
+        session['application_dict']['form'] = 'PAB'
 
     curr_data = {'wob': {'date': data['wob_date'],
                          'number': data['wob_ref'],
@@ -70,7 +71,6 @@ def build_original_data(data):
                          'number': data['pab_ref'],
                          'originals': pab_originals}
                  }
-
 
     fatal = False
     error_msg = ''
@@ -210,11 +210,9 @@ def register_bankruptcy(key_number):
             application['wob_original'] = session['wob_entered']
         if 'pab_entered' in session:
             application['pab_original'] = session['pab_entered']
-        print('amend application is ****', json.dumps(application))
         url = app.config['CASEWORK_API_URL'] + '/applications/' + session['worklist_id'] + '?action=amend'
     else:
         url = app.config['CASEWORK_API_URL'] + '/applications/' + session['worklist_id'] + '?action=complete'
-        print('reg application is ****', json.dumps(application))
 
     headers = {'Content-Type': 'application/json', 'X-Transaction-ID': session['transaction_id']}
     response = requests.put(url, data=json.dumps(application), headers=headers)

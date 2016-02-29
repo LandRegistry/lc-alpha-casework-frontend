@@ -93,7 +93,7 @@
             <div class="spacer-10"></div>
             <div class="form">
                 <label class="form-label">Forename(s)</label>
-                <input class="form-textfield" type="text" id="forenames_1" name="forenames_1" autofocus value="{{data.parties[0].names[0].private.forenames[0]}}">
+                <input class="form-textfield" type="text" id="forenames_1" name="forenames_1" autofocus value="{{data.parties[0].names[0].private.forenames|join(' ')}}">
             </div>
 
             <div class="form">
@@ -101,14 +101,13 @@
                 <input class="form-textfield" type="text" id="surname_1" required name="surname_1" value="{{data.parties[0].names[0].private.surname}}">
             </div>
 
-
             {% for name in data.parties[0].names %}
             {% if loop.index > 1 %}
             <div class="spacer-20"></div>
 
             <div class="form">
                 <label class="form-label">Forename(s)</label>
-                <input class="form-textfield" type="text" name="forenames_{{loop.index}}" id="forenames_{{loop.index}}" value="{{name.private.forenames[0]}}">
+                <input class="form-textfield" type="text" name="forenames_{{loop.index}}" id="forenames_{{loop.index}}" value="{{name.private.forenames|join(' ')}}">
             </div>
 
             <div class="form">
@@ -196,7 +195,9 @@
 <script>
 
     jQuery(document).ready(function(){
-        setupCountyAutocomplete("#county_1");
+        for (i = 1; i <= {{data.parties[0].addresses|length }}; i++) {
+            setupCountyAutocomplete("#county_" + i);
+        }
     });
 
 

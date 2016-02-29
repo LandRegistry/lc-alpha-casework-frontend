@@ -49,15 +49,15 @@
 
             <div class="grid-row-padded-line">
                 {% for address in data[0].addresses %}
-                <span class="text-16-bold col five">{% if loop.index == 1 %}Address{% else %}&nbsp;{% endif %}</span>
-            <span class="text-16 col seven" id="address_{{loop.index}}">
-                {% for line in address.address_lines %}
-                    {{line}}<br/>
-                {% endfor %}
-                {{ address.county }}<br/>
-                {{ address.postcode }}
-                {% if loop.index < data[0].addresses|length %}<hr>{% endif %}
-            </span>
+                <div class="text-16-bold col five">{% if loop.index == 1 %}Address{% else %}&nbsp;{% endif %}</div>
+                <div class="text-16 col seven address" id="address_{{loop.index}}" >
+                    {% for line in address.address_lines %}
+                        {{line}}<br/>
+                    {% endfor %}
+                    {{ address.county }}<br/>
+                    {{ address.postcode }}
+                    {% if loop.index < data[0].addresses|length %} <hr/> {% endif %}
+            </div>
                 {% endfor %}
             </div>
 
@@ -98,8 +98,6 @@
         {% include 'includes/image_view_body.html' %}
     </div>
     <!-- ///////////////////////////////// End of image tool ///////////////////////////////// -->
-
-</div>
 
 </div>
 

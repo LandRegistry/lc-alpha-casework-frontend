@@ -121,7 +121,6 @@ def application_start(application_type, appn_id, form):
 
     # Lock application if not in session otherwise assume user has refreshed the browser after select an application
     if 'worklist_id' not in session:
-        print('LOCK APPLICATION')
         url = app.config['CASEWORK_API_URL'] + '/applications/' + appn_id + '/lock'
         session['transaction_id'] = appn_id
         response = requests.post(url, headers={'X-Transaction-ID': session['transaction_id']})
@@ -231,6 +230,8 @@ def check_court_details():
 
 @app.route('/process_debtor_details', methods=['POST'])
 def process_debtor_details():
+    logging.info('processing debtor details')
+
     session['parties'] = get_debtor_details(request.form)
 
     return render_template('bank_regn/verify.html', images=session['images'], current_page=0,
@@ -330,7 +331,6 @@ def re_enter_registration():
 
 @app.route('/view_original_details', methods=['GET'])
 def view_original_details():
-
     return render_template('bank_amend/amend_details.html', images=session['images'], current_page=0,
                            data=session['original_regns'], application=session, screen='capture',
                            transaction=session['transaction_id'])
@@ -364,6 +364,7 @@ def amendment_capture():
                            current_page=0,
                            errors=[],
                            transaction=session['transaction_id'])
+
 
 @app.route('/amendment_key_no', methods=['GET'])
 def amendment_key_no():
@@ -402,7 +403,7 @@ def submit_banks_amendment():
             logging.error(err)
             return render_template('error.html', error_msg=err), response.status_code
         else:
-            return redirect('/get_list?appn=amend', code=302, Response=None)
+            return redirect('/get_list?appn=bank_amend', code=302, Response=None)
 
 # ===== end of amendment routes  ===========
 
@@ -496,6 +497,9 @@ def get_registration_details():
         application_json = response.json()
         if application_json['status'] == 'cancelled' or application_json['status'] == 'superseded':
             error_msg = "Application has been cancelled or amended - please re-enter"
+        elif 'amends_registration' in application_json:
+            if application_json['amends_registration']['type'] == 'Cancellation':
+                error_msg = "Registration has been cancelled - please re-eneter"
 
     #  check if part cans has been selected for a bankruptcy
     application_json = response.json()
@@ -510,7 +514,7 @@ def get_registration_details():
         if application_type == 'lc_rect':
             template = 'rectification/retrieve.html'
         elif application_type == 'cancel':
-            template = 'canc_retrieve.html'
+            template = 'cancellation/canc_retrieve.html'
         else:
             template = 'regn_retrieve.html'
         return render_template(template, application_type=application_type,
@@ -526,7 +530,7 @@ def get_registration_details():
             template = 'regn_amend.html'
         elif application_type == 'cancel':
             data['full_cans'] = request.form['full_cans']
-            template = 'canc_check.html'
+            template = 'cancellation/canc_check.html'
         return render_template(template, data=session['application_dict'],
                                images=session['images'], current_page=0, curr_data=data,
                                transaction=session['transaction_id'])
@@ -596,7 +600,7 @@ def submit_rectification():
 def cancellation_capture_customer():
     if 'addl_info' in request.form:
         session["addl_info"] = request.form["addl_info"]
-    return render_template('canc_customer.html', images=session['images'],
+    return render_template('cancellation/canc_customer.html', images=session['images'],
                            application=session['application_dict'],
                            application_type=session['application_type'], current_page=0,
                            backend_uri=app.config['CASEWORK_FRONTEND_URL'], transaction=session['transaction_id'])
@@ -818,7 +822,7 @@ def page_required(appn_type, sub_type=''):
     else:
         html_page = {
             "bank_amend": "bank_amend/retrieve.html",
-            "cancel": "canc_retrieve.html",
+            "cancel": "cancellation/canc_retrieve.html",
             "bank_regn": "bank_regn/court.html",
             "search_full": "searches/info.html",
             "search_bank": "searches/info.html",
@@ -899,7 +903,6 @@ def reprints():
         request_id = request.args["request_id"]
 
         url = app.config['CASEWORK_API_URL'] + '/reprints/search?request_id=' + request_id
-        print("url -- ", url)
         response = requests.get(url)
         return send_file(BytesIO(response.content), as_attachment=False, attachment_filename='reprint.pdf',
                          mimetype='application/pdf')
@@ -919,7 +922,6 @@ def generate_reprints():
         registration_no = request.form["k22_reg_no"]
         reg_date = request.form["k22_reg_date"].split("/")  # dd/mm/yyyy
         registration_date = '%s-%s-%s' % (reg_date[2], reg_date[1], reg_date[0])
-        print('reg date***', registration_date)
         url = app.config['CASEWORK_API_URL'] + '/reprints/'
         url += 'registration?registration_no=' + registration_no + '&registration_date=' + registration_date
         response = requests.get(url)
