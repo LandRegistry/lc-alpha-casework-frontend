@@ -38,9 +38,14 @@
         var a = 0;
         var host = "{{config.CASEWORK_FRONTEND_URL}}";
 
+        var transid = document.getElementById('transaction_id').value;
+
         jQuery.ajax({
             url: host + '/counties?welsh=no',
             type: 'GET',
+            headers: {
+                'X-Transaction-ID': transid
+            },
             counties: {},
             success: function( counties ) {
                 jQuery(element).autocomplete({
@@ -61,11 +66,15 @@
         jQuery('<input class="form-textfield" type="text" id="' + fldnam + '" name="' + fldnam+ '"> \
                 <div class="spacer-10"><div>').insertBefore("#addcounty");
         n ++;
+        var transid = document.getElementById('transaction_id').value;
 
 		jQuery.ajax({
 		'async': false,
         url: '{{config.CASEWORK_FRONTEND_URL}}/counties?welsh=no',
         type: 'GET',
+        headers: {
+            'X-Transaction-ID': transid
+        },
         counties: {},
         success: function( counties ) {
             jQuery("#"+fldnam).autocomplete({
@@ -147,9 +156,14 @@
     function addComplexName(){
         var insertName = document.getElementById("complex_name_addition").value;
         var insertNumber = document.getElementById("complex_number_addition").value;
+        var transid = document.getElementById('transaction_id').value;
+
         jQuery.ajax( {
             url: '{{config.CASEWORK_API_URL}}/complex_names/' + insertName + '/' + insertNumber,
             type: 'POST',
+            headers: {
+                'X-Transaction-ID': transid
+            },
             data: {},
             success: function( data ) {
                 jQuery('#modal_add').replaceWith($('<p id="modal_add" class="text-16">Complex name added please close.</p>'));
@@ -165,7 +179,7 @@
     }
 
     function getComplexName(){
-
+        var transid = document.getElementById('transaction_id').value;
         $('body').addClass('stop-scrolling');
         var enteredName = jQuery('#complex_name_field').val().trim();
         clearPreviousResults();
@@ -174,6 +188,9 @@
                 url: '{{config.CASEWORK_API_URL}}/complex_names/' + enteredName,
                 type: 'GET',
                 data: {},
+                headers: {
+                    'X-Transaction-ID': transid
+                },
                 success: function( data ) {
                     jQuery('#modal_message').replaceWith($('<p id="modal_message" class="text-16">Please select a complex name from the list</p>'));
                     jQuery('#add_complex_name').replaceWith($('<a href="#here" id="add_complex_name" data-dismiss="modal" onclick="addComplexNameModal();" class="link-14-right">Add a complex name</a>'));

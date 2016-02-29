@@ -1,5 +1,6 @@
 <script>
     function getCustomerDetails(obj){
+        var transid = document.getElementById('transaction_id').value;
         jQuery('#customer_name').val("");
         jQuery('#customer_address').val("");
         jQuery('#error_msg').html("");
@@ -11,6 +12,9 @@
                 url: '{{backend_uri}}/keyholders/' + obj.value,
 
                 type: 'GET',
+                headers: {
+                    'X-Transaction-ID': transid
+                },
                 data: {},
                 success: function( data ) {
 
