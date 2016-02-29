@@ -121,7 +121,6 @@ def application_start(application_type, appn_id, form):
 
     # Lock application if not in session otherwise assume user has refreshed the browser after select an application
     if 'worklist_id' not in session:
-        print('LOCK APPLICATION')
         url = app.config['CASEWORK_API_URL'] + '/applications/' + appn_id + '/lock'
         response = requests.post(url)
         if response.status_code == 404:
@@ -507,7 +506,7 @@ def get_registration_details():
         if application_type == 'lc_rect':
             template = 'rectification/retrieve.html'
         elif application_type == 'cancel':
-            template = 'canc_retrieve.html'
+            template = 'cancellation/canc_retrieve.html'
         else:
             template = 'regn_retrieve.html'
         return render_template(template, application_type=application_type,
@@ -522,7 +521,7 @@ def get_registration_details():
             template = 'regn_amend.html'
         elif application_type == 'cancel':
             data['full_cans'] = request.form['full_cans']
-            template = 'canc_check.html'
+            template = 'cancellation/canc_check.html'
         return render_template(template, data=session['application_dict'],
                                images=session['images'], current_page=0, curr_data=data)
 
@@ -591,7 +590,7 @@ def submit_rectification():
 def cancellation_capture_customer():
     if 'addl_info' in request.form:
         session["addl_info"] = request.form["addl_info"]
-    return render_template('canc_customer.html', images=session['images'],
+    return render_template('cancellation/canc_customer.html', images=session['images'],
                            application=session['application_dict'],
                            application_type=session['application_type'], current_page=0,
                            backend_uri=app.config['CASEWORK_API_URL'])
@@ -826,7 +825,7 @@ def page_required(appn_type, sub_type=''):
     else:
         html_page = {
             "bank_amend": "bank_amend/retrieve.html",
-            "cancel": "canc_retrieve.html",
+            "cancel": "cancellation/canc_retrieve.html",
             "bank_regn": "bank_regn/court.html",
             "search_full": "searches/info.html",
             "search_bank": "searches/info.html",
@@ -907,7 +906,6 @@ def reprints():
         request_id = request.args["request_id"]
 
         url = app.config['CASEWORK_API_URL'] + '/reprints/search?request_id=' + request_id
-        print("url -- ", url)
         response = requests.get(url)
         return send_file(BytesIO(response.content), as_attachment=False, attachment_filename='reprint.pdf',
                          mimetype='application/pdf')
@@ -927,7 +925,6 @@ def generate_reprints():
         registration_no = request.form["k22_reg_no"]
         reg_date = request.form["k22_reg_date"].split("/")  # dd/mm/yyyy
         registration_date = '%s-%s-%s' % (reg_date[2], reg_date[1], reg_date[0])
-        print('reg date***', registration_date)
         url = app.config['CASEWORK_API_URL'] + '/reprints/'
         url += 'registration?registration_no=' + registration_no + '&registration_date=' + registration_date
         response = requests.get(url)
