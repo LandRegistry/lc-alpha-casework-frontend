@@ -19,7 +19,6 @@ def get_original_data(number, date):
 def build_original_data(data):
     wob_originals = []
     pab_originals = []
-    print(data)
     if data['wob_ref'] != '':
         wob_date_as_list = data['wob_date'].split("/")  # dd/mm/yyyy
         number = data['wob_ref']
@@ -211,11 +210,9 @@ def register_bankruptcy(key_number):
             application['wob_original'] = session['wob_entered']
         if 'pab_entered' in session:
             application['pab_original'] = session['pab_entered']
-        print('amend application is ****', json.dumps(application))
         url = app.config['CASEWORK_API_URL'] + '/applications/' + session['worklist_id'] + '?action=amend'
     else:
         url = app.config['CASEWORK_API_URL'] + '/applications/' + session['worklist_id'] + '?action=complete'
-        print('reg application is ****', json.dumps(application))
 
     headers = {'Content-Type': 'application/json', 'X-Transaction-ID': session['transaction_id']}
     response = requests.put(url, data=json.dumps(application), headers=headers)
