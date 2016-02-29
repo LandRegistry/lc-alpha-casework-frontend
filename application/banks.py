@@ -61,6 +61,8 @@ def build_original_data(data):
         session['original_regns'] = wob_data
     else:
         session['original_regns'] = pab_data
+        # form type needs to be set to PAB to ensure class of charge set correctly.
+        session['application_dict']['form'] = 'PAB'
 
     curr_data = {'wob': {'date': data['wob_date'],
                          'number': data['wob_ref'],
@@ -69,7 +71,6 @@ def build_original_data(data):
                          'number': data['pab_ref'],
                          'originals': pab_originals}
                  }
-
 
     fatal = False
     error_msg = ''
