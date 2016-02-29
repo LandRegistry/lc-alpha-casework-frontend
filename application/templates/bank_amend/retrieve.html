@@ -30,7 +30,7 @@
 <div class="grid-row">
     <div class="col four" id="form_panel">
         <!-- ///////////////////////////////// data entry form ///////////////////////////////// -->
-        <form id="rectify_form" action="/get_original_bankruptcy" method="POST">
+        <form action="/get_original_bankruptcy" method="POST">
             <div class="spacer-40"></div>
             <h2 class="text-24-bold">Retrieve original(s)</h2>
             <div class="spacer-10"></div>
@@ -40,7 +40,7 @@
                 {% endif %}
                 <div class="form">
                     <label class="form-label" for="wob_ref">WOB reference number</label><br/>
-                    <input class="form-textfield width-50"  aria-required="true" type="text" id="wob_ref" name="wob_ref" value="{% if 'wob' in data %}{{data.wob.number}}{% endif %}"/>
+                    <input class="form-textfield width-50" autofocus  aria-required="true" type="text" id="wob_ref" name="wob_ref" value="{% if 'wob' in data %}{{data.wob.number}}{% endif %}"/>
                 </div>
                 <div class="form">
                     <label class="form-label" for="wob_date">Date of registration</label><br/>

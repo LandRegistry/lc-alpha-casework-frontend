@@ -1,4 +1,5 @@
 from application import app
+from application.logformat import format_message
 from flask import session
 import requests
 import logging
@@ -21,10 +22,10 @@ def submit_lc_cancellation(data):
     if 'cancellation_type' in session:
             application['update_registration'] = {'type': session['cancellation_type']}
     url = app.config['CASEWORK_API_URL'] + '/applications/' + session['worklist_id'] + '?action=cancel'
-    headers = {'Content-Type': 'application/json'}
+    headers = {'Content-Type': 'application/json', 'X-Transaction-ID': session['transaction_id']}
     response = requests.put(url, data=json.dumps(application), headers=headers)
     if response.status_code == 200:
-        logging.info("200 response here")
+        logging.info(format_message("Cancellation submitted to CASEWORK_API"))
         data = response.json()
         if 'cancellations' in data:
             reg_list = []

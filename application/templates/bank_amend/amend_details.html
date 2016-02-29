@@ -21,7 +21,7 @@
     function addAddress(sender){
         a++;
         jQuery('<div class="form"> \
-                <label class="form-label">Address</label><div class="right"><a href="remove_address/' +a+ '" class="link-16" id="remove_address_' +a+ '">Remove address</a> \
+                <label class="form-label">Address</label><div class="right"><a href="remove_address/' +a+ '" class="link-16" id="remove_address_' +a+ '">Remove address</a></div> \
                 <input class="form-textfield mr-btm-10" type="text" id="add_' +a+ '_line1" name="add_' +a+ '_line1" value=""> \
                 <input class="form-textfield mr-btm-10" type="text" id="add_' +a+ '_line2" name="add_' +a+ '_line2" value=""> \
                 <input class="form-textfield mr-btm-10" type="text" id="add_' +a+ '_line3" name="add_' +a+ '_line3" value=""> \
@@ -101,7 +101,6 @@
                 <input class="form-textfield" type="text" id="surname_1" required name="surname_1" value="{{data.parties[0].names[0].private.surname}}">
             </div>
 
-
             {% for name in data.parties[0].names %}
             {% if loop.index > 1 %}
             <div class="spacer-20"></div>
@@ -179,8 +178,6 @@
             </div>
             <div class="spacer-40"></div>
             <input id="continue" type="submit" value="Continue" class="form-button"/>
-            <div class="spacer-20"></div>
-            <a href="/get_list?appn=bank_regn" class="link-16">Return to this application later</a>
             <div class="spacer-40"></div>
         </form>
     </div>
@@ -198,7 +195,9 @@
 <script>
 
     jQuery(document).ready(function(){
-        setupCountyAutocomplete("#county_1");
+        for (i = 1; i <= {{data.parties[0].addresses|length }}; i++) {
+            setupCountyAutocomplete("#county_" + i);
+        }
     });
 
 

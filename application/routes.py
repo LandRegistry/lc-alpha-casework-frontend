@@ -1,4 +1,5 @@
 from application import app
+from application.logformat import format_message
 from flask import Response, request, render_template, session, redirect, url_for, send_file
 import requests
 from datetime import datetime
@@ -22,20 +23,27 @@ from io import BytesIO
 
 @app.before_request
 def before_request():
-    logging.info("BEGIN %s %s [%s] (%s)",
-                 request.method, request.url, request.remote_addr, request.__hash__())
+    # tid = "T:" + session['transaction_id'] if 'transaction_id' in session else ''
+    # logging.info("%s %s %s [%s]",
+    #              tid, request.method, request.url, request.remote_addr)
+    pass
 
 
 @app.after_request
 def after_request(response):
-    logging.info('END %s %s [%s] (%s) -- %s',
-                 request.method, request.url, request.remote_addr, request.__hash__(),
-                 response.status)
+    # tid = "T:" + session['transaction_id'] if 'transaction_id' in session else ''
+    # logging.info('%s %s %s [%s] -- %s',
+    #              tid, request.method, request.url, request.remote_addr,
+    #              response.status)
     return response
 
 
 @app.route('/', methods=["GET"])
 def index():
+    if 'transaction_id' in session:
+        logging.info(format_message('End transaction %s'), session['transaction_id'])
+        del(session['transaction_id'])
+
     if 'worklist_id' in session:
         url = app.config['CASEWORK_API_URL'] + '/applications/' + session['worklist_id'] + '/lock'
         requests.delete(url)
@@ -47,6 +55,10 @@ def index():
 
 @app.route('/get_list', methods=["GET"])
 def get_list():
+    if 'transaction_id' in session:
+        logging.info(format_message('End transaction %s'), session['transaction_id'])
+        del(session['transaction_id'])
+
     # check if confirmation message is required
     if 'confirmation' in session:
         result = session['confirmation']
@@ -105,6 +117,7 @@ def get_list_of_applications(requested_worklist, result, error_msg):
 
 @app.route('/application_start/<application_type>/<appn_id>/<form>', methods=["GET"])
 def application_start(application_type, appn_id, form):
+    logging.info("T:%s Start %s Application", appn_id, form)
 
     # Lock application if not in session otherwise assume user has refreshed the browser after select an application
     if 'worklist_id' not in session:
@@ -135,7 +148,7 @@ def application_start(application_type, appn_id, form):
     session.clear()
     set_session_variables({'images': images, 'document_id': document_id,
                            'application_type': application_type, 'worklist_id': appn_id,
-                           'application_dict': application_json})
+                           'application_dict': application_json, 'transaction_id': appn_id})
 
     application = session['application_dict']
 
@@ -195,7 +208,6 @@ def check_court_details():
             application['legal_body_ref_no'] + '/' + application['legal_body_ref_year']
         response = requests.get(url)
         if response.status_code == 200:
-            logging.info("200 response here")
             session['current_registrations'] = json.loads(response.text)
             return render_template('bank_regn/court.html', images=session['images'], current_page=0,
                                    data=session['court_info'], application=session,
@@ -210,13 +222,12 @@ def check_court_details():
         else:
             err = 'Failed to process bankruptcy registration application id:%s - Error code: %s' \
                   % (session['worklist_id'], str(response.status_code))
-            logging.error(err)
+            logging.error(format_message(err))
             return render_template('error.html', error_msg=err), response.status_code
 
 
 @app.route('/process_debtor_details', methods=['POST'])
 def process_debtor_details():
-    print('request****', request.form)
     logging.info('processing debtor details')
 
     session['parties'] = get_debtor_details(request.form)
@@ -250,7 +261,7 @@ def bankruptcy_capture(page):
 @app.route('/submit_banks_registration', methods=['POST'])
 def submit_banks_registration():
 
-    logging.info('submitting banks registration')
+    logging.info(format_message('submitting banks registration'))
     key_number = request.form['key_number']
 
     # Check key_number is valid
@@ -272,7 +283,7 @@ def submit_banks_registration():
         if response.status_code != 200:
             err = 'Failed to submit bankruptcy registration application id:%s - Error code: %s' \
                   % (session['worklist_id'], str(response.status_code))
-            logging.error(err)
+            logging.error(format_message(err))
             return render_template('error.html', error_msg=err), response.status_code
         else:
             return redirect('/get_list?appn=bank_regn', code=302, Response=None)
@@ -292,7 +303,7 @@ def get_original_banks_details():
         if fatal:
             err = 'Failed to process bankruptcy amendment application id:%s - Error code: %s' \
                   % (session['worklist_id'], str(status_code))
-            logging.error(err)
+            logging.error(format_message(err))
             return render_template('error.html', error_msg=err), status_code
 
     if error_msg != '':
@@ -317,77 +328,82 @@ def re_enter_registration():
 
 @app.route('/view_original_details', methods=['GET'])
 def view_original_details():
-
     return render_template('bank_amend/amend_details.html', images=session['images'], current_page=0,
                            data=session['original_regns'], application=session, screen='capture')
 
 
 @app.route('/remove_address/<int:addr>', methods=["GET"])
 def remove_address(addr):
-    print("Address ID = " + str(addr))
-    del session['original_regns']['parties'][0]['addresses'][addr]
-    session['data_amended'] = 'true'
+    if addr < len(session['original_regns']['parties'][0]['addresses']):
+        del session['original_regns']['parties'][0]['addresses'][addr]
+        session['data_amended'] = 'true'
 
     return redirect('/view_original_details', code=302, Response=None)
 
 
 @app.route('/process_amended_details', methods=['POST'])
 def process_amended_details():
-    logging.info('processing amended details')
-    # TODO: this is temp until screen there - can be called by postman
-    # data = request.get_json(force=True)
     session['parties'] = get_debtor_details(request.form)
-    # result = get_debtor_details(data)
-    # print('result', result)
-    # return Response(json.dumps(result), status=200, mimetype='application/json')
-    print(json.dumps(session['parties']))
-
     return render_template('bank_amend/check.html', images=session['images'], current_page=0,
                            data=session['parties'])
 
 
-# TODO: need some routing route here for amendments for navigation from verify screen - will wait till screens available
-# TODO: I think it will be something like...
-@app.route('/amendment_capture/<page>', methods=['GET'])
-def amendment_capture(page):
-    # For returning from verification screen
+@app.route('/amendment_capture', methods=['GET'])
+def amendment_capture():
+    # For returning from check screen
+    party_data = {'parties': session['parties']}
 
-    if page == 'key_no':
-        page_template = 'bank_amend/key_no.html'
-        data = session
-    else:
-        page_template = 'bank_amend/amend_details.html'
-        data = session['parties']
-
-    return render_template(page_template,
+    return render_template('bank_amend/amend_details.html',
                            application_type=session['application_type'],
-                           data=data,
+                           data=party_data,
                            images=session['images'],
                            current_page=0,
-                           errors=[], from_verify=True)
+                           errors=[])
+
+
+@app.route('/amendment_key_no', methods=['GET'])
+def amendment_key_no():
+    return render_template('bank_amend/key_no.html',
+                           application_type=session['application_type'],
+                           data={},
+                           images=session['images'],
+                           current_page=0,
+                           errors=[])
 
 
 @app.route('/submit_banks_amendment', methods=['POST'])
 def submit_banks_amendment():
-    logging.info('submitting banks amendment')
+    logging.info(format_message('submitting banks amendment'))
     key_number = request.form['key_number']
-    response = register_bankruptcy(key_number)
+
+    # Check key_number is valid
+    url = app.config['CASEWORK_API_URL'] + '/keyholders/' + key_number
+    response = requests.get(url)
 
     if response.status_code != 200:
-        err = 'Failed to submit bankruptcy amendment application id:%s - Error code: %s' \
-              % (session['worklist_id'], str(response.status_code))
-        logging.error(err)
-        return render_template('error.html', error_msg=err), response.status_code
+        err = 'This Key number is invalid please re-enter'
+        return render_template('bank_amend/key_no.html',
+                               application_type=session['application_type'],
+                               data=request.form,
+                               images=session['images'],
+                               current_page=0,
+                               error_msg=err)
     else:
-        return redirect('/get_list?appn=amend', code=302, Response=None)
+        response = register_bankruptcy(key_number)
+
+        if response.status_code != 200:
+            err = 'Failed to submit bankruptcy amendment application id:%s - Error code: %s' \
+                  % (session['worklist_id'], str(response.status_code))
+            logging.error(err)
+            return render_template('error.html', error_msg=err), response.status_code
+        else:
+            return redirect('/get_list?appn=bank_amend', code=302, Response=None)
 
 # ===== end of amendment routes  ===========
 
 
 @app.route('/process_search_name/<application_type>', methods=['POST'])
 def process_search_name(application_type):
-    logging.info('Entering search name')
-
     process_search_criteria(request.form, application_type)
 
     request_data = {}
@@ -401,8 +417,6 @@ def process_search_name(application_type):
 
 @app.route('/back_to_search_name', methods=['GET'])
 def back_to_search_name():
-    logging.info('Entering search name')
-
     return render_template('searches/info.html', images=session['images'], application=session['application_dict'],
                            application_type=session['application_type'], current_page=0,
                            backend_uri=app.config['CASEWORK_API_URL'])
@@ -410,7 +424,7 @@ def back_to_search_name():
 
 @app.route('/submit_search', methods=['POST'])
 def submit_search():
-    logging.info('Entering submit search')
+    logging.info(format_message('Submitting submit search'))
 
     customer = {
         'key_number': request.form['key_number'],
@@ -438,8 +452,8 @@ def submit_search():
         session['search_result'] = []
         delete_from_worklist(session['worklist_id'])
     else:
-        logging.error('Unexpected return code: %d', response.status_code)
-        logging.error(response.text)
+        logging.error(format_message('Unexpected return code: %d', response.status_code))
+        logging.error(format_message(response.text))
         return render_template('error.html', error_msg=response.text)
 
     session['confirmation'] = {'reg_no': []}
@@ -476,6 +490,9 @@ def get_registration_details():
         application_json = response.json()
         if application_json['status'] == 'cancelled' or application_json['status'] == 'superseded':
             error_msg = "Application has been cancelled or amended - please re-enter"
+        elif 'amends_registration' in application_json:
+            if application_json['amends_registration']['type'] == 'Cancellation':
+                error_msg = "Registration has been cancelled - please re-eneter"
 
     #  check if part cans has been selected for a bankruptcy
     application_json = response.json()
@@ -512,15 +529,10 @@ def get_registration_details():
 
 @app.route('/rectification_capture', methods=['POST'])
 def rectification_capture():
-
-    logging.info(request.form)
-
     result = validate_land_charge(request.form)
     entered_fields = build_lc_inputs(request.form)
 
     entered_fields['class'] = result['class']
-
-    logging.info(entered_fields)
 
     if len(result['error']) == 0:
         session['rectification_details'] = entered_fields
@@ -550,7 +562,6 @@ def return_to_rectification_amend():
 
 @app.route('/rectification_customer', methods=['GET'])
 def rectification_capture_customer():
-    logging.info('rectification_capture_customer')
     return render_template('rectification/customer.html', images=session['images'],
                            application=session['application_dict'],
                            application_type=session['application_type'], current_page=0,
@@ -559,14 +570,14 @@ def rectification_capture_customer():
 
 @app.route('/submit_rectification', methods=['POST'])
 def submit_rectification():
-    logging.info('Entering submit_rectification')
+    logging.info(format_message('Submitting rectification'))
     response = submit_lc_rectification(request.form)
 
     if response.status_code != 200:
         err = 'Failed to submit land charges rectification application id:%s - Error code: %s'.format(
             session['worklist_id'],
             str(response.status_code))
-        logging.error(err)
+        logging.error(format_message(err))
         return render_template('error.html', error_msg=err), response.status_code
     else:
         return redirect('/get_list?appn=lc_rect', code=302, Response=None)
@@ -588,7 +599,7 @@ def cancellation_capture_customer():
 
 @app.route('/submit_cancellation', methods=['POST'])
 def submit_cancellation():
-    logging.info('Entering submit_cancellation', str(request.form))
+    logging.info(format_message('Submitting cancellation'))
     response = submit_lc_cancellation(request.form)
     if response.status_code != 200:
         err = 'Failed to submit cancellation application id:%s - Error code: %s'.format(
@@ -606,14 +617,9 @@ def submit_cancellation():
 
 @app.route('/land_charge_capture', methods=['POST'])
 def land_charge_capture():
-
-    logging.info(request.form)
-
     result = validate_land_charge(request.form)
     entered_fields = build_lc_inputs(request.form)
     entered_fields['class'] = result['class']
-
-    logging.info(entered_fields)
 
     if len(result['error']) == 0:
         # return get_list_of_applications("lc_regn", "")
@@ -668,12 +674,13 @@ def conveyancer_and_fees():
 
 @app.route('/lc_process_application', methods=['POST'])
 def lc_process_application():
+    logging.info(format_message('Submitting LC registration'))
     customer_fee_details = build_customer_fee_inputs(request.form)
     response = submit_lc_registration(customer_fee_details)
     if response.status_code != 200:
         err = 'Failed to submit land charges registration application id:%s - Error code: %s; %s' \
               % (session['worklist_id'], str(response.status_code), response.text)
-        logging.error(err)
+        logging.error(format_message(err))
         return render_template('error.html', error_msg=err), response.status_code
     else:
         return redirect('/get_list?appn=' + session['application_type'], code=302, Response=None)
@@ -838,7 +845,7 @@ def delete_from_worklist(application_id):
         err = 'Failed to delete application ' + application_id + ' from the worklist. Error code:' \
               + str(response.status_code)
 
-        logging.error(err)
+        logging.error(format_message(err))
         raise RuntimeError(err)
 
 

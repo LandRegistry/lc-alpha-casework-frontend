@@ -124,14 +124,14 @@ function validate(sender) {
             <div class="grid-row-padded-line">
                 {% for address in party_data[0].addresses %}
                 <span class="text-16-bold col five">{% if loop.index == 1 %}Address{% else %}&nbsp;{% endif %}</span>
-                <span class="text-16 col seven" id="address_{{loop.index}}">
+                <div class="text-16 col seven" id="address_{{loop.index}}">
                     {% for line in address.address_lines %}
                         {{line}}<br/>
                     {% endfor %}
                     {{ address.county }}<br/>
                     {{ address.postcode }}
-                    {% if loop.index < party_data[0].addresses|length %}<hr>{% endif %}
-                </span>
+                    {% if loop.index < party_data[0].addresses|length %}<hr/>{% endif %}
+                </div>
                 {% endfor %}
             </div>
 
@@ -178,8 +178,6 @@ function validate(sender) {
         {% include 'includes/image_view_body.html' %}
     </div>
     <!-- ///////////////////////////////// End of image tool ///////////////////////////////// -->
-
-</div>
 
 </div>
 

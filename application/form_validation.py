@@ -1,4 +1,5 @@
 from application import app
+from flask import session
 import json
 import requests
 
@@ -15,7 +16,7 @@ def validate_land_charge(data):
         errors.append('class')
 
     # check that any entered counties are valid
-    response = requests.get(app.config['CASEWORK_API_URL'] + '/counties')
+    response = requests.get(app.config['CASEWORK_API_URL'] + '/counties', headers={'X-Transaction-ID': session['transaction_id']})
     counties = json.loads(response.content.decode('utf-8'))
     counties_upper = [county.upper() for county in counties]
     cntr = 0

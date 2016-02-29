@@ -1,4 +1,5 @@
 from application import app
+from application.logformat import format_message
 from flask import Response, request, render_template, session, redirect, url_for
 import requests
 from datetime import datetime
@@ -16,7 +17,6 @@ def process_search_criteria(data, search_type):
     }
     counter = 1
 
-    print(data)
     while True:
 
         name_type = 'nameType_{}'.format(counter)
@@ -91,13 +91,13 @@ def process_search_criteria(data, search_type):
                 }
             }
             url = app.config['CASEWORK_API_URL'] + '/complex_names/search'
-            headers = {'Content-Type': 'application/json'}
+            headers = {'Content-Type': 'application/json', 'X-Transaction-ID': session['transaction_id']}
             comp_name = {
                 'name': data[complex_name],
                 'number': int(data[complex_number])
             }
             response = requests.post(url, data=json.dumps(comp_name), headers=headers)
-            logging.info('POST {} -- {}'.format(url, response))
+            logging.info(format_message('POST {} -- {}'.format(url, response)))
             result = response.json()
 
             for item in result:
@@ -117,7 +117,7 @@ def process_search_criteria(data, search_type):
             name_extracted = True
 
         if search_type == 'search_full' and name_extracted:
-            logging.info('Getting year stuff')
+            logging.debug('Getting year stuff')
             search_item['year_to'] = int(data['year_to_{}'.format(counter)])
             search_item['year_from'] = int(data['year_from_{}'.format(counter)])
 
@@ -161,6 +161,6 @@ def add_counties(result, data):
 def get_translated_county(county_name):
 
     url = app.config['BANKRUPTCY_DATABASE_URL'] + '/county/' + county_name
-    response = requests.get(url)
+    response = requests.get(url, headers={'X-Transaction-ID': session['transaction_id']})
 
     return response.json()
