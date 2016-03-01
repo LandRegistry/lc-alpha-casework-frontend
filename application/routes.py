@@ -459,7 +459,7 @@ def submit_search():
         session['search_result'] = []
         delete_from_worklist(session['worklist_id'])
     else:
-        logging.error(format_message('Unexpected return code: %d', response.status_code))
+        logging.error(format_message('Unexpected return code: %d'), response.status_code)
         logging.error(format_message(response.text))
         return render_template('error.html', error_msg=response.text)
 
