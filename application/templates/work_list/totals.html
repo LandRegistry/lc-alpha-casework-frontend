@@ -22,7 +22,6 @@
                         document.getElementById('bank_with').innerHTML = data.bank_with;
                         document.getElementById('bank_stored').innerHTML = data.bank_stored;
                         document.getElementById('cancel').innerHTML = data.canc;
-                        document.getElementById('cancel_part').innerHTML = data.canc_part;
                         document.getElementById('cancel_stored').innerHTML = data.canc_stored;
                         document.getElementById('search_full').innerHTML = data.search_full;
                         document.getElementById('search_bank').innerHTML = data.search_bank;
@@ -98,7 +97,6 @@
                 </a>
                 <ul class="appn-list">
                     <li><a href="/get_list?appn=cancel">Cancellations (<span id="cancel">{{data['canc']}}</span>)</a></li>
-                    <li><a href="/get_list?appn=cancel_part">Part Cancellations (<span id="cancel_part">{{data['canc_part']}}</span>)</a></li>
                     <li><a href="/get_list?appn=cancel_stored">Stored Applications (<span id="cancel_stored">{{data['canc_stored']}}</span>)</a></li>
                 </ul>
             </div>

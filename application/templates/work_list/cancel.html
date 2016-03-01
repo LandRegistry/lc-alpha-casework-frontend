@@ -31,11 +31,8 @@ $(document).ready(function() {
 
 
 {% if requested_list == 'cancel' %}
-{% set page_title = 'Full Cancellation' %}
+{% set page_title = 'Cancellation' %}
 {% set cancel_selected = 'selected' %}
-{% elif requested_list == 'cancel_part' %}
-{% set page_title = 'Part Cancellation' %}
-{% set part_selected = 'selected' %}
 {% elif requested_list == 'cancel_stored' %}
 {% set page_title = 'Stored' %}
 {% set stored_selected = 'selected' %}
@@ -87,22 +84,6 @@ $(document).ready(function() {
                 </div>
             </a>
             </div>
-
-            <div class="subservice-box">
-                <a class="no-link-style {{part_selected}}" tabindex="2" href="/get_list?appn=cancel_part">
-                <div class="spacer-20"></div>
-                <p class="text-16-bold">Part Cancellations</p>
-                <div class="spacer-30"></div>
-                <div class="indicator" id="canc_part">
-                    {% if data['canc_part'] < 10 %}
-                    <span class="indicator-middle">{{data['canc_part']}}</span>
-                    {% else %}
-                    <span class="indicator-middle-2">{{data['canc_part']}}</span>
-                    {% endif %}
-                </div>
-                </a>
-            </div>
-
             <div class="subservice-box">
                 <a class="no-link-style {{stored_selected}}" tabindex="3" href="/get_list?appn=cancel_stored">
                     <div class="spacer-20"></div>

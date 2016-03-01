@@ -762,7 +762,7 @@ def get_totals():
 
     bank_regn, bank_amend, bank_rect, bank_with, bank_stored = (0,) * 5
     lc_regn, lc_pn, lc_rect, lc_renewal, lc_stored = (0,) * 5
-    canc, canc_part, canc_stored = (0,) * 3
+    canc, canc_stored = (0,) * 2
     search_full, search_bank, = (0,) * 2
     unknown = 0
 
@@ -794,8 +794,6 @@ def get_totals():
                 lc_stored += 1
             elif item['work_type'] == "cancel":
                 canc += 1
-            elif item['work_type'] == "cancel_part":
-                canc_part += 1
             elif item['work_type'] == "cancel_stored":
                 canc_stored += 1
             # elif item['work_type'] == "prt_search":
@@ -811,7 +809,7 @@ def get_totals():
         'bank_regn': bank_regn, 'bank_amend': bank_amend, 'bank_rect': bank_rect,
         'bank_with': bank_with, 'bank_stored': bank_stored,
         'lc_regn': lc_regn, 'lc_pn': lc_pn, 'lc_rect': lc_rect, 'lc_renewal': lc_renewal, 'lc_stored': lc_stored,
-        'canc': canc, 'canc_part': canc_part, 'canc_stored': canc_stored,
+        'canc': canc, 'canc_stored': canc_stored,
         # 'portal': portal,
         'search_full': search_full, 'search_bank': search_bank,
         'unknown': unknown
