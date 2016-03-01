@@ -215,6 +215,7 @@ def register_bankruptcy(key_number):
         url = app.config['CASEWORK_API_URL'] + '/applications/' + session['worklist_id'] + '?action=complete'
 
     headers = {'Content-Type': 'application/json', 'X-Transaction-ID': session['transaction_id']}
+    logging.debug("bankruptcy details: " + json.dumps(application))
     response = requests.put(url, data=json.dumps(application), headers=headers)
     if response.status_code == 200:
         logging.info(format_message("Registration (bank) submitted to CASEWORK_API"))
