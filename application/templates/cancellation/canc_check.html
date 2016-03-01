@@ -124,17 +124,8 @@
                 <span class="text-16 col six">{{curr_data.occupation}}</span>
             </div>
         </div>
-        <div class="grid-row">
-            <div class="text-19-gray col ten">Additional information</div>
-        </div>
-        <div class="grid-row-padded-line bottom-line">
-            <span class="text-16-bold col four">Information</span>
-            <span class="col two">&nbsp;</span>
-            <span class="text-16 col six">{{curr_data.additional_info}}</span>
-        </div>
         <form id="cancel_form" action="/cancellation_customer" method="POST">
             {% if curr_data.full_cans == 'false' %}
-            <div class="spacer-30"></div>
             {% include 'includes/additional_info.html' %}
             {% endif %}
             <div class="spacer-30"></div>

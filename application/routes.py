@@ -46,7 +46,7 @@ def index():
 
     if 'worklist_id' in session:
         url = app.config['CASEWORK_API_URL'] + '/applications/' + session['worklist_id'] + '/lock'
-        requests.delete(url)
+        requests.delete(url, headers={'X-Transaction-ID': session['worklist_id']})
         del(session['worklist_id'])
 
     data = get_totals()
@@ -68,7 +68,7 @@ def get_list():
 
     if 'worklist_id' in session:
         url = app.config['CASEWORK_API_URL'] + '/applications/' + session['worklist_id'] + '/lock'
-        requests.delete(url)
+        requests.delete(url, headers={'X-Transaction-ID': session['worklist_id']})
         del(session['worklist_id'])
 
     return get_list_of_applications(request.args.get('appn'), result, "")
@@ -122,7 +122,8 @@ def application_start(application_type, appn_id, form):
     # Lock application if not in session otherwise assume user has refreshed the browser after select an application
     if 'worklist_id' not in session:
         url = app.config['CASEWORK_API_URL'] + '/applications/' + appn_id + '/lock'
-        response = requests.post(url)
+        session['transaction_id'] = appn_id
+        response = requests.post(url, headers={'X-Transaction-ID': session['transaction_id']})
         if response.status_code == 404:
             error_msg = "This application is being processed by another member of staff, " \
                         "please select a different application."
@@ -131,9 +132,10 @@ def application_start(application_type, appn_id, form):
 
     url = app.config['CASEWORK_API_URL'] + '/applications/' + appn_id
 
-    response = requests.get(url)
+    response = requests.get(url, headers={'X-Transaction-ID': session['transaction_id']})
 
     application_json = response.json()
+    logging.debug(application_json)
     document_id = application_json['application_data']['document_id']
     doc_response = get_form_images(document_id)
     images = []
@@ -165,7 +167,7 @@ def application_start(application_type, appn_id, form):
 
     return render_template(template, application_type=application_type, data=application_json,
                            images=images, application=application, years=years,
-                           current_page=0, errors=[], curr_data=curr_data)
+                           current_page=0, errors=[], curr_data=curr_data, transaction=session['transaction_id'])
 
 
 @app.route('/retrieve_new_reg', methods=["GET"])
@@ -205,12 +207,13 @@ def check_court_details():
         #  call api to see if registration already exists
         url = app.config['CASEWORK_API_URL'] + '/court_check/' + application['legal_body'] + '/' + \
             application['legal_body_ref_no'] + '/' + application['legal_body_ref_year']
-        response = requests.get(url)
+        response = requests.get(url, headers={'X-Transaction-ID': session['transaction_id']})
         if response.status_code == 200:
             session['current_registrations'] = json.loads(response.text)
             return render_template('bank_regn/court.html', images=session['images'], current_page=0,
                                    data=session['court_info'], application=session,
-                                   current_registrations=session['current_registrations'])
+                                   current_registrations=session['current_registrations'],
+                                   transaction=session['transaction_id'])
         elif response.status_code == 404:
             session['current_registrations'] = []
             if 'return_to_verify' in request.form:
@@ -232,7 +235,8 @@ def process_debtor_details():
     session['parties'] = get_debtor_details(request.form)
 
     return render_template('bank_regn/verify.html', images=session['images'], current_page=0,
-                           court_data=session['court_info'], party_data=session['parties'])
+                           court_data=session['court_info'], party_data=session['parties'],
+                           transaction=session['transaction_id'])
 
 
 @app.route('/bankruptcy_capture/<page>', methods=['GET'])
@@ -254,7 +258,7 @@ def bankruptcy_capture(page):
                            data=data,
                            images=session['images'],
                            current_page=0,
-                           errors=[], from_verify=True)
+                           errors=[], from_verify=True, transaction=session['transaction_id'])
 
 
 @app.route('/submit_banks_registration', methods=['POST'])
@@ -265,7 +269,7 @@ def submit_banks_registration():
 
     # Check key_number is valid
     url = app.config['CASEWORK_API_URL'] + '/keyholders/' + key_number
-    response = requests.get(url)
+    response = requests.get(url, headers={'X-Transaction-ID': session['transaction_id']})
 
     if response.status_code != 200:
         err = 'This Key number is invalid please re-enter'
@@ -274,7 +278,7 @@ def submit_banks_registration():
                                data=request.form,
                                images=session['images'],
                                current_page=0,
-                               error_msg=err)
+                               error_msg=err, transaction=session['transaction_id'])
     else:
 
         response = register_bankruptcy(key_number)
@@ -316,19 +320,20 @@ def get_original_banks_details():
 
             return render_template('bank_amend/retrieve_with_data.html', images=session['images'], current_page=0,
                                    data=session['original_regns'], curr_data=curr_data, application=session,
-                                   screen='capture', error=error_msg)
+                                   screen='capture', error=error_msg, transaction=session['transaction_id'])
 
 
 @app.route('/re_enter_registration', methods=['GET'])
 def re_enter_registration():
     return render_template('bank_amend/retrieve.html', images=session['images'], current_page=0,
-                           data=session['curr_data'], application=session)
+                           data=session['curr_data'], application=session, transaction=session['transaction_id'])
 
 
 @app.route('/view_original_details', methods=['GET'])
 def view_original_details():
     return render_template('bank_amend/amend_details.html', images=session['images'], current_page=0,
-                           data=session['original_regns'], application=session, screen='capture')
+                           data=session['original_regns'], application=session, screen='capture',
+                           transaction=session['transaction_id'])
 
 
 @app.route('/remove_address/<int:addr>', methods=["GET"])
@@ -344,7 +349,7 @@ def remove_address(addr):
 def process_amended_details():
     session['parties'] = get_debtor_details(request.form)
     return render_template('bank_amend/check.html', images=session['images'], current_page=0,
-                           data=session['parties'])
+                           data=session['parties'], transaction=session['transaction_id'])
 
 
 @app.route('/amendment_capture', methods=['GET'])
@@ -357,7 +362,8 @@ def amendment_capture():
                            data=party_data,
                            images=session['images'],
                            current_page=0,
-                           errors=[])
+                           errors=[],
+                           transaction=session['transaction_id'])
 
 
 @app.route('/amendment_key_no', methods=['GET'])
@@ -367,7 +373,8 @@ def amendment_key_no():
                            data={},
                            images=session['images'],
                            current_page=0,
-                           errors=[])
+                           errors=[],
+                           transaction=session['transaction_id'])
 
 
 @app.route('/submit_banks_amendment', methods=['POST'])
@@ -377,7 +384,7 @@ def submit_banks_amendment():
 
     # Check key_number is valid
     url = app.config['CASEWORK_API_URL'] + '/keyholders/' + key_number
-    response = requests.get(url)
+    response = requests.get(url, headers={'X-Transaction-ID': session['transaction_id']})
 
     if response.status_code != 200:
         err = 'This Key number is invalid please re-enter'
@@ -386,7 +393,7 @@ def submit_banks_amendment():
                                data=request.form,
                                images=session['images'],
                                current_page=0,
-                               error_msg=err)
+                               error_msg=err, transaction=session['transaction_id'])
     else:
         response = register_bankruptcy(key_number)
 
@@ -411,14 +418,15 @@ def process_search_name(application_type):
 
     return render_template('searches/customer.html', images=session['images'], application=session['application_dict'],
                            application_type=session['application_type'], current_page=0,
-                           backend_uri=app.config['CASEWORK_API_URL'], data=request_data)
+                           backend_uri=app.config['CASEWORK_FRONTEND_URL'], data=request_data,
+                           transaction=session['transaction_id'])
 
 
 @app.route('/back_to_search_name', methods=['GET'])
 def back_to_search_name():
     return render_template('searches/info.html', images=session['images'], application=session['application_dict'],
                            application_type=session['application_type'], current_page=0,
-                           backend_uri=app.config['CASEWORK_API_URL'])
+                           backend_uri=app.config['CASEWORK_FRONTEND_URL'], transaction=session['transaction_id'])
 
 
 @app.route('/submit_search', methods=['POST'])
@@ -440,7 +448,7 @@ def submit_search():
 
     session['search_data'] = search_data
     url = app.config['CASEWORK_API_URL'] + '/searches'
-    headers = {'Content-Type': 'application/json'}
+    headers = {'Content-Type': 'application/json', 'X-Transaction-ID': session['transaction_id']}
     response = requests.post(url, data=json.dumps(search_data), headers=headers)
 
     if response.status_code == 200:
@@ -479,7 +487,7 @@ def get_registration_details():
     date_as_list = request.form['reg_date'].split("/")  # dd/mm/yyyy
     session['reg_date'] = '%s-%s-%s' % (date_as_list[2], date_as_list[1], date_as_list[0])
     url = app.config['CASEWORK_API_URL'] + '/registrations/' + session['reg_date'] + '/' + session['regn_no']
-    response = requests.get(url)
+    response = requests.get(url, headers={'X-Transaction-ID': session['transaction_id']})
     error_msg = None
     if response.status_code == 404:
         error_msg = "Registration not found please re-enter"
@@ -511,7 +519,8 @@ def get_registration_details():
             template = 'regn_retrieve.html'
         return render_template(template, application_type=application_type,
                                error_msg=error_msg, images=session['images'], current_page=0,
-                               reg_no=request.form['reg_no'], reg_date=request.form['reg_date'])
+                               reg_no=request.form['reg_no'], reg_date=request.form['reg_date'],
+                               transaction=session['transaction_id'])
     else:
         data = response.json()
         template = ''
@@ -523,7 +532,8 @@ def get_registration_details():
             data['full_cans'] = request.form['full_cans']
             template = 'cancellation/canc_check.html'
         return render_template(template, data=session['application_dict'],
-                               images=session['images'], current_page=0, curr_data=data)
+                               images=session['images'], current_page=0, curr_data=data,
+                               transaction=session['transaction_id'])
 
 
 @app.route('/rectification_capture', methods=['POST'])
@@ -538,12 +548,12 @@ def rectification_capture():
         return render_template('rectification/check.html', application_type=session['application_type'], data={},
                                images=session['images'], application=session['application_dict'],
                                details=session['rectification_details'], screen='verify',
-                               current_page=0)
+                               current_page=0, transaction=session['transaction_id'])
     else:
         return render_template('rectification/amend.html', application_type=session['application_type'],
                                images=session['images'], application=session['application_dict'],
                                current_page=0, errors=result['error'], curr_data=entered_fields,
-                               screen='capture', data=session['application_dict'])
+                               screen='capture', data=session['application_dict'], transaction=session['transaction_id'])
 
 
 @app.route('/rectification_capture', methods=['GET'])
@@ -556,7 +566,7 @@ def return_to_rectification_amend():
                            application=session['application_dict'],
                            current_page=0,
                            errors=[],
-                           curr_data=session['rectification_details'])
+                           curr_data=session['rectification_details'], transaction=session['transaction_id'])
 
 
 @app.route('/rectification_customer', methods=['GET'])
@@ -564,7 +574,7 @@ def rectification_capture_customer():
     return render_template('rectification/customer.html', images=session['images'],
                            application=session['application_dict'],
                            application_type=session['application_type'], current_page=0,
-                           backend_uri=app.config['CASEWORK_API_URL'])
+                           backend_uri=app.config['CASEWORK_FRONTEND_URL'], transaction=session['transaction_id'])
 
 
 @app.route('/submit_rectification', methods=['POST'])
@@ -593,7 +603,7 @@ def cancellation_capture_customer():
     return render_template('cancellation/canc_customer.html', images=session['images'],
                            application=session['application_dict'],
                            application_type=session['application_type'], current_page=0,
-                           backend_uri=app.config['CASEWORK_API_URL'])
+                           backend_uri=app.config['CASEWORK_FRONTEND_URL'], transaction=session['transaction_id'])
 
 
 @app.route('/submit_cancellation', methods=['POST'])
@@ -634,7 +644,8 @@ def land_charge_capture():
                                errors=result['error'],
                                curr_data=entered_fields,
                                screen='capture',
-                               data=session['application_dict'])
+                               data=session['application_dict'],
+                               transaction=session['transaction_id'])
 
 
 @app.route('/land_charge_capture', methods=['GET'])
@@ -648,7 +659,8 @@ def get_land_charge_capture():
                            application=session['application_dict'],
                            current_page=0,
                            errors=[],
-                           curr_data=session['register_details'])
+                           curr_data=session['register_details'],
+                           transaction=session['transaction_id'])
 
 
 @app.route('/land_charge_verification', methods=['GET'])
@@ -656,7 +668,7 @@ def land_charge_verification():
     return render_template('lc_regn/verify.html', application_type=session['application_type'], data={},
                            images=session['images'], application=session['application_dict'],
                            details=session['register_details'], screen='verify',
-                           current_page=0)
+                           current_page=0, transaction=session['transaction_id'])
 
 
 @app.route('/lc_verify_details', methods=['POST'])
@@ -668,7 +680,8 @@ def lc_verify_details():
 def conveyancer_and_fees():
     return render_template('lc_regn/customer.html', application_type=session['application_type'], data={},
                            images=session['images'], application=session['application_dict'],
-                           screen='customer', backend_uri=app.config['CASEWORK_API_URL'], current_page=0)
+                           screen='customer', backend_uri=app.config['CASEWORK_FRONTEND_URL'], current_page=0,
+                           transaction=session['transaction_id'])
 
 
 @app.route('/lc_process_application', methods=['POST'])
@@ -733,22 +746,6 @@ def date_time_filter(date_str, date_format='%d %B %Y'):
 
 app.jinja_env.filters['date_time_filter'] = date_time_filter
 # end of common routes
-
-
-# @app.route('/acknowledgement', methods=['GET'])
-# def acknowledgement():
-#     data = {
-#         "type": request.args.get('type'),
-#         "reg_no": request.args.get('reg_no'),
-#         "date": request.args.get('date'),
-#         "details": [
-#             {
-#                 "name": request.args.get('name'),
-#                 "particulars": request.args.get('parts')
-#             }
-#         ]
-#     }
-#     return render_template('K22.html', data=data)
 
 
 def get_totals():
@@ -839,7 +836,7 @@ def page_required(appn_type, sub_type=''):
 # TODO: renamed as 'complete', move to back-end?
 def delete_from_worklist(application_id):
     url = app.config['CASEWORK_API_URL'] + '/applications/' + application_id
-    response = requests.delete(url)
+    response = requests.delete(url, headers={'X-Transaction-ID': application_id})
     if response.status_code != 204:
         err = 'Failed to delete application ' + application_id + ' from the worklist. Error code:' \
               + str(response.status_code)
@@ -857,7 +854,7 @@ def set_session_variables(variable_dict):
 @app.route('/images/<int:doc_id>/<int:page_no>', methods=['GET'])
 def get_page_image(doc_id, page_no):
     url = app.config['CASEWORK_API_URL'] + '/forms/' + str(doc_id) + '/' + str(page_no)
-    data = requests.get(url)
+    data = requests.get(url, headers={'X-Transaction-ID': session['transaction_id']})
     return data.content, data.status_code, data.headers.items()
 
 
@@ -865,7 +862,7 @@ def get_page_image(doc_id, page_no):
 @app.route('/images/<int:doc_id>', methods=['GET'])
 def get_form_images(doc_id):
     url = app.config['CASEWORK_API_URL'] + '/forms/' + str(doc_id)
-    data = requests.get(url)
+    data = requests.get(url, headers={'X-Transaction-ID': session['transaction_id']})
     json_data = json.loads(data.content.decode('utf-8'))
     return json.dumps(json_data), data.status_code, data.headers.items()
 
@@ -880,13 +877,13 @@ def get_counties():
         params = "?welsh=no"
 
     url = app.config['CASEWORK_API_URL'] + '/counties' + params
-    data = requests.get(url)
+    data = requests.get(url, headers={'X-Transaction-ID': session['transaction_id']})
     return Response(data, status=200, mimetype='application/json')
 
 
 def get_translated_county(county_name):
     url = app.config['CASEWORK_API_URL'] + '/county/' + county_name
-    response = requests.get(url)
+    response = requests.get(url, headers={'X-Transaction-ID': session['transaction_id']})
     return response.json()
 
 
@@ -971,3 +968,29 @@ def generate_reprints():
     #  return Response(json.dumps(data), status=200, mimetype="application/json")
     #  return Response(json.dumps(results), status=200, mimetype="application/json")
     return render_template('reprint_k18_results.html', curr_data=results)
+
+
+# Some CORS avoidance routes
+
+@app.route('/keyholders/<key_number>', methods=['GET'])
+def get_keyholder(key_number):
+    uri = app.config['CASEWORK_API_URL'] + '/keyholders/' + key_number
+    response = requests.get(uri, headers={'X-Transaction-ID': session['transaction_id']})
+    return Response(response.text, status=response.status_code, mimetype='application/json')
+
+
+@app.route('/complex_names/<name>', methods=['GET'])
+def get_complex_names(name):
+    uri = app.config['CASEWORK_API_URL'] + '/complex_names/' + name
+    response = requests.get(uri, headers={'X-Transaction-ID': session['transaction_id']})
+    return Response(response.text, status=200, mimetype='application/json')
+
+
+@app.route('/complex_names/<name>/<number>', methods=['POST'])
+def insert_complex_name(name, number):
+    uri = app.config['CASEWORK_API_URL'] + '/complex_names/{}/{}'.format(name, number)
+    response = requests.post(uri, headers={
+        'Content-Type': 'application/json',
+        'X-Transaction-ID': session['transaction_id']
+    })
+    return Response(response.text, status=response.status_code, mimetype='application/json')

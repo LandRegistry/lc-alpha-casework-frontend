@@ -142,25 +142,16 @@ def process_search_criteria(data, search_type):
 
 def add_counties(result, data):
     logging.debug('add counties')
+    logging.debug(data)
     counter = 0
     counties = []
     while True:
         county_counter = "county_" + str(counter)
         if county_counter in data and data[county_counter] != '':
-            county_names = get_translated_county(data[county_counter])
-            for item in county_names:
-                counties.append(item)
+            counties.append(data[county_counter])
             logging.debug('Add county ' + data[county_counter])
         else:
             break
         counter += 1
 
     result['county'] = counties
-
-
-def get_translated_county(county_name):
-
-    url = app.config['BANKRUPTCY_DATABASE_URL'] + '/county/' + county_name
-    response = requests.get(url, headers={'X-Transaction-ID': session['transaction_id']})
-
-    return response.json()
