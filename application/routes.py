@@ -21,6 +21,15 @@ from io import BytesIO
 #     return render_template('error.html', error_msg=str(err)), 500
 
 
+def get_headers(headers=None):
+    if headers is None:
+        headers = {}
+
+    if 'transaction-id' in session:
+        headers['X-Transaction-ID'] = session['transaction-id']
+    return headers
+
+
 @app.before_request
 def before_request():
     # tid = "T:" + session['transaction_id'] if 'transaction_id' in session else ''
@@ -123,7 +132,7 @@ def application_start(application_type, appn_id, form):
     if 'worklist_id' not in session:
         url = app.config['CASEWORK_API_URL'] + '/applications/' + appn_id + '/lock'
         session['transaction_id'] = appn_id
-        response = requests.post(url, headers={'X-Transaction-ID': session['transaction_id']})
+        response = requests.post(url, headers=get_headers())
         if response.status_code == 404:
             error_msg = "This application is being processed by another member of staff, " \
                         "please select a different application."
@@ -132,7 +141,7 @@ def application_start(application_type, appn_id, form):
 
     url = app.config['CASEWORK_API_URL'] + '/applications/' + appn_id
 
-    response = requests.get(url, headers={'X-Transaction-ID': session['transaction_id']})
+    response = requests.get(url, headers=get_headers())
 
     application_json = response.json()
     logging.debug(application_json)
@@ -207,7 +216,7 @@ def check_court_details():
         #  call api to see if registration already exists
         url = app.config['CASEWORK_API_URL'] + '/court_check/' + application['legal_body'] + '/' + \
             application['legal_body_ref_no'] + '/' + application['legal_body_ref_year']
-        response = requests.get(url, headers={'X-Transaction-ID': session['transaction_id']})
+        response = requests.get(url, headers=get_headers())
         if response.status_code == 200:
             session['current_registrations'] = json.loads(response.text)
             return render_template('bank_regn/court.html', images=session['images'], current_page=0,
@@ -269,7 +278,7 @@ def submit_banks_registration():
 
     # Check key_number is valid
     url = app.config['CASEWORK_API_URL'] + '/keyholders/' + key_number
-    response = requests.get(url, headers={'X-Transaction-ID': session['transaction_id']})
+    response = requests.get(url, headers=get_headers())
 
     if response.status_code != 200:
         err = 'This Key number is invalid please re-enter'
@@ -384,7 +393,7 @@ def submit_banks_amendment():
 
     # Check key_number is valid
     url = app.config['CASEWORK_API_URL'] + '/keyholders/' + key_number
-    response = requests.get(url, headers={'X-Transaction-ID': session['transaction_id']})
+    response = requests.get(url, headers=get_headers())
 
     if response.status_code != 200:
         err = 'This Key number is invalid please re-enter'
@@ -448,7 +457,7 @@ def submit_search():
 
     session['search_data'] = search_data
     url = app.config['CASEWORK_API_URL'] + '/searches'
-    headers = {'Content-Type': 'application/json', 'X-Transaction-ID': session['transaction_id']}
+    headers = get_headers({'Content-Type': 'application/json'})
     response = requests.post(url, data=json.dumps(search_data), headers=headers)
 
     if response.status_code == 200:
@@ -487,7 +496,7 @@ def get_registration_details():
     date_as_list = request.form['reg_date'].split("/")  # dd/mm/yyyy
     session['reg_date'] = '%s-%s-%s' % (date_as_list[2], date_as_list[1], date_as_list[0])
     url = app.config['CASEWORK_API_URL'] + '/registrations/' + session['reg_date'] + '/' + session['regn_no']
-    response = requests.get(url, headers={'X-Transaction-ID': session['transaction_id']})
+    response = requests.get(url, headers=get_headers())
     error_msg = None
     if response.status_code == 404:
         error_msg = "Registration not found please re-enter"
@@ -854,7 +863,7 @@ def set_session_variables(variable_dict):
 @app.route('/images/<int:doc_id>/<int:page_no>', methods=['GET'])
 def get_page_image(doc_id, page_no):
     url = app.config['CASEWORK_API_URL'] + '/forms/' + str(doc_id) + '/' + str(page_no)
-    data = requests.get(url, headers={'X-Transaction-ID': session['transaction_id']})
+    data = requests.get(url, headers=get_headers())
     return data.content, data.status_code, data.headers.items()
 
 
@@ -862,7 +871,7 @@ def get_page_image(doc_id, page_no):
 @app.route('/images/<int:doc_id>', methods=['GET'])
 def get_form_images(doc_id):
     url = app.config['CASEWORK_API_URL'] + '/forms/' + str(doc_id)
-    data = requests.get(url, headers={'X-Transaction-ID': session['transaction_id']})
+    data = requests.get(url, headers=get_headers())
     json_data = json.loads(data.content.decode('utf-8'))
     return json.dumps(json_data), data.status_code, data.headers.items()
 
@@ -877,13 +886,13 @@ def get_counties():
         params = "?welsh=no"
 
     url = app.config['CASEWORK_API_URL'] + '/counties' + params
-    data = requests.get(url, headers={'X-Transaction-ID': session['transaction_id']})
+    data = requests.get(url, headers=get_headers())
     return Response(data, status=200, mimetype='application/json')
 
 
 def get_translated_county(county_name):
     url = app.config['CASEWORK_API_URL'] + '/county/' + county_name
-    response = requests.get(url, headers={'X-Transaction-ID': session['transaction_id']})
+    response = requests.get(url, headers=get_headers())
     return response.json()
 
 
@@ -975,22 +984,19 @@ def generate_reprints():
 @app.route('/keyholders/<key_number>', methods=['GET'])
 def get_keyholder(key_number):
     uri = app.config['CASEWORK_API_URL'] + '/keyholders/' + key_number
-    response = requests.get(uri, headers={'X-Transaction-ID': session['transaction_id']})
+    response = requests.get(uri, headers=get_headers())
     return Response(response.text, status=response.status_code, mimetype='application/json')
 
 
 @app.route('/complex_names/<name>', methods=['GET'])
 def get_complex_names(name):
     uri = app.config['CASEWORK_API_URL'] + '/complex_names/' + name
-    response = requests.get(uri, headers={'X-Transaction-ID': session['transaction_id']})
+    response = requests.get(uri, headers=get_headers())
     return Response(response.text, status=200, mimetype='application/json')
 
 
 @app.route('/complex_names/<name>/<number>', methods=['POST'])
 def insert_complex_name(name, number):
     uri = app.config['CASEWORK_API_URL'] + '/complex_names/{}/{}'.format(name, number)
-    response = requests.post(uri, headers={
-        'Content-Type': 'application/json',
-        'X-Transaction-ID': session['transaction_id']
-    })
+    response = requests.post(uri, headers=get_headers({'Content-Type': 'application/json'}))
     return Response(response.text, status=response.status_code, mimetype='application/json')
