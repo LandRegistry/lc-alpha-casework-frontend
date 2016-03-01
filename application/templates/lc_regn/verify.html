@@ -11,7 +11,7 @@
 {% include 'includes/lc_nav_title.html' %}
 
 <div class="grid-row">
-    <div class="col four">
+    <div class="col four" id="form_panel">
     <!-- ///////////////////////////////// data entry form ///////////////////////////////// -->
     <form action="/lc_verify_details" method="POST" onsubmit="return validate(this);">
         
@@ -29,16 +29,16 @@
                 <div class="col two"><a href="land_charge_capture">Change</a></div>
             </div>
             <div class="grid-row-padded-line">
-                <label for="forename" class="text-16-bold col four">Forename</label>
+                <label for="forename" class="text-16-bold col five">Forename</label>
                 <input type="text" autofocus id="forename" class="col six form-textfield-verify"/>
             </div>
             <div class="grid-row-padded-line">
-                <label for="surname" class="text-16-bold col four">Surname</label>
+                <label for="surname" class="text-16-bold col five">Surname</label>
                 <input type="text" class="col six form-textfield-verify" id="surname"/>
             </div>
             <div class="grid-row-padded-line bottom-line">
-                <span class="text-16-bold col four">Title, trade or profession</span>
-                <span class="text-16-bold col six">{{details.occupation}}</span>
+                <span class="text-16-bold col five">Title, trade or profession</span>
+                <span class="text-16 col seven">{{details.occupation}}</span>
             </div>
         </div>
 
@@ -55,16 +55,16 @@
                 <div class="col two"><a href="land_charge_capture">Change</a></div>
             </div>
             <div class="grid-row-padded-line">
-                <label for="fullname" class="text-16-bold col four">Full Name</label>
+                <label for="fullname" class="text-16-bold col five">Full Name</label>
                 <input type="text" autofocus id="fullname" class="col six form-textfield-verify"/>
             </div>
             <div class="grid-row-padded-line">
-                <label for="area" class="text-16-bold col four">Area</label>
+                <label for="area" class="text-16-bold col five">Area</label>
                 <input type="text" class="col six form-textfield-verify" id="area"/>
             </div>
             <div class="grid-row-padded-line bottom-line">
-                <span class="text-16-bold col four">Title, trade or profession</span>
-                <span class="text-16-bold col six">{{details.occupation}}</span>
+                <span class="text-16-bold col five">Title, trade or profession</span>
+                <span class="text-16 col seven">{{details.occupation}}</span>
             </div>
         </div>
 
@@ -78,12 +78,12 @@
                 <div class="col two"><a href="land_charge_capture">Change</a></div>
             </div>
             <div class="grid-row-padded-line">
-                <label for="corpname" class="text-16-bold col four">Name</label>
+                <label for="corpname" class="text-16-bold col five">Name</label>
                 <input type="text" autofocus id="corpname" class="col six form-textfield-verify"/>
             </div>
             <div class="grid-row-padded-line bottom-line">
-                <span class="text-16-bold col four">Title, trade or profession</span>
-                <span class="text-16-bold col six">{{details.occupation}}</span>
+                <span class="text-16-bold col five">Title, trade or profession</span>
+                <span class="text-16 col seven">{{details.occupation}}</span>
             </div>
         </div>
 
@@ -96,12 +96,12 @@
                 <div class="col two"><a href="land_charge_capture">Change</a></div>
             </div>
             <div class="grid-row-padded-line">
-                <label for="company" class="text-16-bold col four">Company Name</label>
+                <label for="company" class="text-16-bold col five">Company Name</label>
                 <input type="text" autofocus id="company" class="col six form-textfield-verify"/>
             </div>
             <div class="grid-row-padded-line bottom-line">
-                <span class="text-16-bold col four">Title, trade or profession</span>
-                <span class="text-16-bold col six">{{details.occupation}}</span>
+                <span class="text-16-bold col five">Title, trade or profession</span>
+                <span class="text-16 col seven">{{details.occupation}}</span>
             </div>
         </div>
 
@@ -113,16 +113,16 @@
                 <div class="col two"><a href="land_charge_capture">Change</a></div>
             </div>
             <div class="grid-row-padded-line">
-                <span class="text-16-bold col four">Name</span>
-                <span class="text-16-bold col six">{{details.estate_owner.complex.name}}</span>
+                <span class="text-16-bold col five">Name</span>
+                <span class="text-16 col seven">{{details.estate_owner.complex.name}}</span>
             </div>
             <div class="grid-row-padded-line">
-                <span class="text-16-bold col four">Number</span>
-                <span class="text-16-bold col six">{{details.estate_owner.complex.number}}</span>
+                <span class="text-16-bold col five">Number</span>
+                <span class="text-16 col seven">{{details.estate_owner.complex.number}}</span>
             </div>
             <div class="grid-row-padded-line bottom-line">
-                <span class="text-16-bold col four">Title, trade or profession</span>
-                <span class="text-16-bold col six">{{details.occupation}}</span>
+                <span class="text-16-bold col five">Title, trade or profession</span>
+                <span class="text-16 col seven">{{details.occupation}}</span>
             </div>
         </div>
 
@@ -138,7 +138,7 @@
                 <div class="col two"><a href="land_charge_capture">Change</a></div>
             </div>
             <div class="grid-row-padded-line bottom-line">
-                <label for="coc" class="text-16-bold col four">Class and subclass</label>
+                <label for="coc" class="text-16-bold col five">Class and subclass</label>
                 <!--<input type="text" class="col six form-textfield-verify" id="coc"/>-->
                 <select class="form-select col six" id="coc" name="coc" required aria-required="true">
                     <option id="CNONE" value="CNone"></option>
@@ -168,8 +168,8 @@
             <div class="col two"><a href="land_charge_capture">Change</a></div>
         </div>
         <div class="grid-row-padded-line  bottom-line">
-            <span class="text-16-bold col four">PN Number</span>
-            <span class="text-16-bold col six">{{details.priority_notice}}</span>
+            <span class="text-16-bold col five">PN Number</span>
+            <span class="text-16 col seven">{{details.priority_notice}}</span>
         </div>
         {% endif %}
 
@@ -178,16 +178,16 @@
             <div class="col two"><a href="land_charge_capture">Change</a></div>
         </div>
         <div class="grid-row-padded-line">
-            <span class="text-16-bold col four">County or unitary authority area</span>
-            <span class="text-16-bold col six">{{details.county|join(', ')}}</span>
+            <span class="text-16-bold col five">County or unitary authority area</span>
+            <span class="text-16 col seven">{{details.county|join(', ')}}</span>
         </div>
         <div class="grid-row-padded-line">
-            <span class="text-16-bold col four">District</span>
-            <span class="text-16-bold col six">{{details.district}}</span>
+            <span class="text-16-bold col five">District</span>
+            <span class="text-16 col seven">{{details.district}}</span>
         </div>
         <div class="grid-row-padded-line bottom-line">
-            <span class="text-16-bold col four">Short description</span>
-            <span class="text-16-bold col six">{{details.short_description}}</span>
+            <span class="text-16-bold col five">Short description</span>
+            <span class="text-16 col seven">{{details.short_description}}</span>
         </div>
 
 
@@ -196,8 +196,8 @@
             <div class="col two"><a href="land_charge_capture">Change</a></div>
         </div>
         <div class="grid-row-padded-line bottom-line">
-            <span class="text-16-bold col four">Information</span>
-            <span class="text-16-bold col six">{{details.additional_info}}</span>
+            <span class="text-16-bold col five">Information</span>
+            <span class="text-16 col seven">{{details.additional_info}}</span>
         </div>
 
         <div class="spacer-30"></div>
@@ -381,52 +381,6 @@ function validate(sender) {
     return allOK;
 }
 
-
-        document.getElementById("estateOwnerTypes").onchange = function() {
-        var type = this.value;
-
-        if (type == "privateIndividual") {
-            document.getElementById("private").style.display = 'block';
-            document.getElementById("limited").style.display = 'none';
-            document.getElementById("local").style.display = 'none';
-            document.getElementById("complex").style.display = 'none';
-            document.getElementById("other").style.display = 'none';
-        }
-        if (type == "limitedCompany") {
-            document.getElementById("limited").style.display = 'block';
-            document.getElementById("private").style.display = 'none';
-            document.getElementById("local").style.display = 'none';
-            document.getElementById("complex").style.display = 'none';
-            document.getElementById("other").style.display = 'none';
-        }
-        if (type == "localAuthority") {
-            document.getElementById("local").style.display = 'block';
-            document.getElementById("private").style.display = 'none';
-            document.getElementById("limited").style.display = 'none';
-            document.getElementById("complex").style.display = 'none';
-            document.getElementById("other").style.display = 'none';
-        }
-        if (type == "complexName") {
-            document.getElementById("complex").style.display = 'block';
-            document.getElementById("private").style.display = 'none';
-            document.getElementById("limited").style.display = 'none';
-            document.getElementById("local").style.display = 'none';
-            document.getElementById("other").style.display = 'none';
-        }
-        if (type == "other") {
-            document.getElementById("other").style.display = 'block';
-            document.getElementById("private").style.display = 'none';
-            document.getElementById("limited").style.display = 'none';
-            document.getElementById("local").style.display = 'none';
-            document.getElementById("complex").style.display = 'none';
-        }
-    }
-
-    document.getElementById("private").style.display = 'none';
-    document.getElementById("limited").style.display = 'none';
-    document.getElementById("local").style.display = 'none';
-    document.getElementById("complex").style.display = 'none';
-    document.getElementById("other").style.display = 'none';
 </script>
 
 </div>
