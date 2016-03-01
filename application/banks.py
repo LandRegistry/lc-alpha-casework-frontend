@@ -62,7 +62,7 @@ def build_original_data(data):
     else:
         session['original_regns'] = pab_data
         # form type needs to be set to PAB to ensure class of charge set correctly.
-        session['application_dict']['form'] = 'PAB'
+        session['application_dict']['form'] = 'PA(B) Amend'
 
     curr_data = {'wob': {'date': data['wob_date'],
                          'number': data['wob_ref'],
