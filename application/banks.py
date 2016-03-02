@@ -195,15 +195,16 @@ def register_bankruptcy(key_number):
 
     registration = {'parties': session['parties'],
                     'class_of_charge': class_of_charge,
-                    'applicant': applicant,
-                    'additional_information': session['additional_information']
+                    'applicant': applicant
+                   # 'applicant': applicant,
+                   # 'additional_information': session['additional_information']
                     }
 
     application = {'registration': registration,
                    'application_data': session['application_dict']['application_data'],
                    'form': session['application_dict']['form']}
 
-    if 'Amend' in session['application_dict']['form']:
+    if session['application_type'] == 'bank_amend':
         # TODO: update registration added twice to get around bad structure for rectifications which needs changing!
         application['update_registration'] = {'type': 'Amendment'}
         application['registration']['update_registration'] = {'type': 'Amendment'}
