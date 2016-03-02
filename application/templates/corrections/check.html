@@ -1,0 +1,100 @@
+{% extends "/page_template/base.html" %}
+{% block page_specific_head %}
+
+{% endblock %}
+
+{% block maincontent %}
+
+<div class="spacer-10"></div>
+
+<h1 class="title-36">Correction</h1>
+
+<div class="spacer-5"></div>
+
+<div class="text-16-gray">
+    1. View and correct details &nbsp;&nbsp;
+    <span class="text-16-bold">2. Check details </span>&nbsp;&nbsp;
+</div>
+
+<div class="grid-row">
+    <div class="col four" id="form_panel">
+        <!-- ///////////////////////////////// data entry form ///////////////////////////////// -->
+        <form action="amendment_key_no" method="GET">
+            <div class="spacer-40"></div>
+
+            <div class="grid-row">
+                <div class="text-19-gray col ten">Debtor details</div>
+                <div class="col two"><a href="amendment_capture" id="change_debtor">Change</a></div>
+            </div>
+            <div class="grid-row-padded-line">
+                <span class="text-16-bold col five">Forename</span>
+                <span class="text-16 col seven" id="forename_1" >{{data[0].names[0].private.forenames|join(' ')}}</span>
+            </div>
+            <div class="grid-row-padded-line">
+                <span class="text-16-bold col five">Surname</span>
+                <span class="text-16 col seven" id="surname_1" >{{data[0].names[0].private.surname}}</span>
+            </div>
+            {% if data[0].names|length > 1 %}
+            <div class="grid-row-padded-line">
+                {% for name in data[0].names %}
+                {% if loop.index > 1 %}
+                <span class="text-16-bold col five">{% if loop.index == 2 %}AKA{% else %}&nbsp;{% endif %}</span>
+                <span class="text-16 col seven" id="aka_name_{{loop.index}}">{{name.private.forenames[0]}} {{name.private.surname}}</span>
+                {% endif %}
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <div class="grid-row-padded-line">
+                {% for address in data[0].addresses %}
+                <div class="text-16-bold col five">{% if loop.index == 1 %}Address{% else %}&nbsp;{% endif %}</div>
+                <div class="text-16 col seven address" id="address_{{loop.index}}" >
+                    {% for line in address.address_lines %}
+                        {{line}}<br/>
+                    {% endfor %}
+                    {{ address.county }}<br/>
+                    {{ address.postcode }}
+                    {% if loop.index < data[0].addresses|length %} <hr/> {% endif %}
+            </div>
+                {% endfor %}
+            </div>
+
+            <div class="grid-row-padded-line bottom-line">
+                <span class="text-16-bold col five">Occupation</span>
+                <span class="text-16 col seven" id="occupation" >{{data[0].occupation}}</span>
+            </div>
+
+            <div class="grid-row">
+                <div class="text-19-gray col ten">Particulars of court</div>
+                <div class="col two"><a href="amendment_capture" id="change_court">Change</a></div>
+            </div>
+            <input type="hidden" id="orig_court" value="{{data.legal_body}}"/>
+            <div class="grid-row-padded-line">
+                <span class="text-16-bold col five">Court</span>
+                <span class="text-16 col seven" id="court">{{data[0].legal_body}}</span>
+            </div>
+            <div class="grid-row-padded-line">
+                <span class="text-16-bold col five">Court reference no.</span>
+                <span class="text-16 col seven" id="court_no">{{data[0].legal_body_ref_no}}</span>
+            </div>
+            <div class="grid-row-padded-line">
+                <span class="text-16-bold col five">Year</span>
+                <span class="text-16 col seven" id="court_year">{{data[0].legal_body_ref_year}}</span>
+            </div>
+            <div class="spacer-40"></div>
+            <input id="complete" type="submit" value="Complete" class="form-button"/>
+            <div class="spacer-40"></div>
+        </form>
+    </div>
+
+    <!-- ///////////////////////////////// end of data entry form ///////////////////////////////// -->
+    <div class="col one"><p></p></div>
+    <div class="col one"><p></p></div>
+    <div class="col seven">
+        <div class="spacer-40"></div>
+        <span>Please view application in Image Retrieval if required</span>
+    </div>
+
+</div>
+
+{% endblock %}

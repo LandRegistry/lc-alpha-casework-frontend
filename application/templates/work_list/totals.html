@@ -52,7 +52,7 @@
                 <li><a href="/get_list?appn=bank_amend">Amendments (<span id="bank_amend">{{data['bank_amend']}}</span>)</a></li>
                 <li><a href="b_rc_list">Rectifications (<span id="bank_rect">{{data['bank_rect']}}</span>)</a></li>
                 <li><a href="b_wa_list">Withheld Address (<span id="bank_with">{{data['bank_with']}}</span>)</a></li>
-                <li><a href="b_stored_list">Stored Applications (<span id="bank_stored">{{data['bank_stored']}}</span>)</a></li>
+                <li><a href="b_stored_list">Stored (<span id="bank_stored">{{data['bank_stored']}}</span>)</a></li>
             </ul>
         </div>
     </div>
@@ -68,7 +68,7 @@
                     <li><a href="/get_list?appn=lc_pn">Priority Notices (<span id="lc_prio_not">{{data['lc_pn']}}</span>)</a></li>
                     <li><a href="/get_list?appn=lc_rect">Rectifications (<span id="lc_rect">{{data['lc_rect']}}</span>)</a></li>
                     <li><a href="/get_list?appn=lc_renewal">Renewals (<span id="lc_renewal">{{data['lc_renewal']}}</span>)</a></li>
-                    <li><a href="/get_list?appn=lc_stored">Stored Applications (<span id="lc_stored">{{data['lc_stored']}}</span>)</a></li>
+                    <li><a href="/get_list?appn=lc_stored">Stored (<span id="lc_stored">{{data['lc_stored']}}</span>)</a></li>
                 </ul>
             </div>
     </div>
@@ -92,7 +92,7 @@
                 </a>
                 <ul class="appn-list">
                     <li><a href="/get_list?appn=cancel">Cancellations (<span id="cancel">{{data['canc']}}</span>)</a></li>
-                    <li><a href="/get_list?appn=cancel_stored">Stored Applications (<span id="cancel_stored">{{data['canc_stored']}}</span>)</a></li>
+                    <li><a href="/get_list?appn=cancel_stored">Stored (<span id="cancel_stored">{{data['canc_stored']}}</span>)</a></li>
                 </ul>
             </div>
     </div>
@@ -125,13 +125,12 @@
         </div>
         <div class="col three" >
             <div class="service-box">
-                <a class="no-link-style text-19-bold" href="/get_list?appn=bank_regn">Image Management</a><br/>
-                <a class="no-link-style" href="/get_list?appn=bank_regn">
-                    <img src="/static/images/image_man.png" alt="Image Management">
+                <a class="no-link-style text-19-bold" href="/internal">Internal Functions</a><br/>
+                <a class="no-link-style" href="/internal">
+                    <img src="/static/images/image_man.png" alt="Internal Functions">
                 </a>
                 <ul class="appn-list">
-                    <li><a href="#">Deletions</a></li>
-                    <li><a href="#">Image Management</a></li>
+                    <li><a href="#">Corrections</a></li>
                 </ul>
             </div>
         </div>
