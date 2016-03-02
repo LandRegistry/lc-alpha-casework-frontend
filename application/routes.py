@@ -242,7 +242,7 @@ def process_debtor_details():
     logging.info('processing debtor details')
 
     session['parties'] = get_debtor_details(request.form)
-    session['additional_information'] = request.form['add_info']
+    # session['additional_information'] = request.form['add_info']
 
     return render_template('bank_regn/verify.html', images=session['images'], current_page=0,
                            court_data=session['court_info'], party_data=session['parties'],
@@ -358,7 +358,7 @@ def remove_address(addr):
 @app.route('/process_amended_details', methods=['POST'])
 def process_amended_details():
     session['parties'] = get_debtor_details(request.form)
-    session['additional_information'] = request.form['add_info']
+    # session['additional_information'] = request.form['add_info']
     return render_template('bank_amend/check.html', images=session['images'], current_page=0,
                            data=session['parties'], transaction=session['transaction_id'])
 
