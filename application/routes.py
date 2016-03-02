@@ -350,6 +350,7 @@ def view_original_details():
 @app.route('/remove_address/<int:addr>', methods=["POST"])
 def remove_address(addr):
     session['parties'] = get_debtor_details(request.form)
+    session['original_regns']['additional_information'] = request.form['add_info']
     session['original_regns']['parties'] = session['parties']
     if addr < len(session['original_regns']['parties'][0]['addresses']):
         del session['original_regns']['parties'][0]['addresses'][addr]
