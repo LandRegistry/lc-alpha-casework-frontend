@@ -195,7 +195,8 @@ def register_bankruptcy(key_number):
 
     registration = {'parties': session['parties'],
                     'class_of_charge': class_of_charge,
-                    'applicant': applicant
+                    'applicant': applicant,
+                    'additional_information': session['additional_information']
                     }
 
     application = {'registration': registration,
