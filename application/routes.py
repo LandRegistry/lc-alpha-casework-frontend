@@ -324,10 +324,11 @@ def get_original_banks_details():
                                data=curr_data, application=session, error_msg=error_msg)
     else:
         if request.form['wob_ref'] == '' or request.form['pab_ref'] == '':
-
+            # User has only entered one registration number so ok to proceed
             return redirect('/view_original_details')
         else:
-
+            # User has entered both wob and pab numbers so display screen so user can check they have entered the
+            # correct pab registration before amending it.
             return render_template('bank_amend/retrieve_with_data.html', images=session['images'], current_page=0,
                                    data=session['original_regns'], curr_data=curr_data, application=session,
                                    screen='capture', error=error_msg, transaction=session['transaction_id'])
@@ -342,8 +343,8 @@ def re_enter_registration():
 @app.route('/view_original_details', methods=['GET'])
 def view_original_details():
     return render_template('bank_amend/amend_details.html', images=session['images'], current_page=0,
-                           data=session['original_regns'], application=session, screen='capture',
-                           transaction=session['transaction_id'])
+                           data=session['original_regns'], additional_information=session['original_regns']['additional_information'],
+                           application=session, screen='capture', transaction=session['transaction_id'])
 
 
 @app.route('/remove_address/<int:addr>', methods=["GET"])
@@ -358,9 +359,10 @@ def remove_address(addr):
 @app.route('/process_amended_details', methods=['POST'])
 def process_amended_details():
     session['parties'] = get_debtor_details(request.form)
-    # session['additional_information'] = request.form['add_info']
+    session['additional_information'] = request.form['add_info']
     return render_template('bank_amend/check.html', images=session['images'], current_page=0,
-                           data=session['parties'], transaction=session['transaction_id'])
+                           data=session['parties'], additional_information=session['additional_information'],
+                           transaction=session['transaction_id'])
 
 
 @app.route('/amendment_capture', methods=['GET'])
@@ -374,6 +376,7 @@ def amendment_capture():
                            images=session['images'],
                            current_page=0,
                            errors=[],
+                           additional_information=session['additional_information'],
                            transaction=session['transaction_id'])
 
 
