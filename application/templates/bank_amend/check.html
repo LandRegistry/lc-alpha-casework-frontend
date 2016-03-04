@@ -41,7 +41,7 @@
                 {% for name in data[0].names %}
                 {% if loop.index > 1 %}
                 <span class="text-16-bold col five">{% if loop.index == 2 %}AKA{% else %}&nbsp;{% endif %}</span>
-                <span class="text-16 col seven" id="aka_name_{{loop.index}}">{{name.private.forenames[0]}} {{name.private.surname}}</span>
+                <span class="text-16 col seven" id="aka_name_{{loop.index}}">{{name.private.forenames|join(' ')}} {{name.private.surname}}</span>
                 {% endif %}
                 {% endfor %}
             </div>
@@ -61,10 +61,15 @@
                 {% endfor %}
             </div>
 
-            <div class="grid-row-padded-line bottom-line">
+            <div class="grid-row-padded-line">
                 <span class="text-16-bold col five">Occupation</span>
                 <span class="text-16 col seven" id="occupation" >{{data[0].occupation}}</span>
             </div>
+            <div class="grid-row-padded-line bottom-line">
+                <span class="text-16-bold col five">Additional information</span>
+                <span class="text-16 col seven" id="add_info" >{{additional_information}}</span>
+            </div>
+
 
             <div class="grid-row">
                 <div class="text-19-gray col ten">Particulars of court</div>
