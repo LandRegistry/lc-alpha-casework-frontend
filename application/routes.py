@@ -461,8 +461,8 @@ def get_original_details():
         session['curr_data'] = session['details_entered']
 
         if fatal:
-            err = 'Failed to process correction for %s dated %s - Error code: %s' % request.form['reg_no'], \
-                  request.form['reg_date'], str(status_code)
+            err = 'Failed to process correction for %s dated %s - Error code: %s' \
+                  % (request.form['reg_no'], request.form['reg_date'], str(status_code))
             logging.error(format_message(err))
             return render_template('error.html', error_msg=err), status_code
 
