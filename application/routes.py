@@ -10,7 +10,8 @@ from application.land_charge import build_lc_inputs, build_customer_fee_inputs, 
 from application.search import process_search_criteria
 from application.rectification import convert_response_data, submit_lc_rectification
 from application.cancellation import submit_lc_cancellation
-from application.banks import get_debtor_details, register_bankruptcy, get_original_data, build_original_data
+from application.banks import get_debtor_details, register_bankruptcy, get_original_data, build_original_data, \
+    build_corrections
 from io import BytesIO
 import uuid
 
@@ -443,17 +444,13 @@ def get_original_details():
 
         error_msg = 'A registration number and date must be entered'
     else:
-        # TODO: Temporarily setting up request_data as per amendment 
-        request_data = {'wob_ref': request.form['reg_no'],
-                        'wob_date': request.form['reg_date'],
-                        'pab_ref': '',
-                        'pab_date': ''
-                        }
+        request_data = {'reg_no': request.form['reg_no'],
+                        'reg_date': request.form['reg_date']}
 
         session['transaction_id'] = uuid.uuid4().int  # consider fields[0] if the int is too long; it *should* be OK
 
-        curr_data, error_msg, status_code, fatal = build_original_data(request_data)
-        session['curr_data'] = curr_data
+        error_msg, status_code, fatal = build_corrections(request_data)
+        session['curr_data'] = session['details_entered']
         if fatal:
             err = 'Failed to process correction for %s dated %s - Error code: %s' % request.form['reg_no'], \
                   request.form['reg_date'], str(status_code)
