@@ -53,7 +53,6 @@ def build_original_data(data):
                 pab_originals = pab_data['parties'][0]['names']
 
     else:
-
         pab_data = {}
         pab_status_code = 200
 
@@ -96,6 +95,31 @@ def build_original_data(data):
         fatal = True
 
     return curr_data, error_msg, status_code, fatal
+
+
+def build_corrections(data):
+    date_as_list = data['reg_date'].split("/")  # dd/mm/yyyy
+    number = data['reg_no']
+    date = '%s-%s-%s' % (date_as_list[2], date_as_list[1], date_as_list[0])
+    session['details_entered'] = {'date': date,
+                                  'number': number}
+    orig_data, status_code = get_original_data(number, date)
+    logging.debug("original data for correction" + json.dumps(orig_data))
+    logging.debug("status_code: " + str(status_code))
+
+    fatal = False
+    error_msg = ''
+    if status_code == 200:
+        if orig_data['class_of_charge'] == 'PAB' or orig_data['class_of_charge'] == 'WOB':
+            session['original_regns'] = orig_data
+        else:
+            error_msg = 'This is not a bankruptcy application. Please check and re-key.'
+    elif status_code == 404:
+        error_msg = 'No details held for registration number and date entered. Please check and re-key.'
+    else:
+        fatal = True
+
+    return error_msg, status_code, fatal
 
 
 def get_debtor_details(data):
