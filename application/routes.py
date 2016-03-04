@@ -494,7 +494,7 @@ def correction_capture():
 def submit_banks_correction():
     logging.info(format_message('submitting banks correction'))
 
-    response = register_bankruptcy('1234567')
+    response = register_bankruptcy(None)
 
     if response.status_code != 200:
         err = 'Failed to submit bankruptcy correction for registration :%s dated  - Error code: %s' \

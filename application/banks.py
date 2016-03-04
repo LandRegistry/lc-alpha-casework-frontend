@@ -196,19 +196,25 @@ def get_debtor_details(data):
     return parties
 
 
-def register_bankruptcy(key_number):
-    url = app.config['CASEWORK_API_URL'] + '/keyholders/' + key_number
-    response = requests.get(url, headers={'X-Transaction-ID': session['transaction_id']})
-    text = json.loads(response.text)
-    if response.status_code == 200:
-        cust_address = ' '.join(text['address']['address_lines']) + ' ' + text['address']['postcode']
-        cust_name = ' '.join(text['name'])
-        applicant = {'name': cust_name,
-                     'address': cust_address,
-                     'key_number': key_number,
-                     'reference': ' '}
+def register_bankruptcy(key_number=None):
+    if key_number is None:
+        applicant = {'name': session['original_regns']['customer_details']['customer_name'],
+                     'address': session['original_regns']['customer_details']['customer_address'],
+                     'key_number': session['original_regns']['customer_details']['key_number'],
+                     'reference': session['original_regns']['customer_details']['application_ref']}
     else:
-        return response
+        url = app.config['CASEWORK_API_URL'] + '/keyholders/' + key_number
+        response = requests.get(url, headers={'X-Transaction-ID': session['transaction_id']})
+        text = json.loads(response.text)
+        if response.status_code == 200:
+            cust_address = ' '.join(text['address']['address_lines']) + ' ' + text['address']['postcode']
+            cust_name = ' '.join(text['name'])
+            applicant = {'name': cust_name,
+                         'address': cust_address,
+                         'key_number': key_number,
+                         'reference': ' '}
+        else:
+            return response
 
     if session['application_dict']['form'] == 'PA(B)' or session['application_dict']['form'] == 'PA(B) Amend':
         class_of_charge = 'PAB'
@@ -220,8 +226,6 @@ def register_bankruptcy(key_number):
     registration = {'parties': session['parties'],
                     'class_of_charge': class_of_charge,
                     'applicant': applicant
-        #,
-        #            'additional_information': session['additional_information']
                     }
 
     application = {'registration': registration,
