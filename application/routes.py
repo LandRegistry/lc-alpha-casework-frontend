@@ -345,7 +345,6 @@ def re_enter_registration():
 
 @app.route('/view_original_details', methods=['GET'])
 def view_original_details():
-    print(session['application_type'])
     if session['application_type'] == 'correction':
         template = 'corrections/correct_details.html'
     else:
@@ -476,7 +475,6 @@ def get_original_details():
 @app.route('/process_corrected_details', methods=['POST'])
 def process_corrected_details():
     session['parties'] = get_debtor_details(request.form)
-    print(session['original_regns'])
     return render_template('corrections/check.html', data=session['parties'], transaction=session['transaction_id'])
 
 @app.route('/correction_capture', methods=['GET'])
