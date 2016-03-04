@@ -342,7 +342,12 @@ def re_enter_registration():
 
 @app.route('/view_original_details', methods=['GET'])
 def view_original_details():
-    return render_template('bank_amend/amend_details.html', images=session['images'], current_page=0,
+    if session['application_type'] == 'correction':
+        template = 'corrections/correct_details.html'
+    else:
+        template = 'bank_amend/amend_details.html'
+
+    return render_template(template, images=session['images'], current_page=0,
                            data=session['original_regns'], application=session, screen='capture',
                            transaction=session['transaction_id'])
 
@@ -430,6 +435,8 @@ def start_correction():
 @app.route('/get_original', methods=['POST'])
 def get_original_details():
 
+    session['application_type'] == 'correction'
+
     curr_data = []
     if request.form['reg_no'] == '' or request.form['reg_date'] == '':
 
@@ -458,6 +465,7 @@ def get_original_details():
         return render_template('corrections/correct_details.html',
                                data=session['original_regns'], application=session, screen='capture',
                                transaction=session['transaction_id'])
+
 
 # ===== end of correction routes  ===========
 
