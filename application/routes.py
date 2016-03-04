@@ -222,7 +222,7 @@ def check_court_details():
         response = requests.get(url, headers=get_headers())
         if response.status_code == 200:
             session['current_registrations'] = json.loads(response.text)
-            return render_template('bank_regn/court.html', images=session['images'], current_page=0,
+            return render_template('bank_regn/official.html', images=session['images'], current_page=0,
                                    data=session['court_info'], application=session,
                                    current_registrations=session['current_registrations'],
                                    transaction=session['transaction_id'])
@@ -260,7 +260,7 @@ def bankruptcy_capture(page):
         page_template = 'bank_regn/key_no.html'
         data = session
     elif page == 'court':
-        page_template = 'bank_regn/court.html'
+        page_template = 'bank_regn/official.html'
         data = session['court_info']
     else:
         page_template = 'bank_regn/debtor.html'
@@ -917,7 +917,7 @@ def page_required(appn_type, sub_type=''):
         html_page = {
             "bank_amend": "bank_amend/retrieve.html",
             "cancel": "cancellation/canc_retrieve.html",
-            "bank_regn": "bank_regn/court.html",
+            "bank_regn": "bank_regn/official.html",
             "search_full": "searches/info.html",
             "search_bank": "searches/info.html",
             "oc": "regn_retrieve.html",

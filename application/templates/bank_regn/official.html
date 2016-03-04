@@ -12,7 +12,7 @@
 <div class="spacer-5"></div>
 
 <div class="text-16-gray">
-    <span class="text-16-bold">1. Input court details</span> &nbsp;&nbsp;
+    <span class="text-16-bold">1. Input official details</span> &nbsp;&nbsp;
     2. Input debtor details &nbsp;&nbsp;
     3. Check and verify details &nbsp;&nbsp;
     4. Key number &nbsp;&nbsp;
@@ -24,26 +24,22 @@
         <form id="rectify_form" action="/check_court_details" method="POST">
             {% if from_verify == True %} <input type="hidden" name="return_to_verify" value="true" />{% endif %}
             <div class="spacer-40"></div>
-            <h2 class="text-24-bold">Particulars of court</h2>
+            <h2 class="text-24-bold">Official details</h2>
             <div class="spacer-10"></div>
-            {% if error_msg|length > 0 %}
-            <p class="error"><strong>{{error_msg}}</strong></p>
-            {% endif %}
-            <div class="form">
-                <label class="form-label" for="court">Name</label><br/>
-                <input class="form-textfield width-50" required  aria-required="true" type="text" id="court" name="court" value="{{data.legal_body}}"/>
-            </div>
-            <div class="spacer-20"></div>
-            <h3 class="text-19-bold">Court reference</h3>
-            <div class="spacer-20"></div>
-            <div class="form col five">
-                <label class="form-label" for="ref_no">Number</label><br/>
-                <input class="form-textfield width-75"  required  aria-required="true" type="text" id="ref_no" name="ref_no" value="{{data.legal_body_ref_no}}"/>
-                <span class="form-label width-25 ">of</span>
-            </div>
-            <div class="form col five">
-                <label class="form-label" for="ref_year">Year</label><br/>
-                <input class="form-textfield width-25 numberOnly"  required  aria-required="true" type="text" id="ref_year" name="ref_year" value="{{data.legal_body_ref_year}}"/>
+            <div id="errorBlock" {% if error_msg|length > 0 %}class="error_block"{% endif %}>
+                {% if error_msg|length > 0 %}
+                <span id="key_no_error" class="error_text">{{error_msg}}</span>
+                {% endif %}
+                <div class="form">
+                    <label class="form-label" for="court">Name</label><br/>
+                    <input class="form-textfield" required  aria-required="true" type="text" id="court" name="court" value="{{data.legal_body}}"/>
+                </div>
+                <div class="spacer-20"></div>
+                <div class="form col ">
+                    <label class="form-label" for="ref_no">Reference</label><br/>
+                    <p class="text-indent">For example, 162 of 2016 or BKT387612</p>
+                    <input class="form-textfield"  required  aria-required="true" type="text" id="ref_no" name="ref_no" value="{{data.legal_body_ref_no}}"/>
+                </div>
             </div>
             <div class="spacer-40"></div>
             {% if current_registrations|length >0 %}
