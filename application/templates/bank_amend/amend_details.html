@@ -61,6 +61,7 @@
     }
 
     function removeAddress(add_index){
+        a --;
         jQuery('#amend_form').attr('action', "/remove_address/" + add_index);
         jQuery("#amend_form").submit();
     }
@@ -138,8 +139,8 @@
             {% if data.parties[0].addresses|length > 0 %}
             {% for address in data.parties[0].addresses %}
             <div class="form">
-                <label class="form-label">Address</label><div class="right"><a href="javascript:removeAddress({{loop.index-1}});" class="link-16" id="remove_address_{{loop.index-1}}">Remove address</a></div>
-                <input class="form-textfield mr-btm-10" type="text" id="add_{{loop.index}}_line1" name="add_{{loop.index}}_line1" value="{{address.address_lines[0]}}">
+                <label class="form-label">Address</label><div class="right">{% if loop.index > 1%}<a href="javascript:removeAddress({{loop.index-1}});" class="link-16" id="remove_address_{{loop.index-1}}">Remove address</a>{% endif %}</div>
+                <input class="form-textfield mr-btm-10" type="text" required id="add_{{loop.index}}_line1" name="add_{{loop.index}}_line1" value="{{address.address_lines[0]}}">
                 <input class="form-textfield mr-btm-10" type="text" id="add_{{loop.index}}_line2" name="add_{{loop.index}}_line2" value="{{address.address_lines[1]}}">
                 <input class="form-textfield mr-btm-10" type="text" id="add_{{loop.index}}_line3" name="add_{{loop.index}}_line3" value="{{address.address_lines[2]}}">
                 <input class="form-textfield mr-btm-10" type="text" id="add_{{loop.index}}_line4" name="add_{{loop.index}}_line4" value="{{address.address_lines[3]}}">
@@ -156,7 +157,7 @@
             <div class="spacer-20"></div>
             {% endfor %}
             {% endif %}
-            <script> a = {{ data.parties[0].addresses| length }};</script>
+            <script> a = {{ data.parties[0].addresses| length }} -1;</script>
             <div><a href="#add_address" onclick="addAddress(this)" class="link-16" id="add_address">Add additional address</a></div>
             <div class="spacer-30"></div>
             <h2 class="text-24-bold">Additional information</h2>
