@@ -12,6 +12,8 @@ from application.rectification import convert_response_data, submit_lc_rectifica
 from application.cancellation import submit_lc_cancellation
 from application.banks import get_debtor_details, register_bankruptcy, get_original_data, build_original_data
 from io import BytesIO
+import uuid
+
 
 
 # @app.errorhandler(Exception)
@@ -430,9 +432,19 @@ def get_original_details():
 
     curr_data = []
     if request.form['reg_no'] == '' or request.form['reg_date'] == '':
+
         error_msg = 'A registration number and date must be entered'
     else:
-        curr_data, error_msg, status_code, fatal = build_original_data(request.form)
+        # TODO: Temporarily setting up request_data as per amendment 
+        request_data = {'wob_ref': request.form['reg_no'],
+                        'wob_date': request.form['reg_date'],
+                        'pab_ref': '',
+                        'pab_date': ''
+                        }
+
+        session['transaction_id'] = uuid.uuid4().int  # consider fields[0] if the int is too long; it *should* be OK
+
+        curr_data, error_msg, status_code, fatal = build_original_data(request_data)
         session['curr_data'] = curr_data
         if fatal:
             err = 'Failed to process correction for %s dated %s - Error code: %s' % request.form['reg_no'], \

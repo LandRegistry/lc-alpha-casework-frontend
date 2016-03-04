@@ -8,21 +8,26 @@
 {% block maincontent %}
 
 {% include "includes/side_nav.html" %}
-    <div class="col nine text-19">
-    <div class="spacer-20"></div>
-    <div class="col six">
-        <h2 class="text-24-bold">Corrections</h2>
-        <form id="page_form_K22" action="/??????" method="POST">
-            <div class="column-form width-75" id="K22_form_panel">
 
+    <div class="col nine text-19">
+    <div class="spacer-10"></div>
+    <h1 class="title-36">Internal Functions</h1>
+    <div class="spacer-5"></div>
+    <div class="spacer-20"></div>
+    <div class="grid-row">
+    <div class="col six">
+        <form id="correct_form" action="/get_original" method="POST">
+            <div class="column-form width-75" id="form_panel" >
+                <h2 class="text-24-bold">Corrections</h2>
                 <div class="spacer-20"></div>
 
                 <div class="form">
                     <label class="form-label" for="reg_no">Registration number</label>
-                    <input class="form-textfield" id="reg_no" name="reg_no" type="text" value="{{reg_date}}" autofocus>
+                    <input class="form-textfield" id="reg_no" name="reg_no" type="text" value="{{reg_no}}" autofocus>
                 </div>
                 <div class="form">
                     <label class="form-label" for="reg_date">Date of registration</label><br/>
+                    <p class="text-indent">For example, 31/03/2014</p>
                     <input class="form-textfield width-75 dateEntry"  required  aria-required="true" type="text"
                            placeholder="dd/mm/yyyy" id="reg_date" name="reg_date" value="{{reg_date}}"/>
                 </div>
@@ -33,6 +38,7 @@
                 <input id="continue" type="submit" value="Continue" class="form-button">
             </div>
         </form>
+    </div>
     </div>
 </div>
 <script>
