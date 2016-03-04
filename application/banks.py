@@ -198,10 +198,10 @@ def get_debtor_details(data):
 
 def register_bankruptcy(key_number=None):
     if key_number is None:
-        applicant = {'name': session['original_regns']['customer_details']['customer_name'],
-                     'address': session['original_regns']['customer_details']['customer_address'],
-                     'key_number': session['original_regns']['customer_details']['key_number'],
-                     'reference': session['original_regns']['customer_details']['application_ref']}
+        applicant = {'name': session['original_regns']['applicant']['name'],
+                     'address': session['original_regns']['applicant']['address'],
+                     'key_number': session['original_regns']['applicant']['key_number'],
+                     'reference': session['original_regns']['applicant']['reference']}
     else:
         url = app.config['CASEWORK_API_URL'] + '/keyholders/' + key_number
         response = requests.get(url, headers={'X-Transaction-ID': session['transaction_id']})
@@ -242,6 +242,9 @@ def register_bankruptcy(key_number=None):
             application['pab_original'] = session['pab_entered']
         url = app.config['CASEWORK_API_URL'] + '/applications/' + session['worklist_id'] + '?action=amend'
     elif session['application_type'] == 'correction':
+        # TODO: need to determine is K22 needed, default to True for now
+        application['k22'] = True
+        application['orig_regn'] = session['details_entered']
         application['update_registration'] = {'type': 'Correction'}
         application['registration']['update_registration'] = {'type': 'Correction'}
         url = app.config['CASEWORK_API_URL'] + '/applications/0' + '?action=correction'
