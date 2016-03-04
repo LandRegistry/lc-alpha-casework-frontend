@@ -12,6 +12,8 @@ from application.rectification import convert_response_data, submit_lc_rectifica
 from application.cancellation import submit_lc_cancellation
 from application.banks import get_debtor_details, register_bankruptcy, get_original_data, build_original_data
 from io import BytesIO
+import uuid
+
 
 
 # @app.errorhandler(Exception)
@@ -424,6 +426,48 @@ def submit_banks_amendment():
 
 # ===== end of amendment routes  ===========
 
+# =============== Correction routes ======================
+
+
+#  Do we need to set the transaction id here for logging later?????
+@app.route('/correction', methods=['GET'])
+def start_correction():
+
+    return render_template("corrections/retrieve.html", reg_no="", reg_date="")
+
+@app.route('/get_original', methods=['POST'])
+def get_original_details():
+
+    curr_data = []
+    if request.form['reg_no'] == '' or request.form['reg_date'] == '':
+
+        error_msg = 'A registration number and date must be entered'
+    else:
+        # TODO: Temporarily setting up request_data as per amendment 
+        request_data = {'wob_ref': request.form['reg_no'],
+                        'wob_date': request.form['reg_date'],
+                        'pab_ref': '',
+                        'pab_date': ''
+                        }
+
+        session['transaction_id'] = uuid.uuid4().int  # consider fields[0] if the int is too long; it *should* be OK
+
+        curr_data, error_msg, status_code, fatal = build_original_data(request_data)
+        session['curr_data'] = curr_data
+        if fatal:
+            err = 'Failed to process correction for %s dated %s - Error code: %s' % request.form['reg_no'], \
+                  request.form['reg_date'], str(status_code)
+            logging.error(format_message(err))
+            return render_template('error.html', error_msg=err), status_code
+
+    if error_msg != '':
+        return render_template('corrections/retrieve.html', data=curr_data, application=session, error_msg=error_msg)
+    else:
+        return render_template('corrections/correct_details.html',
+                               data=session['original_regns'], application=session, screen='capture',
+                               transaction=session['transaction_id'])
+
+# ===== end of correction routes  ===========
 
 @app.route('/process_search_name/<application_type>', methods=['POST'])
 def process_search_name(application_type):
@@ -902,11 +946,15 @@ def get_translated_county(county_name):
     return response.json()
 
 
+@app.route('/internal', methods=['GET'])
+def internal():
+       return render_template('work_list/internal.html')
+
 @app.route('/enquiries', methods=['GET'])
 def enquiries():
     curr_data = {'reprint_selected': True, 'estate_owner': {'private': {"forenames": [], "surname": ""},
                                                             'local': {'name': "", "area": ""}, "complex": {"name": ""}}}
-    return render_template('enquiries.html', curr_data=curr_data)
+    return render_template('work_list/enquiries.html', curr_data=curr_data)
 
 
 @app.route('/reprints', methods=['GET'])
