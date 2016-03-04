@@ -344,6 +344,7 @@ def re_enter_registration():
 
 @app.route('/view_original_details', methods=['GET'])
 def view_original_details():
+    print(session['application_type'])
     if session['application_type'] == 'correction':
         template = 'corrections/correct_details.html'
     else:
@@ -356,9 +357,11 @@ def view_original_details():
 
 @app.route('/remove_address/<int:addr>', methods=["POST"])
 def remove_address(addr):
+
     session['parties'] = get_debtor_details(request.form)
-    session['original_regns']['additional_information'] = request.form['add_info']
+    # session['original_regns']['additional_information'] = request.form['add_info']
     session['original_regns']['parties'] = session['parties']
+    print("HERE!!!!!!!!!!!!!!!!!!!!!!!!!")
     if addr < len(session['original_regns']['parties'][0]['addresses']):
         del session['original_regns']['parties'][0]['addresses'][addr]
         session['data_amended'] = 'true'
@@ -442,9 +445,7 @@ def start_correction():
 
 @app.route('/get_original', methods=['POST'])
 def get_original_details():
-
-    session['application_type'] == 'correction'
-
+    session['application_type'] = 'correction'
     curr_data = []
     if request.form['reg_no'] == '' or request.form['reg_date'] == '':
 
@@ -461,6 +462,7 @@ def get_original_details():
 
         curr_data, error_msg, status_code, fatal = build_original_data(request_data)
         session['curr_data'] = curr_data
+
         if fatal:
             err = 'Failed to process correction for %s dated %s - Error code: %s' % request.form['reg_no'], \
                   request.form['reg_date'], str(status_code)
@@ -474,6 +476,36 @@ def get_original_details():
                                data=session['original_regns'], application=session, screen='capture',
                                transaction=session['transaction_id'])
 
+@app.route('/process_corrected_details', methods=['POST'])
+def process_corrected_details():
+    session['parties'] = get_debtor_details(request.form)
+    print(session['original_regns'])
+    return render_template('corrections/check.html', data=session['parties'], transaction=session['transaction_id'])
+
+@app.route('/correction_capture', methods=['GET'])
+def correction_capture():
+    # For returning from check screen
+    party_data = {'parties': session['parties']}
+
+    return render_template('corrections/correct_details.html',
+                           application_type=session['application_type'],
+                           data=party_data,
+                           errors=[],
+                           transaction=session['transaction_id'])
+
+@app.route('/submit_banks_correction', methods=['POST'])
+def submit_banks_correction():
+    logging.info(format_message('submitting banks correction'))
+
+    response = register_bankruptcy('1234567')
+
+    if response.status_code != 200:
+        err = 'Failed to submit bankruptcy correction for registration :%s dated  - Error code: %s' \
+              % (session['original_regns']['registration']['number'], str(response.status_code))
+        logging.error(err)
+        return render_template('error.html', error_msg=err), response.status_code
+    else:
+        return redirect('/correction', code=302, Response=None)
 
 # ===== end of correction routes  ===========
 
