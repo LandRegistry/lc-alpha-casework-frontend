@@ -237,6 +237,10 @@ def register_bankruptcy(key_number):
         if 'pab_entered' in session:
             application['pab_original'] = session['pab_entered']
         url = app.config['CASEWORK_API_URL'] + '/applications/' + session['worklist_id'] + '?action=amend'
+    elif session['application_type'] == 'correction':
+        application['update_registration'] = {'type': 'Correction'}
+        application['registration']['update_registration'] = {'type': 'Correction'}
+        url = app.config['CASEWORK_API_URL'] + '/applications/0' + '?action=correction'
     else:
         url = app.config['CASEWORK_API_URL'] + '/applications/' + session['worklist_id'] + '?action=complete'
 
