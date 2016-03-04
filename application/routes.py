@@ -441,7 +441,7 @@ def submit_banks_amendment():
 @app.route('/correction', methods=['GET'])
 def start_correction():
 
-    return render_template("corrections/retrieve.html", reg_no="", reg_date="")
+    return render_template("corrections/retrieve.html", reg_no="", reg_date="", result="")
 
 @app.route('/get_original', methods=['POST'])
 def get_original_details():
@@ -500,7 +500,7 @@ def submit_banks_correction():
         logging.error(err)
         return render_template('error.html', error_msg=err), response.status_code
     else:
-        return redirect('/correction', code=302, Response=None)
+        return render_template("corrections/retrieve.html", reg_no="", reg_date="", result="success")
 
 # ===== end of correction routes  ===========
 
