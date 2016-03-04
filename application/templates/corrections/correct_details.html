@@ -21,7 +21,7 @@
     function addAddress(sender){
         a++;
         jQuery('<div class="form"> \
-                <label class="form-label">Address</label><div class="right"><a href="remove_address/' +a+ '" class="link-16" id="remove_address_' +a+ '">Remove address</a></div> \
+                <label class="form-label">Address</label><div class="right"><a href="javascript:removeAddress(' +a+ ')" class="link-16" id="remove_address_' +a+ '">Remove address</a></div> \
                 <input class="form-textfield mr-btm-10" type="text" id="add_' +a+ '_line1" name="add_' +a+ '_line1" value=""> \
                 <input class="form-textfield mr-btm-10" type="text" id="add_' +a+ '_line2" name="add_' +a+ '_line2" value=""> \
                 <input class="form-textfield mr-btm-10" type="text" id="add_' +a+ '_line3" name="add_' +a+ '_line3" value=""> \
@@ -60,6 +60,11 @@
         });
     }
 
+    function removeAddress(add_index){
+        jQuery('#correct_form').attr('action', "/remove_address/" + add_index);
+        jQuery("#correct_form").submit();
+    }
+
 </script>
 {% endblock %}
 
@@ -78,7 +83,7 @@
 <div class="grid-row">
     <div class="col four" id="form_panel">
         <!-- ///////////////////////////////// data entry form ///////////////////////////////// -->
-        <form id="amend_form" action="/??" method="POST">
+        <form id="correct_form" action="/process_corrected_details" method="POST">
             <div class="spacer-40"></div>
             <h2 class="text-24-bold">Bankruptcy details</h2>
             <div class="spacer-10"></div>
@@ -126,7 +131,7 @@
             {% if data.parties[0].addresses|length > 0 %}
             {% for address in data.parties[0].addresses %}
             <div class="form">
-                <label class="form-label">Address</label><div class="right"><a href="remove_address/{{loop.index-1}}" class="link-16" id="remove_address_{{loop.index-1}}">Remove address</a></div>
+                <label class="form-label">Address</label><div class="right"><a href="javascript:removeAddress({{loop.index-1}});" class="link-16" id="remove_address_{{loop.index-1}}">Remove address</a></div>
                 <input class="form-textfield mr-btm-10" type="text" id="add_{{loop.index}}_line1" name="add_{{loop.index}}_line1" value="{{address.address_lines[0]}}">
                 <input class="form-textfield mr-btm-10" type="text" id="add_{{loop.index}}_line2" name="add_{{loop.index}}_line2" value="{{address.address_lines[1]}}">
                 <input class="form-textfield mr-btm-10" type="text" id="add_{{loop.index}}_line3" name="add_{{loop.index}}_line3" value="{{address.address_lines[2]}}">
