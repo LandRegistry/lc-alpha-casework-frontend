@@ -215,8 +215,8 @@ def check_court_details():
         session['court_info'] = application
 
         #  call api to see if registration already exists
-        """url = app.config['CASEWORK_API_URL'] + '/court_check/' + application['legal_body'] + '/' + \
-            application['legal_body_ref_no'] + '/' + application['legal_body_ref_year']
+        url = app.config['CASEWORK_API_URL'] + '/court_check/' + application['legal_body'] + '/' + \
+            application['legal_body_ref_no']
         response = requests.get(url, headers=get_headers())
         if response.status_code == 200:
             session['current_registrations'] = json.loads(response.text)
@@ -224,18 +224,18 @@ def check_court_details():
                                    data=session['court_info'], application=session,
                                    current_registrations=session['current_registrations'],
                                    transaction=session['transaction_id'])
-        elif response.status_code == 404:"""
-        session['current_registrations'] = []
-        if 'return_to_verify' in request.form:
-            return render_template('bank_regn/verify.html', images=session['images'], current_page=0,
-                                   court_data=session['court_info'], party_data=session['parties'])
+        elif response.status_code == 404:
+            session['current_registrations'] = []
+            if 'return_to_verify' in request.form:
+                return render_template('bank_regn/verify.html', images=session['images'], current_page=0,
+                                       court_data=session['court_info'], party_data=session['parties'])
+            else:
+                return render_template('bank_regn/debtor.html', images=session['images'], current_page=0, data=session)
         else:
-            return render_template('bank_regn/debtor.html', images=session['images'], current_page=0, data=session)
-        """else:
             err = 'Failed to process bankruptcy registration application id:%s - Error code: %s' \
                   % (session['worklist_id'], str(response.status_code))
             logging.error(format_message(err))
-            return render_template('error.html', error_msg=err), response.status_code"""
+            return render_template('error.html', error_msg=err), response.status_code
 
 
 @app.route('/process_debtor_details', methods=['POST'])

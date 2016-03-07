@@ -186,8 +186,7 @@ def get_debtor_details(data):
             'trading_name': ' ',
             'case_reference': case_reference,
             'legal_body': session['court_info']['legal_body'],
-            'legal_body_ref_no': session['court_info']['legal_body_ref_no'],
-            'legal_body_ref_year': "2012"
+            'legal_body_ref_no': session['court_info']['legal_body_ref_no']
         }
     ]
 
