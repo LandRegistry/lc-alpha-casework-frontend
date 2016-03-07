@@ -269,9 +269,13 @@ def register_correction():
                     }
 
     application = {'registration': registration,
-                   'k22': True,
                    'orig_regn': session['details_entered'],
                    'update_registration': {'type': 'Correction'}}
+
+    if request.form['generate_K22'] == 'yes':
+        application['k22'] = True
+    else:
+        application['k22'] = False
 
     url = app.config['CASEWORK_API_URL'] + '/applications/0' + '?action=correction'
 
