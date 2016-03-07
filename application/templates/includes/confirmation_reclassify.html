@@ -1,0 +1,11 @@
+<!-- CONFIRMATION OF RECLASSIFICATION -->
+
+        <div class="col nine confirmation_banner" id="conf_banner">
+            Your application has been moved
+            {% if (result['list_title']|length > 0) %}
+                <span id="conf_work_list">to
+                {{result['list_title']}}
+
+                </span>
+            {% endif %}
+        </div>

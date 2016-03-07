@@ -16,7 +16,6 @@ from io import BytesIO
 import uuid
 
 
-
 # @app.errorhandler(Exception)
 # def error_handler(err):
 #     logging.error('========== Error Caught ===========')
@@ -99,6 +98,8 @@ def get_list_of_applications(requested_worklist, result, error_msg):
         return_page = 'work_list/search.html'
     elif requested_worklist.startswith('canc'):
         return_page = 'work_list/cancel.html'
+    elif requested_worklist.startswith('unknown'):
+        return_page = 'work_list/unknown.html'
 
     appn_list = []
 
@@ -200,7 +201,7 @@ def check_court_details():
 
     elif request.form['submit_btn'] == 'Yes' and \
         session['court_info']['legal_body'] == request.form['court'] and \
-        session['court_info']['legal_body_ref_no'] == request.form['ref_no']:
+            session['court_info']['legal_body_ref_no'] == request.form['ref_no']:
 
         session['current_registrations'] = []
         if 'return_to_verify' in request.form:
@@ -441,6 +442,7 @@ def start_correction():
 
     return render_template("corrections/retrieve.html", reg_no="", reg_date="", result="")
 
+
 @app.route('/get_original', methods=['POST'])
 def get_original_details():
     session['application_type'] = 'correction'
@@ -470,10 +472,12 @@ def get_original_details():
                                data=session['original_regns'], application=session, screen='capture',
                                transaction=session['transaction_id'])
 
+
 @app.route('/process_corrected_details', methods=['POST'])
 def process_corrected_details():
     session['parties'] = get_debtor_details(request.form)
     return render_template('corrections/check.html', data=session['parties'], transaction=session['transaction_id'])
+
 
 @app.route('/correction_capture', methods=['GET'])
 def correction_capture():
@@ -485,6 +489,7 @@ def correction_capture():
                            data=party_data,
                            errors=[],
                            transaction=session['transaction_id'])
+
 
 @app.route('/submit_banks_correction', methods=['POST'])
 def submit_banks_correction():
@@ -501,6 +506,7 @@ def submit_banks_correction():
         return render_template("corrections/retrieve.html", reg_no="", reg_date="", result="success")
 
 # ===== end of correction routes  ===========
+
 
 @app.route('/process_search_name/<application_type>', methods=['POST'])
 def process_search_name(application_type):
@@ -647,7 +653,8 @@ def rectification_capture():
         return render_template('rectification/amend.html', application_type=session['application_type'],
                                images=session['images'], application=session['application_dict'],
                                current_page=0, errors=result['error'], curr_data=entered_fields,
-                               screen='capture', data=session['application_dict'], transaction=session['transaction_id'])
+                               screen='capture', data=session['application_dict'],
+                               transaction=session['transaction_id'])
 
 
 @app.route('/rectification_capture', methods=['GET'])
@@ -981,7 +988,8 @@ def get_translated_county(county_name):
 
 @app.route('/internal', methods=['GET'])
 def internal():
-       return render_template('work_list/internal.html')
+    return render_template('work_list/internal.html')
+
 
 @app.route('/enquiries', methods=['GET'])
 def enquiries():
@@ -1087,3 +1095,40 @@ def insert_complex_name(name, number):
     uri = app.config['CASEWORK_API_URL'] + '/complex_names/{}/{}'.format(name, number)
     response = requests.post(uri, headers=get_headers({'Content-Type': 'application/json'}))
     return Response(response.text, status=response.status_code, mimetype='application/json')
+
+
+@app.route('/reclassify/<appn_id>', methods=['GET'])
+def get_reclassify_form(appn_id):
+    logging.info("T:%s Reclassify %s Application", appn_id)
+    session['transaction_id'] = appn_id
+    url = app.config['CASEWORK_API_URL'] + '/applications/' + appn_id
+    response = requests.get(url, headers=get_headers())
+    application_json = response.json()
+    logging.debug(application_json)
+    document_id = application_json['application_data']['document_id']
+    doc_response = get_form_images(document_id)
+    images = []
+    image_data = json.loads(doc_response[0])
+    for page in image_data['images']:
+        url = app.config["CASEWORK_FRONTEND_URL"] + "/images/" + str(document_id) + '/' + str(page['page'])
+        images.append(url)
+    template = "reclassify/reclassify.html"
+    session['page_template'] = template
+    return render_template(template, data=application_json, images=images, curr_data=application_json,
+                           current_page=0, errors=[], transaction=session['transaction_id'])
+
+
+@app.route('/reclassify', methods=['POST'])
+def post_reclassify_form():
+    appn_id = session['transaction_id']
+    print("looking for form_type", str(request.form))
+    form_type = request.form['form_type']
+    print("form_type ", form_type)
+    logging.info("T:%s Reclassify %s Application ", appn_id, form_type)
+    uri = app.config['CASEWORK_API_URL'] + '/reclassify'
+    data = {"appn_id": appn_id, "form_type": form_type}
+    response = requests.post(uri, data=json.dumps(data), headers=get_headers({'Content-Type': 'application/json'}))
+    work_type = json.loads(response.content.decode('utf-8'))
+    print("yeah ", work_type)
+    result = work_type
+    return get_list_of_applications("unknown", result, "")

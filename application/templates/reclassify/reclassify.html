@@ -1,0 +1,145 @@
+{% extends "/page_template/base.html" %}
+{% block page_specific_head %}
+
+<script>
+</script>
+
+{% endblock %}
+
+{% block maincontent %}
+
+<div class="spacer-10"></div>
+
+<h1 class="title-36">Unidentified application</h1>
+<div class="spacer-20"></div>
+<div class="grid-row">
+
+    <form id="reclassify_form" action="/reclassify" method="POST">
+        <div class="col four" id="form_panel">
+            <h2 class="text-19-bold">What is the form type?</h2>
+            <div class="spacer-5"></div>
+            <div class="grid-row">
+               <!-- FORM_TYPE -->
+                <div class="spacer-10"></div>
+
+                <div class="form">
+                    <div class="grid-row-padded-line">
+                        <span class="text-16">
+                        <input type="radio" name="form_type" id="pab_regn" required class="text-16" value="PAB"/>
+                        <label for="pab_regn">PAB registration</label>
+                        </span>
+                    </div>
+                    <div class="grid-row-padded-line">
+                        <span class="text-16">
+                        <input type="radio" name="form_type" id="wob_regn" class="text-16" value="WOB"/>
+                        <label for="wob_regn">WOB registration</label>
+                        </span>
+                    </div>
+                    <div class="grid-row-padded-line">
+                        <span class="text-16">
+                        <input type="radio" name="form_type" id="pab_amend" class="text-16" value="PABAmend"/>
+                        <label for="pab_amend">PAB amendment</label>
+                        </span>
+                    </div>
+                    <div class="grid-row-padded-line">
+                        <span class="text-16">
+                        <input type="radio" name="form_type" id="lrrabo" class="text-16" value="LRRABO"/>
+                        <label for="lrrabo">LRRABO</label>
+                        </span>
+                    </div>
+                    <div class="grid-row-padded-line">
+                        <span class="text-16">
+                        <input type="radio" name="form_type" id="k1" class="text-16" value="K1"/>
+                        <label for="k1">K1</label>
+                        </span>
+                    </div>
+                    <div class="grid-row-padded-line">
+                        <span class="text-16">
+                        <input type="radio" name="form_type" id="k2" class="text-16" value="K2"/>
+                        <label for="k2">K2</label>
+                        </span>
+                    </div>
+                    <div class="grid-row-padded-line">
+                        <span class="text-16">
+                        <input type="radio" name="form_type" id="k3" class="text-16" value="K3"/>
+                        <label for="k3">K3</label>
+                        </span>
+                    </div>
+                    <div class="grid-row-padded-line">
+                        <span class="text-16">
+                        <input type="radio" name="form_type" id="k4" class="text-16" value="K4"/>
+                        <label for="k4">K4</label>
+                        </span>
+                    </div>
+                    <div class="grid-row-padded-line">
+                        <span class="text-16">
+                        <input type="radio" name="form_type" id="k6" class="text-16" value="K6"/>
+                        <label for="k6">K6</label>
+                        </span>
+                    </div>
+                    <div class="grid-row-padded-line">
+                        <span class="text-16">
+                        <input type="radio" name="form_type" id="k7" class="text-16" value="K7"/>
+                        <label for="k7">K7</label>
+                        </span>
+                    </div>
+                    <div class="grid-row-padded-line">
+                        <span class="text-16">
+                        <input type="radio" name="form_type" id="k8" class="text-16" value="K8"/>
+                        <label for="k8">K8</label>
+                        </span>
+                    </div>
+                    <div class="grid-row-padded-line">
+                        <span class="text-16">
+                        <input type="radio" name="form_type" id="k9" class="text-16" value="K9"/>
+                        <label for="k9">K9</label>
+                        </span>
+                    </div>
+                    <div class="grid-row-padded-line">
+                        <span class="text-16">
+                        <input type="radio" name="form_type" id="k11" class="text-16" value="K11"/>
+                        <label for="k11">K11</label>
+                        </span>
+                    </div>
+                    <div class="grid-row-padded-line">
+                        <span class="text-16">
+                        <input type="radio" name="form_type" id="k13" class="text-16" value="K13"/>
+                        <label for="k13">K13</label>
+                        </span>
+                    </div>
+                    <div class="grid-row-padded-line">
+                        <span class="text-16">
+                        <input type="radio" name="form_type" id="k15" class="text-16" value="K15"/>
+                        <label for="k15">K15</label>
+                        </span>
+                    </div>
+                    <div class="grid-row-padded-line">
+                        <span class="text-16">
+                        <input type="radio" name="form_type" id="k16" class="text-16" value="K16"/>
+                        <label for="k16">K16</label>
+                        </span>
+                    </div>
+
+
+                    <input type="hidden" id="hd_form_type" value="{{curr_data.form_type}}"/>
+                </div>
+
+        <div class="spacer-10"></div>
+            </div>
+            <div class="spacer-40"></div>
+            <input id="continue" type="submit" value="Move" class="form-button"/>
+            <div class="spacer-40"></div>
+        </div>
+    </form>
+    <!-- ///////////////////////////////// end of data entry form ///////////////////////////////// -->
+    <div class="col one"><p></p></div>
+    <!-- /////////////////////////////////  Include image tool ///////////////////////////////// -->
+    <div class="col seven">
+    {% include 'includes/image_view_body.html' %}
+
+    <!-- ///////////////////////////////// End of image tool ///////////////////////////////// -->
+    </div>
+
+</div>
+
+{% endblock %}

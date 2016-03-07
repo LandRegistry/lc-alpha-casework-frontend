@@ -2,18 +2,12 @@
 {% block maincontent %}
 
 {% set page_title = 'Enquiries' %}
-{% set reprint_selected = 'selected' %}
 
 
 <div class="breadcrumb">
     <ol>
         <li><a href="/">Home</a></li>
-        {% if requested_list == "bank" %}
-        <li class="breadcrumb-no-arrow"><span>Bankruptcy</span></li>
-        {% else %}
-        <li><a href="/get_list?appn=bank">Bankruptcy</a></li>
-        <li class="breadcrumb-no-arrow"><span>{{page_title}}</span></li>
-        {% endif %}
+        <li class="breadcrumb-no-arrow"><span>Enquiries</span></li>
     </ol>
 </div>
 
@@ -23,17 +17,15 @@
     {% include "includes/side_nav.html" %}
 
     <!-- Content -->
-    <div class="col nine text-19">
+    <div class="col nine" style="min-width:800px;">
+        <div class="spacer-10"></div>
         <div class="grid-row" >
             <h1 class="title-36">Enquiries</h1>
         </div>
-        <div class="col eleven">
-            <div class="spacer-10"></div>
-
-        </div>
+        <div class="spacer-20"></div>
 
     </div>
-    <div class="subservice-box">
+    <div class="subservice-box no-margin">
         <a class="no-link-style {{enquiries_selected}}" tabindex="2" href="/get_list?appn=bank_amend">
             <div class="spacer-20"></div>
             <p class="text-16-bold">Enquiries</p>
@@ -50,7 +42,7 @@
         </a>
     </div>
     <div class="subservice-box">
-        <a class="no-link-style {{unidentified_selected}}" tabindex="2" href="/get_list?appn=bank_amend">
+        <a class="no-link-style {{unidentified_selected}}" tabindex="2" href="/get_list?appn=unknown">
             <div class="spacer-20"></div>
             <p class="text-16-bold">Unidentified</p>
             <div class="spacer-30"></div>
