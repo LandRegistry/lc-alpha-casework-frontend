@@ -11,7 +11,7 @@ from application.search import process_search_criteria
 from application.rectification import convert_response_data, submit_lc_rectification
 from application.cancellation import submit_lc_cancellation
 from application.banks import get_debtor_details, register_bankruptcy, get_original_data, build_original_data, \
-    build_corrections
+    build_corrections, register_correction
 from io import BytesIO
 import uuid
 
@@ -439,6 +439,7 @@ def submit_banks_amendment():
 #  Do we need to set the transaction id here for logging later?????
 @app.route('/correction', methods=['GET'])
 def start_correction():
+    session.clear()
 
     return render_template("corrections/retrieve.html", reg_no="", reg_date="", result="")
 
@@ -495,7 +496,7 @@ def correction_capture():
 def submit_banks_correction():
     logging.info(format_message('submitting banks correction'))
 
-    response = register_bankruptcy(None)
+    response = register_correction()
 
     if response.status_code != 200:
         err = 'Failed to submit bankruptcy correction for registration :%s dated  - Error code: %s' \

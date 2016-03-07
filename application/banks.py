@@ -19,6 +19,11 @@ def get_original_data(number, date):
 def build_original_data(data):
     wob_originals = []
     pab_originals = []
+    if 'pab_entered' in session:
+        del session['pab_entered']
+    if 'wob_entered' in session:
+        del session['wob_entered']
+
     if data['wob_ref'] != '':
         wob_date_as_list = data['wob_date'].split("/")  # dd/mm/yyyy
         number = data['wob_ref']
@@ -193,25 +198,20 @@ def get_debtor_details(data):
     return parties
 
 
-def register_bankruptcy(key_number=None):
-    if key_number is None:
-        applicant = {'name': session['original_regns']['applicant']['name'],
-                     'address': session['original_regns']['applicant']['address'],
-                     'key_number': session['original_regns']['applicant']['key_number'],
-                     'reference': session['original_regns']['applicant']['reference']}
+def register_bankruptcy(key_number):
+
+    url = app.config['CASEWORK_API_URL'] + '/keyholders/' + key_number
+    response = requests.get(url, headers={'X-Transaction-ID': session['transaction_id']})
+    text = json.loads(response.text)
+    if response.status_code == 200:
+        cust_address = ' '.join(text['address']['address_lines']) + ' ' + text['address']['postcode']
+        cust_name = ' '.join(text['name'])
+        applicant = {'name': cust_name,
+                     'address': cust_address,
+                     'key_number': key_number,
+                     'reference': ' '}
     else:
-        url = app.config['CASEWORK_API_URL'] + '/keyholders/' + key_number
-        response = requests.get(url, headers={'X-Transaction-ID': session['transaction_id']})
-        text = json.loads(response.text)
-        if response.status_code == 200:
-            cust_address = ' '.join(text['address']['address_lines']) + ' ' + text['address']['postcode']
-            cust_name = ' '.join(text['name'])
-            applicant = {'name': cust_name,
-                         'address': cust_address,
-                         'key_number': key_number,
-                         'reference': ' '}
-        else:
-            return response
+        return response
 
     if session['application_dict']['form'] == 'PA(B)' or session['application_dict']['form'] == 'PA(B) Amend':
         class_of_charge = 'PAB'
@@ -238,13 +238,6 @@ def register_bankruptcy(key_number=None):
         if 'pab_entered' in session:
             application['pab_original'] = session['pab_entered']
         url = app.config['CASEWORK_API_URL'] + '/applications/' + session['worklist_id'] + '?action=amend'
-    elif session['application_type'] == 'correction':
-        # TODO: need to determine is K22 needed, default to True for now
-        application['k22'] = True
-        application['orig_regn'] = session['details_entered']
-        application['update_registration'] = {'type': 'Correction'}
-        application['registration']['update_registration'] = {'type': 'Correction'}
-        url = app.config['CASEWORK_API_URL'] + '/applications/0' + '?action=correction'
     else:
         url = app.config['CASEWORK_API_URL'] + '/applications/' + session['worklist_id'] + '?action=complete'
 
@@ -260,4 +253,37 @@ def register_bankruptcy(key_number=None):
             reg_list.append(item['number'])
         session['confirmation'] = {'reg_no': reg_list}
 
+    return response
+
+
+def register_correction():
+    applicant = {'name': session['original_regns']['applicant']['name'],
+                 'address': session['original_regns']['applicant']['address'],
+                 'key_number': session['original_regns']['applicant']['key_number'],
+                 'reference': session['original_regns']['applicant']['reference']}
+
+    registration = {'parties': session['parties'],
+                    'class_of_charge': session['original_regns']['class_of_charge'],
+                    'applicant': applicant,
+                    'update_registration': {'type': 'Correction'}
+                    }
+
+    application = {'registration': registration,
+                   'k22': True,
+                   'orig_regn': session['details_entered'],
+                   'update_registration': {'type': 'Correction'}}
+
+    url = app.config['CASEWORK_API_URL'] + '/applications/0' + '?action=correction'
+
+    headers = {'Content-Type': 'application/json', 'X-Transaction-ID': session['transaction_id']}
+    logging.debug("bankruptcy details: " + json.dumps(application))
+    response = requests.put(url, data=json.dumps(application), headers=headers)
+    if response.status_code == 200:
+        logging.info(format_message("Registration (bank) submitted to CASEWORK_API"))
+        data = response.json()
+        reg_list = []
+
+        for item in data['new_registrations']:
+            reg_list.append(item['number'])
+        session['confirmation'] = {'reg_no': reg_list}
     return response
