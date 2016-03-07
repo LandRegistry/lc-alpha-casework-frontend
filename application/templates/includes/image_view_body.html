@@ -4,6 +4,14 @@
 
 <div id="page1">
     <!-- ///////////////////////////////// scanned page ///////////////////////////////// -->
+    {% if application is defined %}
+        {% if application.appn_id is defined %}
+            <div class="grid-row">
+            <span id="wrong_form" class="text-16">Wrong form? <a href="/reclassify/{{application.appn_id}}">Choose the correct form type</a></span>
+            <hr class="width-75" align="left">
+            </div>
+        {% endif %}
+    {% endif %}
     <div id="sticky_div">
     <div class="column-scan">
 
