@@ -98,7 +98,8 @@ def build_customer_fee_inputs(data):
     customer_fee_details = {'key_number': data['key_number'],
                             'customer_name': data['customer_name'],
                             'customer_address': data['customer_address'],
-                            'application_reference': data['customer_ref']}
+                            'application_reference': data['customer_ref'],
+                            'payment': data['payment']}
 
     return customer_fee_details
 
@@ -115,6 +116,9 @@ def submit_lc_registration(cust_fee_data):
     application['residence_withheld'] = False
     application['date_of_birth'] = "1980-01-01"  # TODO: what are we doing about the DOB??
     application['document_id'] = session['document_id']
+    application['fee'] = {'type': cust_fee_data['payment'],
+                          'fee_factor': 1,
+                          'delivery': session['application_dict']['delivery_method']}
 
     if session['application_dict']['form'] == 'K6':
         application['priority_notice_ind'] = True

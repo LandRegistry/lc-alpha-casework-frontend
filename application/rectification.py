@@ -126,7 +126,11 @@ def submit_lc_rectification(form):
                    'class_of_charge': convert_class_of_charge(rect_details['class']),
                    'regn_no': session['regn_no'],
                    'registration': {'date': session['reg_date']},
-                   'document_id': session['document_id']}
+                   'document_id': session['document_id'],
+                   'fee': {'type': form['payment'],
+                           'fee_factor': 1,
+                           'delivery': session['application_dict']['delivery_method']}
+                   }
 
     url = app.config['CASEWORK_API_URL'] + '/applications/' + session['worklist_id'] + '?action=rectify'
     headers = {'Content-Type': 'application/json', 'X-Transaction-ID': session['transaction_id']}

@@ -544,7 +544,10 @@ def submit_search():
     search_data = {
         'customer': customer,
         'document_id': session['document_id'],
-        'parameters': session['application_dict']['search_criteria']
+        'parameters': session['application_dict']['search_criteria'],
+        'fee': {'type': request.form['payment'],
+                'fee_factor': len(session['application_dict']['search_criteria']['search_items']),
+                'delivery': session['application_dict']['delivery_method']}
     }
 
     session['search_data'] = search_data
