@@ -172,11 +172,9 @@ def get_debtor_details(data):
 
     if 'court' in data:
         session['court_info'] = {'legal_body': data['court'],
-                                 'legal_body_ref_no': data['ref_no'],
-                                 'legal_body_ref_year': data['ref_year']}
+                                 'legal_body_ref_no': data['ref_no']}
 
-    case_reference = session['court_info']['legal_body'] + ' ' + session['court_info']['legal_body_ref_no'] + \
-        ' of ' + session['court_info']['legal_body_ref_year']
+    case_reference = session['court_info']['legal_body'] + ' ' + session['court_info']['legal_body_ref_no']
 
     parties = [
         {
@@ -189,7 +187,7 @@ def get_debtor_details(data):
             'case_reference': case_reference,
             'legal_body': session['court_info']['legal_body'],
             'legal_body_ref_no': session['court_info']['legal_body_ref_no'],
-            'legal_body_ref_year': session['court_info']['legal_body_ref_year']
+            'legal_body_ref_year': "2012"
         }
     ]
 
