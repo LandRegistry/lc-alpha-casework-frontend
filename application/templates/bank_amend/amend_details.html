@@ -166,27 +166,18 @@
                 <textarea class="form-textarea-mid" id="add_info" name="add_info">{{additional_information}}</textarea>
             </div>
             <div class="spacer-30"></div>
-            <div class="spacer-40"></div>
-            <h2 class="text-24-bold">Particulars of court</h2>
+            <h2 class="text-24-bold">Official details</h2>
             <div class="spacer-10"></div>
             {% if error_msg|length > 0 %}
             <p class="error"><strong>{{error_msg}}</strong></p>
             {% endif %}
             <div class="form">
                 <label class="form-label" for="court">Name</label><br/>
-                <input class="form-textfield width-50" required  aria-required="true" type="text" id="court" name="court" value="{{data.parties[0].legal_body}}"/>
+                <input class="form-textfield" type="text" id="court" name="court" value="{{data.parties[0].legal_body}}"/>
             </div>
-            <div class="spacer-20"></div>
-            <h3 class="text-19-bold">Court reference</h3>
-            <div class="spacer-20"></div>
-            <div class="form col five">
-                <label class="form-label" for="ref_no">Number</label><br/>
-                <input class="form-textfield width-75"  required  aria-required="true" type="text" id="ref_no" name="ref_no" value="{{data.parties[0].legal_body_ref_no}}"/>
-                <span class="form-label width-25 ">of</span>
-            </div>
-            <div class="form col five">
-                <label class="form-label" for="ref_year">Year</label><br/>
-                <input class="form-textfield width-25 numberOnly"  required  aria-required="true" type="text" id="ref_year" name="ref_year" value="{{data.parties[0].legal_body_ref_year}}"/>
+            <div class="form col ">
+                <label class="form-label" for="ref_no">Reference</label><br/>
+                <input class="form-textfield" required  aria-required="true" type="text" id="ref_no" name="ref_no" value="{{data.parties[0].legal_body_ref_no}}"/>
             </div>
             <div class="spacer-40"></div>
             <input id="continue" type="submit" value="Continue" class="form-button"/>

@@ -143,7 +143,7 @@ function validate(sender) {
         <div id="court_validation">
             <span id="court_error" class="hide">[placeholder]</span>
             <div class="grid-row">
-                <div class="text-19-gray col ten">Particulars of court</div>
+                <div class="text-19-gray col ten">Official details</div>
                 <div class="col two"><a href="bankruptcy_capture/court" id="change_court">Change</a></div>
             </div>
             <input type="hidden" id="orig_court" value="{{court_data.legal_body}}"/>
@@ -152,12 +152,8 @@ function validate(sender) {
                 <input type="text" id="court_name" class="col six form-textfield-verify"/>
             </div>
             <div class="grid-row-padded-line">
-                <span class="text-16-bold col five">Court reference no.</span>
+                <span class="text-16-bold col five">Reference</span>
                 <span class="text-16 col seven" id="court_no">{{court_data.legal_body_ref_no}}</span>
-            </div>
-            <div class="grid-row-padded-line">
-                <span class="text-16-bold col five">Year</span>
-                <span class="text-16 col seven" id="court_year">{{court_data.legal_body_ref_year}}</span>
             </div>
         </div>
 
