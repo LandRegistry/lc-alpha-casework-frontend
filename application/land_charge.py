@@ -116,9 +116,9 @@ def submit_lc_registration(cust_fee_data):
     application['residence_withheld'] = False
     application['date_of_birth'] = "1980-01-01"  # TODO: what are we doing about the DOB??
     application['document_id'] = session['document_id']
-    application['fee'] = {'type': cust_fee_data['payment'],
-                          'fee_factor': 1,
-                          'delivery': session['application_dict']['delivery_method']}
+    application['fee_details'] = {'type': cust_fee_data['payment'],
+                                  'fee_factor': 1,
+                                  'delivery': session['application_dict']['delivery_method']}
 
     if session['application_dict']['form'] == 'K6':
         application['priority_notice_ind'] = True

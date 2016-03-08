@@ -127,9 +127,9 @@ def submit_lc_rectification(form):
                    'regn_no': session['regn_no'],
                    'registration': {'date': session['reg_date']},
                    'document_id': session['document_id'],
-                   'fee': {'type': form['payment'],
-                           'fee_factor': 1,
-                           'delivery': session['application_dict']['delivery_method']}
+                   'fee_details': {'type': form['payment'],
+                                   'fee_factor': 1,
+                                   'delivery': session['application_dict']['delivery_method']}
                    }
 
     url = app.config['CASEWORK_API_URL'] + '/applications/' + session['worklist_id'] + '?action=rectify'
