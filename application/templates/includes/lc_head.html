@@ -159,7 +159,7 @@
         var transid = document.getElementById('transaction_id').value;
 
         jQuery.ajax( {
-            url: '{{config.CASEWORK_API_URL}}/complex_names/' + insertName + '/' + insertNumber,
+            url: '{{config.CASEWORK_FRONTEND_URL}}/complex_names/' + insertName + '/' + insertNumber,
             type: 'POST',
             headers: {
                 'X-Transaction-ID': transid
@@ -179,13 +179,14 @@
     }
 
     function getComplexName(){
+        jQuery('#modal_message').replaceWith($('<p id="modal_message" class="text-16">Please wait...</p>'));
         var transid = document.getElementById('transaction_id').value;
         $('body').addClass('stop-scrolling');
         var enteredName = jQuery('#complex_name_field').val().trim();
         clearPreviousResults();
         if (enteredName.length > 3){
             jQuery.ajax( {
-                url: '{{config.CASEWORK_API_URL}}/complex_names/' + enteredName,
+                url: '{{config.CASEWORK_FRONTEND_URL}}/complex_names/' + enteredName,
                 type: 'GET',
                 data: {},
                 headers: {
@@ -212,7 +213,11 @@
                         jQuery('#add_complex_name').replaceWith($('<p id="add_complex_name" class="text-16"></p>'));
                     }
 
-                }
+                },
+                error: function( data) {
+                    jQuery('#modal_message').replaceWith($('<p id="modal_message" class="text-16">An error occured loading complex name data - please try again.</p>'));
+
+            }
             } );
         } else {
             jQuery('#modal_message').replaceWith('<p id="modal_message" class="text-16">The system is unable to retrieve a list '+
