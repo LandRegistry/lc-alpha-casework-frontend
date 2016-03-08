@@ -371,10 +371,8 @@ def remove_address(addr):
 @app.route('/process_amended_details', methods=['POST'])
 def process_amended_details():
     session['parties'] = get_debtor_details(request.form)
-    session['additional_information'] = request.form['add_info']
     return render_template('bank_amend/check.html', images=session['images'], current_page=0,
-                           data=session['parties'], additional_information=session['additional_information'],
-                           transaction=session['transaction_id'])
+                           data=session['parties'], transaction=session['transaction_id'])
 
 
 @app.route('/amendment_capture', methods=['GET'])

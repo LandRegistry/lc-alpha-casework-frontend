@@ -160,12 +160,6 @@
             <script> a = {{ data.parties[0].addresses| length }} -1;</script>
             <div><a href="#add_address" onclick="addAddress(this)" class="link-16" id="add_address">Add additional address</a></div>
             <div class="spacer-30"></div>
-            <h2 class="text-24-bold">Additional information</h2>
-            <div class="spacer-10"></div>
-            <div class="form">
-                <textarea class="form-textarea-mid" id="add_info" name="add_info">{{additional_information}}</textarea>
-            </div>
-            <div class="spacer-30"></div>
             <h2 class="text-24-bold">Official details</h2>
             <div class="spacer-10"></div>
             {% if error_msg|length > 0 %}
