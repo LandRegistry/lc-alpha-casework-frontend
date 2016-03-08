@@ -16,7 +16,10 @@ def submit_lc_cancellation(data):
                        'reference': data['customer_ref']},
                    'registration_no': session['regn_no'],
                    'document_id': session['document_id'],
-                   'registration': {'date': session['reg_date']}}
+                   'registration': {'date': session['reg_date']},
+                   'fee_details': {'type': data['payment'],
+                                   'fee_factor': 1,
+                                   'delivery': session['application_dict']['delivery_method']}}
     if 'addl_info' in session:
             application['additional_information'] = session['addl_info']
     if 'cancellation_type' in session:
