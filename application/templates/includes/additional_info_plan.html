@@ -1,0 +1,27 @@
+        <!-- FURTHER INFO -->
+        <div class="spacer-30"></div>
+
+        <h2 class="text-24-bold">Additional information</h2>
+        <div class="spacer-10"></div>
+        <p class="text-indent">Please select whether a plan is attached, or complete the additional information  </p>
+        <div class="spacer-10"></div>
+
+        <div class="form">
+                <div class="grid-row">
+                <div class="col four form-control-div">
+                    <label class="form-label" for="plan_attached">
+                        <input id="plan_attached" type="checkbox" name="plan_attached" onclick="">
+                        Plan attached
+                    </label>
+
+                </div>   <label class="form-label">or</label>
+                </div>
+                <div class="spacer-10"></div>
+                <label class="form-label" for="part_cans_text">
+                Part cancelled in so far only as it relates to ...
+                <textarea class="form-textarea-mid" id="part_cans_text" required name="part_cans_text">{{curr_data.part_cans_text}}</textarea>
+                ... as described on application to cancel.
+                </label>
+        </div>
+
+        <div class="spacer-30"></div>

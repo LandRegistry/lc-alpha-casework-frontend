@@ -20,10 +20,14 @@ def submit_lc_cancellation(data):
                    'fee_details': {'type': data['payment'],
                                    'fee_factor': 1,
                                    'delivery': session['application_dict']['delivery_method']}}
-    if 'addl_info' in session:
-            application['additional_information'] = session['addl_info']
+    # if plan attached selected then pass the part_cans_text into that field
     if 'cancellation_type' in session:
-            application['update_registration'] = {'type': session['cancellation_type']}
+        application['update_registration'] = {'type': session['cancellation_type']}
+        if 'plan_attached' in session:
+            if session['plan_attached'] == 'true':
+                application['update_registration']['plan_attached'] = session['part_cans_text']
+        elif 'part_cans_text' in session:
+            application['update_registration']['part_cancelled'] = session['part_cans_text']
     url = app.config['CASEWORK_API_URL'] + '/applications/' + session['worklist_id'] + '?action=cancel'
     headers = {'Content-Type': 'application/json', 'X-Transaction-ID': session['transaction_id']}
     response = requests.put(url, data=json.dumps(application), headers=headers)

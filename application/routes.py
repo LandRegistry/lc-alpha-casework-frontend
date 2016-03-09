@@ -701,8 +701,14 @@ def submit_rectification():
 
 @app.route('/cancellation_customer', methods=['POST'])
 def cancellation_capture_customer():
-    if 'addl_info' in request.form:
-        session["addl_info"] = request.form["addl_info"]
+    if "plan_attached" in request.form:
+        print("plan attached = ", request.form["plan_attached"])
+        if request.form["plan_attached"] == 'on':
+            session["plan_attached"] = 'true'
+        else:
+            session["plan_attached"] = 'false'
+    if 'part_cans_text' in request.form:
+        session["part_cans_text"] = request.form["part_cans_text"]
     return render_template('cancellation/canc_customer.html', images=session['images'],
                            application=session['application_dict'],
                            application_type=session['application_type'], current_page=0,
