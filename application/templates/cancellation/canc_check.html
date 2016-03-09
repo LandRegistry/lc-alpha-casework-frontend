@@ -46,28 +46,34 @@
             </span>
         </div>
 
-        <div class="grid-row">
-            <div class="text-19-gray col ten">Particulars of land affected</div>
-        </div>
-        <div class="grid-row-padded-line">
-            <span class="text-16-bold col four">County or unitary authority area</span>
-            <span class="col two">&nbsp;</span>
-            <span class="text-16 col six">{{curr_data.county|join(', ')}}</span>
-        </div>
-        <div class="grid-row-padded-line">
-            <span class="text-16-bold col four">District</span>
-            <span class="col two">&nbsp;</span>
-            <span class="text-16 col six">{{curr_data.district}}</span>
-        </div>
-        <div class="grid-row-padded-line bottom-line">
-            <span class="text-16-bold col four">Short description</span>
-            <span class="col two">&nbsp;</span>
-            <span class="text-16 col six">{{curr_data.short_description}}</span>
-        </div>
+        {% if curr_data.class != 'WOB' and curr_data.class != 'PAB' %}
+            <div class="grid-row">
+                <div class="text-19-gray col ten">Particulars of land affected</div>
+            </div>
+            <div class="grid-row-padded-line">
+                <span class="text-16-bold col four">County or unitary authority area</span>
+                <span class="col two">&nbsp;</span>
+                <span class="text-16 col six">{{curr_data.county|join(', ')}}</span>
+            </div>
+            <div class="grid-row-padded-line">
+                <span class="text-16-bold col four">District</span>
+                <span class="col two">&nbsp;</span>
+                <span class="text-16 col six">{{curr_data.district}}</span>
+            </div>
+            <div class="grid-row-padded-line bottom-line">
+                <span class="text-16-bold col four">Short description</span>
+                <span class="col two">&nbsp;</span>
+                <span class="text-16 col six">{{curr_data.short_description}}</span>
+            </div>
+        {% endif %}
 
         <div>
             <div class="grid-row">
-                <div class="text-19-gray col ten">Estate owner details</div>
+                {% if curr_data.class != 'WOB' and curr_data.class != 'PAB' %}
+                    <div class="text-19-gray col ten">Estate owner details</div>
+                {% else %}
+                    <div class="text-19-gray col ten">Debtor details</div>
+                {% endif %}
             </div>
             {% if curr_data.estate_owner_ind == 'Private Individual' %}
                 <div class="grid-row-padded-line">
