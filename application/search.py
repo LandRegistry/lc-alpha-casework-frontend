@@ -156,7 +156,7 @@ def process_search_criteria(data, search_type):
             search_item = {
                 'name_type': 'Development Corporation',
                 'name': {
-                    'other': data[other_name]
+                    'other_name': data[other_name]
                 }
             }
             name_extracted = True
