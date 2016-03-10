@@ -12,6 +12,7 @@ from application.rectification import convert_response_data, submit_lc_rectifica
 from application.cancellation import submit_lc_cancellation
 from application.banks import get_debtor_details, register_bankruptcy, get_original_data, build_original_data, \
     build_corrections, register_correction
+from application.headers import get_headers
 from application.auth import authenticate
 from io import BytesIO
 import uuid
@@ -24,14 +25,6 @@ from functools import wraps
 #     logging.error(err)
 #     return render_template('error.html', error_msg=str(err)), 500
 
-
-def get_headers(headers=None):
-    if headers is None:
-        headers = {}
-
-    if 'transaction-id' in session:
-        headers['X-Transaction-ID'] = session['transaction-id']
-    return headers
 
 
 @app.before_request
@@ -65,6 +58,23 @@ def requires_auth(f):
     return decorated
 
 
+def clear_session():
+    username = session['username']
+    display = session['display_name']
+    group = session['group']
+    session.clear()
+    session['username'] = username
+    session['display_name'] = display
+    session['group'] = group
+
+
+@app.route("/logout", methods=["GET"])
+def logout():
+    logging.info(format_message("User %s logged out"), session['username'])
+    session.clear()
+    return redirect("/login")
+
+
 @app.route("/login", methods=["GET"])
 def login():
     return render_template("login.html", errors=False)
@@ -82,9 +92,13 @@ def login_as_user():
     auth = authenticate(username, password)
 
     if not auth:
+        logging.info(format_message("Login failed for user %s"), username)
         return redirect("/login_failed")
     else:
-        session['username'] = username
+        session['username'] = auth['username']
+        session['display_name'] = auth['display_name']
+        session['group'] = auth['primary_group']
+        logging.info(format_message("Login successful for user %s"), username)
         return redirect("/")
 
 
@@ -97,7 +111,7 @@ def index():
 
     if 'worklist_id' in session:
         url = app.config['CASEWORK_API_URL'] + '/applications/' + session['worklist_id'] + '/lock'
-        requests.delete(url, headers={'X-Transaction-ID': session['worklist_id']})
+        requests.delete(url, headers=get_headers({'X-Transaction-ID': session['worklist_id']}))
         del(session['worklist_id'])
 
     data = get_totals()
@@ -120,7 +134,7 @@ def get_list():
 
     if 'worklist_id' in session:
         url = app.config['CASEWORK_API_URL'] + '/applications/' + session['worklist_id'] + '/lock'
-        requests.delete(url, headers={'X-Transaction-ID': session['worklist_id']})
+        requests.delete(url, headers=get_headers({'X-Transaction-ID': session['worklist_id']}))
         del(session['worklist_id'])
 
     return get_list_of_applications(request.args.get('appn'), result, "")
@@ -128,7 +142,9 @@ def get_list():
 
 def get_list_of_applications(requested_worklist, result, error_msg):
     url = app.config['CASEWORK_API_URL'] + '/applications?type=' + requested_worklist
-    response = requests.get(url)
+
+    logging.info('get-list...')
+    response = requests.get(url, headers=get_headers())
     work_list_json = response.json()
     return_page = ''
     if requested_worklist.startswith('bank'):
@@ -172,7 +188,7 @@ def get_list_of_applications(requested_worklist, result, error_msg):
 @app.route('/application_start/<application_type>/<appn_id>/<form>', methods=["GET"])
 @requires_auth
 def application_start(application_type, appn_id, form):
-    logging.info("T:%s Start %s Application", appn_id, form)
+
 
     # Lock application if not in session otherwise assume user has refreshed the browser after select an application
     if 'worklist_id' not in session:
@@ -201,10 +217,11 @@ def application_start(application_type, appn_id, form):
     template = page_required(application_type, form)
     application_json['form'] = form
 
-    session.clear()
+    clear_session()
     set_session_variables({'images': images, 'document_id': document_id,
                            'application_type': application_type, 'worklist_id': appn_id,
                            'application_dict': application_json, 'transaction_id': appn_id})
+    logging.info(format_message("Start %s Application"), form)
 
     application = session['application_dict']
 
@@ -493,8 +510,7 @@ def submit_banks_amendment():
 @app.route('/correction', methods=['GET'])
 @requires_auth
 def start_correction():
-    session.clear()
-
+    clear_session()
     return render_template("corrections/retrieve.html", reg_no="", reg_date="", result="")
 
 
@@ -944,7 +960,7 @@ def get_totals():
     unknown = 0
 
     url = app.config['CASEWORK_API_URL'] + '/applications'
-    response = requests.get(url)
+    response = requests.get(url, headers=get_headers())
     if response.status_code == 200:
         full_list = response.json()
 
@@ -1020,7 +1036,7 @@ def page_required(appn_type, sub_type=''):
 # TODO: renamed as 'complete', move to back-end?
 def delete_from_worklist(application_id):
     url = app.config['CASEWORK_API_URL'] + '/applications/' + application_id
-    response = requests.delete(url, headers={'X-Transaction-ID': application_id})
+    response = requests.delete(url, headers=get_headers({'X-Transaction-ID': application_id}))
     if response.status_code != 204:
         err = 'Failed to delete application ' + application_id + ' from the worklist. Error code:' \
               + str(response.status_code)

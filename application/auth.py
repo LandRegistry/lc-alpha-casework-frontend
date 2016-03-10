@@ -2,4 +2,4 @@
 
 
 def authenticate(username, password):
-    return True
+    return {'username': username, 'display_name': username, 'primary_group': ''}

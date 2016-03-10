@@ -1,5 +1,6 @@
 from application import app
 from application.logformat import format_message
+from application.headers import get_headers
 from flask import session
 import requests
 import logging

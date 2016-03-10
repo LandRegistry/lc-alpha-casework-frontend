@@ -1,4 +1,5 @@
 from application import app
+from application.headers import get_headers
 from application.logformat import format_message
 from flask import Response, request, render_template, session, redirect, url_for
 import requests
