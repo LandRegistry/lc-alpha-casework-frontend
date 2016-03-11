@@ -586,16 +586,16 @@ def start_rectification():
 @app.route('/get_details', methods=["POST"])
 def get_registration_details():
     application_type = session['application_type']
-    c4_d2_class = ""
-    if "c4d2_sel" in request.form:
-        c4_d2_class = request.form['c4d2_sel']
+    multi_reg_class = ""
+    if "multi_reg_sel" in request.form:
+        multi_reg_class = request.form['multi_reg_sel']
 
     session['regn_no'] = request.form['reg_no']
     date_as_list = request.form['reg_date'].split("/")  # dd/mm/yyyy
     session['reg_date'] = '%s-%s-%s' % (date_as_list[2], date_as_list[1], date_as_list[0])
     url = app.config['CASEWORK_API_URL'] + '/registrations/' + session['reg_date'] + '/' + session['regn_no']
-    if c4_d2_class != "":
-        url += "?class_of_charge=" + c4_d2_class
+    if multi_reg_class != "":
+        url += "?class_of_charge=" + multi_reg_class
     response = requests.get(url, headers=get_headers())
     error_msg = None
     if response.status_code == 404:
@@ -1149,8 +1149,8 @@ def post_reclassify_form():
     return get_list_of_applications("unknown", result, "")
 
 
-@app.route('/c4_d2_check/<reg_date>/<reg_no>', methods=['GET'])
-def get_c4_d2_check(reg_date, reg_no):
-    url = app.config['CASEWORK_API_URL'] + '/c4_d2_check/' + reg_date + "/" + reg_no
+@app.route('/multi_reg_check/<reg_date>/<reg_no>', methods=['GET'])
+def get_multiple_registrations(reg_date, reg_no):
+    url = app.config['CASEWORK_API_URL'] + '/multi_reg_check/' + reg_date + "/" + reg_no
     data = requests.get(url, headers=get_headers())
     return Response(data, status=200, mimetype='application/json')
