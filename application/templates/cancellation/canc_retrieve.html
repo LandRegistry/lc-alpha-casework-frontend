@@ -1,10 +1,126 @@
+
+
 {% extends "/page_template/base.html" %}
 
 {% block page_specific_head %}
+
+
+
 {% endblock %}
 {% block maincontent %}
 
 
+<script>
+
+    var enteredReg = '';
+    var enteredDate = '';
+    function check_form()
+    {
+
+        //if full cans selected submit the form
+        if($('#full_cans').is(':checked'))
+        {
+            alert('submit full cans');
+            submit_form();
+        }
+
+        newReg = jQuery('#reg_no').val().trim();
+        newDate = jQuery('#reg_date').val().trim();
+        if (newDate != enteredDate || newReg != enteredReg)
+        {
+            //input data has changed reset the c4d2 elements
+            jQuery('#select_title').replaceWith($('<p id="select_title" class="text-16"></p>'));
+            jQuery('#select_table').replaceWith($('<p id="select_table_place" class="text-16">- </p>'));
+            jQuery('#c4d2_error').replaceWith($('<div id="c4d2_error"></div>'));
+            enteredDate = newDate;
+            enteredReg = newReg;
+        }
+        enteredDate = newDate;
+        enteredReg = newReg;
+        //elif C4 D2 showing and selected submit the form
+        if ( $( "#select_table" ).length )
+        {
+            alert('called1');
+            var radio_buttons = $("input[name='c4d2_sel']");
+            if( radio_buttons.filter(':checked').length == 0)
+            {
+                jQuery('#c4d2_error').replaceWith($('<div id="c4d2_error" class="error_block">' +
+                    '<span class="error_text">please select an application</span>' +
+                    '<p id="select_title" class="text-16">Which application do you want to cancel? </p></div>'));
+            }
+            else
+            {
+                var c4d2_val = radio_buttons.val();
+                var input = $("<input>")
+                    .attr("type", "hidden")
+                    .attr("name", "C4D2_selection").val(c4d2_val);
+                $('#cancel_form').append($(input));
+                submit_form();
+            }
+        }
+        else
+        {
+            alert('called2');
+            //check C4D2 before submitting
+            check_C4D2();
+        }
+
+    }
+
+    function submit_form()
+    {
+        //no c4 d2 data so just submit the form.
+        $('form#cancel_form').submit();
+    }
+
+    function check_C4D2(){
+        var transid = document.getElementById('transaction_id').value;
+        formattedDate = newDate.substr(6) + '-' + newDate.substr(3,2) + '-' + newDate.substr(0,2);
+        jQuery('#select_title').replaceWith($('<p id="select_title" class="text-16">- </p>'));
+        jQuery('#select_table').replaceWith($('<p id="select_table_place" class="text-16">- </p>'));
+        jQuery.ajax(
+            {
+                url: '{{config.CASEWORK_FRONTEND_URL}}/c4_d2_check/' + formattedDate + '/' + enteredReg,
+                type: 'GET',
+                data: {},
+                headers: {'X-Transaction-ID': transid},
+                success: function( data )
+                {
+                    if (data.length > 0 )
+                    {
+                        jQuery('#c4d2_error').replaceWith($('<div id="c4d2_error" class="grid-row"> ' +
+                            '<p id="select_title" class="text-16">Which application do you want to cancel?' +
+                            '</div></p>'));
+                        resultHTML = jQuery('<table id="select_table"></table>');
+                        for ( var i = 0; i < data.length; i++) {
+                            var class_of_charge = data[i]['data'][0].class_of_charge;
+                            var reg_no = data[i]['data'][0].number;
+                            var reg_date = data[i]['data'][0].date;
+                            var row =jQuery('<tr/>');
+                            var cells =  jQuery('<td>'+
+                            '<input type="radio" id="c4d2_'+i+'" name="c4d2_sel" onclick="" value="'+ class_of_charge +
+                                '"/></td>' +
+                                '<td>' + class_of_charge +'</td><td>' + reg_no + '</td><td>' + reg_date + '</td>');
+
+                            row.append(cells);
+                            resultHTML.append(row);
+                        }
+                        resultHTML.append(data);
+                        jQuery('#select_table_place').replaceWith(resultHTML);
+                    }
+                    else
+                    {
+                        submit_form();
+                    }
+                },
+                error: function( data)
+                {
+                    submit_form();
+                }
+            });
+}
+
+</script>
 <div class="spacer-10"></div>
 
 <h1 class="title-36">Cancellation</h1>
@@ -49,16 +165,21 @@
                 </div>
                 <div class="col four form-control-div">
                     <label class="form-label width-50" for="part_cans">
-                        <input id="part_cans" type="radio" name="full_cans" onclick=""  value="false">
+                        <input id="part_cans" type="radio" name="full_cans" onclick="" value="false">
                         Part
                     </label>
                 </div>
             </div>
-            <div class="spacer-20"></div>
-            <input id="continue" type="submit" value="Continue" class="form-button"/>
             <div class="spacer-40"></div>
 
+            <div id="c4d2_error"> <p id="select_title" class="text-16"></p>
+            </div>
+            <p id="select_table_place" class="text-16"></p>
+
+            <div class="spacer-20"></div>
+
         </form>
+        <input id="continue" type="submit" value="Continue" class="form-button" onclick="check_form()"/>
     </div>
     <!-- ///////////////////////////////// end of data entry form ///////////////////////////////// -->
     <div class="col one"><p></p></div>
