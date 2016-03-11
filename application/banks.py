@@ -189,7 +189,7 @@ def get_debtor_details(data):
             'occupation': data['occupation'],
             'residence_withheld': False,
             'trading_name': ' ',
-            'case_reference': case_reference,
+            'case_reference': case_reference.strip(),
             'legal_body': session['court_info']['legal_body'],
             'legal_body_ref_no': session['court_info']['legal_body_ref_no']
         }
