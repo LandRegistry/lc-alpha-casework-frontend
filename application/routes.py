@@ -387,7 +387,6 @@ def amendment_capture():
                            images=session['images'],
                            current_page=0,
                            errors=[],
-                           additional_information=session['additional_information'],
                            transaction=session['transaction_id'])
 
 
