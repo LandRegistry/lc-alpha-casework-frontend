@@ -143,7 +143,6 @@ def get_list():
 def get_list_of_applications(requested_worklist, result, error_msg):
     url = app.config['CASEWORK_API_URL'] + '/applications?type=' + requested_worklist
 
-    logging.info('get-list...')
     response = requests.get(url, headers=get_headers())
     work_list_json = response.json()
     return_page = ''
@@ -194,7 +193,7 @@ def application_start(application_type, appn_id, form):
     if 'worklist_id' not in session:
         url = app.config['CASEWORK_API_URL'] + '/applications/' + appn_id + '/lock'
         session['transaction_id'] = appn_id
-        response = requests.post(url, headers=get_headers())
+        response = requests.post(url, headers=get_headers({'X-Transaction-ID': appn_id}))
         if response.status_code == 404:
             error_msg = "This application is being processed by another member of staff, " \
                         "please select a different application."

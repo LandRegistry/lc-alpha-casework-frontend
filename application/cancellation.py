@@ -30,7 +30,7 @@ def submit_lc_cancellation(data):
         elif 'part_cans_text' in session:
             application['update_registration']['part_cancelled'] = session['part_cans_text']
     url = app.config['CASEWORK_API_URL'] + '/applications/' + session['worklist_id'] + '?action=cancel'
-    headers = {'Content-Type': 'application/json', 'X-Transaction-ID': session['transaction_id']}
+    headers = get_headers({'Content-Type': 'application/json'})
     response = requests.put(url, data=json.dumps(application), headers=headers)
     if response.status_code == 200:
         logging.info(format_message("Cancellation submitted to CASEWORK_API"))

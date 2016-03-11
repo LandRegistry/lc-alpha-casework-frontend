@@ -92,7 +92,7 @@ def process_search_criteria(data, search_type):
                 }
             }
             url = app.config['CASEWORK_API_URL'] + '/complex_names/search'
-            headers = {'Content-Type': 'application/json', 'X-Transaction-ID': session['transaction_id']}
+            headers = get_headers({'Content-Type': 'application/json'})
             comp_name = {
                 'name': data[complex_name],
                 'number': int(data[complex_number])
