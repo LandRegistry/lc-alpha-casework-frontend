@@ -879,7 +879,7 @@ def submit_cancellation():
 def land_charge_capture():
     logging.debug(request.form)
 
-    if 'store' in request.form and request.form['store'] == 'Store':
+    if 'store' in request.form: # and request.form['store'] == 'Store':
         return store_application()
 
     result = validate_land_charge(request.form)
