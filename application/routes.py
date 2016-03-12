@@ -213,9 +213,22 @@ def get_list_of_applications(requested_worklist, result, error_msg):
                            data=app_totals, error_msg=error_msg, result=result)
 
 
+# @app.route('/application_resume/<appn_id>', methods=['GET'])
+# def application_result(appn_id):
+#     # Get appliation details from worklist
+#     # Lock application
+
 @app.route('/application_start/<application_type>/<appn_id>/<form>', methods=["GET"])
 @requires_auth
 def application_start(application_type, appn_id, form):
+
+    url = app.config['CASEWORK_API_URL'] + '/applications/' + appn_id
+    response = requests.get(url, headers=get_headers())
+    application_json = response.json()
+    stored = application_json['stored']
+    if stored:
+        application_type = application_json['application_data']['application_type']
+        form = application_json['application_data']['application_dict']['form']
 
 
     # Lock application if not in session otherwise assume user has refreshed the browser after select an application
@@ -229,11 +242,6 @@ def application_start(application_type, appn_id, form):
             result = {}
             return get_list_of_applications(application_type, result, error_msg)
 
-    url = app.config['CASEWORK_API_URL'] + '/applications/' + appn_id
-
-    response = requests.get(url, headers=get_headers())
-
-    application_json = response.json()
     logging.debug(application_json)
     document_id = application_json['application_data']['document_id']
     doc_response = get_form_images(document_id)
@@ -242,14 +250,26 @@ def application_start(application_type, appn_id, form):
     for page in image_data['images']:
         url = app.config["CASEWORK_FRONTEND_URL"] + "/images/" + str(document_id) + '/' + str(page['page'])
         images.append(url)
+
     template = page_required(application_type, form)
     application_json['form'] = form
 
     clear_session()
-    set_session_variables({'images': images, 'document_id': document_id,
-                           'application_type': application_type, 'worklist_id': appn_id,
-                           'application_dict': application_json, 'transaction_id': appn_id})
-    logging.info(format_message("Start %s Application"), form)
+    if stored:
+        for key in application_json['application_data']:
+            session[key] = application_json['application_data'][key]
+        session['transaction_id'] = appn_id
+        logging.info(format_message("Resume %s Application"), form)
+    else:
+        set_session_variables({'images': images, 'document_id': document_id,
+                               'application_type': application_type, 'worklist_id': appn_id,
+                               'application_dict': application_json, 'transaction_id': appn_id})
+        logging.info(format_message("Start %s Application"), form)
+        #session['register_details'] = application_json['application_data']['register_details']
+#
+# for key in session:
+#         if key not in ['username', 'display_name', 'appn_id', 'transaction_id']:  # Don't want to save this as part of the data
+#             stored_data[key] = session[key]
 
     application = session['application_dict']
 
