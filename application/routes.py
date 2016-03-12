@@ -12,8 +12,11 @@ from application.rectification import convert_response_data, submit_lc_rectifica
 from application.cancellation import submit_lc_cancellation
 from application.banks import get_debtor_details, register_bankruptcy, get_original_data, build_original_data, \
     build_corrections, register_correction
+from application.headers import get_headers
+from application.auth import authenticate
 from io import BytesIO
 import uuid
+from functools import wraps
 
 
 # @app.errorhandler(Exception)
@@ -22,14 +25,6 @@ import uuid
 #     logging.error(err)
 #     return render_template('error.html', error_msg=str(err)), 500
 
-
-def get_headers(headers=None):
-    if headers is None:
-        headers = {}
-
-    if 'transaction-id' in session:
-        headers['X-Transaction-ID'] = session['transaction-id']
-    return headers
 
 
 @app.before_request
@@ -49,7 +44,66 @@ def after_request(response):
     return response
 
 
+def go_to_login():
+    return redirect("/login")
+
+
+def requires_auth(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        if 'username' not in session:
+            return go_to_login()
+        return f(*args, **kwargs)
+
+    return decorated
+
+
+def clear_session():
+    username = session['username']
+    display = session['display_name']
+    group = session['group']
+    session.clear()
+    session['username'] = username
+    session['display_name'] = display
+    session['group'] = group
+
+
+@app.route("/logout", methods=["GET"])
+def logout():
+    logging.info(format_message("User %s logged out"), session['username'])
+    session.clear()
+    return redirect("/login")
+
+
+@app.route("/login", methods=["GET"])
+def login():
+    return render_template("login.html", errors=False)
+
+
+@app.route("/login_failed", methods=["GET"])
+def login_failed():
+    return render_template("login.html", errors=True)
+
+
+@app.route("/login", methods=["POST"])
+def login_as_user():
+    username = request.form['username']
+    password = request.form['password']
+    auth = authenticate(username, password)
+
+    if not auth:
+        logging.info(format_message("Login failed for user %s"), username)
+        return redirect("/login_failed")
+    else:
+        session['username'] = auth['username']
+        session['display_name'] = auth['display_name']
+        session['group'] = auth['primary_group']
+        logging.info(format_message("Login successful for user %s"), username)
+        return redirect("/")
+
+
 @app.route('/', methods=["GET"])
+@requires_auth
 def index():
     if 'transaction_id' in session:
         logging.info(format_message('End transaction %s'), session['transaction_id'])
@@ -57,7 +111,7 @@ def index():
 
     if 'worklist_id' in session:
         url = app.config['CASEWORK_API_URL'] + '/applications/' + session['worklist_id'] + '/lock'
-        requests.delete(url, headers={'X-Transaction-ID': session['worklist_id']})
+        requests.delete(url, headers=get_headers({'X-Transaction-ID': session['worklist_id']}))
         del(session['worklist_id'])
 
     data = get_totals()
@@ -65,6 +119,7 @@ def index():
 
 
 @app.route('/get_list', methods=["GET"])
+@requires_auth
 def get_list():
     if 'transaction_id' in session:
         logging.info(format_message('End transaction %s'), session['transaction_id'])
@@ -79,7 +134,7 @@ def get_list():
 
     if 'worklist_id' in session:
         url = app.config['CASEWORK_API_URL'] + '/applications/' + session['worklist_id'] + '/lock'
-        requests.delete(url, headers={'X-Transaction-ID': session['worklist_id']})
+        requests.delete(url, headers=get_headers({'X-Transaction-ID': session['worklist_id']}))
         del(session['worklist_id'])
 
     return get_list_of_applications(request.args.get('appn'), result, "")
@@ -87,7 +142,8 @@ def get_list():
 
 def get_list_of_applications(requested_worklist, result, error_msg):
     url = app.config['CASEWORK_API_URL'] + '/applications?type=' + requested_worklist
-    response = requests.get(url)
+
+    response = requests.get(url, headers=get_headers())
     work_list_json = response.json()
     return_page = ''
     if requested_worklist.startswith('bank'):
@@ -128,14 +184,15 @@ def get_list_of_applications(requested_worklist, result, error_msg):
 
 
 @app.route('/application_start/<application_type>/<appn_id>/<form>', methods=["GET"])
+@requires_auth
 def application_start(application_type, appn_id, form):
-    logging.info("T:%s Start %s Application", appn_id, form)
+
 
     # Lock application if not in session otherwise assume user has refreshed the browser after select an application
     if 'worklist_id' not in session:
         url = app.config['CASEWORK_API_URL'] + '/applications/' + appn_id + '/lock'
         session['transaction_id'] = appn_id
-        response = requests.post(url, headers=get_headers())
+        response = requests.post(url, headers=get_headers({'X-Transaction-ID': appn_id}))
         if response.status_code == 404:
             error_msg = "This application is being processed by another member of staff, " \
                         "please select a different application."
@@ -158,10 +215,11 @@ def application_start(application_type, appn_id, form):
     template = page_required(application_type, form)
     application_json['form'] = form
 
-    session.clear()
+    clear_session()
     set_session_variables({'images': images, 'document_id': document_id,
                            'application_type': application_type, 'worklist_id': appn_id,
                            'application_dict': application_json, 'transaction_id': appn_id})
+    logging.info(format_message("Start %s Application"), form)
 
     application = session['application_dict']
 
@@ -183,6 +241,7 @@ def application_start(application_type, appn_id, form):
 
 
 @app.route('/retrieve_new_reg', methods=["GET"])
+@requires_auth
 def retrieve_new_reg():
     return redirect('/application_start/%s/%s/%s' % (session['application_type'], session['worklist_id'],
                     session['application_dict']['form']), code=302, Response=None)
@@ -191,6 +250,7 @@ def retrieve_new_reg():
 # ======Banks Registration routes===========
 
 @app.route('/check_court_details', methods=["POST"])
+@requires_auth
 def check_court_details():
 
     if request.form['submit_btn'] == 'No':
@@ -240,6 +300,7 @@ def check_court_details():
 
 
 @app.route('/process_debtor_details', methods=['POST'])
+@requires_auth
 def process_debtor_details():
     logging.info('processing debtor details')
 
@@ -252,6 +313,7 @@ def process_debtor_details():
 
 
 @app.route('/bankruptcy_capture/<page>', methods=['GET'])
+@requires_auth
 def bankruptcy_capture(page):
     # For returning from verification screen
 
@@ -274,6 +336,7 @@ def bankruptcy_capture(page):
 
 
 @app.route('/submit_banks_registration', methods=['POST'])
+@requires_auth
 def submit_banks_registration():
 
     logging.info(format_message('submitting banks registration'))
@@ -307,6 +370,7 @@ def submit_banks_registration():
 # =============== Amendment routes ======================
 
 @app.route('/get_original_bankruptcy', methods=['POST'])
+@requires_auth
 def get_original_banks_details():
 
     curr_data = []
@@ -337,12 +401,14 @@ def get_original_banks_details():
 
 
 @app.route('/re_enter_registration', methods=['GET'])
+@requires_auth
 def re_enter_registration():
     return render_template('bank_amend/retrieve.html', images=session['images'], current_page=0,
                            data=session['curr_data'], application=session, transaction=session['transaction_id'])
 
 
 @app.route('/view_original_details', methods=['GET'])
+@requires_auth
 def view_original_details():
     if session['application_type'] == 'correction':
         template = 'corrections/correct_details.html'
@@ -355,6 +421,7 @@ def view_original_details():
 
 
 @app.route('/remove_address/<int:addr>', methods=["POST"])
+@requires_auth
 def remove_address(addr):
 
     session['parties'] = get_debtor_details(request.form)
@@ -369,6 +436,7 @@ def remove_address(addr):
 
 
 @app.route('/process_amended_details', methods=['POST'])
+@requires_auth
 def process_amended_details():
     session['parties'] = get_debtor_details(request.form)
     return render_template('bank_amend/check.html', images=session['images'], current_page=0,
@@ -376,6 +444,7 @@ def process_amended_details():
 
 
 @app.route('/amendment_capture', methods=['GET'])
+@requires_auth
 def amendment_capture():
     # For returning from check screen
     party_data = {'parties': session['parties']}
@@ -390,6 +459,7 @@ def amendment_capture():
 
 
 @app.route('/amendment_key_no', methods=['GET'])
+@requires_auth
 def amendment_key_no():
     return render_template('bank_amend/key_no.html',
                            application_type=session['application_type'],
@@ -401,6 +471,7 @@ def amendment_key_no():
 
 
 @app.route('/submit_banks_amendment', methods=['POST'])
+@requires_auth
 def submit_banks_amendment():
     logging.info(format_message('submitting banks amendment'))
     key_number = request.form['key_number']
@@ -435,13 +506,14 @@ def submit_banks_amendment():
 
 #  Do we need to set the transaction id here for logging later?????
 @app.route('/correction', methods=['GET'])
+@requires_auth
 def start_correction():
-    session.clear()
-
+    clear_session()
     return render_template("corrections/retrieve.html", reg_no="", reg_date="", result="")
 
 
 @app.route('/get_original', methods=['POST'])
+@requires_auth
 def get_original_details():
     session['application_type'] = 'correction'
     curr_data = []
@@ -472,12 +544,14 @@ def get_original_details():
 
 
 @app.route('/process_corrected_details', methods=['POST'])
+@requires_auth
 def process_corrected_details():
     session['parties'] = get_debtor_details(request.form)
     return render_template('corrections/check.html', data=session['parties'], transaction=session['transaction_id'])
 
 
 @app.route('/correction_capture', methods=['GET'])
+@requires_auth
 def correction_capture():
     # For returning from check screen
     party_data = {'parties': session['parties']}
@@ -490,6 +564,7 @@ def correction_capture():
 
 
 @app.route('/submit_banks_correction', methods=['POST'])
+@requires_auth
 def submit_banks_correction():
     logging.info(format_message('submitting banks correction'))
 
@@ -507,6 +582,7 @@ def submit_banks_correction():
 
 
 @app.route('/process_search_name/<application_type>', methods=['POST'])
+@requires_auth
 def process_search_name(application_type):
     process_search_criteria(request.form, application_type)
 
@@ -521,6 +597,7 @@ def process_search_name(application_type):
 
 
 @app.route('/back_to_search_name', methods=['GET'])
+@requires_auth
 def back_to_search_name():
     return render_template('searches/info.html', images=session['images'], application=session['application_dict'],
                            application_type=session['application_type'], current_page=0,
@@ -528,6 +605,7 @@ def back_to_search_name():
 
 
 @app.route('/submit_search', methods=['POST'])
+@requires_auth
 def submit_search():
     logging.info(format_message('Submitting submit search'))
 
@@ -576,12 +654,14 @@ def submit_search():
 
 # ======== Rectification routes =============
 @app.route('/start_rectification', methods=["GET"])
+@requires_auth
 def start_rectification():
     session['application_type'] = "rectify"
     return render_template('rectification/retrieve.html')
 
 
 @app.route('/get_details', methods=["POST"])
+@requires_auth
 def get_registration_details():
     application_type = session['application_type']
     multi_reg_class = ""
@@ -644,6 +724,7 @@ def get_registration_details():
 
 
 @app.route('/rectification_capture', methods=['POST'])
+@requires_auth
 def rectification_capture():
     result = validate_land_charge(request.form)
     entered_fields = build_lc_inputs(request.form)
@@ -665,6 +746,7 @@ def rectification_capture():
 
 
 @app.route('/rectification_capture', methods=['GET'])
+@requires_auth
 def return_to_rectification_amend():
     # For returning from check rectification screen
     return render_template('rectification/amend.html',
@@ -678,6 +760,7 @@ def return_to_rectification_amend():
 
 
 @app.route('/rectification_customer', methods=['GET'])
+@requires_auth
 def rectification_capture_customer():
     return render_template('rectification/customer.html', images=session['images'],
                            application=session['application_dict'],
@@ -686,6 +769,7 @@ def rectification_capture_customer():
 
 
 @app.route('/submit_rectification', methods=['POST'])
+@requires_auth
 def submit_rectification():
     logging.info(format_message('Submitting rectification'))
     response = submit_lc_rectification(request.form)
@@ -705,6 +789,7 @@ def submit_rectification():
 
 
 @app.route('/cancellation_customer', methods=['POST'])
+@requires_auth
 def cancellation_capture_customer():
     if "plan_attached" in request.form:
         print("plan attached = ", request.form["plan_attached"])
@@ -721,6 +806,7 @@ def cancellation_capture_customer():
 
 
 @app.route('/submit_cancellation', methods=['POST'])
+@requires_auth
 def submit_cancellation():
     logging.info(format_message('Submitting cancellation'))
     response = submit_lc_cancellation(request.form)
@@ -739,6 +825,7 @@ def submit_cancellation():
 
 
 @app.route('/land_charge_capture', methods=['POST'])
+@requires_auth
 def land_charge_capture():
     logging.debug(request.form)
 
@@ -768,6 +855,7 @@ def land_charge_capture():
 
 
 @app.route('/land_charge_capture', methods=['GET'])
+@requires_auth
 def get_land_charge_capture():
     # For returning from verification screen
     # session['page_template']
@@ -783,6 +871,7 @@ def get_land_charge_capture():
 
 
 @app.route('/land_charge_verification', methods=['GET'])
+@requires_auth
 def land_charge_verification():
     return render_template('lc_regn/verify.html', application_type=session['application_type'], data={},
                            images=session['images'], application=session['application_dict'],
@@ -791,11 +880,13 @@ def land_charge_verification():
 
 
 @app.route('/lc_verify_details', methods=['POST'])
+@requires_auth
 def lc_verify_details():
     return redirect('/conveyancer_and_fees', code=302, Response=None)
 
 
 @app.route('/conveyancer_and_fees', methods=['GET'])
+@requires_auth
 def conveyancer_and_fees():
     return render_template('lc_regn/customer.html', application_type=session['application_type'], data={},
                            images=session['images'], application=session['application_dict'],
@@ -804,6 +895,7 @@ def conveyancer_and_fees():
 
 
 @app.route('/lc_process_application', methods=['POST'])
+@requires_auth
 def lc_process_application():
     logging.info(format_message('Submitting LC registration'))
     customer_fee_details = build_customer_fee_inputs(request.form)
@@ -820,6 +912,7 @@ def lc_process_application():
 # ============== Common routes =====================
 
 @app.route('/confirmation', methods=['GET'])
+@requires_auth
 def confirmation():
     if 'regn_no' not in session:
         session['regn_no'] = []
@@ -827,21 +920,21 @@ def confirmation():
     return render_template('confirmation.html', data=session['regn_no'], application_type=session['application_type'])
 
 
-@app.route('/notification', methods=['GET'])
-def notification():
-    application = session['application_dict']
-    data = {
-        "type": application['form'],
-        "reg_no": session['regn_no'],
-        "date": application['date'],
-        "details": [
-            {
-                "name": ' '.join(application['debtor_name']['forenames']) + ' ' + application['debtor_name']['surname'],
-                "particulars": 'TODO: what goes here?'
-            }
-        ]
-    }
-    return render_template('K22.html', data=data)
+# @app.route('/notification', methods=['GET'])
+# def notification():
+#     application = session['application_dict']
+#     data = {
+#         "type": application['form'],
+#         "reg_no": session['regn_no'],
+#         "date": application['date'],
+#         "details": [
+#             {
+#                 "name": ' '.join(application['debtor_name']['forenames']) + ' ' + application['debtor_name']['surname'],
+#                 "particulars": 'TODO: what goes here?'
+#             }
+#         ]
+#     }
+#     return render_template('K22.html', data=data)
 
 
 @app.route('/totals', methods=['GET'])
@@ -849,11 +942,10 @@ def totals():
     data = get_totals()
     return Response(json.dumps(data), status=200, mimetype='application/json')
 
-
+# TODO: is this used????
 @app.route('/rejection', methods=['GET'])
 def rejection():
     application_type = session['application_type']
-
     return render_template('rejection.html', application_type=application_type)
 
 
@@ -877,7 +969,7 @@ def get_totals():
     unknown = 0
 
     url = app.config['CASEWORK_API_URL'] + '/applications'
-    response = requests.get(url)
+    response = requests.get(url, headers=get_headers())
     if response.status_code == 200:
         full_list = response.json()
 
@@ -953,7 +1045,7 @@ def page_required(appn_type, sub_type=''):
 # TODO: renamed as 'complete', move to back-end?
 def delete_from_worklist(application_id):
     url = app.config['CASEWORK_API_URL'] + '/applications/' + application_id
-    response = requests.delete(url, headers={'X-Transaction-ID': application_id})
+    response = requests.delete(url, headers=get_headers({'X-Transaction-ID': application_id}))
     if response.status_code != 204:
         err = 'Failed to delete application ' + application_id + ' from the worklist. Error code:' \
               + str(response.status_code)

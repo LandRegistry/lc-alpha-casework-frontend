@@ -1,5 +1,6 @@
 from application import app
 from application.logformat import format_message
+from application.headers import get_headers
 from flask import Response, request, render_template, session, redirect, url_for
 import requests
 from datetime import datetime
@@ -136,7 +137,7 @@ def process_search_criteria(data, search_type):
                 }
             }
             url = app.config['CASEWORK_API_URL'] + '/complex_names/search'
-            headers = {'Content-Type': 'application/json', 'X-Transaction-ID': session['transaction_id']}
+            headers = get_headers({'Content-Type': 'application/json'})
             comp_name = {
                 'name': data[complex_name],
                 'number': int(data[complex_number])
