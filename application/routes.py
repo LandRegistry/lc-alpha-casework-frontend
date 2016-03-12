@@ -185,7 +185,7 @@ def get_list_of_applications(requested_worklist, result, error_msg):
 
 
     else:
-        url = app.config['CASEWORK_API_URL'] + '/applications?type=' + requested_worklist
+        url = app.config['CASEWORK_API_URL'] + '/applications?type=' + requested_worklist + '&state=NEW'
         response = requests.get(url, headers=get_headers())
         work_list_json = response.json()
 
