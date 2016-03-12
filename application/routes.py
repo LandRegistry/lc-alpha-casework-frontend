@@ -1302,11 +1302,29 @@ def post_store():
     #     "application_dict": session['application_dict']
     # }
 
-    stored_data = {
+    stored_data = {}
+    for key in session:
+        if key not in ['username', 'display_name', 'appn_id', 'transaction_id']:  # Don't want to save this as part of the data
+            stored_data[key] = session[key]
+
+    store_app = {
+        'data': stored_data,
+        'who': session['username'],
         'reason': request.form['store_reason']
     }
-    for key in session:
-        stored_data[key] = session[key]
+
+    logging.debug(session)
+
+    url = app.config['CASEWORK_API_URL'] + '/applications/' + session['worklist_id'] + '?action=store'
+    headers = get_headers({'Content-Type': 'application/json'})
+    response = requests.put(url, data=json.dumps(store_app), headers=headers)
+
+    if response.status_code != 200:
+        logging.debug(response.text)
+        raise RuntimeError("Failed to save application")
+
+    return redirect("/")
+    #
 
     # logging.debug(session)
     # logging.debug(session['application_dict'])
@@ -1336,4 +1354,3 @@ def post_store():
 
     # @app.route('/applications/<appn_id>', methods=['PUT'])
     # which will store all of the data we hope
-    return redirect("/")
