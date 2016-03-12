@@ -111,21 +111,6 @@ $(document).ready(function() {
             </div>
 
             <div class="subservice-box">
-                <a class="no-link-style  {{rect_selected}}" tabindex="3" href="/get_list?appn=bank_rect">
-                    <div class="spacer-20"></div>
-                    <p class="text-16-bold">Rectifications</p>
-                    <div class="spacer-30"></div>
-                    <div class="indicator" id="bank_rect">
-                        {% if data['bank_rect'] < 10 %}
-                        <span class="indicator-middle">{{data['bank_rect']}}</span>
-                        {% else %}
-                        <span class="indicator-middle-2">{{data['bank_rect']}}</span>
-                        {% endif %}
-                    </div>
-                </a>
-            </div>
-
-            <div class="subservice-box">
                 <a class="no-link-style {{with_selected}}" tabindex="4" href="/get_list?appn=bank_with">
                     <div class="spacer-20"></div>
                     <p class="text-16-bold">Withheld address</p>

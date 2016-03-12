@@ -352,7 +352,12 @@ def check_court_details():
 @app.route('/process_debtor_details', methods=['POST'])
 @requires_auth
 def process_debtor_details():
-    logging.info('processing debtor details')
+    logging.debug('PROCESS DEBTOR DETAILS')
+    logging.debug(request.form)
+    if 'store' in request.form:
+        return store_application()
+
+    logging.info(format_message('processing debtor details'))
 
     session['parties'] = get_debtor_details(request.form)
     # session['additional_information'] = request.form['add_info']
@@ -488,6 +493,9 @@ def remove_address(addr):
 @app.route('/process_amended_details', methods=['POST'])
 @requires_auth
 def process_amended_details():
+    if 'store' in request.form:
+        return store_application()
+
     session['parties'] = get_debtor_details(request.form)
     return render_template('bank_amend/check.html', images=session['images'], current_page=0,
                            data=session['parties'], transaction=session['transaction_id'])
@@ -776,6 +784,9 @@ def get_registration_details():
 @app.route('/rectification_capture', methods=['POST'])
 @requires_auth
 def rectification_capture():
+    if 'store' in request.form:
+        return store_application()
+
     result = validate_land_charge(request.form)
     entered_fields = build_lc_inputs(request.form)
 
@@ -841,6 +852,9 @@ def submit_rectification():
 @app.route('/cancellation_customer', methods=['POST'])
 @requires_auth
 def cancellation_capture_customer():
+    if 'store' in request.form:
+        return store_application()
+
     if "plan_attached" in request.form:
         print("plan attached = ", request.form["plan_attached"])
         if request.form["plan_attached"] == 'on':
@@ -879,7 +893,7 @@ def submit_cancellation():
 def land_charge_capture():
     logging.debug(request.form)
 
-    if 'store' in request.form: # and request.form['store'] == 'Store':
+    if 'store' in request.form:
         return store_application()
 
     result = validate_land_charge(request.form)
@@ -1316,7 +1330,23 @@ def get_store_form(): # TODO: probably not needed...
 
 
 def store_application():
-    session['register_details'] = build_lc_inputs(request.form)
+    logging.debug(session)
+
+    if session['application_type'] in ['bank_regn', 'bank_amend']:
+        session['parties'] = get_debtor_details(request.form)
+    elif session['application_type'] in ['cancel']:
+        # TODO: this duplicates code in /cancellation_customer, which is still in development.
+        if "plan_attached" in request.form:
+            if request.form["plan_attached"] == 'on':
+                session["plan_attached"] = 'true'
+            else:
+                session["plan_attached"] = 'false'
+
+        if 'part_cans_text' in request.form:
+            session["part_cans_text"] = request.form["part_cans_text"]
+    else:
+        session['register_details'] = build_lc_inputs(request.form)
+
     return render_template('store.html', application_type=session['application_type'],
                            images=session['images'],
                            application=session['application_dict'],

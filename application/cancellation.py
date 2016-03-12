@@ -7,6 +7,7 @@ import logging
 import json
 
 
+
 def submit_lc_cancellation(data):
 
     application = {'update_registration': {'type': 'Cancellation'},
