@@ -18,6 +18,9 @@
         <div class="spacer-30"></div>
 
         <h2 class="text-24-bold">Additional information</h2>
+        {{session}}
+        {{session.part_cans_text}}
+        {{session.plan_attached}}
         <div class="spacer-10"></div>
         <p class="text-indent">Please select whether a plan is attached, and complete the additional information  </p>
         <div class="spacer-10"></div>
@@ -26,7 +29,8 @@
                 <div class="grid-row">
                 <div class="col four form-control-div">
                     <label class="form-label" for="plan_attached">
-                        <input id="plan_attached" type="checkbox" name="plan_attached" onclick="toggle_plan()">
+                        <input id="plan_attached" type="checkbox" name="plan_attached" onclick="toggle_plan()"
+                                {% if session.plan_attached %}checked="true"{% endif %}>
                         Plan attached
                     </label>
 
@@ -35,7 +39,7 @@
                 <div class="spacer-10"></div>
                 <p id="part_cans_msg_2" class="text-16">Part cancelled in so far only as it relates to ...</p>
                 <label class="form-label" for="part_cans_text">
-                <textarea class="form-textarea-mid" id="part_cans_text" required name="part_cans_text">{{curr_data.part_cans_text}}</textarea>
+                <textarea class="form-textarea-mid" id="part_cans_text" required name="part_cans_text">{% if session.part_cans_text %}{{ session.part_cans_text }}{% endif %}</textarea>
                 <p id="part_cans_msg_3" class="text-16">... as described on application to cancel.</p>
                 </label>
         </div>
