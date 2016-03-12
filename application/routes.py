@@ -115,8 +115,7 @@ def get_list_of_applications(requested_worklist, result, error_msg):
                 "time_received": "{:%H:%M}".format(date),
                 "application_type": appn['application_type'],
                 "status": appn['status'],
-                "work_type": appn['work_type'],
-                "assigned_to": appn['assigned_to'],
+                "work_type": appn['work_type']
             }
             if requested_worklist.startswith('search'):
                 application['delivery_method'] = appn['delivery_method']
@@ -741,6 +740,11 @@ def submit_cancellation():
 
 @app.route('/land_charge_capture', methods=['POST'])
 def land_charge_capture():
+    logging.debug(request.form)
+
+    if 'store' in request.form and request.form['store'] == 'Store':
+        return store_application()
+
     result = validate_land_charge(request.form)
     entered_fields = build_lc_inputs(request.form)
     entered_fields['class'] = result['class']
@@ -1153,3 +1157,91 @@ def get_multiple_registrations(reg_date, reg_no):
     url = app.config['CASEWORK_API_URL'] + '/multi_reg_check/' + reg_date + "/" + reg_no
     data = requests.get(url, headers=get_headers())
     return Response(data, status=200, mimetype='application/json')
+
+
+@app.route('/store', methods=['GET'])
+def get_store_form(): # TODO: probably not needed...
+    return render_template('store.html', application_type=session['application_type'],
+                               images=session['images'],
+                               application=session['application_dict'],
+                               current_page=0,
+
+                               # curr_data=entered_fields,
+                               screen='capture',
+                               data=session['application_dict'],
+                               #transaction=session['transaction_id'])
+                           )
+
+
+def store_application():
+    session['register_details'] = build_lc_inputs(request.form)
+    return render_template('store.html', application_type=session['application_type'],
+                           images=session['images'],
+                           application=session['application_dict'],
+                           current_page=0,
+                           # curr_data=entered_fields,
+                           # screen='capture',
+                           data=session['application_dict'],
+                           # transaction=session['transaction_id'])
+                           )
+    # entered_fields = build_lc_inputs(request.form)
+    # entered_fields['class'] = result['class']
+    #
+    # if len(result['error']) == 0:
+    #     # return get_list_of_applications("lc_regn", "")
+    #     session['register_details'] = entered_fields
+    # SESSION:
+    # {'page_template': 'lc_regn/k1234.html', 'application_type': 'lc_regn', 'document_id': 67,
+    # 'application_dict': {'date_received': '2015-11-05 14:03:57', 'work_type': 'lc_regn',
+    # 'delivery_method': 'Postal', 'appn_id': '958', 'status': 'new', 'application_data': {'document_id': 67},
+    # 'form': 'K2', 'application_type': 'K2'}, 'transaction_id': '958',
+    # 'images': ['http://localhost:5010/images/67/1'], 'worklist_id': '958'}
+
+
+
+@app.route('/store', methods=['POST'])
+def post_store():
+    logging.debug('---------- STORE -----------')
+
+    # stored_data = {
+    #     "document_id": session['document_id'],
+    #     "page_template": session['page_template'],
+    #     "application_type": session['application_type'],
+    #     "application_dict": session['application_dict']
+    # }
+
+    stored_data = {
+        'reason': request.form['store_reason']
+    }
+    for key in session:
+        stored_data[key] = session[key]
+
+    # logging.debug(session)
+    # logging.debug(session['application_dict'])
+    # logging.debug(request.form)
+    #
+    # for key in request.form:
+    #     logging.debug(key)
+    #     #logging.debug(value)
+
+
+    # Initially assume we're saving from the capture screen
+
+
+    # We need to store the current 'register_details'
+    # And the contents of the current form (damn)
+    # And which page we were on
+    # Therefore this needs to be a POST, and the link needs to be JavaScript
+
+    #     result = validate_land_charge(request.form)
+    # entered_fields = build_lc_inputs(request.form)
+    # entered_fields['class'] = result['class']
+    #
+    # if len(result['error']) == 0:
+    #     # return get_list_of_applications("lc_regn", "")
+    #     session['register_details'] = entered_fields
+
+
+    # @app.route('/applications/<appn_id>', methods=['PUT'])
+    # which will store all of the data we hope
+    return redirect("/")
