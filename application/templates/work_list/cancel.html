@@ -116,6 +116,10 @@ $(document).ready(function() {
                     <tr>
                         <th class="table-text-black">Date and time received <a href="#"></a></th>
                         <th class="table-text-black">Form type <a href="#"></a></th>
+                        {% if requested_list == "cancel_stored" %}
+                            <th class="table-text-black">Stored by <a href="#"></a></th>
+                            <th class="table-text-black">Reason <a href="#"></a></th>
+                        {% endif %}
                     </tr>
                     </thead>
                     {% for n in worklist %}
@@ -134,6 +138,10 @@ $(document).ready(function() {
                                 link required for clickable table row
                             </a>
                         </td>
+                        {% if requested_list == "cancel_stored" %}
+                            <td>{{n['stored_by']}}</td>
+                            <td>{{n['store_reason']}}</td>
+                        {% endif %}
                     </tr>
                     </tbody>
                     {% endfor %}

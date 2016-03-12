@@ -260,20 +260,13 @@ def application_start(application_type, appn_id, form):
             session[key] = application_json['application_data'][key]
         session['transaction_id'] = appn_id
         logging.info(format_message("Resume %s Application"), form)
-        # if application_type == 'bank_amend':  # Tiresome special case, skip the PAB WOB screen...
-        #     template = 'bank_amend/amend_details.html'
-            #get_original_bankruptcy
+        # get_registration_details()
 
     else:
         set_session_variables({'images': images, 'document_id': document_id,
                                'application_type': application_type, 'worklist_id': appn_id,
                                'application_dict': application_json, 'transaction_id': appn_id})
         logging.info(format_message("Start %s Application"), form)
-        #session['register_details'] = application_json['application_data']['register_details']
-#
-# for key in session:
-#         if key not in ['username', 'display_name', 'appn_id', 'transaction_id']:  # Don't want to save this as part of the data
-#             stored_data[key] = session[key]
 
     application = session['application_dict']
 
@@ -293,10 +286,19 @@ def application_start(application_type, appn_id, form):
     logging.debug('---- START RENDER TEMPLATE DATA ----')
     logging.debug(json.dumps(application_json))
 
-    if stored and application_type == 'bank_amend':  # Tiresome special case, skip the PAB WOB screen...
-        return render_template('bank_amend/amend_details.html', images=session['images'], current_page=0,
-                               data=session['original_regns'], application=session, screen='capture',
-                               transaction=session['transaction_id'])
+    if stored:
+        if application_type == 'cancel':
+            logging.debug('---- RESTORING A CANCELLATION ----')
+            date = re.sub("(\d{4})\-(\d\d)\-(\d\d)", r"\3/\2/\1", application_json['application_data']['reg_date'])
+            return render_template('cancellation/canc_retrieve.html', application_type=application_type,
+                                   images=session['images'], current_page=0,
+                                   reg_no=application_json['application_data']['regn_no'], reg_date=date,
+                                   transaction=session['transaction_id'])
+
+        if application_type == 'bank_amend':  # Tiresome special case, skip the PAB WOB screen...
+            return render_template('bank_amend/amend_details.html', images=session['images'], current_page=0,
+                                   data=session['original_regns'], application=session, screen='capture',
+                                   transaction=session['transaction_id'])
     else:
         return render_template(template, application_type=application_type, data=application_json,
                                images=images, application=application, years=years,
@@ -746,7 +748,11 @@ def get_registration_details():
     if "multi_reg_sel" in request.form:
         multi_reg_class = request.form['multi_reg_sel']
 
+    logging.debug('---- GET DETAILS ----')
+    logging.debug(request.form)
+
     session['regn_no'] = request.form['reg_no']
+
     date_as_list = request.form['reg_date'].split("/")  # dd/mm/yyyy
     session['reg_date'] = '%s-%s-%s' % (date_as_list[2], date_as_list[1], date_as_list[0])
     url = app.config['CASEWORK_API_URL'] + '/registrations/' + session['reg_date'] + '/' + session['regn_no']
