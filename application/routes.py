@@ -260,6 +260,10 @@ def application_start(application_type, appn_id, form):
             session[key] = application_json['application_data'][key]
         session['transaction_id'] = appn_id
         logging.info(format_message("Resume %s Application"), form)
+        # if application_type == 'bank_amend':  # Tiresome special case, skip the PAB WOB screen...
+        #     template = 'bank_amend/amend_details.html'
+            #get_original_bankruptcy
+
     else:
         set_session_variables({'images': images, 'document_id': document_id,
                                'application_type': application_type, 'worklist_id': appn_id,
@@ -289,9 +293,14 @@ def application_start(application_type, appn_id, form):
     logging.debug('---- START RENDER TEMPLATE DATA ----')
     logging.debug(json.dumps(application_json))
 
-    return render_template(template, application_type=application_type, data=application_json,
-                           images=images, application=application, years=years,
-                           current_page=0, errors=[], curr_data=curr_data, transaction=session['transaction_id'])
+    if stored and application_type == 'bank_amend':  # Tiresome special case, skip the PAB WOB screen...
+        return render_template('bank_amend/amend_details.html', images=session['images'], current_page=0,
+                               data=session['original_regns'], application=session, screen='capture',
+                               transaction=session['transaction_id'])
+    else:
+        return render_template(template, application_type=application_type, data=application_json,
+                               images=images, application=application, years=years,
+                               current_page=0, errors=[], curr_data=curr_data, transaction=session['transaction_id'])
 
 
 @app.route('/retrieve_new_reg', methods=["GET"])
