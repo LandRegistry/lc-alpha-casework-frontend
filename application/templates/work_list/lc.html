@@ -156,10 +156,11 @@ $(document).ready(function() {
         </div>
 
         <!-- List of pending applications -->
-        {% if worklist|length > 0 %}
+        {% if requested_list != 'lc' %}
         <div class="grid-row">
             <div class="spacer-15"></div>
             <h2 class="text-24-bold">{{page_title}} applications</h2>
+            {% if worklist|length > 0 %}
             <div class="spacer-15"></div>
             {% if error_msg|length > 0 %}
             <p class="text-16-bold error">{{error_msg}}</p>
@@ -170,6 +171,10 @@ $(document).ready(function() {
                     <tr>
                         <th class="table-text-black">Date and time received <a href="#"></a></th>
                         <th class="table-text-black">Form type <a href="#"></a></th>
+                        {% if requested_list == "lc_stored" %}
+                            <th class="table-text-black">Stored by <a href="#"></a></th>
+                            <th class="table-text-black">Reason <a href="#"></a></th>
+                        {% endif %}
                     </tr>
                     </thead>
                     {% for n in worklist %}
@@ -188,11 +193,20 @@ $(document).ready(function() {
                             link required for clickable table row
                             </a>
                         </td>
+                        {% if requested_list == "lc_stored" %}
+                            <td>{{n['stored_by']}}</td>
+                            <td>{{n['store_reason']}}</td>
+                        {% endif %}
                     </tr>
                     </tbody>
                     {% endfor %}
                 </table>
             </div>
+            {% else %}
+            <div class="grid-row text-16">
+                There are no current applications
+            </div>
+            {% endif %}
         </div>
         {% endif %}
     </div>

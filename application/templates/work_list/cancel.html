@@ -101,10 +101,11 @@ $(document).ready(function() {
         </div>
 
         <!-- List of pending applications -->
-        {% if worklist|length > 0 %}
+        {% if requested_list != 'canc' %}
         <div class="grid-row">
             <div class="spacer-15"></div>
             <h2 class="text-24-bold">{{page_title}} applications</h2>
+            {% if worklist|length > 0 %}
             <div class="spacer-15"></div>
             {% if error_msg|length > 0 %}
             <p class="text-16-bold error">{{error_msg}}</p>
@@ -138,6 +139,11 @@ $(document).ready(function() {
                     {% endfor %}
                 </table>
             </div>
+            {% else %}
+            <div class="grid-row text-16">
+                There are no current applications
+            </div>
+            {% endif %}
         </div>
         {% endif %}
     </div>

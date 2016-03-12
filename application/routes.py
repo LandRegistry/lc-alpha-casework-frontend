@@ -5,6 +5,7 @@ import requests
 from datetime import datetime
 import logging
 import json
+import re
 from application.form_validation import validate_land_charge
 from application.land_charge import build_lc_inputs, build_customer_fee_inputs, submit_lc_registration
 from application.search import process_search_criteria
@@ -141,10 +142,9 @@ def get_list():
 
 
 def get_list_of_applications(requested_worklist, result, error_msg):
-    url = app.config['CASEWORK_API_URL'] + '/applications?type=' + requested_worklist
+    logging.debug('--- GET LIST OF APPLICATIONS ---')
+    logging.debug(requested_worklist)
 
-    response = requests.get(url, headers=get_headers())
-    work_list_json = response.json()
     return_page = ''
     if requested_worklist.startswith('bank'):
         return_page = 'work_list/bank.html'
@@ -156,27 +156,57 @@ def get_list_of_applications(requested_worklist, result, error_msg):
         return_page = 'work_list/cancel.html'
     elif requested_worklist.startswith('unknown'):
         return_page = 'work_list/unknown.html'
-
     appn_list = []
 
-    if len(work_list_json) > 0:
-        for appn in work_list_json:
-            # reformat result to include separate date and time received strings
-            date = datetime.strptime(appn['date_received'], "%Y-%m-%d %H:%M:%S")
+    # This is going to be fragile - depends on the internal strings identifying worklists
+    # being slightly consistent...
+    m = re.search("(.*)_stored", requested_worklist)
+    if m is not None:
+        prefix = m.group(1)
+        url = app.config['CASEWORK_API_URL'] + '/applications?state=stored'
+        response = requests.get(url, headers=get_headers())
+        work_list_json = response.json()
 
-            application = {
-                "appn_id": appn['appn_id'],
-                "received_tmstmp": appn['date_received'],
-                "date_received": "{:%d %B %Y}".format(date),
-                "time_received": "{:%H:%M}".format(date),
-                "application_type": appn['application_type'],
-                "status": appn['status'],
-                "work_type": appn['work_type']
-            }
-            if requested_worklist.startswith('search'):
-                application['delivery_method'] = appn['delivery_method']
+        for item in work_list_json:
+            if prefix in item['work_type']:
+                date = datetime.strptime(item['date_received'], "%Y-%m-%d %H:%M:%S")
+                application = {
+                    "appn_id": item['appn_id'],
+                    "received_tmstmp": item['date_received'],
+                    "date_received": "{:%d %B %Y}".format(date),
+                    "time_received": "{:%H:%M}".format(date),
+                    "application_type": item['application_type'],
+                    "status": item['status'],
+                    "work_type": item['work_type'],
+                    "stored_by": item['stored_by'],
+                    "store_reason": item['store_reason']
+                }
+                appn_list.append(application)
 
-            appn_list.append(application)
+
+    else:
+        url = app.config['CASEWORK_API_URL'] + '/applications?type=' + requested_worklist
+        response = requests.get(url, headers=get_headers())
+        work_list_json = response.json()
+
+        if len(work_list_json) > 0:
+            for appn in work_list_json:
+                # reformat result to include separate date and time received strings
+                date = datetime.strptime(appn['date_received'], "%Y-%m-%d %H:%M:%S")
+
+                application = {
+                    "appn_id": appn['appn_id'],
+                    "received_tmstmp": appn['date_received'],
+                    "date_received": "{:%d %B %Y}".format(date),
+                    "time_received": "{:%H:%M}".format(date),
+                    "application_type": appn['application_type'],
+                    "status": appn['status'],
+                    "work_type": appn['work_type']
+                }
+                if requested_worklist.startswith('search'):
+                    application['delivery_method'] = appn['delivery_method']
+
+                appn_list.append(application)
 
     app_totals = get_totals()
     return render_template(return_page, worklist=appn_list, requested_list=requested_worklist,
@@ -974,45 +1004,45 @@ def get_totals():
         full_list = response.json()
 
         for item in full_list:
-            if item['work_type'] == "bank_regn":
-                bank_regn += 1
-            elif item['work_type'] == "bank_amend":
-                bank_amend += 1
-            elif item['work_type'] == "bank_rect":
-                bank_rect += 1
-            elif item['work_type'] == "bank_with":
-                bank_with += 1
-            elif item['work_type'] == "bank_stored":
-                bank_stored += 1
-            elif item['work_type'] == "lc_regn":
-                lc_regn += 1
-            elif item['work_type'] == "lc_pn":
-                lc_pn += 1
-            elif item['work_type'] == "lc_rect":
-                lc_rect += 1
-            elif item['work_type'] == "lc_renewal":
-                lc_renewal += 1
-            elif item['work_type'] == "lc_stored":
-                lc_stored += 1
-            elif item['work_type'] == "cancel":
-                canc += 1
-            elif item['work_type'] == "cancel_stored":
-                canc_stored += 1
-            # elif item['work_type'] == "prt_search":
-            #     portal += 1
-            elif item['work_type'] == "search_full":
-                search_full += 1
-            elif item['work_type'] == "search_bank":
-                search_bank += 1
-            elif item['work_type'] == "unknown":
-                unknown += 1
+            if item['stored']:
+                if item['work_type'] in ['bank_regn', 'bank_amend', 'bank_rect', 'bank_with']:
+                    bank_stored += 1
+                elif item['work_type'] in ['lc_regn', 'lc_pn', 'lc_rect', 'lc_renewal']:
+                    lc_stored += 1
+                elif item['work_type'] in ['cancel']:
+                    canc_stored += 1
+
+            else:
+                if item['work_type'] == "bank_regn":
+                    bank_regn += 1
+                elif item['work_type'] == "bank_amend":
+                    bank_amend += 1
+                elif item['work_type'] == "bank_rect":
+                    bank_rect += 1
+                elif item['work_type'] == "bank_with":
+                    bank_with += 1
+                elif item['work_type'] == "lc_regn":
+                    lc_regn += 1
+                elif item['work_type'] == "lc_pn":
+                    lc_pn += 1
+                elif item['work_type'] == "lc_rect":
+                    lc_rect += 1
+                elif item['work_type'] == "lc_renewal":
+                    lc_renewal += 1
+                elif item['work_type'] == "cancel":
+                    canc += 1
+                elif item['work_type'] == "search_full":
+                    search_full += 1
+                elif item['work_type'] == "search_bank":
+                    search_bank += 1
+                elif item['work_type'] == "unknown":
+                    unknown += 1
 
     return {
         'bank_regn': bank_regn, 'bank_amend': bank_amend, 'bank_rect': bank_rect,
         'bank_with': bank_with, 'bank_stored': bank_stored,
         'lc_regn': lc_regn, 'lc_pn': lc_pn, 'lc_rect': lc_rect, 'lc_renewal': lc_renewal, 'lc_stored': lc_stored,
         'canc': canc, 'canc_stored': canc_stored,
-        # 'portal': portal,
         'search_full': search_full, 'search_bank': search_bank,
         'unknown': unknown
     }
