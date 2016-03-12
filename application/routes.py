@@ -230,7 +230,6 @@ def application_start(application_type, appn_id, form):
         application_type = application_json['application_data']['application_type']
         form = application_json['application_data']['application_dict']['form']
 
-
     # Lock application if not in session otherwise assume user has refreshed the browser after select an application
     if 'worklist_id' not in session:
         url = app.config['CASEWORK_API_URL'] + '/applications/' + appn_id + '/lock'
@@ -256,6 +255,7 @@ def application_start(application_type, appn_id, form):
 
     clear_session()
     if stored:
+        # Load stored stuff into session...
         for key in application_json['application_data']:
             session[key] = application_json['application_data'][key]
         session['transaction_id'] = appn_id
@@ -280,10 +280,14 @@ def application_start(application_type, appn_id, form):
     # land charge input data required for validation on lc_regn/capture.html
     if 'register_details' in session:
         curr_data = session['register_details']
+
     else:
         curr_data = build_lc_inputs({})
 
     session['page_template'] = template  # Might need this later
+
+    logging.debug('---- START RENDER TEMPLATE DATA ----')
+    logging.debug(json.dumps(application_json))
 
     return render_template(template, application_type=application_type, data=application_json,
                            images=images, application=application, years=years,
@@ -341,12 +345,19 @@ def check_court_details():
                 return render_template('bank_regn/verify.html', images=session['images'], current_page=0,
                                        court_data=session['court_info'], party_data=session['parties'])
             else:
-                return render_template('bank_regn/debtor.html', images=session['images'], current_page=0, data=session)
+                return redirect("/debtor")
+                #return render_template('bank_regn/debtor.html', images=session['images'], current_page=0, data=session)
         else:
             err = 'Failed to process bankruptcy registration application id:%s - Error code: %s' \
                   % (session['worklist_id'], str(response.status_code))
             logging.error(format_message(err))
             return render_template('error.html', error_msg=err), response.status_code
+
+
+@app.route("/debtor", methods=['GET'])
+@requires_auth
+def enter_debtor_details():
+    return render_template('bank_regn/debtor.html', images=session['images'], current_page=0, data=session)
 
 
 @app.route('/process_debtor_details', methods=['POST'])

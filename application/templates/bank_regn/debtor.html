@@ -89,6 +89,8 @@
             <div class="spacer-40"></div>
             <h2 class="text-24-bold">Particulars of debtor</h2>
             <div class="spacer-10"></div>
+                {% if session.parties|length == 0 %}
+
                 <div class="form">
                     <label class="form-label">Forename(s)</label>
                     <input class="form-textfield" type="text" id="forenames_1" name="forenames_1" autofocus value="{% if 'names' in data%}{{data.names[0].private.forenames|join(' ')}}{% endif %}">
@@ -98,24 +100,24 @@
                     <label class="form-label">Surname</label>
                     <input class="form-textfield" type="text" id="surname_1" required name="surname_1" value="{% if 'names' in data%}{{data.names[0].private.surname}}{% endif %}">
                 </div>
+                {% else %}
 
+                    {% for name in session.parties[0].names %}
+                        <div class="spacer-20"></div>
 
-                {% for name in data.names %}
-                {% if loop.index > 1 %}
-                    <div class="spacer-20"></div>
+                        <div class="form">
+                            <label class="form-label">Forename(s)</label>
+                            <input class="form-textfield" type="text" name="forenames_{{loop.index}}" id="forenames_{{loop.index}}" value="{{name.private.forenames[0]}}">
+                        </div>
 
-                    <div class="form">
-                        <label class="form-label">Forename(s)</label>
-                        <input class="form-textfield" type="text" name="forenames_{{loop.index}}" id="forenames_{{loop.index}}" value="{{name.private.forenames[0]}}">
-                    </div>
-
-                    <div class="form">
-                        <label class="form-label">Surname</label>
-                        <input class="form-textfield" type="text" name="surname_{{loop.index}}" id="surname_{{loop.index}}" value="{{name.private.surname}}">
-                    </div>
+                        <div class="form">
+                            <label class="form-label">Surname</label>
+                            <input class="form-textfield" type="text" name="surname_{{loop.index}}" id="surname_{{loop.index}}" value="{{name.private.surname}}">
+                        </div>
+                    {% endfor %}
+                    <script> n = {{ data.names| length}};</script>
                 {% endif %}
-                {% endfor %}
-                {% if 'names'in data %}<script> n = {{ data.names| length}};</script>{% endif %}
+
                 <div class="spacer-20"></div>
 
                 <div><a href="#add_name" onclick="addName(this)" class="link-16" id="addname">Add AKA</a></div>
@@ -124,11 +126,12 @@
 
                 <div class="form">
                     <label class="form-label">Occupation</label>
-                    <input class="form-textfield" type="text" id="occupation" name="occupation" value="{{data.occupation}}">
+                    <input class="form-textfield" type="text" id="occupation" name="occupation" value="{% if session.parties %}{{session.parties[0].occupation}}{% endif %}">
                 </div>
 
             <div class="spacer-20"></div>
 
+            {% if session.parties|length == 0 or session.parties[0].addresses|length == 0%}
             <div class="form">
                 <label class="form-label">Address</label>
                 <input class="form-textfield mr-btm-10" type="text" id="add_1_line1" name="add_1_line1" value="{% if data.addresses|length > 0 %}{{data.addresses[0].address_lines[0]}}{% endif %}">
@@ -146,28 +149,28 @@
                 <input class="form-textfield" type="text" id="postcode_1" name="postcode_1" value="{% if data.addresses|length > 0 %}{{data.addresses[0].postcode}}{% endif %}">
             </div>
             <div class="spacer-20"></div>
+            {% endif %}
 
-            {% if data.addresses|length > 0 %}
-                {% for address in data.addresses %}
-                {% if loop.index > 1 %}
+            {% if session.parties[0].addresses|length > 0 %}
+                {% for address in session.parties[0].addresses %}
                     <div class="form">
                         <label class="form-label">Address</label>
-                        <input class="form-textfield mr-btm-10" type="text" id="add_{{loop.index}}_line1" name="add_{{loop.index}}_line1" value="{% if data.addresses|length > 0 %}{{address.address_lines[0]}}{% endif %}">
-                        <input class="form-textfield mr-btm-10" type="text" id="add_{{loop.index}}_line2" name="add_{{loop.index}}_line2" value="{% if data.addresses|length > 0 %}{{address.address_lines[1]}}{% endif %}">
-                        <input class="form-textfield mr-btm-10" type="text" id="add_{{loop.index}}_line3" name="add_{{loop.index}}_line3" value="{% if data.addresses|length > 0 %}{{address.address_lines[2]}}{% endif %}">
-                        <input class="form-textfield mr-btm-10" type="text" id="add_{{loop.index}}_line4" name="add_{{loop.index}}_line4" value="{% if data.addresses|length > 0 %}{{address.address_lines[3]}}{% endif %}">
-                        <input class="form-textfield" type="text" id="add_{{loop.index}}_line5" name="add_{{loop.index}}_line5" value="{% if data.addresses|length > 0 %}{{address.address_lines[4]}}{% endif %}">
+                        <input class="form-textfield mr-btm-10" type="text" id="add_{{loop.index}}_line1" name="add_{{loop.index}}_line1" value="{{address.address_lines[0]}}">
+                        <input class="form-textfield mr-btm-10" type="text" id="add_{{loop.index}}_line2" name="add_{{loop.index}}_line2" value="{{address.address_lines[1]}}">
+                        <input class="form-textfield mr-btm-10" type="text" id="add_{{loop.index}}_line3" name="add_{{loop.index}}_line3" value="{{address.address_lines[2]}}">
+                        <input class="form-textfield mr-btm-10" type="text" id="add_{{loop.index}}_line4" name="add_{{loop.index}}_line4" value="{{address.address_lines[3]}}">
+                        <input class="form-textfield" type="text" id="add_{{loop.index}}_line5" name="add_{{loop.index}}_line5" value="{{address.address_lines[4]}}">
                     </div>
                     <div class="form">
                         <label class="form-label">County</label>
-                        <input class="form-textfield" type="text" id="county_{{loop.index}}" name="county_{{loop.index}}" value="{% if data.addresses|length > 0 %}{{address.county}}{% endif %}">
+                        <input class="form-textfield" type="text" id="county_{{loop.index}}" name="county_{{loop.index}}" value="{{address.county}}">
                     </div>
                     <div class="form">
                         <label class="form-label">Postcode</label>
-                        <input class="form-textfield" type="text" id="postcode_{{loop.index}}" name="postcode_{{loop.index}}" value="{% if data.addresses|length > 0 %}{{address.postcode}}{% endif %}">
+                        <input class="form-textfield" type="text" id="postcode_{{loop.index}}" name="postcode_{{loop.index}}" value="{{address.postcode}}">
                     </div>
                     <div class="spacer-20"></div>
-                {% endif %}
+
                 {% endfor %}
                 <script> a = {{ data.addresses| length}};</script>
             {% endif %}
