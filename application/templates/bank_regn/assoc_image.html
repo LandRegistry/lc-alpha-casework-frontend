@@ -17,27 +17,27 @@
         <form id="rectify_form" action="/associate_image" method="POST">
             <h2 class="text-24-bold">Associate image</h2>
             <div class="spacer-30"></div>
-            <p class="text-16-bold">Which application would you like to save this image with?</p>
+            <div id="assoc_error">
+                <p id="assoc_title"  class="text-16-bold">Which application would you like to save this image with?</p>
+            </div>
             <div class="spacer-30"></div>
             <div>
                 <table class="custom-1" id="orig_regns">
                     <tbody>
                     {% for name in curr_data %}
                     <tr id="name">
-                        <td><input type="radio" id="radio_{{loop.index}}" name="assoc_name"/></td>
+                        <td><input type="radio" id="radio_{{loop.index}}" name="assoc_name" value="" /></td>
                         <td id="name_{{loop.index}}">{{name.name}}</td>
-                        <td id="reg_no_{{loop.index}}">{{name.reg_no}}</td>
-                        <td id="date_{{loop.index}}">{{name.date}}</td>
+                        <td class="c_reg_no" id="reg_no_{{loop.index}}">{{name.reg_no}}</td>
+                        <td class="c_reg_date" id="date_{{loop.index}}">{{name.date}}</td>
                     </tr>
                     {% endfor %}
                     </tbody>
                 </table>
             </div>
-            <input type="hidden" name="reg_no_assoc" id="reg_no_assoc"/>
-            <input type="hidden" name="date_assoc" id="date_assoc"/>
 
             <div class="spacer-40"></div>
-            <input id="continue" type="submit" name="submit_btn" value="Continue" onclick="getValue()" class="form-button"/>
+            <input id="continue" type="button" name="submit_btn" value="Continue" onclick="submitForm()" class="form-button"/>
 
         </form>
     </div>
@@ -54,13 +54,34 @@
 </div>
 
 <script>
-    function getValue()
+    function submitForm()
     {
-    var reg_no=document.getElementById("reg_no_1").innerHTML;
-    var date=document.getElementById("date_1").innerHTML;
-    alert(reg_no + date);
-    document.getElementById("reg_no_assoc").value=reg_no;
-    document.getElementById("date_assoc").value=date;
+        if($("input[name=assoc_name]:checked").length == 0)
+        {
+            jQuery('#assoc_error').replaceWith($('<div id="assoc_error" class="error_block">' +
+                    '<span class="error_text">please select an application</span>' +
+                    '<p id="assoc_title" class="text-16">Which application would you like to save this image with? ' +
+                    '</p></div>'));
+            return;
+        }
+
+        //get the selected reg no and date values from the radio group and add them as hidden fields.
+        selected_registration_no = $("input[name=assoc_name]:checked").parent().siblings("td.c_reg_no").text();
+        selected_registration_date = $("input[name=assoc_name]:checked").parent().siblings("td.c_reg_date").text();
+
+        //append the values to the form as hidden fields
+        var reg_no_input = $("<input>")
+            .attr("type", "hidden")
+            .attr("name", "reg_no_assoc").val(selected_registration_no);
+            $('#rectify_form').append($(reg_no_input));
+
+        var reg_date_input = $("<input>")
+            .attr("type", "hidden")
+            .attr("name", "date_assoc").val(selected_registration_date);
+            $('#rectify_form').append($(reg_date_input));
+
+        //submit the form
+        $('form#rectify_form').submit();
     }
 
 
