@@ -196,8 +196,10 @@ def check_court_details():
 
     if request.form['submit_btn'] == 'No':
         # TODO: Need to save images somewhere, separate story promised
-        delete_from_worklist(session['worklist_id'])
-        return redirect('/get_list?appn=bank_regn', code=302, Response=None)
+        # delete_from_worklist(session['worklist_id'])
+        # return redirect('/get_list?appn=bank_regn', code=302, Response=None)
+        return render_template('bank_regn/assoc_image.html', images=session['images'], current_page=0,
+                               curr_data=session['current_registrations'], error=' ')
 
     elif request.form['submit_btn'] == 'Yes' and \
         session['court_info']['legal_body'] == request.form['court'] and \
@@ -238,6 +240,31 @@ def check_court_details():
                   % (session['worklist_id'], str(response.status_code))
             logging.error(format_message(err))
             return render_template('error.html', error_msg=err), response.status_code
+
+
+@app.route('/associate_image', methods=['POST'])
+def associate_image():
+    print('***request.form****', request.form)
+    print(session)
+    reg = {'reg_no': request.form['reg_no-assoc'],
+           'date': request.form['date'],
+           'document_id': session['application_dict']['document_id']}
+
+    url = app.config['CASEWORK_API_URL'] + '/assoc_image'
+    response = requests.put(url, json.dumps(reg), headers=get_headers())
+
+    if response.status_code == 200:
+        return redirect('/get_list?appn=bank_regn', code=302, Response=None)
+    elif response.status_code == 404:
+        err = 'Error - Unable to associate the image for reg: %s and date %s. Please contact service desk ' \
+              % (reg['reg_no'], reg['date'])
+        logging.error(format_message(err))
+        return render_template('error.html', error_msg=err), response.status_code
+    else:
+        err = 'Failed to process bankruptcy registration application id:%s - Error code: %s' \
+              % (session['application_dict']['appn_id'], str(response.status_code))
+        logging.error(format_message(err))
+        return render_template('error.html', error_msg=err), response.status_code
 
 
 @app.route('/process_debtor_details', methods=['POST'])
