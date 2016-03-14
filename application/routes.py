@@ -246,7 +246,8 @@ def check_court_details():
 def associate_image():
     reg = {'reg_no': request.form['reg_no_assoc'],
            'date': request.form['date_assoc'],
-           'document_id': session['document_id']}
+           'document_id': session['document_id'],
+           'appn_id': session['worklist_id']}
 
     url = app.config['CASEWORK_API_URL'] + '/assoc_image'
     response = requests.put(url, json.dumps(reg), headers=get_headers())
@@ -260,7 +261,7 @@ def associate_image():
         return render_template('error.html', error_msg=err), response.status_code
     else:
         err = 'Failed to process bankruptcy registration application id:%s - Error code: %s' \
-              % (session['application_dict']['appn_id'], str(response.status_code))
+              % (session['worklist_id'], str(response.status_code))
         logging.error(format_message(err))
         return render_template('error.html', error_msg=err), response.status_code
 
@@ -270,7 +271,6 @@ def process_debtor_details():
     logging.info('processing debtor details')
 
     session['parties'] = get_debtor_details(request.form)
-    # session['additional_information'] = request.form['add_info']
 
     return render_template('bank_regn/verify.html', images=session['images'], current_page=0,
                            court_data=session['court_info'], party_data=session['parties'],
