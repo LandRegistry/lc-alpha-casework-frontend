@@ -1,0 +1,78 @@
+{% extends "/page_template/base.html" %}
+
+{% block page_specific_head %}
+{% endblock %}
+{% block maincontent %}
+
+
+<div class="spacer-10"></div>
+
+<h1 class="title-36">Renewal</h1>
+
+<div class="spacer-5"></div>
+
+<div class="text-16-gray">
+    <span class="text-16-bold">1. Retrieve original</span> &nbsp;&nbsp;
+    2. View and cancel &nbsp;&nbsp;
+    3. Conveyancer and fees &nbsp;&nbsp;
+</div>
+
+<div class="grid-row">
+    <div class="col four" id="form_panel">
+        <!-- ///////////////////////////////// data entry form ///////////////////////////////// -->
+        <form id="renewal_form" action="/get_details" method="POST">
+            <div class="spacer-40"></div>
+            <h2 class="text-24-bold">Retrieve original</h2>
+            <div class="spacer-10"></div>
+            {% if error_msg|length > 0 %}
+            <p class="error"><strong>{{error_msg}}</strong></p>
+            {% endif %}
+            <div class="form">
+                <label class="form-label" for="reg_no">Original reference number</label><br/>
+                <input class="form-textfield width-50" required  aria-required="true" type="text" id="reg_no" name="reg_no" value="{{reg_no}}"/>
+            </div>
+            <div class="form">
+                <label class="form-label" for="reg_date">Date of registration</label><br/>
+                <input class="form-textfield width-50 dateEntry"  required  aria-required="true" type="text" placeholder="dd/mm/yyyy" id="reg_date" name="reg_date" value="{{reg_date}}"/>
+            </div>
+            <div class="spacer-40"></div>
+            <input id="continue" type="submit" value="Continue" class="form-button"/>
+            <div class="spacer-40"></div>
+        </form>
+    </div>
+    <!-- ///////////////////////////////// end of data entry form ///////////////////////////////// -->
+    <div class="col one"><p></p></div>
+    <!-- /////////////////////////////////  Include image tool ///////////////////////////////// -->
+
+    <div class="col seven">
+        <div class="spacer-40"></div>
+        {% include 'includes/image_view_body.html' %}
+    </div>
+    <!-- ///////////////////////////////// End of image tool ///////////////////////////////// -->
+    <script>
+        $(document).ready(function () {
+        //called when key is down
+            $(".dateEntry").bind("keydown", function (event) {
+                if ( event.keyCode == 46 || event.keyCode == 8 || event.keyCode == 9 || event.keyCode == 27 || event.keyCode == 13 ||
+                    // Allow: Ctrl+A
+                    (event.keyCode == 65 && event.ctrlKey === true) ||
+                    // Allow: home, end, left, right
+                    (event.keyCode >= 35 && event.keyCode <= 39) ||
+                    // allow forward slash
+                    (event.keyCode == 191) || (event.keyCode == 111)) {
+                    // let it happen, don't do anything
+                    return;
+                } else {
+                    // Ensure that it is a number and stop the keypress
+                    if (event.shiftKey || (event.keyCode < 48 || event.keyCode > 57) && (event.keyCode < 96 || event.keyCode > 105 )) {
+                        event.preventDefault();
+                    }
+                }
+            });
+        });
+    </script>
+</div>
+
+
+
+{% endblock %}

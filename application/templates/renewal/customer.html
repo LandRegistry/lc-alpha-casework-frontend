@@ -1,0 +1,42 @@
+{% extends "/page_template/base.html" %}
+{% block page_specific_head %}
+{% include 'includes/customer_head.html' %}
+
+{% endblock %}
+{% block maincontent %}
+
+<div class="spacer-10"></div>
+
+<h1 class="title-36">Renewal</h1>
+
+<div class="spacer-5"></div>
+
+<div class="text-16-gray">
+    1. Retrieve original &nbsp;&nbsp;
+    2. View and cancel &nbsp;&nbsp;
+    <span class="text-16-bold">3. Conveyancer and fees</span> &nbsp;&nbsp;
+</div>
+<div class="spacer-40"></div>
+<div class="grid-row">
+    <div class="col four" id="form_panel">
+        <!-- ///////////////////////////////// data entry form ///////////////////////////////// -->
+        <form action="/submit_renewal" method="POST">
+            {% set customer_type = 'Conveyancer' %}
+            {% include 'includes/customer_fields.html' %}
+
+            <input id="submit" type="submit" class="form-button" value="Complete"/>
+
+        </form>
+    </div>
+    <!-- ///////////////////////////////// end of data entry form ///////////////////////////////// -->
+    <div class="col one"><p></p></div>
+    <!-- /////////////////////////////////  Include image tool ///////////////////////////////// -->
+
+    <div class="col seven">
+        {% include 'includes/image_view_body.html' %}
+    </div>
+    <!-- ///////////////////////////////// End of image tool ///////////////////////////////// -->
+</div>
+
+
+{% endblock %}
