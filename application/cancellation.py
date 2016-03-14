@@ -22,6 +22,8 @@ def submit_lc_cancellation(data):
                    'fee_details': {'type': data['payment'],
                                    'fee_factor': 1,
                                    'delivery': session['application_dict']['delivery_method']}}
+    if "class_of_charge" in session:
+        application["class_of_charge"] = session["class_of_charge"]
     # if plan attached selected then pass the part_cans_text into that field
     if 'cancellation_type' in session:
         application['update_registration'] = {'type': session['cancellation_type']}

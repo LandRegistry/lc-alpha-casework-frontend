@@ -320,8 +320,10 @@ def check_court_details():
 
     if request.form['submit_btn'] == 'No':
         # TODO: Need to save images somewhere, separate story promised
-        delete_from_worklist(session['worklist_id'])
-        return redirect('/get_list?appn=bank_regn', code=302, Response=None)
+        # delete_from_worklist(session['worklist_id'])
+        # return redirect('/get_list?appn=bank_regn', code=302, Response=None)
+        return render_template('bank_regn/assoc_image.html', images=session['images'], current_page=0,
+                               curr_data=session['current_registrations'], error=' ')
 
     elif request.form['submit_btn'] == 'Yes' and \
         session['court_info']['legal_body'] == request.form['court'] and \
@@ -371,6 +373,31 @@ def enter_debtor_details():
     return render_template('bank_regn/debtor.html', images=session['images'], current_page=0, data=session)
 
 
+@app.route('/associate_image', methods=['POST'])
+def associate_image():
+    reg = {'reg_no': request.form['reg_no_assoc'],
+           'date': request.form['date_assoc'],
+           'document_id': session['document_id'],
+           'appn_id': session['worklist_id']}
+    logging.debug(reg)
+
+    url = app.config['CASEWORK_API_URL'] + '/assoc_image'
+    response = requests.put(url, json.dumps(reg), headers=get_headers())
+
+    if response.status_code == 200:
+        return redirect('/get_list?appn=bank_regn', code=302, Response=None)
+    elif response.status_code == 404:
+        err = 'Error 404 - Unable to associate the image for reg: %s and date %s. Please contact service desk.' \
+              % (reg['reg_no'], reg['date'])
+        logging.error(format_message(err))
+        return render_template('error.html', error_msg=err), response.status_code
+    else:
+        err = 'Failed to process bankruptcy registration application id:%s - Error code: %s' \
+              % (session['worklist_id'], str(response.status_code))
+        logging.error(format_message(err))
+        return render_template('error.html', error_msg=err), response.status_code
+
+
 @app.route('/process_debtor_details', methods=['POST'])
 @requires_auth
 def process_debtor_details():
@@ -382,7 +409,6 @@ def process_debtor_details():
     logging.info(format_message('processing debtor details'))
 
     session['parties'] = get_debtor_details(request.form)
-    # session['additional_information'] = request.form['add_info']
 
     return render_template('bank_regn/verify.html', images=session['images'], current_page=0,
                            court_data=session['court_info'], party_data=session['parties'],
@@ -758,6 +784,7 @@ def get_registration_details():
     url = app.config['CASEWORK_API_URL'] + '/registrations/' + session['reg_date'] + '/' + session['regn_no']
     if multi_reg_class != "":
         url += "?class_of_charge=" + multi_reg_class
+        session['class_of_charge'] = multi_reg_class
     response = requests.get(url, headers=get_headers())
     error_msg = None
     if response.status_code == 404:

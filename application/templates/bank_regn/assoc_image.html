@@ -1,0 +1,90 @@
+{% extends "/page_template/base.html" %}
+
+{% block page_specific_head %}
+{% endblock %}
+{% block maincontent %}
+
+
+<div class="spacer-10"></div>
+
+<h1 class="title-36">Bankruptcy registration</h1>
+
+<div class="spacer-40"></div>
+
+<div class="grid-row">
+    <div class="col four" id="form_panel">
+        <!-- ///////////////////////////////// data entry form ///////////////////////////////// -->
+        <form id="rectify_form" action="/associate_image" method="POST">
+            <h2 class="text-24-bold">Associate image</h2>
+            <div class="spacer-30"></div>
+            <div id="assoc_error">
+                <p id="assoc_title"  class="text-16-bold">Which application would you like to save this image with?</p>
+            </div>
+            <div class="spacer-30"></div>
+            <div>
+                <table class="custom-1" id="orig_regns">
+                    <tbody>
+                    {% for name in curr_data %}
+                    <tr id="name">
+                        <td><input type="radio" id="radio_{{loop.index}}" name="assoc_name" value="" /></td>
+                        <td id="name_{{loop.index}}">{{name.name}}</td>
+                        <td class="c_reg_no" id="reg_no_{{loop.index}}">{{name.reg_no}}</td>
+                        <td class="c_reg_date" id="date_{{loop.index}}">{{name.date}}</td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="spacer-40"></div>
+            <input id="continue" type="button" name="submit_btn" value="Continue" onclick="submitForm()" class="form-button"/>
+
+        </form>
+    </div>
+    <!-- ///////////////////////////////// end of data entry form ///////////////////////////////// -->
+    <div class="col one"><p></p></div>
+    <!-- /////////////////////////////////  Include image tool ///////////////////////////////// -->
+
+    <div class="col seven">
+        <div class="spacer-40"></div>
+        {% include 'includes/image_view_body.html' %}
+    </div>
+    <!-- ///////////////////////////////// End of image tool ///////////////////////////////// -->
+
+</div>
+
+<script>
+    function submitForm()
+    {
+        if($("input[name=assoc_name]:checked").length == 0)
+        {
+            jQuery('#assoc_error').replaceWith($('<div id="assoc_error" class="error_block">' +
+                    '<span class="error_text">please select an application</span>' +
+                    '<p id="assoc_title" class="text-16">Which application would you like to save this image with? ' +
+                    '</p></div>'));
+            return;
+        }
+
+        //get the selected reg no and date values from the radio group and add them as hidden fields.
+        selected_registration_no = $("input[name=assoc_name]:checked").parent().siblings("td.c_reg_no").text();
+        selected_registration_date = $("input[name=assoc_name]:checked").parent().siblings("td.c_reg_date").text();
+
+        //append the values to the form as hidden fields
+        var reg_no_input = $("<input>")
+            .attr("type", "hidden")
+            .attr("name", "reg_no_assoc").val(selected_registration_no);
+            $('#rectify_form').append($(reg_no_input));
+
+        var reg_date_input = $("<input>")
+            .attr("type", "hidden")
+            .attr("name", "date_assoc").val(selected_registration_date);
+            $('#rectify_form').append($(reg_date_input));
+
+        //submit the form
+        $('form#rectify_form').submit();
+    }
+
+
+</script>
+
+{% endblock %}
