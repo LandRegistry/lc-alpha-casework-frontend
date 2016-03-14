@@ -248,6 +248,7 @@ def associate_image():
            'date': request.form['date_assoc'],
            'document_id': session['document_id'],
            'appn_id': session['worklist_id']}
+    logging.debug(reg)
 
     url = app.config['CASEWORK_API_URL'] + '/assoc_image'
     response = requests.put(url, json.dumps(reg), headers=get_headers())
