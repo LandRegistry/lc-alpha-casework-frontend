@@ -622,6 +622,7 @@ def get_registration_details():
     url = app.config['CASEWORK_API_URL'] + '/registrations/' + session['reg_date'] + '/' + session['regn_no']
     if multi_reg_class != "":
         url += "?class_of_charge=" + multi_reg_class
+        session['class_of_charge'] = multi_reg_class
     response = requests.get(url, headers=get_headers())
     error_msg = None
     if response.status_code == 404:

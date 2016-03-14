@@ -10,114 +10,6 @@
 {% block maincontent %}
 
 
-<script>
-
-    var enteredReg = '';
-    var enteredDate = '';
-    function check_form()
-    {
-
-        //if full cans selected submit the form
-        if($('#full_cans').is(':checked'))
-        {
-            submit_form();
-        }
-
-        newReg = jQuery('#reg_no').val().trim();
-        newDate = jQuery('#reg_date').val().trim();
-        if (newDate != enteredDate || newReg != enteredReg)
-        {
-            //input data has changed reset the multi reg elements
-            jQuery('#multi_reg_title').replaceWith($('<p id="multi_reg_title" class="text-16"></p>'));
-            jQuery('#multi_reg_table').replaceWith($('<p id="multi_reg_table_place" class="text-16">- </p>'));
-            jQuery('#multi_reg_error').replaceWith($('<div id="multi_reg_error"></div>'));
-            enteredDate = newDate;
-            enteredReg = newReg;
-        }
-        enteredDate = newDate;
-        enteredReg = newReg;
-        //elif multi_reg showing and selected submit the form
-        if ( $( "#multi_reg_table" ).length )
-        {
-            var radio_buttons = $("input[name='multi_reg_sel']");
-            if( radio_buttons.filter(':checked').length == 0)
-            {
-                jQuery('#multi_reg_error').replaceWith($('<div id="multi_reg_error" class="error_block">' +
-                    '<span class="error_text">please select an application</span>' +
-                    '<p id="multi_reg_title" class="text-16">Which application do you want to cancel? </p></div>'));
-            }
-            else
-            {
-                var multi_reg_val = radio_buttons.val();
-                var input = $("<input>")
-                    .attr("type", "hidden")
-                    .attr("name", "multi_reg_selection").val(multi_reg_val);
-                $('#cancel_form').append($(input));
-                submit_form();
-            }
-        }
-        else
-        {
-            //check multi_reg before submitting
-            check_multi_reg();
-        }
-
-    }
-
-    function submit_form()
-    {
-        //no multi_reg data so just submit the form.
-        $('form#cancel_form').submit();
-    }
-
-    function check_multi_reg(){
-        var transid = document.getElementById('transaction_id').value;
-        formattedDate = newDate.substr(6) + '-' + newDate.substr(3,2) + '-' + newDate.substr(0,2);
-        jQuery('#multi_reg_title').replaceWith($('<p id="multi_reg_title" class="text-16">- </p>'));
-        jQuery('#multi_reg_table').replaceWith($('<p id="multi_reg_table_place" class="text-16">- </p>'));
-        jQuery.ajax(
-            {
-                url: '{{config.CASEWORK_FRONTEND_URL}}/multi_reg_check/' + formattedDate + '/' + enteredReg,
-                type: 'GET',
-                data: {},
-                headers: {'X-Transaction-ID': transid},
-                success: function( data )
-                {
-                    if (data.length > 0 )
-                    {
-                        jQuery('#multi_reg_error').replaceWith($('<div id="multi_reg_error" class="grid-row"> ' +
-                            '<p id="multi_reg_title" class="text-16">Which application do you want to cancel?' +
-                            '</div></p>'));
-                        resultHTML = jQuery('<table id="multi_reg_table"></table>');
-                        for ( var i = 0; i < data.length; i++) {
-                            var class_of_charge = data[i]['data'][0].class_of_charge;
-                            var reg_no = data[i]['data'][0].number;
-                            var reg_date = data[i]['data'][0].date;
-                            var row =jQuery('<tr/>');
-                            var cells =  jQuery('<td>'+
-                            '<input type="radio" id="multi_reg_'+i+'" name="multi_reg_sel" onclick="" value="'+
-                                class_of_charge + '"/></td>' +
-                                '<td>' + class_of_charge +'</td><td>' + reg_no + '</td><td>' + reg_date + '</td>');
-
-                            row.append(cells);
-                            resultHTML.append(row);
-                        }
-                        resultHTML.append(data);
-                        jQuery('#multi_reg_table_place').replaceWith(resultHTML);
-                    }
-                    else
-                    {
-                        submit_form();
-                    }
-                },
-                error: function( data)
-                {
-                    submit_form();
-                }
-            });
-}
-
-</script>
 <div class="spacer-10"></div>
 
 <h1 class="title-36">Cancellation</h1>
@@ -168,15 +60,9 @@
                 </div>
             </div>
             <div class="spacer-40"></div>
-
-            <div id="multi_reg_error"> <p id="multi_reg_title" class="text-16"></p>
-            </div>
-            <p id="multi_reg_table_place" class="text-16"></p>
-
-            <div class="spacer-20"></div>
-
+           {% include 'cancellation/canc_multi_reg_check.html' %}
         </form>
-        <input id="continue" type="submit" value="Continue" class="form-button" onclick="check_form()"/>
+
     </div>
     <!-- ///////////////////////////////// end of data entry form ///////////////////////////////// -->
     <div class="col one"><p></p></div>
