@@ -244,11 +244,9 @@ def check_court_details():
 
 @app.route('/associate_image', methods=['POST'])
 def associate_image():
-    print('***request.form****', request.form)
-    print(session)
-    reg = {'reg_no': request.form['reg_no-assoc'],
-           'date': request.form['date'],
-           'document_id': session['application_dict']['document_id']}
+    reg = {'reg_no': request.form['reg_no_assoc'],
+           'date': request.form['date_assoc'],
+           'document_id': session['document_id']}
 
     url = app.config['CASEWORK_API_URL'] + '/assoc_image'
     response = requests.put(url, json.dumps(reg), headers=get_headers())
@@ -256,7 +254,7 @@ def associate_image():
     if response.status_code == 200:
         return redirect('/get_list?appn=bank_regn', code=302, Response=None)
     elif response.status_code == 404:
-        err = 'Error - Unable to associate the image for reg: %s and date %s. Please contact service desk ' \
+        err = 'Error 404 - Unable to associate the image for reg: %s and date %s. Please contact service desk.' \
               % (reg['reg_no'], reg['date'])
         logging.error(format_message(err))
         return render_template('error.html', error_msg=err), response.status_code
