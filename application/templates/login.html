@@ -1,0 +1,52 @@
+
+{% extends "/page_template/base.html" %}
+{% block page_specific_head %}
+
+
+{% endblock %}
+
+{% block maincontent %}
+
+
+
+<div class="grid-row">
+    <div class="col four" id="a">&nbsp;
+    </div>
+    <div class="col four" id="b">
+        <form action="/login" method="POST">
+            <div class="form">
+                <label for="username" class="form-label">User Name</label>
+                <input type="text" class="form-textfield" name="username" id="username"/>
+            </div>
+
+            <div class="form">
+                <label for="password" class="form-label">Password</label>
+                <input type="password" class="form-textfield" name="password" id="password"/>
+            </div>
+
+            {% if errors %}
+            <div class="error-text">
+                User name or password invalid.
+            </div>
+            {% endif %}
+
+            <div class="form">
+                <input type="submit" class="form-button" value="Log In"/>
+            </div>
+        </form>
+    </div>
+    <div class="col four" id="c">&nbsp;
+    </div>
+    <!-- ///////////////////////////////// data entry form ///////////////////////////////// -->
+
+
+
+
+<script>
+
+
+</script>
+
+</div>
+
+{% endblock %}

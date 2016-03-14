@@ -1,5 +1,6 @@
 from application import app
 from application.logformat import format_message
+from application.headers import get_headers
 from flask import Response, request, render_template, session, redirect, url_for
 import requests
 from datetime import datetime
@@ -241,7 +242,7 @@ def register_bankruptcy(key_number):
     else:
         url = app.config['CASEWORK_API_URL'] + '/applications/' + session['worklist_id'] + '?action=complete'
 
-    headers = {'Content-Type': 'application/json', 'X-Transaction-ID': session['transaction_id']}
+    headers = get_headers({'Content-Type': 'application/json'})
     logging.debug("bankruptcy details: " + json.dumps(application))
     response = requests.put(url, data=json.dumps(application), headers=headers)
     if response.status_code == 200:
