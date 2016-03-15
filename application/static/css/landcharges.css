@@ -391,3 +391,13 @@ body {
 .right {
     float: right;
 }
+
+#logout_link {
+    color:#ffffff;
+    text-decoration: none;
+}
+
+#logout_link:hover, #logout_link:focus {
+    color:#ffffff;
+    text-decoration: underline;
+}
