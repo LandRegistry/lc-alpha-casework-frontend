@@ -10,7 +10,7 @@
 <div class="grid-row">
     <div class="col four" id="form_panel">
         <!-- ///////////////////////////////// data entry form ///////////////////////////////// -->
-        <form action="/lc_process_application" method="POST">
+        <form action="/lc_process_application" onsubmit="return validateForm()" method="POST">
             <div class="spacer-20"></div>
             {% set customer_type = 'Conveyancer' %}
             {% include 'includes/customer_fields.html' %}

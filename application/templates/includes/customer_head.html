@@ -22,36 +22,47 @@
                     jQuery('#customer_name').val(data.name);
                     full_address = data.address.address_lines.join('\r\n') + '\r\n'+ data.address.postcode;
                     jQuery('#customer_address').val(full_address);
-                    jQuery('#error_msg').html("");
-
+                    jQuery('#errorBlock').removeClass("error_block");
+                    jQuery('#key_no_error').html("");
+                    jQuery('#key_no_error').hide();
                 },
                 error: function( xhr, textStatus, errorThrown ) {
                     jQuery('#customer_name').val('');
                     full_address = '';
                     jQuery('#customer_address').val(full_address);
-                    jQuery('#error_msg').html("Key Number not found");
+                    jQuery('#errorBlock').addClass("error_block");
+                    jQuery('#key_no_error').html("Invalid key number");
+                    jQuery('#key_no_error').show();
                 }
             } );
+        } else {
+            clearError();
+        }
+    }
+
+    function clearKeyNo(){
+        jQuery('#key_number').val('');
+    }
+
+    function clearError(){
+        if (jQuery('#key_no_error').is(':visible')){
+            jQuery('#errorBlock').removeClass("error_block");
+            jQuery('#key_no_error').html("");
+            jQuery('#key_no_error').hide();
         }
     }
 
     function validateForm (){
-        nameOk = false;
-        // Check existence of a name
-        for (i = 0; i < 6; i++){
-            if (jQuery('#fullname'+i).val() != "") {
-                nameOk = true;
-                break;
+        if (jQuery('#direct_debit').is(':checked')){
+            // there must be a valid keynumber to proceed
+            if (jQuery('#key_number').val() == ""){
+                jQuery('#errorBlock').addClass("error_block");
+                jQuery('#key_no_error').html("A valid key number must be provided for direct debit transactions");
+                jQuery('#key_no_error').show();
+                return false
             }
         }
-        if (!nameOk){
-         alert('You must enter at least one name');
-         return false;
-        }
-        if ( jQuery('#customer_name').val() == "" || jQuery('#customer_address').val() == ""){
-            alert('You must enter the customers details');
-            return false;
-        }
+
         // if we got this far the form validation has succeeded
         return true;
     }
