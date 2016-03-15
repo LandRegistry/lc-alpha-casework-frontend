@@ -406,3 +406,13 @@ body {
     border-radius: 4px;
     height: 100%;
 }
+
+#logout_link {
+    color:#ffffff;
+    text-decoration: none;
+}
+
+#logout_link:hover, #logout_link:focus {
+    color:#ffffff;
+    text-decoration: underline;
+}

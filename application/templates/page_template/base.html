@@ -16,7 +16,7 @@
         <div class="header-title">Digital Land Charges</div>
         <div class="header-user">{{ session['display_name'] }}
             {% if 'username' in session %}
-                <a href="/logout">Log Out</a>
+                <a id="logout_link" href="/logout">Log Out</a>
             {% endif %}
         </div>
     </div>
