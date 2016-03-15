@@ -70,10 +70,13 @@ def get_list():
         logging.info(format_message('End transaction %s'), session['transaction_id'])
         del(session['transaction_id'])
 
-    # check if confirmation message is required
+    # check if confirmation or rejection message is required
     if 'confirmation' in session:
         result = session['confirmation']
         del(session['confirmation'])
+    elif 'rejection' in session:
+        result = {'rejection': True}
+        del(session['rejection'])
     else:
         result = {}
 
@@ -873,11 +876,31 @@ def totals():
     return Response(json.dumps(data), status=200, mimetype='application/json')
 
 
-@app.route('/rejection', methods=['GET'])
+@app.route('/rejection', methods=['POST'])
 def rejection():
-    application_type = session['application_type']
+    print('****session***', session)
+    appn_id = session['worklist_id']
+    url = app.config['CASEWORK_API_URL'] + '/applications/' + appn_id
+    response = requests.delete(url, headers=get_headers())
 
-    return render_template('rejection.html', application_type=application_type)
+    if response.status_code != 204 and response.status_code != 404:
+        return redirect('/rejection_error', code=302, Response=None)
+
+    doc_id = session['document_id']
+    url = app.config['CASEWORK_API_URL'] + '/forms/' + str(doc_id)
+    response = requests.delete(url, headers=get_headers())
+    if response.status_code != 204 and response.status_code != 404:
+        return redirect('/rejection_error', code=302, Response=None)
+    session['rejection'] = True
+    return redirect('/get_list?appn=' + session['application_type'], code=302, Response=None)
+
+
+@app.route('/rejection_error', methods=['GET'])
+def rejection_error():
+    err = 'Failure in the deletion of application id: %s and/or document id: %s' \
+          % (session['worklist_id'], session['document_id'])
+    logging.error(format_message(err))
+    return render_template('error.html', error_msg=err), '500'
 
 
 @app.template_filter()
