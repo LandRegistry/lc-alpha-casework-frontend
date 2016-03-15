@@ -258,4 +258,16 @@
         }
     }
 
+
+    function confirmDelete()
+    {
+        var x = confirm('This will remove and delete the scanned image and application from the worklist.\n\nAre you sure you wish to continue?')
+        if (x){
+            jQuery('#lc_reg_form').attr('action', "/rejection");
+            jQuery("#lc_reg_form").submit();
+            }
+        else
+            return;
+    }
+
 </script>

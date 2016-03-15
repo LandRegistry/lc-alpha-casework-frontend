@@ -70,9 +70,11 @@ $(document).ready(function() {
         <div class="spacer-10"></div>
         <h1 class="title-36">Land Charge</h1>
 
-        <!-- Confirmation -->
+        <!-- Confirmation/Rejection -->
         {% if 'reg_no' in result %}
             {% include 'includes/confirmation.html' %}
+        {% elif 'rejection' in result %}
+            {% include 'includes/rejection.html' %}
         {% endif %}
 
         <div class="spacer-20"></div>

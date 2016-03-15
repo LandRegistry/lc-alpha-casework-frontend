@@ -37,7 +37,10 @@
                 <input class="form-textfield width-50 dateEntry"  required  aria-required="true" type="text" placeholder="dd/mm/yyyy" id="reg_date" name="reg_date" value="{{reg_date}}"/>
             </div>
             <div class="spacer-40"></div>
-            <input id="continue" type="submit" value="Continue" class="form-button"/>
+            <div>
+                <input id="continue" type="submit" value="Continue" class="form-button"/>
+                <a href="javascript:confirmDelete()" id="reject" class="link-16 right">Reject application</a>
+            </div>
             <br/>
             <input id="store" type="submit" name="store" value="Return to this application later" class="link-button-16"/>
             <div class="spacer-40"></div>
@@ -73,6 +76,17 @@
                 }
             });
         });
+
+        function confirmDelete()
+        {
+            var x = confirm('This will remove and delete the scanned image and application from the worklist.\n\nAre you sure you wish to continue?')
+            if (x){
+                jQuery('#rectify_form').attr('action', "/rejection");
+                jQuery("#rectify_form").submit();
+                }
+            else
+                return;
+        }
     </script>
 </div>
 

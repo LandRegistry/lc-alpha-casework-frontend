@@ -54,13 +54,14 @@
             <div class="spacer-20"></div>
             <input id="yes" type="submit" name="submit_btn" value="Yes" class="form-button"/>
             <input id="no" type="submit" name="submit_btn" value="No" class="form-button-no"/>
+            <a href="javascript:confirmDelete()" id="reject_1" class="link-16 right">Reject application</a>
             <div class="spacer-20"></div>
             <a href="/get_list?appn=bank_regn" class="link-16">Return to this application later</a>
             <div class="spacer-40"></div>
             {% else %}
             <div>
                 <input id="continue" type="submit" name="submit_btn" value="Continue" class="form-button"/>
-                <a href="javascript:confirmDelete()" id="reject" class="link-16 right">Reject application</a>
+                <a href="javascript:confirmDelete()" id="reject_2" class="link-16 right">Reject application</a>
             </div>
             <div class="spacer-20"></div>
             <div class="spacer-40"></div>
@@ -103,10 +104,7 @@
     function confirmDelete()
     {
         var x = confirm('This will remove and delete the scanned image and application from the worklist.\n\nAre you sure you wish to continue?')
-        console.log(x);
         if (x){
-            // alert('ok');
-            // window.location.href = "/rejection"
             jQuery('#bank_reg_form').attr('action', "/rejection");
             jQuery("#bank_reg_form").submit();
             }
