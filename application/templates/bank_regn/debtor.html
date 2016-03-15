@@ -151,7 +151,7 @@
             <div class="spacer-20"></div>
             {% endif %}
 
-            {% if session.parties[0].addresses|length > 0 %}
+            {% if session.parties and session.parties[0].addresses|length > 0 %}
                 {% for address in session.parties[0].addresses %}
                     <div class="form">
                         <label class="form-label">Address</label>
