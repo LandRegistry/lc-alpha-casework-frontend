@@ -7,21 +7,20 @@
 
 <div class="spacer-10"></div>
 
-<h1 class="title-36">Rectification</h1>
+<h1 class="title-36">Renewal</h1>
 
 <div class="spacer-5"></div>
 
 <div class="text-16-gray">
     <span class="text-16-bold">1. Retrieve original</span> &nbsp;&nbsp;
-    2. View and amend original &nbsp;&nbsp;
-    3. Check details &nbsp;&nbsp;
-    4. Conveyancer and fees &nbsp;&nbsp;
+    2. View and cancel &nbsp;&nbsp;
+    3. Conveyancer and fees &nbsp;&nbsp;
 </div>
 
 <div class="grid-row">
     <div class="col four" id="form_panel">
         <!-- ///////////////////////////////// data entry form ///////////////////////////////// -->
-        <form id="rectify_form" action="/get_details" method="POST">
+        <form id="renewal_form" action="/get_details" method="POST">
             <div class="spacer-40"></div>
             <h2 class="text-24-bold">Retrieve original</h2>
             <div class="spacer-10"></div>
@@ -29,7 +28,7 @@
             <p class="error"><strong>{{error_msg}}</strong></p>
             {% endif %}
             <div class="form">
-                <label class="form-label" for="reg_no">Original registration number</label><br/>
+                <label class="form-label" for="reg_no">Original reference number</label><br/>
                 <input class="form-textfield width-50" required  aria-required="true" type="text" id="reg_no" name="reg_no" value="{{reg_no}}"/>
             </div>
             <div class="form">
@@ -38,8 +37,6 @@
             </div>
             <div class="spacer-40"></div>
             <input id="continue" type="submit" value="Continue" class="form-button"/>
-            <br/>
-            <input id="store" type="submit" name="store" value="Return to this application later" class="link-button-16"/>
             <div class="spacer-40"></div>
         </form>
     </div>
