@@ -6,7 +6,7 @@ import requests
 from datetime import datetime
 import logging
 import json
-
+import re
 
 def get_original_data(number, date):
     originals = {"date": date,
@@ -180,7 +180,11 @@ def get_debtor_details(data):
         session['court_info'] = {'legal_body': data['court'],
                                  'legal_body_ref_no': data['ref_no']}
 
-    case_reference = session['court_info']['legal_body'] + ' ' + session['court_info']['legal_body_ref_no']
+    if re.match("\d+ of \d+", session['court_info']['legal_body_ref_no'], re.IGNORECASE) is not None:
+        case_reference = session['court_info']['legal_body'] + ' no ' + session['court_info']['legal_body_ref_no']
+    else:
+        case_reference = session['court_info']['legal_body'] + ' ref ' + session['court_info']['legal_body_ref_no']
+
 
     parties = [
         {
