@@ -698,4 +698,14 @@ td.custom-3 {
   text-decoration: underline;
 }
 
-
+.padded-rule {
+  margin-left:0;
+  text-align:left;
+  display: block;
+  clear:both;
+  border-width: 1px 0px 0px 0px;
+  border-color: #999999;
+  border-style: solid;
+  pading: 4px;
+  width: 85%;
+  }
