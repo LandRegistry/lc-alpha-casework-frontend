@@ -3,26 +3,7 @@
 <link href="/static/datatables/css/jquery.dataTables.css" rel="stylesheet" />
 <link href="/static/datatables/css/dataTables.responsive.css" rel="stylesheet" />
 <script type="text/javascript" src="/static/datatables/js/jquery.dataTables.js"></script>
-<script>
- HOST = window.location.protocol + "//" + window.location.hostname;
-
-$(document).ready(function() {
-    $("#refresh").hide();
-    display_list = $('#requested_list').val();
-    var refresh_screen = setInterval(function(){ location.href="/get_list?appn=" + display_list;}, 30000);
-    $('#work-list').DataTable({info: false, paging: false, searching: false, ordering:false});
-
-    // make table row clickable link to child href
-    $('#work-list tbody tr').click(function() {
-        var href = $(this).find("a").attr("href");
-        if(href) {
-            window.location = href;
-            clearInterval(refresh_screen);
-        }
-    });
-} );
-
-</script>
+<script type="text/javascript" src="/static/js/worklist.js"></script>
 {% endblock %}
 
 {% block maincontent %}
@@ -178,7 +159,7 @@ $(document).ready(function() {
                             {% else %}
                             {{n['application_type']}}
                             {% endif %}
-                            <a class="hide" id="appn_type{{loop.index}}" href="/application_start/{{requested_list}}/{{n['appn_id']}}/{{n['application_type']|replace(' ', '%20')}}">
+                            <a class="hide prevent_doubleclick" id="appn_type{{loop.index}}" href="/application_start/{{requested_list}}/{{n['appn_id']}}/{{n['application_type']|replace(' ', '%20')}}">
                                 link required for clickable table row
                             </a>
                         </td>
