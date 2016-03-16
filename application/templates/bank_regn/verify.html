@@ -81,16 +81,19 @@ function validateAKA() {
 }
 
 function validate(sender) {
-    var allOK = true;
+    var allOK = false;
 
     var origCourt = document.getElementById('orig_court').value;
     var enteredCourt = document.getElementById('court_name').value;
 
     allOK = validatePrivateInd();
 
-    allOK = validateAKA();
+    no_of_aka = document.getElementById('no_of_aka')
+    if (no_of_aka != 'undefined' && no_of_aka != null) {
+        allOK = validateAKA();
+    }
 
-    if(origCourt !== enteredCourt) {
+    if(origCourt != enteredCourt) {
         var errorBlock = document.getElementById('court_validation');
         errorBlock.classList.add('error_block');
 
@@ -107,6 +110,7 @@ function validate(sender) {
         var errorText = document.getElementById('court_error');
         errorText.classList.remove('error_text');
         errorText.classList.add('hide');
+        allOk = true;
     }
 
     return allOK;
