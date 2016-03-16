@@ -30,7 +30,7 @@
 <div class="grid-row">
     <div class="col four" id="form_panel">
         <!-- ///////////////////////////////// data entry form ///////////////////////////////// -->
-        <form action="view_original_details" method="GET">
+        <form id="bank_reg" action="view_original_details" method="GET">
             <div class="spacer-40"></div>
             <h2 class="text-24-bold">Registration check</h2>
             <div class="spacer-10"></div>
@@ -78,7 +78,10 @@
                 {% endif %}
 
             <div class="spacer-20"></div>
-            <input id="continue" type="submit" value="Continue" class="form-button"/>
+            <div>
+                <input id="continue" type="submit" value="Continue" class="form-button"/>
+                <a href="javascript:confirmDelete()" id="reject" class="link-16 right">Reject application</a>
+            </div>
             <div class="spacer-40"></div>
         </form>
     </div>
@@ -94,6 +97,18 @@
 
 </div>
 
+<script>
+    function confirmDelete()
+    {
+        var x = confirm('This will remove and delete the scanned image and application from the worklist.\n\nAre you sure you wish to continue?')
+        if (x){
+            jQuery('#bank_reg').attr('action', "/rejection");
+            jQuery("#bank_reg").submit();
+            }
+        else
+            return;
+    }
+</script>
 
 
 

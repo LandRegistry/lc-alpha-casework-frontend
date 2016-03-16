@@ -30,7 +30,7 @@
 <div class="grid-row">
     <div class="col four" id="form_panel">
         <!-- ///////////////////////////////// data entry form ///////////////////////////////// -->
-        <form action="/get_original_bankruptcy" method="POST">
+        <form id="get_banks" action="/get_original_bankruptcy" method="POST">
             <div class="spacer-40"></div>
             <h2 class="text-24-bold">Retrieve original(s)</h2>
             <div class="spacer-10"></div>
@@ -57,7 +57,10 @@
                 </div>
             </div>
             <div class="spacer-40"></div>
-            <input id="continue" type="submit" value="Continue" class="form-button"/>
+            <div>
+                <input id="continue" type="submit" value="Continue" class="form-button"/>
+                <a href="javascript:confirmDelete()" id="reject" class="link-16 right">Reject application</a>
+            </div>
             <div class="spacer-40"></div>
         </form>
     </div>
@@ -93,6 +96,17 @@
             }
         });
     });
+
+    function confirmDelete()
+    {
+    var x = confirm('This will remove and delete the scanned image and application from the worklist.\n\nAre you sure you wish to continue?')
+    if (x){
+        jQuery('#get_banks').attr('action', "/rejection");
+        jQuery("#get_banks").submit();
+        }
+    else
+        return;
+    }
 </script>
 
 

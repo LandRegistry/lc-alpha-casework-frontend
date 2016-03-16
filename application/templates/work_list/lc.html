@@ -50,10 +50,10 @@ $(document).ready(function() {
     <ol>
         <li><a href="/">Home</a></li>
         {% if requested_list == "lc" %}
-            <li class="breadcrumb-no-arrow"><span>Land Charge</span></li>
+        <li class="breadcrumb-no-arrow"><span>Land Charge</span></li>
         {% else %}
-            <li><a href="/get_list?appn=lc">Land Charge</a></li>
-            <li class="breadcrumb-no-arrow"><span>{{page_title}}</span></li>
+        <li><a href="/get_list?appn=lc">Land Charge</a></li>
+        <li class="breadcrumb-no-arrow"><span>{{page_title}}</span></li>
         {% endif %}
     </ol>
 </div>
@@ -70,9 +70,11 @@ $(document).ready(function() {
         <div class="spacer-10"></div>
         <h1 class="title-36">Land Charge</h1>
 
-        <!-- Confirmation -->
+        <!-- Confirmation/Rejection -->
         {% if 'reg_no' in result %}
-            {% include 'includes/confirmation.html' %}
+        {% include 'includes/confirmation.html' %}
+        {% elif 'rejection' in result %}
+        {% include 'includes/rejection.html' %}
         {% endif %}
 
         <div class="spacer-20"></div>
@@ -80,32 +82,32 @@ $(document).ready(function() {
         {% set sub_cat_qty = 5 %}
         <div class="grid-row">
             <div class="subservice-box no-margin">
-            <a class="no-link-style {{regn_selected}}" tabindex="1" href="/get_list?appn=lc_regn">
-                <div class="spacer-20"></div>
-                <p class="text-16-bold">Registrations</p>
-                <div class="spacer-30"></div>
-                <div class="indicator" id="lc_regn">
-                    {% if data['lc_regn'] < 10 %}
-                    <span class="indicator-middle">{{data['lc_regn']}}</span>
-                    {% else %}
-                    <span class="indicator-middle-2">{{data['lc_regn']}}</span>
-                    {% endif %}
-                </div>
-            </a>
+                <a class="no-link-style {{regn_selected}}" tabindex="1" href="/get_list?appn=lc_regn">
+                    <div class="spacer-20"></div>
+                    <p class="text-16-bold">Registrations</p>
+                    <div class="spacer-30"></div>
+                    <div class="indicator" id="lc_regn">
+                        {% if data['lc_regn'] < 10 %}
+                        <span class="indicator-middle">{{data['lc_regn']}}</span>
+                        {% else %}
+                        <span class="indicator-middle-2">{{data['lc_regn']}}</span>
+                        {% endif %}
+                    </div>
+                </a>
             </div>
 
             <div class="subservice-box">
                 <a class="no-link-style {{pn_selected}}" tabindex="2" href="/get_list?appn=lc_pn">
-                <div class="spacer-20"></div>
-                <p class="text-16-bold">Priority Notices</p>
-                <div class="spacer-30"></div>
-                <div class="indicator" id="lc_pn">
-                    {% if data['lc_pn'] < 10 %}
-                    <span class="indicator-middle">{{data['lc_pn']}}</span>
-                    {% else %}
-                    <span class="indicator-middle-2">{{data['lc_pn']}}</span>
-                    {% endif %}
-                </div>
+                    <div class="spacer-20"></div>
+                    <p class="text-16-bold">Priority Notices</p>
+                    <div class="spacer-30"></div>
+                    <div class="indicator" id="lc_pn">
+                        {% if data['lc_pn'] < 10 %}
+                        <span class="indicator-middle">{{data['lc_pn']}}</span>
+                        {% else %}
+                        <span class="indicator-middle-2">{{data['lc_pn']}}</span>
+                        {% endif %}
+                    </div>
                 </a>
             </div>
 
@@ -172,8 +174,8 @@ $(document).ready(function() {
                         <th class="table-text-black">Date and time received <a href="#"></a></th>
                         <th class="table-text-black">Form type <a href="#"></a></th>
                         {% if requested_list == "lc_stored" %}
-                            <th class="table-text-black">Stored by <a href="#"></a></th>
-                            <th class="table-text-black">Reason <a href="#"></a></th>
+                        <th class="table-text-black">Stored by <a href="#"></a></th>
+                        <th class="table-text-black">Reason <a href="#"></a></th>
                         {% endif %}
                     </tr>
                     </thead>
@@ -190,12 +192,12 @@ $(document).ready(function() {
                             {{n['application_type']}}
                             {% endif %}
                             <a class="hide" id="appn_type{{loop.index}}" href="/application_start/{{requested_list}}/{{n['appn_id']}}/{{n['application_type']|replace(' ', '%20')}}">
-                            link required for clickable table row
+                                link required for clickable table row
                             </a>
                         </td>
                         {% if requested_list == "lc_stored" %}
-                            <td>{{n['stored_by']}}</td>
-                            <td>{{n['store_reason']}}</td>
+                        <td>{{n['stored_by']}}</td>
+                        <td>{{n['store_reason']}}</td>
                         {% endif %}
                     </tr>
                     </tbody>
