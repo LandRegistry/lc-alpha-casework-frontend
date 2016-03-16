@@ -50,7 +50,10 @@
             {% include 'includes/search_counties_fields.html' %}
             {% endif %}
             <div class="spacer-40"></div>
-            <input id="continue" type="submit" value="Continue" onclick="return validateFields();" class="form-button"/>
+            <div>
+                <input id="continue" type="submit" value="Continue" onclick="return validateFields();" class="form-button"/>
+                <a href="javascript:confirmDelete()" id="reject" class="link-16 right">Reject application</a>
+            </div>
             <div class="spacer-20"></div>
             <a href="/get_list?appn=search_full" class="link-16">Return to this application later</a>
             <div class="spacer-40"></div>
@@ -76,6 +79,17 @@
         allCountyClick();
     });
 
+
+    function confirmDelete()
+    {
+        var x = confirm('This will remove and delete the scanned image and application from the worklist.\n\nAre you sure you wish to continue?')
+        if (x){
+            jQuery('#search_form').attr('action', "/rejection");
+            jQuery("#search_form").submit();
+            }
+        else
+            return;
+    }
 
 </script>
 

@@ -1,5 +1,6 @@
 from application import app
 from application.logformat import format_message
+from application.headers import get_headers
 from flask import Response, request, render_template, session, redirect, url_for
 import requests
 from datetime import datetime
@@ -44,21 +45,66 @@ def process_search_criteria(data, search_type):
 
             company = 'company_{}'.format(counter)
             search_item = {
-                'name_type': 'Company',
+                'name_type': 'Limited Company',
                 'name': {
                     'company_name': data[company]
                 }
             }
             name_extracted = True
 
-        elif data[name_type] == 'localAuthority' \
+        elif data[name_type] == 'countyCouncil' \
                 and data['loc_auth_{}'.format(counter)] != '' \
                 and data['loc_auth_area_{}'.format(counter)] != '':
 
             loc_auth = 'loc_auth_{}'.format(counter)
             loc_auth_area = 'loc_auth_area_{}'.format(counter)
             search_item = {
-                'name_type': 'Local Authority',
+                'name_type': 'County Council',
+                'name': {
+                    'local_authority_name': data[loc_auth],
+                    'local_authority_area': data[loc_auth_area]
+                }
+            }
+            name_extracted = True
+
+        elif data[name_type] == 'ruralCouncil' \
+                and data['loc_auth_{}'.format(counter)] != '' \
+                and data['loc_auth_area_{}'.format(counter)] != '':
+
+            loc_auth = 'loc_auth_{}'.format(counter)
+            loc_auth_area = 'loc_auth_area_{}'.format(counter)
+            search_item = {
+                'name_type': 'Rural Council',
+                'name': {
+                    'local_authority_name': data[loc_auth],
+                    'local_authority_area': data[loc_auth_area]
+                }
+            }
+            name_extracted = True
+
+        elif data[name_type] == 'parishCouncil' \
+                and data['loc_auth_{}'.format(counter)] != '' \
+                and data['loc_auth_area_{}'.format(counter)] != '':
+
+            loc_auth = 'loc_auth_{}'.format(counter)
+            loc_auth_area = 'loc_auth_area_{}'.format(counter)
+            search_item = {
+                'name_type': 'Parish Council',
+                'name': {
+                    'local_authority_name': data[loc_auth],
+                    'local_authority_area': data[loc_auth_area]
+                }
+            }
+            name_extracted = True
+
+        elif data[name_type] == 'otherCouncil' \
+                and data['loc_auth_{}'.format(counter)] != '' \
+                and data['loc_auth_area_{}'.format(counter)] != '':
+
+            loc_auth = 'loc_auth_{}'.format(counter)
+            loc_auth_area = 'loc_auth_area_{}'.format(counter)
+            search_item = {
+                'name_type': 'Other Council',
                 'name': {
                     'local_authority_name': data[loc_auth],
                     'local_authority_area': data[loc_auth_area]
@@ -91,7 +137,7 @@ def process_search_criteria(data, search_type):
                 }
             }
             url = app.config['CASEWORK_API_URL'] + '/complex_names/search'
-            headers = {'Content-Type': 'application/json', 'X-Transaction-ID': session['transaction_id']}
+            headers = get_headers({'Content-Type': 'application/json'})
             comp_name = {
                 'name': data[complex_name],
                 'number': int(data[complex_number])
@@ -103,6 +149,17 @@ def process_search_criteria(data, search_type):
             for item in result:
                 search_item['name']['complex_variations'].append({'name': item['name'],
                                                                   'number': int(item['number'])})
+            name_extracted = True
+
+        elif data[name_type] == 'developmentCorporation' and data['other_name_{}'.format(counter)] != '':
+            # name_type is other
+            other_name = 'other_name_{}'.format(counter)
+            search_item = {
+                'name_type': 'Development Corporation',
+                'name': {
+                    'other_name': data[other_name]
+                }
+            }
             name_extracted = True
 
         elif data[name_type] == 'other' and data['other_name_{}'.format(counter)] != '':

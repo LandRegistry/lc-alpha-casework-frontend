@@ -28,7 +28,7 @@
 <div class="grid-row">
     <div class="col four" id="form_panel">
         <!-- ///////////////////////////////// data entry form ///////////////////////////////// -->
-        <form action="/submit_search" method="POST">
+        <form action="/submit_search" onsubmit="return validateForm()" method="POST">
             <div class="spacer-30"></div>
             {% set customer_type = 'Applicant' %}
             {% include 'includes/customer_fields.html' %}

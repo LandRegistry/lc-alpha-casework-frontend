@@ -11,7 +11,7 @@
 <div class="grid-row">
     <div class="col four" id="form_panel">
     <!-- ///////////////////////////////// data entry form ///////////////////////////////// -->
-    <form action="/land_charge_capture" method="POST">
+    <form id="lc_reg_form" action="/land_charge_capture" method="POST">
         {% if errors|length > 0 %}
         <div class="error-text">
             <h3>Information missing or incorrect. Please amend as applicable.</h3>
@@ -34,10 +34,10 @@
 
         <div>
             <input id="continue" type="submit" value="Continue" class="form-button"/>
+            <a href="javascript:confirmDelete()" id="reject" class="link-16 right">Reject application</a>
+            <br/>
+            <input id="store" type="submit" name="store" value="Return to this application later" class="link-button-16"/>
         </div>
-
-        <a href="/get_list?appn=lc_regn" class="link-16">Return to this application later</a>
-
     </form>
     </div>
 

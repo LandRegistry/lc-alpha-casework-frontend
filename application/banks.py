@@ -1,11 +1,12 @@
 from application import app
 from application.logformat import format_message
+from application.headers import get_headers
 from flask import Response, request, render_template, session, redirect, url_for
 import requests
 from datetime import datetime
 import logging
 import json
-
+import re
 
 def get_original_data(number, date):
     originals = {"date": date,
@@ -179,7 +180,11 @@ def get_debtor_details(data):
         session['court_info'] = {'legal_body': data['court'],
                                  'legal_body_ref_no': data['ref_no']}
 
-    case_reference = session['court_info']['legal_body'] + ' ' + session['court_info']['legal_body_ref_no']
+    if re.match("\d+ of \d+", session['court_info']['legal_body_ref_no'], re.IGNORECASE) is not None:
+        case_reference = session['court_info']['legal_body'] + ' no ' + session['court_info']['legal_body_ref_no']
+    else:
+        case_reference = session['court_info']['legal_body'] + ' ref ' + session['court_info']['legal_body_ref_no']
+
 
     parties = [
         {
@@ -189,7 +194,7 @@ def get_debtor_details(data):
             'occupation': data['occupation'],
             'residence_withheld': False,
             'trading_name': ' ',
-            'case_reference': case_reference,
+            'case_reference': case_reference.strip(),
             'legal_body': session['court_info']['legal_body'],
             'legal_body_ref_no': session['court_info']['legal_body_ref_no']
         }
@@ -241,7 +246,7 @@ def register_bankruptcy(key_number):
     else:
         url = app.config['CASEWORK_API_URL'] + '/applications/' + session['worklist_id'] + '?action=complete'
 
-    headers = {'Content-Type': 'application/json', 'X-Transaction-ID': session['transaction_id']}
+    headers = get_headers({'Content-Type': 'application/json'})
     logging.debug("bankruptcy details: " + json.dumps(application))
     response = requests.put(url, data=json.dumps(application), headers=headers)
     if response.status_code == 200:

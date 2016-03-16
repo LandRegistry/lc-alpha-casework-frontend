@@ -48,3 +48,4 @@ def authenticate(username, password):
         print(e)
         logging.error(str(e))
         return None  # None == not authenticated
+

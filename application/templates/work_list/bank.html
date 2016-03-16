@@ -50,10 +50,10 @@ $(document).ready(function() {
     <ol>
         <li><a href="/">Home</a></li>
         {% if requested_list == "bank" %}
-            <li class="breadcrumb-no-arrow"><span>Bankruptcy</span></li>
+        <li class="breadcrumb-no-arrow"><span>Bankruptcy</span></li>
         {% else %}
-            <li><a href="/get_list?appn=bank">Bankruptcy</a></li>
-            <li class="breadcrumb-no-arrow"><span>{{page_title}}</span></li>
+        <li><a href="/get_list?appn=bank">Bankruptcy</a></li>
+        <li class="breadcrumb-no-arrow"><span>{{page_title}}</span></li>
         {% endif %}
     </ol>
 </div>
@@ -71,9 +71,11 @@ $(document).ready(function() {
         <div class="spacer-10"></div>
         <h1 class="title-36">Bankruptcy</h1>
 
-        <!-- Confirmation -->
+        <!-- Confirmation/Rejection -->
         {% if 'reg_no' in result %}
-            {% include 'includes/confirmation.html' %}
+        {% include 'includes/confirmation.html' %}
+        {% elif 'rejection' in result %}
+        {% include 'includes/rejection.html' %}
         {% endif %}
 
         <div class="spacer-20"></div>
@@ -81,45 +83,30 @@ $(document).ready(function() {
         {% set sub_cat_qty = 5 %}
         <div class="grid-row">
             <div class="subservice-box no-margin">
-            <a class="no-link-style {{regn_selected}}" tabindex="1"  href="/get_list?appn=bank_regn">
-                <div class="spacer-20"></div>
-                <p class="text-16-bold">Registrations</p>
-                <div class="spacer-30"></div>
-                <div class="indicator" id="bank_regn">
-                    {% if data['bank_regn'] < 10 %}
-                    <span class="indicator-middle">{{data['bank_regn']}}</span>
-                    {% else %}
-                    <span class="indicator-middle-2">{{data['bank_regn']}}</span>
-                    {% endif %}
-                </div>
-            </a>
-            </div>
-
-            <div class="subservice-box">
-                <a class="no-link-style {{amend_selected}}" tabindex="2" href="/get_list?appn=bank_amend">
-                <div class="spacer-20"></div>
-                <p class="text-16-bold">Amendments</p>
-                <div class="spacer-30"></div>
-                <div class="indicator" id="bank_amend">
-                    {% if data['bank_amend'] < 10 %}
-                    <span class="indicator-middle">{{data['bank_amend']}}</span>
-                    {% else %}
-                    <span class="indicator-middle-2">{{data['bank_amend']}}</span>
-                    {% endif %}
-                </div>
+                <a class="no-link-style {{regn_selected}}" tabindex="1"  href="/get_list?appn=bank_regn">
+                    <div class="spacer-20"></div>
+                    <p class="text-16-bold">Registrations</p>
+                    <div class="spacer-30"></div>
+                    <div class="indicator" id="bank_regn">
+                        {% if data['bank_regn'] < 10 %}
+                        <span class="indicator-middle">{{data['bank_regn']}}</span>
+                        {% else %}
+                        <span class="indicator-middle-2">{{data['bank_regn']}}</span>
+                        {% endif %}
+                    </div>
                 </a>
             </div>
 
             <div class="subservice-box">
-                <a class="no-link-style  {{rect_selected}}" tabindex="3" href="/get_list?appn=bank_rect">
+                <a class="no-link-style {{amend_selected}}" tabindex="2" href="/get_list?appn=bank_amend">
                     <div class="spacer-20"></div>
-                    <p class="text-16-bold">Rectifications</p>
+                    <p class="text-16-bold">Amendments</p>
                     <div class="spacer-30"></div>
-                    <div class="indicator" id="bank_rect">
-                        {% if data['bank_rect'] < 10 %}
-                        <span class="indicator-middle">{{data['bank_rect']}}</span>
+                    <div class="indicator" id="bank_amend">
+                        {% if data['bank_amend'] < 10 %}
+                        <span class="indicator-middle">{{data['bank_amend']}}</span>
                         {% else %}
-                        <span class="indicator-middle-2">{{data['bank_rect']}}</span>
+                        <span class="indicator-middle-2">{{data['bank_amend']}}</span>
                         {% endif %}
                     </div>
                 </a>
@@ -157,10 +144,12 @@ $(document).ready(function() {
         </div>
 
         <!-- List of pending applications -->
-        {% if worklist|length > 0 %}
+        {% if requested_list != 'bank' %}
         <div class="grid-row">
             <div class="spacer-15"></div>
             <h2 class="text-24-bold">{{page_title}} applications</h2>
+
+            {% if worklist|length > 0 %}
             <div class="spacer-15"></div>
             {% if error_msg|length > 0 %}
             <p class="text-16-bold error">{{error_msg}}</p>
@@ -171,6 +160,10 @@ $(document).ready(function() {
                     <tr>
                         <th class="table-text-black">Date and time received <a href="#"></a></th>
                         <th class="table-text-black">Form type <a href="#"></a></th>
+                        {% if requested_list == "bank_stored" %}
+                        <th class="table-text-black">Stored by <a href="#"></a></th>
+                        <th class="table-text-black">Reason <a href="#"></a></th>
+                        {% endif %}
                     </tr>
                     </thead>
                     {% for n in worklist %}
@@ -189,12 +182,22 @@ $(document).ready(function() {
                                 link required for clickable table row
                             </a>
                         </td>
+                        {% if requested_list == "bank_stored" %}
+                        <td>{{n['stored_by']}}</td>
+                        <td>{{n['store_reason']}}</td>
+                        {% endif %}
                     </tr>
                     </tbody>
                     {% endfor %}
                 </table>
             </div>
+            {% else %}
+            <div class="grid-row text-16">
+                There are no current applications
+            </div>
+            {% endif %}
         </div>
+
         {% endif %}
     </div>
 </div>

@@ -21,7 +21,7 @@
 <div class="grid-row">
     <div class="col four" id="form_panel">
         <!-- ///////////////////////////////// data entry form ///////////////////////////////// -->
-        <form id="rectify_form" action="/check_court_details" method="POST">
+        <form id="bank_reg_form" action="/check_court_details" method="POST">
             {% if from_verify == True %} <input type="hidden" name="return_to_verify" value="true" />{% endif %}
             <div class="spacer-40"></div>
             <h2 class="text-24-bold">Official details</h2>
@@ -32,13 +32,13 @@
                 {% endif %}
                 <div class="form">
                     <label class="form-label" for="court">Name</label><br/>
-                    <input class="form-textfield" type="text" id="court" name="court" value="{{data.legal_body}}"/>
+                    <input class="form-textfield" type="text" id="court" name="court" value="{% if session.court_info %}{{session.court_info.legal_body}}{% endif %}"/>
                 </div>
                 <div class="spacer-20"></div>
                 <div class="form col ">
                     <label class="form-label" for="ref_no">Reference</label><br/>
                     <p class="text-indent">For example, 162 of 2016 or BKT387612</p>
-                    <input class="form-textfield"  required  aria-required="true" type="text" id="ref_no" name="ref_no" value="{{data.legal_body_ref_no}}"/>
+                    <input class="form-textfield"  required  aria-required="true" type="text" id="ref_no" name="ref_no" value="{% if session.court_info %}{{session.court_info.legal_body_ref_no}}{% endif %}"/>
                 </div>
             </div>
             <div class="spacer-40"></div>
@@ -54,16 +54,20 @@
             <div class="spacer-20"></div>
             <input id="yes" type="submit" name="submit_btn" value="Yes" class="form-button"/>
             <input id="no" type="submit" name="submit_btn" value="No" class="form-button-no"/>
+            <a href="javascript:confirmDelete()" id="reject_1" class="link-16 right">Reject application</a>
             <div class="spacer-20"></div>
             <a href="/get_list?appn=bank_regn" class="link-16">Return to this application later</a>
             <div class="spacer-40"></div>
             {% else %}
-            <input id="continue" type="submit" name="submit_btn" value="Continue" class="form-button"/>
+            <div>
+                <input id="continue" type="submit" name="submit_btn" value="Continue" class="form-button"/>
+                <a href="javascript:confirmDelete()" id="reject_2" class="link-16 right">Reject application</a>
+            </div>
             <div class="spacer-20"></div>
-            <a href="/get_list?appn=bank_regn" class="link-16">Return to this application later</a>
             <div class="spacer-40"></div>
             {% endif %}
         </form>
+
     </div>
     <!-- ///////////////////////////////// end of data entry form ///////////////////////////////// -->
     <div class="col one"><p></p></div>
@@ -96,6 +100,17 @@
             }
         });
     });
+
+    function confirmDelete()
+    {
+        var x = confirm('This will remove and delete the scanned image and application from the worklist.\n\nAre you sure you wish to continue?')
+        if (x){
+            jQuery('#bank_reg_form').attr('action', "/rejection");
+            jQuery("#bank_reg_form").submit();
+            }
+        else
+            return;
+    }
 </script>
 
 {% endblock %}

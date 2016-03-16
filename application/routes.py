@@ -5,13 +5,15 @@ import requests
 from datetime import datetime
 import logging
 import json
+import re
 from application.form_validation import validate_land_charge
 from application.land_charge import build_lc_inputs, build_customer_fee_inputs, submit_lc_registration
 from application.search import process_search_criteria
-from application.rectification import convert_response_data, submit_lc_rectification
+from application.rectification import convert_response_data, submit_lc_rectification, convert_class_of_charge
 from application.cancellation import submit_lc_cancellation
 from application.banks import get_debtor_details, register_bankruptcy, get_original_data, build_original_data, \
     build_corrections, register_correction
+from application.headers import get_headers
 from application.auth import authenticate
 from io import BytesIO
 import uuid
@@ -24,14 +26,6 @@ from functools import wraps
 #     logging.error(err)
 #     return render_template('error.html', error_msg=str(err)), 500
 
-
-def get_headers(headers=None):
-    if headers is None:
-        headers = {}
-
-    if 'transaction-id' in session:
-        headers['X-Transaction-ID'] = session['transaction-id']
-    return headers
 
 
 @app.before_request
@@ -66,6 +60,23 @@ def requires_auth(f):
     return decorated
 
 
+def clear_session():
+    username = session['username']
+    display = session['display_name']
+    group = session['group']
+    session.clear()
+    session['username'] = username
+    session['display_name'] = display
+    session['group'] = group
+
+
+@app.route("/logout", methods=["GET"])
+def logout():
+    logging.info(format_message("User %s logged out"), session['username'])
+    session.clear()
+    return redirect("/login")
+
+
 @app.route("/login", methods=["GET"])
 def login():
     return render_template("login.html", errors=False)
@@ -83,9 +94,13 @@ def login_as_user():
     auth = authenticate(username, password)
 
     if not auth:
+        logging.info(format_message("Login failed for user %s"), username)
         return redirect("/login_failed")
     else:
-        session['username'] = username
+        session['username'] = auth['username']
+        session['display_name'] = auth['display_name']
+        session['group'] = auth['primary_group']
+        logging.info(format_message("Login successful for user %s"), username)
         return redirect("/")
 
 
@@ -98,7 +113,7 @@ def index():
 
     if 'worklist_id' in session:
         url = app.config['CASEWORK_API_URL'] + '/applications/' + session['worklist_id'] + '/lock'
-        requests.delete(url, headers={'X-Transaction-ID': session['worklist_id']})
+        requests.delete(url, headers=get_headers({'X-Transaction-ID': session['worklist_id']}))
         del(session['worklist_id'])
 
     data = get_totals()
@@ -112,25 +127,28 @@ def get_list():
         logging.info(format_message('End transaction %s'), session['transaction_id'])
         del(session['transaction_id'])
 
-    # check if confirmation message is required
+    # check if confirmation or rejection message is required
     if 'confirmation' in session:
         result = session['confirmation']
         del(session['confirmation'])
+    elif 'rejection' in session:
+        result = {'rejection': True}
+        del(session['rejection'])
     else:
         result = {}
 
     if 'worklist_id' in session:
         url = app.config['CASEWORK_API_URL'] + '/applications/' + session['worklist_id'] + '/lock'
-        requests.delete(url, headers={'X-Transaction-ID': session['worklist_id']})
+        requests.delete(url, headers=get_headers({'X-Transaction-ID': session['worklist_id']}))
         del(session['worklist_id'])
 
     return get_list_of_applications(request.args.get('appn'), result, "")
 
 
 def get_list_of_applications(requested_worklist, result, error_msg):
-    url = app.config['CASEWORK_API_URL'] + '/applications?type=' + requested_worklist
-    response = requests.get(url)
-    work_list_json = response.json()
+    logging.debug('--- GET LIST OF APPLICATIONS ---')
+    logging.debug(requested_worklist)
+
     return_page = ''
     if requested_worklist.startswith('bank'):
         return_page = 'work_list/bank.html'
@@ -142,55 +160,89 @@ def get_list_of_applications(requested_worklist, result, error_msg):
         return_page = 'work_list/cancel.html'
     elif requested_worklist.startswith('unknown'):
         return_page = 'work_list/unknown.html'
-
     appn_list = []
 
-    if len(work_list_json) > 0:
-        for appn in work_list_json:
-            # reformat result to include separate date and time received strings
-            date = datetime.strptime(appn['date_received'], "%Y-%m-%d %H:%M:%S")
+    # This is going to be fragile - depends on the internal strings identifying worklists
+    # being slightly consistent...
+    m = re.search("(.*)_stored", requested_worklist)
+    if m is not None:
+        prefix = m.group(1)
+        url = app.config['CASEWORK_API_URL'] + '/applications?state=stored'
+        response = requests.get(url, headers=get_headers())
+        work_list_json = response.json()
 
-            application = {
-                "appn_id": appn['appn_id'],
-                "received_tmstmp": appn['date_received'],
-                "date_received": "{:%d %B %Y}".format(date),
-                "time_received": "{:%H:%M}".format(date),
-                "application_type": appn['application_type'],
-                "status": appn['status'],
-                "work_type": appn['work_type'],
-                "assigned_to": appn['assigned_to'],
-            }
-            if requested_worklist.startswith('search'):
-                application['delivery_method'] = appn['delivery_method']
+        for item in work_list_json:
+            if prefix in item['work_type']:
+                date = datetime.strptime(item['date_received'], "%Y-%m-%d %H:%M:%S")
+                application = {
+                    "appn_id": item['appn_id'],
+                    "received_tmstmp": item['date_received'],
+                    "date_received": "{:%d %B %Y}".format(date),
+                    "time_received": "{:%H:%M}".format(date),
+                    "application_type": item['application_type'],
+                    "status": item['status'],
+                    "work_type": item['work_type'],
+                    "stored_by": item['stored_by'],
+                    "store_reason": item['store_reason']
+                }
+                appn_list.append(application)
+    else:
+        url = app.config['CASEWORK_API_URL'] + '/applications?type=' + requested_worklist + '&state=NEW'
+        response = requests.get(url, headers=get_headers())
+        work_list_json = response.json()
 
-            appn_list.append(application)
+        if len(work_list_json) > 0:
+            for appn in work_list_json:
+                # reformat result to include separate date and time received strings
+                date = datetime.strptime(appn['date_received'], "%Y-%m-%d %H:%M:%S")
+
+                application = {
+                    "appn_id": appn['appn_id'],
+                    "received_tmstmp": appn['date_received'],
+                    "date_received": "{:%d %B %Y}".format(date),
+                    "time_received": "{:%H:%M}".format(date),
+                    "application_type": appn['application_type'],
+                    "status": appn['status'],
+                    "work_type": appn['work_type']
+                }
+                if requested_worklist.startswith('search'):
+                    application['delivery_method'] = appn['delivery_method']
+
+                appn_list.append(application)
 
     app_totals = get_totals()
     return render_template(return_page, worklist=appn_list, requested_list=requested_worklist,
                            data=app_totals, error_msg=error_msg, result=result)
 
 
+# @app.route('/application_resume/<appn_id>', methods=['GET'])
+# def application_result(appn_id):
+#     # Get appliation details from worklist
+#     # Lock application
+
 @app.route('/application_start/<application_type>/<appn_id>/<form>', methods=["GET"])
 @requires_auth
 def application_start(application_type, appn_id, form):
-    logging.info("T:%s Start %s Application", appn_id, form)
+
+    url = app.config['CASEWORK_API_URL'] + '/applications/' + appn_id
+    response = requests.get(url, headers=get_headers())
+    application_json = response.json()
+    stored = application_json['stored']
+    if stored:
+        application_type = application_json['application_data']['application_type']
+        form = application_json['application_data']['application_dict']['form']
 
     # Lock application if not in session otherwise assume user has refreshed the browser after select an application
     if 'worklist_id' not in session:
         url = app.config['CASEWORK_API_URL'] + '/applications/' + appn_id + '/lock'
         session['transaction_id'] = appn_id
-        response = requests.post(url, headers=get_headers())
+        response = requests.post(url, headers=get_headers({'X-Transaction-ID': appn_id}))
         if response.status_code == 404:
             error_msg = "This application is being processed by another member of staff, " \
                         "please select a different application."
             result = {}
             return get_list_of_applications(application_type, result, error_msg)
 
-    url = app.config['CASEWORK_API_URL'] + '/applications/' + appn_id
-
-    response = requests.get(url, headers=get_headers())
-
-    application_json = response.json()
     logging.debug(application_json)
     document_id = application_json['application_data']['document_id']
     doc_response = get_form_images(document_id)
@@ -199,13 +251,24 @@ def application_start(application_type, appn_id, form):
     for page in image_data['images']:
         url = app.config["CASEWORK_FRONTEND_URL"] + "/images/" + str(document_id) + '/' + str(page['page'])
         images.append(url)
+
     template = page_required(application_type, form)
     application_json['form'] = form
 
-    session.clear()
-    set_session_variables({'images': images, 'document_id': document_id,
-                           'application_type': application_type, 'worklist_id': appn_id,
-                           'application_dict': application_json, 'transaction_id': appn_id})
+    clear_session()
+    if stored:
+        # Load stored stuff into session...
+        for key in application_json['application_data']:
+            session[key] = application_json['application_data'][key]
+        session['transaction_id'] = appn_id
+        logging.info(format_message("Resume %s Application"), form)
+        # get_registration_details()
+
+    else:
+        set_session_variables({'images': images, 'document_id': document_id,
+                               'application_type': application_type, 'worklist_id': appn_id,
+                               'application_dict': application_json, 'transaction_id': appn_id})
+        logging.info(format_message("Start %s Application"), form)
 
     application = session['application_dict']
 
@@ -216,14 +279,32 @@ def application_start(application_type, appn_id, form):
     # land charge input data required for validation on lc_regn/capture.html
     if 'register_details' in session:
         curr_data = session['register_details']
+
     else:
         curr_data = build_lc_inputs({})
 
     session['page_template'] = template  # Might need this later
 
-    return render_template(template, application_type=application_type, data=application_json,
-                           images=images, application=application, years=years,
-                           current_page=0, errors=[], curr_data=curr_data, transaction=session['transaction_id'])
+    logging.debug('---- START RENDER TEMPLATE DATA ----')
+    logging.debug(json.dumps(application_json))
+
+    if stored:
+        if application_type == 'cancel':
+            logging.debug('---- RESTORING A CANCELLATION ----')
+            date = re.sub("(\d{4})\-(\d\d)\-(\d\d)", r"\3/\2/\1", application_json['application_data']['reg_date'])
+            return render_template('cancellation/canc_retrieve.html', application_type=application_type,
+                                   images=session['images'], current_page=0,
+                                   reg_no=application_json['application_data']['regn_no'], reg_date=date,
+                                   transaction=session['transaction_id'])
+
+        if application_type == 'bank_amend':  # Tiresome special case, skip the PAB WOB screen...
+            return render_template('bank_amend/amend_details.html', images=session['images'], current_page=0,
+                                   data=session['original_regns'], application=session, screen='capture',
+                                   transaction=session['transaction_id'])
+    else:
+        return render_template(template, application_type=application_type, data=application_json,
+                               images=images, application=application, years=years,
+                               current_page=0, errors=[], curr_data=curr_data, transaction=session['transaction_id'])
 
 
 @app.route('/retrieve_new_reg', methods=["GET"])
@@ -241,8 +322,10 @@ def check_court_details():
 
     if request.form['submit_btn'] == 'No':
         # TODO: Need to save images somewhere, separate story promised
-        delete_from_worklist(session['worklist_id'])
-        return redirect('/get_list?appn=bank_regn', code=302, Response=None)
+        # delete_from_worklist(session['worklist_id'])
+        # return redirect('/get_list?appn=bank_regn', code=302, Response=None)
+        return render_template('bank_regn/assoc_image.html', images=session['images'], current_page=0,
+                               curr_data=session['current_registrations'], error=' ')
 
     elif request.form['submit_btn'] == 'Yes' and \
         session['court_info']['legal_body'] == request.form['court'] and \
@@ -260,9 +343,10 @@ def check_court_details():
                        "legal_body_ref_no": request.form['ref_no']}
         session['court_info'] = application
 
+        legal_body_ref = application['legal_body'] + ' ' + application['legal_body_ref_no']
+        legal_body_ref = legal_body_ref.strip()
         #  call api to see if registration already exists
-        url = app.config['CASEWORK_API_URL'] + '/court_check/' + application['legal_body'] + '/' + \
-            application['legal_body_ref_no']
+        url = app.config['CASEWORK_API_URL'] + '/court_check/' + legal_body_ref
         response = requests.get(url, headers=get_headers())
         if response.status_code == 200:
             session['current_registrations'] = json.loads(response.text)
@@ -276,7 +360,8 @@ def check_court_details():
                 return render_template('bank_regn/verify.html', images=session['images'], current_page=0,
                                        court_data=session['court_info'], party_data=session['parties'])
             else:
-                return render_template('bank_regn/debtor.html', images=session['images'], current_page=0, data=session)
+                return redirect("/debtor")
+                #return render_template('bank_regn/debtor.html', images=session['images'], current_page=0, data=session)
         else:
             err = 'Failed to process bankruptcy registration application id:%s - Error code: %s' \
                   % (session['worklist_id'], str(response.status_code))
@@ -284,13 +369,48 @@ def check_court_details():
             return render_template('error.html', error_msg=err), response.status_code
 
 
+@app.route("/debtor", methods=['GET'])
+@requires_auth
+def enter_debtor_details():
+    return render_template('bank_regn/debtor.html', images=session['images'], current_page=0, data=session)
+
+
+@app.route('/associate_image', methods=['POST'])
+def associate_image():
+    reg = {'reg_no': request.form['reg_no_assoc'],
+           'date': request.form['date_assoc'],
+           'document_id': session['document_id'],
+           'appn_id': session['worklist_id']}
+    logging.debug(reg)
+
+    url = app.config['CASEWORK_API_URL'] + '/assoc_image'
+    response = requests.put(url, json.dumps(reg), headers=get_headers())
+
+    if response.status_code == 200:
+        return redirect('/get_list?appn=bank_regn', code=302, Response=None)
+    elif response.status_code == 404:
+        err = 'Error 404 - Unable to associate the image for reg: %s and date %s. Please contact service desk.' \
+              % (reg['reg_no'], reg['date'])
+        logging.error(format_message(err))
+        return render_template('error.html', error_msg=err), response.status_code
+    else:
+        err = 'Failed to process bankruptcy registration application id:%s - Error code: %s' \
+              % (session['worklist_id'], str(response.status_code))
+        logging.error(format_message(err))
+        return render_template('error.html', error_msg=err), response.status_code
+
+
 @app.route('/process_debtor_details', methods=['POST'])
 @requires_auth
 def process_debtor_details():
-    logging.info('processing debtor details')
+    logging.debug('PROCESS DEBTOR DETAILS')
+    logging.debug(request.form)
+    if 'store' in request.form:
+        return store_application()
+
+    logging.info(format_message('processing debtor details'))
 
     session['parties'] = get_debtor_details(request.form)
-    # session['additional_information'] = request.form['add_info']
 
     return render_template('bank_regn/verify.html', images=session['images'], current_page=0,
                            court_data=session['court_info'], party_data=session['parties'],
@@ -423,6 +543,9 @@ def remove_address(addr):
 @app.route('/process_amended_details', methods=['POST'])
 @requires_auth
 def process_amended_details():
+    if 'store' in request.form:
+        return store_application()
+
     session['parties'] = get_debtor_details(request.form)
     return render_template('bank_amend/check.html', images=session['images'], current_page=0,
                            data=session['parties'], transaction=session['transaction_id'])
@@ -440,7 +563,6 @@ def amendment_capture():
                            images=session['images'],
                            current_page=0,
                            errors=[],
-                           additional_information=session['additional_information'],
                            transaction=session['transaction_id'])
 
 
@@ -494,8 +616,7 @@ def submit_banks_amendment():
 @app.route('/correction', methods=['GET'])
 @requires_auth
 def start_correction():
-    session.clear()
-
+    clear_session()
     return render_template("corrections/retrieve.html", reg_no="", reg_date="", result="")
 
 
@@ -651,10 +772,21 @@ def start_rectification():
 @requires_auth
 def get_registration_details():
     application_type = session['application_type']
+    multi_reg_class = ""
+    if "multi_reg_sel" in request.form:
+        multi_reg_class = request.form['multi_reg_sel']
+
+    logging.debug('---- GET DETAILS ----')
+    logging.debug(request.form)
+
     session['regn_no'] = request.form['reg_no']
+
     date_as_list = request.form['reg_date'].split("/")  # dd/mm/yyyy
     session['reg_date'] = '%s-%s-%s' % (date_as_list[2], date_as_list[1], date_as_list[0])
     url = app.config['CASEWORK_API_URL'] + '/registrations/' + session['reg_date'] + '/' + session['regn_no']
+    if multi_reg_class != "":
+        url += "?class_of_charge=" + multi_reg_class
+        session['class_of_charge'] = multi_reg_class
     response = requests.get(url, headers=get_headers())
     error_msg = None
     if response.status_code == 404:
@@ -681,6 +813,8 @@ def get_registration_details():
     if error_msg is not None:
         if application_type == 'lc_rect':
             template = 'rectification/retrieve.html'
+        elif application_type == 'lc_renewal':
+            template = 'renewal/retrieve.html'
         elif application_type == 'cancel':
             template = 'cancellation/canc_retrieve.html'
         else:
@@ -696,6 +830,9 @@ def get_registration_details():
             template = 'rectification/amend.html'
         elif application_type == 'amend':
             template = 'regn_amend.html'
+        elif application_type == 'lc_renewal':
+            session['class_of_charge'] = application_json['class']
+            template = 'renewal/check.html'
         elif application_type == 'cancel':
             data['full_cans'] = request.form['full_cans']
             template = 'cancellation/canc_check.html'
@@ -707,6 +844,9 @@ def get_registration_details():
 @app.route('/rectification_capture', methods=['POST'])
 @requires_auth
 def rectification_capture():
+    if 'store' in request.form:
+        return store_application()
+
     result = validate_land_charge(request.form)
     entered_fields = build_lc_inputs(request.form)
 
@@ -772,6 +912,9 @@ def submit_rectification():
 @app.route('/cancellation_customer', methods=['POST'])
 @requires_auth
 def cancellation_capture_customer():
+    if 'store' in request.form:
+        return store_application()
+
     if "plan_attached" in request.form:
         print("plan attached = ", request.form["plan_attached"])
         if request.form["plan_attached"] == 'on':
@@ -802,12 +945,78 @@ def submit_cancellation():
 
 # end of cancellation routes
 
+
+# ============== Renewal Routes ===============
+
+
+@app.route('/renewal_customer', methods=['POST'])
+@requires_auth
+def renewal_capture_customer():
+    if 'store' in request.form:
+        return store_application()
+    return render_template('renewal/customer.html', images=session['images'],
+                           application=session['application_dict'],
+                           application_type=session['application_type'], current_page=0,
+                           backend_uri=app.config['CASEWORK_FRONTEND_URL'], transaction=session['transaction_id'])
+
+
+@app.route('/submit_renewal', methods=['POST'])
+@requires_auth
+def submit_renewal():
+    form = request.form
+    logging.info(format_message('Submitting renewal'))
+    application = {'update_registration': {'type': 'Renewal'},
+                   'applicant': {
+                       'key_number': form['key_number'],
+                       'name': form['customer_name'],
+                       'address': form['customer_address'],
+                       'reference': form['customer_ref']},
+
+
+                   'class_of_charge': convert_class_of_charge(session['class_of_charge']),
+                   'registration_no': session['regn_no'],
+                   'registration': {'date': session['reg_date']},
+                   'document_id': session['document_id'],
+                   'fee_details': {'type': form['payment'],
+                                   'fee_factor': 1,
+                                   'delivery': session['application_dict']['delivery_method']}
+                   }
+    url = app.config['CASEWORK_API_URL'] + '/applications/' + session['worklist_id'] + '?action=renewal'
+    headers = get_headers({'Content-Type': 'application/json'})
+    response = requests.put(url, data=json.dumps(application), headers=headers)
+    if response.status_code != 200:
+        err = 'Failed to submit renewal application id:%s - Error code: %s'.format(
+            session['worklist_id'],
+            str(response.status_code))
+        logging.error(err)
+        return render_template('error.html', error_msg=err), response.status_code
+
+    logging.info(format_message("Rectification submitted to CASEWORK_API"))
+    data = response.json()
+
+    if 'new_registrations' in data:
+        reg_list = []
+        for item in data['new_registrations']:
+            reg_list.append(item['number'])
+        session['confirmation'] = {'reg_no': reg_list}
+    else:
+        session['confirmation'] = {'reg_no': []}
+
+    return redirect('/get_list?appn=lc_renewal', code=302, Response=None)
+# end of renewal routes
+
+
 # ============== Land Charges routes ===============
 
 
 @app.route('/land_charge_capture', methods=['POST'])
 @requires_auth
 def land_charge_capture():
+    logging.debug(request.form)
+
+    if 'store' in request.form:
+        return store_application()
+
     result = validate_land_charge(request.form)
     entered_fields = build_lc_inputs(request.form)
     entered_fields['class'] = result['class']
@@ -918,11 +1127,31 @@ def totals():
     data = get_totals()
     return Response(json.dumps(data), status=200, mimetype='application/json')
 
-# TODO: is this used????
-@app.route('/rejection', methods=['GET'])
+
+@app.route('/rejection', methods=['POST'])
 def rejection():
-    application_type = session['application_type']
-    return render_template('rejection.html', application_type=application_type)
+    appn_id = session['worklist_id']
+    url = app.config['CASEWORK_API_URL'] + '/applications/' + appn_id
+    response = requests.delete(url, headers=get_headers())
+
+    if response.status_code != 204 and response.status_code != 404:
+        return redirect('/rejection_error', code=302, Response=None)
+
+    doc_id = session['document_id']
+    url = app.config['CASEWORK_API_URL'] + '/forms/' + str(doc_id)
+    response = requests.delete(url, headers=get_headers())
+    if response.status_code != 204 and response.status_code != 404:
+        return redirect('/rejection_error', code=302, Response=None)
+    session['rejection'] = True
+    return redirect('/get_list?appn=' + session['application_type'], code=302, Response=None)
+
+
+@app.route('/rejection_error', methods=['GET'])
+def rejection_error():
+    err = 'Failure in the deletion of application id: %s and/or document id: %s' \
+          % (session['worklist_id'], session['document_id'])
+    logging.error(format_message(err))
+    return render_template('error.html', error_msg=err), '500'
 
 
 @app.template_filter()
@@ -945,50 +1174,50 @@ def get_totals():
     unknown = 0
 
     url = app.config['CASEWORK_API_URL'] + '/applications'
-    response = requests.get(url)
+    response = requests.get(url, headers=get_headers())
     if response.status_code == 200:
         full_list = response.json()
 
         for item in full_list:
-            if item['work_type'] == "bank_regn":
-                bank_regn += 1
-            elif item['work_type'] == "bank_amend":
-                bank_amend += 1
-            elif item['work_type'] == "bank_rect":
-                bank_rect += 1
-            elif item['work_type'] == "bank_with":
-                bank_with += 1
-            elif item['work_type'] == "bank_stored":
-                bank_stored += 1
-            elif item['work_type'] == "lc_regn":
-                lc_regn += 1
-            elif item['work_type'] == "lc_pn":
-                lc_pn += 1
-            elif item['work_type'] == "lc_rect":
-                lc_rect += 1
-            elif item['work_type'] == "lc_renewal":
-                lc_renewal += 1
-            elif item['work_type'] == "lc_stored":
-                lc_stored += 1
-            elif item['work_type'] == "cancel":
-                canc += 1
-            elif item['work_type'] == "cancel_stored":
-                canc_stored += 1
-            # elif item['work_type'] == "prt_search":
-            #     portal += 1
-            elif item['work_type'] == "search_full":
-                search_full += 1
-            elif item['work_type'] == "search_bank":
-                search_bank += 1
-            elif item['work_type'] == "unknown":
-                unknown += 1
+            if item['stored']:
+                if item['work_type'] in ['bank_regn', 'bank_amend', 'bank_rect', 'bank_with']:
+                    bank_stored += 1
+                elif item['work_type'] in ['lc_regn', 'lc_pn', 'lc_rect', 'lc_renewal']:
+                    lc_stored += 1
+                elif item['work_type'] in ['cancel']:
+                    canc_stored += 1
+
+            else:
+                if item['work_type'] == "bank_regn":
+                    bank_regn += 1
+                elif item['work_type'] == "bank_amend":
+                    bank_amend += 1
+                elif item['work_type'] == "bank_rect":
+                    bank_rect += 1
+                elif item['work_type'] == "bank_with":
+                    bank_with += 1
+                elif item['work_type'] == "lc_regn":
+                    lc_regn += 1
+                elif item['work_type'] == "lc_pn":
+                    lc_pn += 1
+                elif item['work_type'] == "lc_rect":
+                    lc_rect += 1
+                elif item['work_type'] == "lc_renewal":
+                    lc_renewal += 1
+                elif item['work_type'] == "cancel":
+                    canc += 1
+                elif item['work_type'] == "search_full":
+                    search_full += 1
+                elif item['work_type'] == "search_bank":
+                    search_bank += 1
+                elif item['work_type'] == "unknown":
+                    unknown += 1
 
     return {
         'bank_regn': bank_regn, 'bank_amend': bank_amend, 'bank_rect': bank_rect,
         'bank_with': bank_with, 'bank_stored': bank_stored,
         'lc_regn': lc_regn, 'lc_pn': lc_pn, 'lc_rect': lc_rect, 'lc_renewal': lc_renewal, 'lc_stored': lc_stored,
         'canc': canc, 'canc_stored': canc_stored,
-        # 'portal': portal,
         'search_full': search_full, 'search_bank': search_bank,
         'unknown': unknown
     }
@@ -1013,7 +1242,8 @@ def page_required(appn_type, sub_type=''):
             "search_bank": "searches/info.html",
             "oc": "regn_retrieve.html",
             "lc_rect": "rectification/retrieve.html",
-            "lc_pn": "priority_notice_capture.html"
+            "lc_pn": "priority_notice_capture.html",
+            "lc_renewal": "renewal/retrieve.html"
         }
         return html_page.get(appn_type)
 
@@ -1021,7 +1251,7 @@ def page_required(appn_type, sub_type=''):
 # TODO: renamed as 'complete', move to back-end?
 def delete_from_worklist(application_id):
     url = app.config['CASEWORK_API_URL'] + '/applications/' + application_id
-    response = requests.delete(url, headers={'X-Transaction-ID': application_id})
+    response = requests.delete(url, headers=get_headers({'X-Transaction-ID': application_id}))
     if response.status_code != 204:
         err = 'Failed to delete application ' + application_id + ' from the worklist. Error code:' \
               + str(response.status_code)
@@ -1185,13 +1415,17 @@ def insert_complex_name(name, number):
 
 @app.route('/reclassify/<appn_id>', methods=['GET'])
 def get_reclassify_form(appn_id):
-    logging.info("T:%s Reclassify %s Application", appn_id)
+    clear_session()
+    logging.info("Reclassify %s Application", appn_id)
     session['transaction_id'] = appn_id
+    session['worklist_id'] = appn_id
     url = app.config['CASEWORK_API_URL'] + '/applications/' + appn_id
     response = requests.get(url, headers=get_headers())
     application_json = response.json()
     logging.debug(application_json)
+    session['application_type'] = application_json['work_type']
     document_id = application_json['application_data']['document_id']
+    session['document_id'] = document_id
     doc_response = get_form_images(document_id)
     images = []
     image_data = json.loads(doc_response[0])
@@ -1207,14 +1441,135 @@ def get_reclassify_form(appn_id):
 @app.route('/reclassify', methods=['POST'])
 def post_reclassify_form():
     appn_id = session['transaction_id']
-    print("looking for form_type", str(request.form))
     form_type = request.form['form_type']
-    print("form_type ", form_type)
     logging.info("T:%s Reclassify %s Application ", appn_id, form_type)
     uri = app.config['CASEWORK_API_URL'] + '/reclassify'
     data = {"appn_id": appn_id, "form_type": form_type}
     response = requests.post(uri, data=json.dumps(data), headers=get_headers({'Content-Type': 'application/json'}))
     work_type = json.loads(response.content.decode('utf-8'))
-    print("yeah ", work_type)
     result = work_type
     return get_list_of_applications("unknown", result, "")
+
+
+@app.route('/multi_reg_check/<reg_date>/<reg_no>', methods=['GET'])
+def get_multiple_registrations(reg_date, reg_no):
+    url = app.config['CASEWORK_API_URL'] + '/multi_reg_check/' + reg_date + "/" + reg_no
+    data = requests.get(url, headers=get_headers())
+    return Response(data, status=200, mimetype='application/json')
+
+
+@app.route('/store', methods=['GET'])
+def get_store_form(): # TODO: probably not needed...
+    return render_template('store.html', application_type=session['application_type'],
+                               images=session['images'],
+                               application=session['application_dict'],
+                               current_page=0,
+
+                               # curr_data=entered_fields,
+                               screen='capture',
+                               data=session['application_dict'],
+                               # transaction=session['transaction_id'])
+                           )
+
+
+def store_application():
+    logging.debug(session)
+
+    if session['application_type'] in ['bank_regn', 'bank_amend']:
+        session['parties'] = get_debtor_details(request.form)
+    elif session['application_type'] in ['cancel']:
+        # TODO: this duplicates code in /cancellation_customer, which is still in development.
+        if "plan_attached" in request.form:
+            if request.form["plan_attached"] == 'on':
+                session["plan_attached"] = 'true'
+            else:
+                session["plan_attached"] = 'false'
+
+        if 'part_cans_text' in request.form:
+            session["part_cans_text"] = request.form["part_cans_text"]
+    else:
+        session['register_details'] = build_lc_inputs(request.form)
+
+    return render_template('store.html', application_type=session['application_type'],
+                           images=session['images'],
+                           application=session['application_dict'],
+                           current_page=0,
+                           # curr_data=entered_fields,
+                           # screen='capture',
+                           data=session['application_dict'],
+                           # transaction=session['transaction_id'])
+                           )
+    # entered_fields = build_lc_inputs(request.form)
+    # entered_fields['class'] = result['class']
+    #
+    # if len(result['error']) == 0:
+    #     # return get_list_of_applications("lc_regn", "")
+    #     session['register_details'] = entered_fields
+    # SESSION:
+    # {'page_template': 'lc_regn/k1234.html', 'application_type': 'lc_regn', 'document_id': 67,
+    # 'application_dict': {'date_received': '2015-11-05 14:03:57', 'work_type': 'lc_regn',
+    # 'delivery_method': 'Postal', 'appn_id': '958', 'status': 'new', 'application_data': {'document_id': 67},
+    # 'form': 'K2', 'application_type': 'K2'}, 'transaction_id': '958',
+    # 'images': ['http://localhost:5010/images/67/1'], 'worklist_id': '958'}
+
+
+@app.route('/store', methods=['POST'])
+def post_store():
+    logging.debug('---------- STORE -----------')
+
+    # stored_data = {
+    #     "document_id": session['document_id'],
+    #     "page_template": session['page_template'],
+    #     "application_type": session['application_type'],
+    #     "application_dict": session['application_dict']
+    # }
+
+    stored_data = {}
+    for key in session:
+        if key not in ['username', 'display_name', 'appn_id', 'transaction_id']:  # Don't want to save this as part of the data
+            stored_data[key] = session[key]
+
+    store_app = {
+        'data': stored_data,
+        'who': session['username'],
+        'reason': request.form['store_reason']
+    }
+
+    logging.debug(session)
+
+    url = app.config['CASEWORK_API_URL'] + '/applications/' + session['worklist_id'] + '?action=store'
+    headers = get_headers({'Content-Type': 'application/json'})
+    response = requests.put(url, data=json.dumps(store_app), headers=headers)
+
+    if response.status_code != 200:
+        logging.debug(response.text)
+        raise RuntimeError("Failed to save application")
+
+    return redirect("/")
+    #
+
+    # logging.debug(session)
+    # logging.debug(session['application_dict'])
+    # logging.debug(request.form)
+    #
+    # for key in request.form:
+    #     logging.debug(key)
+    #     #logging.debug(value)
+
+    # Initially assume we're saving from the capture screen
+
+    # We need to store the current 'register_details'
+    # And the contents of the current form (damn)
+    # And which page we were on
+    # Therefore this needs to be a POST, and the link needs to be JavaScript
+
+    #     result = validate_land_charge(request.form)
+    # entered_fields = build_lc_inputs(request.form)
+    # entered_fields['class'] = result['class']
+    #
+    # if len(result['error']) == 0:
+    #     # return get_list_of_applications("lc_regn", "")
+    #     session['register_details'] = entered_fields
+
+    # @app.route('/applications/<appn_id>', methods=['PUT'])
+    # which will store all of the data we hope

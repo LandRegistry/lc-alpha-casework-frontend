@@ -1,6 +1,11 @@
+
+
 {% extends "/page_template/base.html" %}
 
 {% block page_specific_head %}
+
+
+
 {% endblock %}
 {% block maincontent %}
 
@@ -41,24 +46,40 @@
             <h2 class="text-24-bold">Is this a full or part cancellation?</h2>
             <div class="spacer-10"></div>
             <div class="grid-row">
-                <div class="col four form-control-div">
-                    <label class="form-label" for="full_cans">
-                        <input id="full_cans" type="radio" name="full_cans"  required onclick=""  value="true">
-                        Full
-                    </label>
-                </div>
-                <div class="col four form-control-div">
-                    <label class="form-label width-50" for="part_cans">
-                        <input id="part_cans" type="radio" name="full_cans" onclick=""  value="false">
-                        Part
-                    </label>
-                </div>
-            </div>
-            <div class="spacer-20"></div>
-            <input id="continue" type="submit" value="Continue" class="form-button"/>
-            <div class="spacer-40"></div>
 
+                {% if session.application_dict.application_data %}
+
+                   <div class="col four form-control-div">
+                        <label class="form-label" for="full_cans">
+                            <input id="full_cans" type="radio" name="full_cans"
+                                   required onclick="" value="true" {% if session.cancellation_type == 'Cancellation' %}checked="Checked"{% endif %}>Full
+                        </label>
+                    </div>
+                    <div class="col four form-control-div">
+                        <label class="form-label width-50" for="part_cans">
+                            <input id="part_cans" type="radio" name="full_cans"
+                                   onclick="" value="false" {% if session.cancellation_type == 'Part Cancellation' %}checked="Checked"{% endif %}>Part
+                        </label>
+                    </div>
+
+                {% else %}
+                    <div class="col four form-control-div">
+                        <label class="form-label" for="full_cans">
+                            <input id="full_cans" type="radio" name="full_cans"  required onclick="" value="true">Full
+                        </label>
+                    </div>
+                    <div class="col four form-control-div">
+                        <label class="form-label width-50" for="part_cans">
+                            <input id="part_cans" type="radio" name="full_cans" onclick="" value="false">Part
+                        </label>
+                    </div>
+                {% endif %}
+
+            </div>
+            <div class="spacer-40"></div>
+           {% include 'cancellation/canc_multi_reg_check.html' %}
         </form>
+
     </div>
     <!-- ///////////////////////////////// end of data entry form ///////////////////////////////// -->
     <div class="col one"><p></p></div>
@@ -93,6 +114,7 @@
             }
         });
     });
+
 </script>
 
 

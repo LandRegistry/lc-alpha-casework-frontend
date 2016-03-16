@@ -1,5 +1,6 @@
 from application import app
 from application.logformat import format_message
+from application.headers import get_headers
 from flask import Response, session
 import requests
 import logging
@@ -133,7 +134,7 @@ def submit_lc_rectification(form):
                    }
 
     url = app.config['CASEWORK_API_URL'] + '/applications/' + session['worklist_id'] + '?action=rectify'
-    headers = {'Content-Type': 'application/json', 'X-Transaction-ID': session['transaction_id']}
+    headers = get_headers({'Content-Type': 'application/json'})
     response = requests.put(url, data=json.dumps(application), headers=headers)
     if response.status_code == 200:
         logging.info(format_message("Rectification submitted to CASEWORK_API"))

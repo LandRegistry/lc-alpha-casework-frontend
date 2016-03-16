@@ -1,0 +1,46 @@
+{% extends "/page_template/base.html" %}
+{% block page_specific_head %}
+
+{% endblock %}
+
+{% block maincontent %}
+
+{% include 'includes/lc_nav_title.html' %}
+
+<div class="grid-row">
+    <div class="col four" id="form_panel">
+    <!-- ///////////////////////////////// data entry form ///////////////////////////////// -->
+    <form action="/store" method="POST">
+
+
+        <div class="spacer-30"></div>
+
+            <h2 class="text-24-bold">Store application</h2>
+
+            <div class="spacer-10"></div>
+
+            <div class="form">
+                <textarea class="form-textarea-mid" id="store_reason" name="store_reason"></textarea>
+            </div>
+
+        <div class="spacer-30"></div>
+
+
+        <div>
+            <input id="store" type="submit" name="store" value="Store" class="form-button"/>
+        </div>
+    </form>
+    </div>
+
+    <!-- ///////////////////////////////// end of data entry form ///////////////////////////////// -->
+    <div class="col one"><p></p></div>
+    <!-- /////////////////////////////////  Include image tool ///////////////////////////////// -->
+
+    <div class="col seven">
+    {% include 'includes/image_view_body.html' %}
+    </div>
+    <!-- ///////////////////////////////// End of image tool ///////////////////////////////// -->
+
+</div>
+
+{% endblock %}
