@@ -1065,7 +1065,6 @@ def totals():
 
 @app.route('/rejection', methods=['POST'])
 def rejection():
-    print('****session***', session)
     appn_id = session['worklist_id']
     url = app.config['CASEWORK_API_URL'] + '/applications/' + appn_id
     response = requests.delete(url, headers=get_headers())
@@ -1350,13 +1349,17 @@ def insert_complex_name(name, number):
 
 @app.route('/reclassify/<appn_id>', methods=['GET'])
 def get_reclassify_form(appn_id):
-    logging.info("T:%s Reclassify %s Application", appn_id)
+    clear_session()
+    logging.info("Reclassify %s Application", appn_id)
     session['transaction_id'] = appn_id
+    session['worklist_id'] = appn_id
     url = app.config['CASEWORK_API_URL'] + '/applications/' + appn_id
     response = requests.get(url, headers=get_headers())
     application_json = response.json()
     logging.debug(application_json)
+    session['application_type'] = application_json['work_type']
     document_id = application_json['application_data']['document_id']
+    session['document_id'] = document_id
     doc_response = get_form_images(document_id)
     images = []
     image_data = json.loads(doc_response[0])
@@ -1372,15 +1375,12 @@ def get_reclassify_form(appn_id):
 @app.route('/reclassify', methods=['POST'])
 def post_reclassify_form():
     appn_id = session['transaction_id']
-    print("looking for form_type", str(request.form))
     form_type = request.form['form_type']
-    print("form_type ", form_type)
     logging.info("T:%s Reclassify %s Application ", appn_id, form_type)
     uri = app.config['CASEWORK_API_URL'] + '/reclassify'
     data = {"appn_id": appn_id, "form_type": form_type}
     response = requests.post(uri, data=json.dumps(data), headers=get_headers({'Content-Type': 'application/json'}))
     work_type = json.loads(response.content.decode('utf-8'))
-    print("yeah ", work_type)
     result = work_type
     return get_list_of_applications("unknown", result, "")
 
