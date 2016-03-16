@@ -9,7 +9,7 @@ import re
 from application.form_validation import validate_land_charge
 from application.land_charge import build_lc_inputs, build_customer_fee_inputs, submit_lc_registration
 from application.search import process_search_criteria
-from application.rectification import convert_response_data, submit_lc_rectification
+from application.rectification import convert_response_data, submit_lc_rectification, convert_class_of_charge
 from application.cancellation import submit_lc_cancellation
 from application.banks import get_debtor_details, register_bankruptcy, get_original_data, build_original_data, \
     build_corrections, register_correction
@@ -185,8 +185,6 @@ def get_list_of_applications(requested_worklist, result, error_msg):
                     "store_reason": item['store_reason']
                 }
                 appn_list.append(application)
-
-
     else:
         url = app.config['CASEWORK_API_URL'] + '/applications?type=' + requested_worklist + '&state=NEW'
         response = requests.get(url, headers=get_headers())
@@ -814,6 +812,8 @@ def get_registration_details():
     if error_msg is not None:
         if application_type == 'lc_rect':
             template = 'rectification/retrieve.html'
+        elif application_type == 'lc_renewal':
+            template = 'renewal/retrieve.html'
         elif application_type == 'cancel':
             template = 'cancellation/canc_retrieve.html'
         else:
@@ -829,6 +829,9 @@ def get_registration_details():
             template = 'rectification/amend.html'
         elif application_type == 'amend':
             template = 'regn_amend.html'
+        elif application_type == 'lc_renewal':
+            session['class_of_charge'] = application_json['class']
+            template = 'renewal/check.html'
         elif application_type == 'cancel':
             data['full_cans'] = request.form['full_cans']
             template = 'cancellation/canc_check.html'
@@ -940,6 +943,67 @@ def submit_cancellation():
         return redirect('/get_list?appn=cancel', code=302, Response=None)
 
 # end of cancellation routes
+
+
+# ============== Renewal Routes ===============
+
+
+@app.route('/renewal_customer', methods=['POST'])
+@requires_auth
+def renewal_capture_customer():
+    if 'store' in request.form:
+        return store_application()
+    return render_template('renewal/customer.html', images=session['images'],
+                           application=session['application_dict'],
+                           application_type=session['application_type'], current_page=0,
+                           backend_uri=app.config['CASEWORK_FRONTEND_URL'], transaction=session['transaction_id'])
+
+
+@app.route('/submit_renewal', methods=['POST'])
+@requires_auth
+def submit_renewal():
+    form = request.form
+    logging.info(format_message('Submitting renewal'))
+    application = {'update_registration': {'type': 'Renewal'},
+                   'applicant': {
+                       'key_number': form['key_number'],
+                       'name': form['customer_name'],
+                       'address': form['customer_address'],
+                       'reference': form['customer_ref']},
+
+
+                   'class_of_charge': convert_class_of_charge(session['class_of_charge']),
+                   'registration_no': session['regn_no'],
+                   'registration': {'date': session['reg_date']},
+                   'document_id': session['document_id'],
+                   'fee_details': {'type': form['payment'],
+                                   'fee_factor': 1,
+                                   'delivery': session['application_dict']['delivery_method']}
+                   }
+    url = app.config['CASEWORK_API_URL'] + '/applications/' + session['worklist_id'] + '?action=renewal'
+    headers = get_headers({'Content-Type': 'application/json'})
+    response = requests.put(url, data=json.dumps(application), headers=headers)
+    if response.status_code != 200:
+        err = 'Failed to submit renewal application id:%s - Error code: %s'.format(
+            session['worklist_id'],
+            str(response.status_code))
+        logging.error(err)
+        return render_template('error.html', error_msg=err), response.status_code
+
+    logging.info(format_message("Rectification submitted to CASEWORK_API"))
+    data = response.json()
+
+    if 'new_registrations' in data:
+        reg_list = []
+        for item in data['new_registrations']:
+            reg_list.append(item['number'])
+        session['confirmation'] = {'reg_no': reg_list}
+    else:
+        session['confirmation'] = {'reg_no': []}
+
+    return redirect('/get_list?appn=lc_renewal', code=302, Response=None)
+# end of renewal routes
+
 
 # ============== Land Charges routes ===============
 
@@ -1178,7 +1242,8 @@ def page_required(appn_type, sub_type=''):
             "search_bank": "searches/info.html",
             "oc": "regn_retrieve.html",
             "lc_rect": "rectification/retrieve.html",
-            "lc_pn": "priority_notice_capture.html"
+            "lc_pn": "priority_notice_capture.html",
+            "lc_renewal": "renewal/retrieve.html"
         }
         return html_page.get(appn_type)
 
@@ -1402,7 +1467,7 @@ def get_store_form(): # TODO: probably not needed...
                                # curr_data=entered_fields,
                                screen='capture',
                                data=session['application_dict'],
-                               #transaction=session['transaction_id'])
+                               # transaction=session['transaction_id'])
                            )
 
 
@@ -1445,7 +1510,6 @@ def store_application():
     # 'delivery_method': 'Postal', 'appn_id': '958', 'status': 'new', 'application_data': {'document_id': 67},
     # 'form': 'K2', 'application_type': 'K2'}, 'transaction_id': '958',
     # 'images': ['http://localhost:5010/images/67/1'], 'worklist_id': '958'}
-
 
 
 @app.route('/store', methods=['POST'])
@@ -1491,9 +1555,7 @@ def post_store():
     #     logging.debug(key)
     #     #logging.debug(value)
 
-
     # Initially assume we're saving from the capture screen
-
 
     # We need to store the current 'register_details'
     # And the contents of the current form (damn)
@@ -1507,7 +1569,6 @@ def post_store():
     # if len(result['error']) == 0:
     #     # return get_list_of_applications("lc_regn", "")
     #     session['register_details'] = entered_fields
-
 
     # @app.route('/applications/<appn_id>', methods=['PUT'])
     # which will store all of the data we hope
