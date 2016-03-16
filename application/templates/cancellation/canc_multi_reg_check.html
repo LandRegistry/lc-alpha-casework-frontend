@@ -113,6 +113,17 @@
             });
 }
 
+    function confirmDelete()
+    {
+        var x = confirm('This will remove and delete the scanned image and application from the worklist.\n\nAre you sure you wish to continue?')
+        if (x){
+            jQuery('#cancel_form').attr('action', "/rejection");
+            jQuery("#cancel_form").submit();
+            }
+        else
+            return;
+    }
+
 </script>
 
 <div id="multi_reg_error"> <p id="multi_reg_title" class="text-16"></p>
@@ -120,4 +131,7 @@
 <p id="multi_reg_table_place" class="text-16"></p>
 
 <div class="spacer-40"></div>
-<input id="continue" type="button" value="Continue" class="form-button" onclick="check_form()"/>
+<div>
+    <input id="continue" type="button" value="Continue" class="form-button" onclick="check_form()"/>
+    <a href="javascript:confirmDelete()" id="reject" class="link-16 right">Reject application</a>
+</div>
