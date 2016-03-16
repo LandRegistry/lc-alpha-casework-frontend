@@ -4,8 +4,8 @@
 <script>
 
 function validatePrivateInd() {
-    var origForename = document.getElementById('orig_forename').value;
-    var origSurname = document.getElementById('orig_surname').value;
+    var origForename = document.getElementById('orig_forename_1').value;
+    var origSurname = document.getElementById('orig_surname_1').value;
     var enteredForename = document.getElementById('forename_1').value;
     var enteredSurname = document.getElementById('surname_1').value;
     var errorBlock = document.getElementById('name_validation');
@@ -39,6 +39,47 @@ function validatePrivateInd() {
 }
 
 
+function validateAKA() {
+
+    errors = false;
+    errorMsg = ""
+    len = parseInt(document.getElementById('no_of_aka').value) + 1;
+    for (i = 2; i <= len  ; i++) {
+        var origForename = document.getElementById('orig_forename_'+ i).value;
+        var origSurname = document.getElementById('orig_surname_'+ i).value;
+        var enteredForename = document.getElementById('forename_'+ i).value;
+        var enteredSurname = document.getElementById('surname_'+ i).value;
+        var errorBlock = document.getElementById('name_validation');
+        var errorText = document.getElementById('aka_error');
+
+
+        if(origForename != enteredForename && origSurname != enteredSurname) {
+            errors = true;
+            errorMsg = 'The aka names do not match the previously entered names. Please re-key or select to change the original.';
+        } else if(origForename != enteredForename) {
+            errors = true;
+            errorMsg = 'The aka forename does not match the previously entered name. Please re-key or select to change the original.';
+        } else if(origSurname != enteredSurname) {
+            errors = true;
+            errorMsg = 'The aka surname does not match the previously entered name. Please re-key or select to change the original.';
+        }
+
+    }
+
+    if(errors) {
+        errorBlock.classList.add('error_block');
+        errorText.textContent = errorMsg;
+        errorText.classList.add('error_text');
+        errorText.classList.remove('hide');
+        return false;
+    } else {
+        errorBlock.classList.remove('error_block');
+        errorText.classList.remove('error_text');
+        errorText.classList.add('hide');
+        return true;
+    }
+}
+
 function validate(sender) {
     var allOK = true;
 
@@ -46,6 +87,8 @@ function validate(sender) {
     var enteredCourt = document.getElementById('court_name').value;
 
     allOK = validatePrivateInd();
+
+    allOK = validateAKA();
 
     if(origCourt !== enteredCourt) {
         var errorBlock = document.getElementById('court_validation');
@@ -94,8 +137,8 @@ function validate(sender) {
     <form action="/bankruptcy_capture/key_no" method="GET" onsubmit="return validate(this);">
         <div class="spacer-40"></div>
         <div id="name_validation">
-            <input type="hidden" id="orig_forename" value="{{party_data[0].names[0].private.forenames|join(' ')}}"/>
-            <input type="hidden" id="orig_surname" value="{{party_data[0].names[0].private.surname}}"/>
+            <input type="hidden" id="orig_forename_1" value="{{party_data[0].names[0].private.forenames|join(' ')}}"/>
+            <input type="hidden" id="orig_surname_1" value="{{party_data[0].names[0].private.surname}}"/>
 
             <span id="name_error" class="hide">[placeholder]</span>
             <div class="grid-row">
@@ -111,16 +154,28 @@ function validate(sender) {
                 <input type="text" class="col six form-textfield-verify" id="surname_1"/>
             </div>
             {% if party_data[0].names|length > 1 %}
-            <div class="grid-row-padded-line">
-                {% for name in party_data[0].names %}
-                    {% if loop.index > 1 %}
-                    <span class="text-16-bold col five">{% if loop.index == 2 %}AKA{% else %}&nbsp;{% endif %}</span>
-                    <span class="text-16 col seven" id="aka_name_{{loop.index}}">{{name.private.forenames|join(' ')}} {{name.private.surname}}</span>
-                    {% endif %}
-                {% endfor %}
+            <span id="aka_error" class="hide">[placeholder]</span>
+            <div class="grid-row">
+                <div class="text-19-gray col ten">AKA details</div>
+                <div class="col two"><a href="bankruptcy_capture/debtor" id="change_aka">Change</a></div>
             </div>
+            {% for name in party_data[0].names %}
+            {% if loop.index > 1 %}
+            <input type="hidden" id="orig_forename_{{loop.index}}" value="{{name.private.forenames|join(' ')}}"/>
+            <input type="hidden" id="orig_surname_{{loop.index}}" value="{{name.private.surname}}"/>
+                <div class="grid-row-padded-line">
+                    <label for="forename_1" class="text-16-bold col five">Forename</label>
+                    <input type="text" autofocus id="forename_{{loop.index }}" class="col six form-textfield-verify"/>
+                </div>
+                <div class="grid-row-padded-line">
+                    <label for="surname_1" class="text-16-bold col five">Surname</label>
+                    <input type="text" class="col six form-textfield-verify" id="surname_{{ loop.index }}"/>
+                </div>
             {% endif %}
-
+            {% endfor %}
+            <input type="hidden" id="no_of_aka" value="{{party_data[0].names|length - 1}}"/>
+            {% endif %}
+            {% if party_data[0].addresses|length > 0 %}
             <div class="grid-row-padded-line">
                 {% for address in party_data[0].addresses %}
                 <span class="text-16-bold col five">{% if loop.index == 1 %}Address{% else %}&nbsp;{% endif %}</span>
@@ -134,6 +189,7 @@ function validate(sender) {
                 </div>
                 {% endfor %}
             </div>
+            {% endif %}
 
             <div class="grid-row-padded-line bottom-line">
                 <span class="text-16-bold col five">Occupation</span>
