@@ -3,7 +3,26 @@
 <link href="/static/datatables/css/jquery.dataTables.css" rel="stylesheet" />
 <link href="/static/datatables/css/dataTables.responsive.css" rel="stylesheet" />
 <script type="text/javascript" src="/static/datatables/js/jquery.dataTables.js"></script>
-<script type="text/javascript" src="/static/js/worklist.js"></script>
+<script>
+ HOST = window.location.protocol + "//" + window.location.hostname;
+
+$(document).ready(function() {
+    $("#refresh").hide();
+    display_list = $('#requested_list').val();
+    var refresh_screen = setInterval(function(){ location.href="/get_list?appn=" + display_list;}, 30000);
+    $('#work-list').DataTable({info: false, paging: false, searching: false, ordering:false});
+
+    // make table row clickable link to child href
+    $('#work-list tbody tr').click(function() {
+        var href = $(this).find("a").attr("href");
+        if(href) {
+            window.location = href;
+            clearInterval(refresh_screen);
+        }
+    });
+} );
+
+</script>
 {% endblock %}
 
 {% block maincontent %}
@@ -22,10 +41,10 @@
     <ol>
         <li><a href="/">Home</a></li>
         {% if requested_list == "canc" %}
-            <li class="breadcrumb-no-arrow"><span>Cancellation</span></li>
+        <li class="breadcrumb-no-arrow"><span>Cancellation</span></li>
         {% else %}
-            <li><a href="/get_list?appn=canc">Cancellation</a></li>
-            <li class="breadcrumb-no-arrow"><span>{{page_title}}</span></li>
+        <li><a href="/get_list?appn=canc">Cancellation</a></li>
+        <li class="breadcrumb-no-arrow"><span>{{page_title}}</span></li>
         {% endif %}
     </ol>
 </div>
@@ -44,9 +63,9 @@
 
         <!-- Confirmation/Rejection -->
         {% if 'reg_no' in result %}
-            {% include 'includes/confirmation.html' %}
+        {% include 'includes/confirmation.html' %}
         {% elif 'rejection' in result %}
-            {% include 'includes/rejection.html' %}
+        {% include 'includes/rejection.html' %}
         {% endif %}
 
         <div class="spacer-20"></div>
@@ -54,18 +73,18 @@
         {% set sub_cat_qty = 3 %}
         <div class="grid-row">
             <div class="subservice-box no-margin">
-            <a class="no-link-style {{cancel_selected}}" tabindex="1"  href="/get_list?appn=cancel">
-                <div class="spacer-20"></div>
-                <p class="text-16-bold">Cancellations</p>
-                <div class="spacer-30"></div>
-                <div class="indicator" id="canc">
-                    {% if data['canc'] < 10 %}
-                    <span class="indicator-middle">{{data['canc']}}</span>
-                    {% else %}
-                    <span class="indicator-middle-2">{{data['canc']}}</span>
-                    {% endif %}
-                </div>
-            </a>
+                <a class="no-link-style {{cancel_selected}}" tabindex="1"  href="/get_list?appn=cancel">
+                    <div class="spacer-20"></div>
+                    <p class="text-16-bold">Cancellations</p>
+                    <div class="spacer-30"></div>
+                    <div class="indicator" id="canc">
+                        {% if data['canc'] < 10 %}
+                        <span class="indicator-middle">{{data['canc']}}</span>
+                        {% else %}
+                        <span class="indicator-middle-2">{{data['canc']}}</span>
+                        {% endif %}
+                    </div>
+                </a>
             </div>
             <div class="subservice-box">
                 <a class="no-link-style {{stored_selected}}" tabindex="3" href="/get_list?appn=cancel_stored">
@@ -100,8 +119,8 @@
                         <th class="table-text-black">Date and time received <a href="#"></a></th>
                         <th class="table-text-black">Form type <a href="#"></a></th>
                         {% if requested_list == "cancel_stored" %}
-                            <th class="table-text-black">Stored by <a href="#"></a></th>
-                            <th class="table-text-black">Reason <a href="#"></a></th>
+                        <th class="table-text-black">Stored by <a href="#"></a></th>
+                        <th class="table-text-black">Reason <a href="#"></a></th>
                         {% endif %}
                     </tr>
                     </thead>
@@ -122,8 +141,8 @@
                             </a>
                         </td>
                         {% if requested_list == "cancel_stored" %}
-                            <td>{{n['stored_by']}}</td>
-                            <td>{{n['store_reason']}}</td>
+                        <td>{{n['stored_by']}}</td>
+                        <td>{{n['store_reason']}}</td>
                         {% endif %}
                     </tr>
                     </tbody>
