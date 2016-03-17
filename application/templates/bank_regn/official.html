@@ -3,7 +3,8 @@
 {% block page_specific_head %}
 {% endblock %}
 {% block maincontent %}
-
+<script src="/static/js/jquery-ui.js" ></script>
+<link href="/static/css/jquery-ui.css" rel="Stylesheet" type="text/css" />
 
 <div class="spacer-10"></div>
 
@@ -61,11 +62,18 @@
             {% else %}
             <div>
                 <input id="continue" type="submit" name="submit_btn" value="Continue" class="form-button"/>
-                <a href="javascript:confirmDelete()" id="reject_2" class="link-16 right">Reject application</a>
+                <a href="javascript:showDelete()" id="reject_2" class="link-16 right">Reject application</a>
             </div>
             <div class="spacer-20"></div>
             <div class="spacer-40"></div>
             {% endif %}
+
+            <div id="reject_application_dlg" role="dialog" style="display: none;">
+                This will remove and delete the scanned image and application from the worklist.<br/><br/>
+                Are you sure you wish to continue?<br/><br/>
+                <input type="button" id="accept-reject" class="form-button" onclick="confirmDelete();" value="OK"/>
+                <input type="button" id="cancel-reject" class="form-button" onclick="cancelDelete();" value="Cancel"/>
+            </div>
         </form>
 
     </div>
@@ -101,15 +109,31 @@
         });
     });
 
+    function showDelete() {
+        $("#reject_application_dlg").dialog({
+            modal:true,
+            show: true,
+            title:"Reject Application?",
+            hide:true,
+            width: 600,
+            maxHeight: 500,
+            position: {
+                my: "center",
+                at: "center",
+                of: window,
+                collision: "none"
+            }
+        });
+    }
+
+    function cancelDelete() {
+        $("#reject_application_dlg").dialog('close');
+    }
+
     function confirmDelete()
     {
-        var x = confirm('This will remove and delete the scanned image and application from the worklist.\n\nAre you sure you wish to continue?')
-        if (x){
-            jQuery('#bank_reg_form').attr('action', "/rejection");
-            jQuery("#bank_reg_form").submit();
-            }
-        else
-            return;
+        jQuery('#bank_reg_form').attr('action', "/rejection");
+        jQuery("#bank_reg_form").submit();
     }
 </script>
 
