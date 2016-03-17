@@ -202,8 +202,8 @@ def register_bankruptcy(key_number):
     response = requests.get(url, headers={'X-Transaction-ID': session['transaction_id']})
     text = json.loads(response.text)
     if response.status_code == 200:
-        cust_address = ' '.join(text['address']['address_lines']) + ' ' + text['address']['postcode']
-        cust_name = ' '.join(text['name'])
+        cust_address = ', '.join(text['address']['address_lines']) + ', ' + text['address']['postcode']
+        cust_name = text['name']
         applicant = {'name': cust_name,
                      'address': cust_address,
                      'key_number': key_number,

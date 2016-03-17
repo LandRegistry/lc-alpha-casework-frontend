@@ -96,9 +96,10 @@ def add_counties(result, data):
 
 
 def build_customer_fee_inputs(data):
+    cust_address = data['customer_address'].replace("\r\n", ", ").strip()
     customer_fee_details = {'key_number': data['key_number'],
                             'customer_name': data['customer_name'],
-                            'customer_address': data['customer_address'],
+                            'customer_address': cust_address,
                             'application_reference': data['customer_ref'],
                             'payment': data['payment']}
 
