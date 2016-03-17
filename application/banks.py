@@ -175,16 +175,11 @@ def get_debtor_details(data):
                                     data[postcode_counter]
         addresses.append(address)
         counter += 1
-
-    if 'court' in data:
-        session['court_info'] = {'legal_body': data['court'],
-                                 'legal_body_ref_no': data['ref_no']}
-
-    if re.match("\d+ of \d+", session['court_info']['legal_body_ref_no'], re.IGNORECASE) is not None:
-        case_reference = session['court_info']['legal_body'] + ' no ' + session['court_info']['legal_body_ref_no']
+    print(session)
+    if 'court_info' in session:
+        case_reference = session['court_info']['legal_body'] + ' ' + session['court_info']['legal_body_ref_no']
     else:
-        case_reference = session['court_info']['legal_body'] + ' ref ' + session['court_info']['legal_body_ref_no']
-
+        case_reference = data['ref_no']
 
     parties = [
         {
@@ -194,9 +189,7 @@ def get_debtor_details(data):
             'occupation': data['occupation'],
             'residence_withheld': False,
             'trading_name': ' ',
-            'case_reference': case_reference.strip(),
-            'legal_body': session['court_info']['legal_body'],
-            'legal_body_ref_no': session['court_info']['legal_body_ref_no']
+            'case_reference': case_reference.strip()
         }
     ]
 

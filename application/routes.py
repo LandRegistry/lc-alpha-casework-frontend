@@ -346,6 +346,7 @@ def check_court_details():
         legal_body_ref = legal_body_ref.strip()
         #  call api to see if registration already exists
         url = app.config['CASEWORK_API_URL'] + '/court_check/' + legal_body_ref
+
         response = requests.get(url, headers=get_headers())
         if response.status_code == 200:
             session['current_registrations'] = json.loads(response.text)
