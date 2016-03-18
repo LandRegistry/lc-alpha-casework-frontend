@@ -15,6 +15,7 @@ def submit_lc_cancellation(data):
                        'key_number': data['key_number'],
                        'name': data['customer_name'],
                        'address': data['customer_address'],
+                       'address_type': data['address_type'],
                        'reference': data['customer_ref']},
                    'registration_no': session['regn_no'],
                    'document_id': session['document_id'],

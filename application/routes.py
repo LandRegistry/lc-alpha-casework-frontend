@@ -726,6 +726,7 @@ def submit_search():
         'key_number': request.form['key_number'],
         'name': request.form['customer_name'],
         'address': request.form['customer_address'],
+        'address_type': request.form['address_type'],
         'reference': request.form['customer_ref']
     }
 
@@ -976,6 +977,7 @@ def submit_renewal():
                        'key_number': form['key_number'],
                        'name': form['customer_name'],
                        'address': cust_address,
+                       'address_type': form['address_type'],
                        'reference': form['customer_ref']},
                    'class_of_charge': convert_class_of_charge(session['class_of_charge']),
                    'registration_no': session['regn_no'],
