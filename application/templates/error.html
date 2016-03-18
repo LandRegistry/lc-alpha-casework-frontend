@@ -67,7 +67,23 @@
         <div class="col twelve">
             <div class="spacer-10"></div>
             <p class="text-24-bold">Please contact the service desk for assistance.</p>
-            <p id="error_msg">Error message:- {{error_msg}}</p>
+
+            <ul>
+                {% for key, value in error_msg.items() %}
+                    {% if key == 'ValidationError' %}
+                        <li>Data Validation Failures</li>
+                        <ul>
+                        {% for item in value %}
+                            <li>{{ item.error_message }}</li>
+                        {% endfor %}
+                        </ul>
+                    {% else %}
+                        <li>{{ key }}: {{ value }}</li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+
+
         </div>
 
 

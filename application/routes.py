@@ -463,7 +463,11 @@ def submit_banks_registration():
 
         response = register_bankruptcy(key_number)
 
-        if response.status_code != 200:
+        if response.status_code == 400:
+            error = response.text
+            logging.error(format_message(error))
+            return render_template('error.html', error_msg=json.loads(error)), response.status_code
+        elif response.status_code != 200:
             err = 'Failed to submit bankruptcy registration application id:%s - Error code: %s' \
                   % (session['worklist_id'], str(response.status_code))
             logging.error(format_message(err))
