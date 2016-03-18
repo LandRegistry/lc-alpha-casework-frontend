@@ -53,6 +53,7 @@ def requires_auth(f):
     @wraps(f)
     def decorated(*args, **kwargs):
         if 'username' not in session:
+            logging.debug("Login required")
             return go_to_login()
         return f(*args, **kwargs)
 
@@ -969,14 +970,13 @@ def renewal_capture_customer():
 def submit_renewal():
     form = request.form
     logging.info(format_message('Submitting renewal'))
+    cust_address = form['customer_address'].replace("\r\n", ", ").strip()
     application = {'update_registration': {'type': 'Renewal'},
                    'applicant': {
                        'key_number': form['key_number'],
                        'name': form['customer_name'],
-                       'address': form['customer_address'],
+                       'address': cust_address,
                        'reference': form['customer_ref']},
-
-
                    'class_of_charge': convert_class_of_charge(session['class_of_charge']),
                    'registration_no': session['regn_no'],
                    'registration': {'date': session['reg_date']},
