@@ -207,9 +207,11 @@ function validate(sender) {
                 <div class="col two"><a href="bankruptcy_capture/court" id="change_court">Change</a></div>
             </div>
             <input type="hidden" id="orig_court" value="{{court_data.legal_body}}"/>
-            <div class="grid-row-padded-line">
-                <label for="court_name" class="text-16-bold col five">Court name</label>
-                <input type="text" id="court_name" class="col six form-textfield-verify"/>
+            <div id="court_field" {%  if court_data.legal_body|length == 0 %}class="hide"{%  endif %}>
+                <div class="grid-row-padded-line">
+                    <label for="court_name" class="text-16-bold col five">Court name</label>
+                    <input type="text" id="court_name" class="col six form-textfield-verify"/>
+                </div>
             </div>
             <div class="grid-row-padded-line bottom-line">
                 <span class="text-16-bold col five">Reference</span>
