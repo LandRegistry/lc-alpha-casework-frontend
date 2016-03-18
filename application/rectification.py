@@ -114,12 +114,12 @@ def get_party_name(data):
 def submit_lc_rectification(form):
 
     rect_details = (session['rectification_details'])
-
+    cust_address = form['customer_address'].replace("\r\n", ", ").strip()
     application = {'update_registration': {'type': 'Rectification'},
                    'applicant': {
                        'key_number': form['key_number'],
                        'name': form['customer_name'],
-                       'address': form['customer_address'],
+                       'address': cust_address,
                        'reference': form['customer_ref']},
                    'parties': [get_party_name(rect_details)],
                    'particulars': {'counties': rect_details['county'], 'district': rect_details['district'],

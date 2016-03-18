@@ -721,11 +721,11 @@ def back_to_search_name():
 @requires_auth
 def submit_search():
     logging.info(format_message('Submitting submit search'))
-
+    cust_address = request.form['customer_address'].replace("\r\n", ", ").strip()
     customer = {
         'key_number': request.form['key_number'],
         'name': request.form['customer_name'],
-        'address': request.form['customer_address'],
+        'address': cust_address,
         'reference': request.form['customer_ref']
     }
 
