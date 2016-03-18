@@ -7,9 +7,8 @@ import logging
 import json
 
 
-
 def submit_lc_cancellation(data):
-
+    cust_address = data['customer_address'].replace("\r\n", ", ").strip()
     application = {'update_registration': {'type': 'Cancellation'},
                    'applicant': {
                        'key_number': data['key_number'],
