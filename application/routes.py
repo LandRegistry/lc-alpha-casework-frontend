@@ -1083,6 +1083,14 @@ def conveyancer_and_fees():
                            transaction=session['transaction_id'])
 
 
+# def extract_error(stack, message):
+#     items = stack.split("\n")
+#     result = {
+#         "message": message,
+#         "stack": []
+#     }
+
+
 @app.route('/lc_process_application', methods=['POST'])
 @requires_auth
 def lc_process_application():
@@ -1090,10 +1098,26 @@ def lc_process_application():
     customer_fee_details = build_customer_fee_inputs(request.form)
     response = submit_lc_registration(customer_fee_details)
     if response.status_code != 200:
-        err = 'Failed to submit land charges registration application id:%s - Error code: %s; %s' \
-              % (session['worklist_id'], str(response.status_code), response.text)
-        logging.error(format_message(err))
-        return render_template('error.html', error_msg=err), response.status_code
+        exception = json.loads(response.text)
+
+        error = {
+            "message": 'Failed to submit land charges registration application id: {}'.format(session['worklist_id']),
+            "dict": exception
+        }
+
+        # error = {
+        #     "message": 'Failed to submit land charges registration application id: {}'.format(session['worklist_id']),
+        #     "stack": exception["stack"]
+        # }
+
+
+        # err = 'Failed to submit land charges registration application id: {} - Error code: {}; {}'.format(
+        #      session['worklist_id'],
+        #      str(response.status_code),
+        #      response.text
+        # )
+        logging.error(format_message(error))
+        return render_template('error.html', error_msg=error), response.status_code
     else:
         return redirect('/get_list?appn=' + session['application_type'], code=302, Response=None)
 

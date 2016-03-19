@@ -64,23 +64,36 @@
         </div>
 
         <div class="spacer-20"></div>
-        <div class="col twelve">
+        <p class="col twelve">
             <div class="spacer-10"></div>
             <p class="text-24-bold">Please contact the service desk for assistance.</p>
 
             <ul>
-                {% for key, value in error_msg.items() %}
-                    {% if key == 'ValidationError' %}
-                        <li>Data Validation Failures</li>
+                <li><b>Error:</b> {{ error_msg.message }}</li>
+                {%- for k, v in error_msg.dict.items() recursive %}
+
+                    {% if k == 'type' %}
+                    {% elif k == 'stack' %}
+                        <li><b>Stack:</b>
                         <ul>
-                        {% for item in value %}
-                            <li>{{ item.error_message }}</li>
+                        {% for line in v %}
+                            <li> {{ line }}</li>
+
                         {% endfor %}
                         </ul>
+                    {% elif k == 'dict' %}
+                        <li><b>Cause:</b>
+                        {% if v.items %}
+                            <ul>{{ loop(v.items()) }}</ul>
+                        {% endif %}
+                        </li>
+                    {% elif k == 'text' %}
+                        <li><b>Error: </b>{{ v }}
                     {% else %}
-                        <li>{{ key }}: {{ value }}</li>
+                        <li><b>{{ k }}: </b>{{ v }}
                     {% endif %}
-                {% endfor %}
+
+                {%- endfor %}
             </ul>
 
 
