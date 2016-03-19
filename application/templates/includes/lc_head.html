@@ -56,6 +56,11 @@
                         }) );
                     }
                 });
+            },
+            error: function(xhr, textStatus, errorThrown) {
+                if(xhr.status === 500) {
+                    window.location.href = "/error/county/" + xhr.status;
+                }
             }
         });
     }
@@ -69,22 +74,27 @@
         var transid = document.getElementById('transaction_id').value;
 
 		jQuery.ajax({
-		'async': false,
-        url: '{{config.CASEWORK_FRONTEND_URL}}/counties?welsh=no',
-        type: 'GET',
-        headers: {
-            'X-Transaction-ID': transid
-        },
-        counties: {},
-        success: function( counties ) {
-            jQuery("#"+fldnam).autocomplete({
-              source: function( request, response ) {
-                var matcher = new RegExp( "^" + jQuery.ui.autocomplete.escapeRegex( request.term ), "i" );
-                response( jQuery.grep( counties, function( item ){
-                      return matcher.test( item );
-                    }) );
-                }
+            'async': false,
+            url: '{{config.CASEWORK_FRONTEND_URL}}/counties?welsh=no',
+            type: 'GET',
+            headers: {
+                'X-Transaction-ID': transid
+            },
+            counties: {},
+            success: function( counties ) {
+                jQuery("#"+fldnam).autocomplete( {
+                    source: function( request, response ) {
+                        var matcher = new RegExp( "^" + jQuery.ui.autocomplete.escapeRegex( request.term ), "i" );
+                        response( jQuery.grep( counties, function( item ) {
+                            return matcher.test( item );
+                        } ));
+                    }
                 });
+            },
+            error: function(xhr, textStatus, errorThrown) {
+                if(xhr.status === 500) {
+                    window.location.href = "/error/county/" + xhr.status;
+                }
             }
         });
     };

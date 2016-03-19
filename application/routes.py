@@ -1,11 +1,11 @@
 from application import app
 from application.logformat import format_message
 from flask import Response, request, render_template, session, redirect, url_for, send_file
-import requests
 from datetime import datetime
 import logging
 import json
 import re
+import requests
 from application.form_validation import validate_land_charge
 from application.land_charge import build_lc_inputs, build_customer_fee_inputs, submit_lc_registration
 from application.search import process_search_criteria
@@ -15,6 +15,7 @@ from application.banks import get_debtor_details, register_bankruptcy, get_origi
     build_corrections, register_correction
 from application.headers import get_headers
 from application.auth import authenticate
+from application.http import http_get, http_delete, http_post, http_put
 from application.error import CaseworkFrontEndError
 from io import BytesIO
 import uuid
@@ -162,7 +163,7 @@ def index():
 
     if 'worklist_id' in session:
         url = app.config['CASEWORK_API_URL'] + '/applications/' + session['worklist_id'] + '/lock'
-        requests.delete(url, headers=get_headers({'X-Transaction-ID': session['worklist_id']}))
+        http_delete(url, headers=get_headers({'X-Transaction-ID': session['worklist_id']}))
         del(session['worklist_id'])
 
     data = get_totals()
@@ -188,7 +189,7 @@ def get_list():
 
     if 'worklist_id' in session:
         url = app.config['CASEWORK_API_URL'] + '/applications/' + session['worklist_id'] + '/lock'
-        requests.delete(url, headers=get_headers({'X-Transaction-ID': session['worklist_id']}))
+        http_delete(url, headers=get_headers({'X-Transaction-ID': session['worklist_id']}))
         del(session['worklist_id'])
 
     return get_list_of_applications(request.args.get('appn'), result, "")
@@ -217,7 +218,7 @@ def get_list_of_applications(requested_worklist, result, error_msg):
     if m is not None:
         prefix = m.group(1)
         url = app.config['CASEWORK_API_URL'] + '/applications?state=stored'
-        response = requests.get(url, headers=get_headers())
+        response = http_get(url, headers=get_headers())
         work_list_json = response.json()
 
         for item in work_list_json:
@@ -237,7 +238,7 @@ def get_list_of_applications(requested_worklist, result, error_msg):
                 appn_list.append(application)
     else:
         url = app.config['CASEWORK_API_URL'] + '/applications?type=' + requested_worklist + '&state=NEW'
-        response = requests.get(url, headers=get_headers())
+        response = http_get(url, headers=get_headers())
         work_list_json = response.json()
 
         if len(work_list_json) > 0:
@@ -274,7 +275,7 @@ def get_list_of_applications(requested_worklist, result, error_msg):
 def application_start(application_type, appn_id, form):
 
     url = app.config['CASEWORK_API_URL'] + '/applications/' + appn_id
-    response = requests.get(url, headers=get_headers())
+    response = http_get(url, headers=get_headers())
     application_json = response.json()
     stored = application_json['stored']
     if stored:
@@ -285,7 +286,7 @@ def application_start(application_type, appn_id, form):
     if 'worklist_id' not in session:
         url = app.config['CASEWORK_API_URL'] + '/applications/' + appn_id + '/lock'
         session['transaction_id'] = appn_id
-        response = requests.post(url, headers=get_headers({'X-Transaction-ID': appn_id}))
+        response = http_post(url, headers=get_headers({'X-Transaction-ID': appn_id}))
         if response.status_code == 404:
             error_msg = "This application is being processed by another member of staff, " \
                         "please select a different application."
@@ -397,7 +398,7 @@ def check_court_details():
         #  call api to see if registration already exists
         url = app.config['CASEWORK_API_URL'] + '/court_check/' + legal_body_ref
 
-        response = requests.get(url, headers=get_headers())
+        response = http_get(url, headers=get_headers())
         if response.status_code == 200:
             session['current_registrations'] = json.loads(response.text)
             return render_template('bank_regn/official.html', images=session['images'], current_page=0,
@@ -434,7 +435,7 @@ def associate_image():
     logging.debug(reg)
 
     url = app.config['CASEWORK_API_URL'] + '/assoc_image'
-    response = requests.put(url, json.dumps(reg), headers=get_headers())
+    response = http_put(url, json.dumps(reg), headers=get_headers())
 
     if response.status_code == 200:
         return redirect('/get_list?appn=bank_regn', code=302, Response=None)
@@ -499,7 +500,7 @@ def submit_banks_registration():
 
     # Check key_number is valid
     url = app.config['CASEWORK_API_URL'] + '/keyholders/' + key_number
-    response = requests.get(url, headers=get_headers())
+    response = http_get(url, headers=get_headers())
 
     if response.status_code != 200:
         err = 'This Key number is invalid please re-enter'
@@ -640,7 +641,7 @@ def submit_banks_amendment():
 
     # Check key_number is valid
     url = app.config['CASEWORK_API_URL'] + '/keyholders/' + key_number
-    response = requests.get(url, headers=get_headers())
+    response = http_get(url, headers=get_headers())
 
     if response.status_code != 200:
         err = 'This Key number is invalid please re-enter'
@@ -791,7 +792,7 @@ def submit_search():
     session['search_data'] = search_data
     url = app.config['CASEWORK_API_URL'] + '/searches'
     headers = get_headers({'Content-Type': 'application/json'})
-    response = requests.post(url, data=json.dumps(search_data), headers=headers)
+    response = http_post(url, data=json.dumps(search_data), headers=headers)
 
     if response.status_code == 200:
         search_response = response.json()
@@ -813,6 +814,7 @@ def submit_search():
         return redirect('/get_list?appn=search_bank', code=302, Response=None)
 
 # ===== end of search routes =========
+
 
 
 # ======== Rectification routes =============
@@ -842,17 +844,11 @@ def get_registration_details():
     if multi_reg_class != "":
         url += "?class_of_charge=" + multi_reg_class
         session['class_of_charge'] = multi_reg_class
-    response = requests.get(url, headers=get_headers())
+
+    response = http_get(url, headers=get_headers())
     error_msg = None
     if response.status_code == 404:
         error_msg = "Registration not found please re-enter"
-
-    elif response.status_code == 500:
-        logging.info('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
-        logging.info(response.text)
-        logging.info(json.dumps(response.text, indent=2))
-        logging.info('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
-        raise CaseworkFrontEndError(response.text)#json.dumps(response.text))
 
     else:
         application_json = response.json()
@@ -1045,7 +1041,7 @@ def submit_renewal():
                    }
     url = app.config['CASEWORK_API_URL'] + '/applications/' + session['worklist_id'] + '?action=renewal'
     headers = get_headers({'Content-Type': 'application/json'})
-    response = requests.put(url, data=json.dumps(application), headers=headers)
+    response = http_put(url, data=json.dumps(application), headers=headers)
     if response.status_code != 200:
         err = 'Failed to submit renewal application id:%s - Error code: %s'.format(
             session['worklist_id'],
@@ -1218,14 +1214,14 @@ def totals():
 def rejection():
     appn_id = session['worklist_id']
     url = app.config['CASEWORK_API_URL'] + '/applications/' + appn_id
-    response = requests.delete(url, headers=get_headers())
+    response = http_delete(url, headers=get_headers())
 
     if response.status_code != 204 and response.status_code != 404:
         return redirect('/rejection_error', code=302, Response=None)
 
     doc_id = session['document_id']
     url = app.config['CASEWORK_API_URL'] + '/forms/' + str(doc_id)
-    response = requests.delete(url, headers=get_headers())
+    response = http_delete(url, headers=get_headers())
     if response.status_code != 204 and response.status_code != 404:
         return redirect('/rejection_error', code=302, Response=None)
     session['rejection'] = True
@@ -1260,7 +1256,7 @@ def get_totals():
     unknown = 0
 
     url = app.config['CASEWORK_API_URL'] + '/applications'
-    response = requests.get(url, headers=get_headers())
+    response = http_get(url, headers=get_headers())
     if response.status_code == 200:
         full_list = response.json()
 
@@ -1337,7 +1333,7 @@ def page_required(appn_type, sub_type=''):
 # TODO: renamed as 'complete', move to back-end?
 def delete_from_worklist(application_id):
     url = app.config['CASEWORK_API_URL'] + '/applications/' + application_id
-    response = requests.delete(url, headers=get_headers({'X-Transaction-ID': application_id}))
+    response = http_delete(url, headers=get_headers({'X-Transaction-ID': application_id}))
     if response.status_code != 204:
         err = 'Failed to delete application ' + application_id + ' from the worklist. Error code:' \
               + str(response.status_code)
@@ -1355,7 +1351,7 @@ def set_session_variables(variable_dict):
 @app.route('/images/<int:doc_id>/<int:page_no>', methods=['GET'])
 def get_page_image(doc_id, page_no):
     url = app.config['CASEWORK_API_URL'] + '/forms/' + str(doc_id) + '/' + str(page_no)
-    data = requests.get(url, headers=get_headers())
+    data = http_get(url, headers=get_headers())
     return data.content, data.status_code, data.headers.items()
 
 
@@ -1363,7 +1359,7 @@ def get_page_image(doc_id, page_no):
 @app.route('/images/<int:doc_id>', methods=['GET'])
 def get_form_images(doc_id):
     url = app.config['CASEWORK_API_URL'] + '/forms/' + str(doc_id)
-    data = requests.get(url, headers=get_headers())
+    data = http_get(url, headers=get_headers())
     json_data = json.loads(data.content.decode('utf-8'))
     return json.dumps(json_data), data.status_code, data.headers.items()
 
@@ -1379,12 +1375,12 @@ def get_counties():
 
     url = app.config['CASEWORK_API_URL'] + '/counties' + params
     data = requests.get(url, headers=get_headers())
-    return Response(data, status=200, mimetype='application/json')
+    return Response(data, status=data.status_code, mimetype='application/json')
 
 
 def get_translated_county(county_name):
     url = app.config['CASEWORK_API_URL'] + '/county/' + county_name
-    response = requests.get(url, headers=get_headers())
+    response = http_get(url, headers=get_headers())
     return response.json()
 
 
@@ -1409,7 +1405,7 @@ def reprints():
         request_id = request.args["request_id"]
 
         url = app.config['CASEWORK_API_URL'] + '/reprints/search?request_id=' + request_id
-        response = requests.get(url)
+        response = http_get(url)
         return send_file(BytesIO(response.content), as_attachment=False, attachment_filename='reprint.pdf',
                          mimetype='application/pdf')
     return render_template('reprint.html', curr_data=curr_data)
@@ -1430,7 +1426,7 @@ def generate_reprints():
         registration_date = '%s-%s-%s' % (reg_date[2], reg_date[1], reg_date[0])
         url = app.config['CASEWORK_API_URL'] + '/reprints/'
         url += 'registration?registration_no=' + registration_no + '&registration_date=' + registration_date
-        response = requests.get(url)
+        response = http_get(url)
         return send_file(BytesIO(response.content), as_attachment=False, attachment_filename='reprint.pdf',
                          mimetype='application/pdf')
     elif reprint_type == 'k18':
@@ -1451,7 +1447,7 @@ def generate_reprints():
         curr_data['estate_owner']['complex']['number'] = request.form['complex_number']
         curr_data['estate_owner']['other'] = request.form['other_name']
     url = app.config['CASEWORK_API_URL'] + '/reprints/search'
-    response = requests.post(url, data=json.dumps(curr_data))
+    response = http_post(url, data=json.dumps(curr_data))
     data = json.loads(response.content.decode('utf-8'))
     results = {'results': []}
     for result in data['results']:
@@ -1481,21 +1477,21 @@ def generate_reprints():
 @app.route('/keyholders/<key_number>', methods=['GET'])
 def get_keyholder(key_number):
     uri = app.config['CASEWORK_API_URL'] + '/keyholders/' + key_number
-    response = requests.get(uri, headers=get_headers())
+    response = http_get(uri, headers=get_headers())
     return Response(response.text, status=response.status_code, mimetype='application/json')
 
 
 @app.route('/complex_names/<name>', methods=['GET'])
 def get_complex_names(name):
     uri = app.config['CASEWORK_API_URL'] + '/complex_names/' + name
-    response = requests.get(uri, headers=get_headers())
+    response = http_get(uri, headers=get_headers())
     return Response(response.text, status=200, mimetype='application/json')
 
 
 @app.route('/complex_names/<name>/<number>', methods=['POST'])
 def insert_complex_name(name, number):
     uri = app.config['CASEWORK_API_URL'] + '/complex_names/{}/{}'.format(name, number)
-    response = requests.post(uri, headers=get_headers({'Content-Type': 'application/json'}))
+    response = http_post(uri, headers=get_headers({'Content-Type': 'application/json'}))
     return Response(response.text, status=response.status_code, mimetype='application/json')
 
 
@@ -1506,7 +1502,7 @@ def get_reclassify_form(appn_id):
     session['transaction_id'] = appn_id
     session['worklist_id'] = appn_id
     url = app.config['CASEWORK_API_URL'] + '/applications/' + appn_id
-    response = requests.get(url, headers=get_headers())
+    response = http_get(url, headers=get_headers())
     application_json = response.json()
     logging.debug(application_json)
     session['application_type'] = application_json['work_type']
@@ -1531,7 +1527,7 @@ def post_reclassify_form():
     logging.info("T:%s Reclassify %s Application ", appn_id, form_type)
     uri = app.config['CASEWORK_API_URL'] + '/reclassify'
     data = {"appn_id": appn_id, "form_type": form_type}
-    response = requests.post(uri, data=json.dumps(data), headers=get_headers({'Content-Type': 'application/json'}))
+    response = http_post(uri, data=json.dumps(data), headers=get_headers({'Content-Type': 'application/json'}))
     work_type = json.loads(response.content.decode('utf-8'))
     result = work_type
     return get_list_of_applications("unknown", result, "")
@@ -1540,7 +1536,7 @@ def post_reclassify_form():
 @app.route('/multi_reg_check/<reg_date>/<reg_no>', methods=['GET'])
 def get_multiple_registrations(reg_date, reg_no):
     url = app.config['CASEWORK_API_URL'] + '/multi_reg_check/' + reg_date + "/" + reg_no
-    data = requests.get(url, headers=get_headers())
+    data = http_get(url, headers=get_headers())
     return Response(data, status=200, mimetype='application/json')
 
 
@@ -1625,7 +1621,7 @@ def post_store():
 
     url = app.config['CASEWORK_API_URL'] + '/applications/' + session['worklist_id'] + '?action=store'
     headers = get_headers({'Content-Type': 'application/json'})
-    response = requests.put(url, data=json.dumps(store_app), headers=headers)
+    response = http_put(url, data=json.dumps(store_app), headers=headers)
 
     if response.status_code != 200:
         logging.debug(response.text)
@@ -1659,3 +1655,22 @@ def post_store():
 
     # @app.route('/applications/<appn_id>', methods=['PUT'])
     # which will store all of the data we hope
+
+
+# We need a place to navigate to if any of the important AJAX queries fail during form creation
+# Can't post, which is a shame, so we're not able to display much information. It's enough at least
+# to stop the user when the application is invisibly broken.
+@app.route("/error/<message_id>/<status>", methods=["GET"])
+def get_ajax_error(message_id, status):
+    messages = {
+        "county": "Failed to load county list."
+    }
+
+    msg = message_id
+    if message_id in messages:
+        msg = messages[message_id]
+
+    msg += " Status: {}.".format(status)
+    error = msg
+
+    return render_template('error.html', error_msg=error, status=500)
