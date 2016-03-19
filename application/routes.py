@@ -15,17 +15,66 @@ from application.banks import get_debtor_details, register_bankruptcy, get_origi
     build_corrections, register_correction
 from application.headers import get_headers
 from application.auth import authenticate
+from application.error import CaseworkFrontEndError
 from io import BytesIO
 import uuid
 from functools import wraps
+import traceback
 
 
-# @app.errorhandler(Exception)
-# def error_handler(err):
-#     logging.error('========== Error Caught ===========')
-#     logging.error(err)
-#     return render_template('error.html', error_msg=str(err)), 500
+@app.errorhandler(Exception)
+def error_handler(err):
+    logging.error('========== Error Caught ===========')
+    logging.error(err)
+    # logging.debug('-----------------')
+    # logging.error(str(err))
+    # logging.error(format_message('Unhandled exception: ' + str(err)))
+    # call_stack = traceback.format_exc()
+    #
+    # lines = call_stack.split("\n")
+    # for line in lines[0:-2]:
+    #     logging.error(format_message(line))
+    #
+    # error = {
+    #     "type": "F",
+    #     "stack": lines[0:-2]
+    # }
+    #
+    # try:
+    #     error["dict"] = json.loads(str(err))
+    # except ValueError as e:
+    #     error["text"] = str(err)
+    call_stack = traceback.format_exc()
+    lines = call_stack.split("\n")[0:-2]
+    edata = None
 
+
+    try:
+        edata = json.loads(str(err))
+    except ValueError as e:
+        pass
+
+    if edata:
+        error = {
+            "dict": {
+                "stack": lines,
+                "dict": edata
+            }
+        }
+
+        if 'text' in edata:
+            error['message'] = edata['text']
+
+    else:
+        error = {
+            "message": str(err),
+            "stack": lines
+        }
+
+    # logging.info('=======================================')
+    # logging.info(json.dumps(error, indent=2))
+    # logging.info('=======================================')
+    return render_template('error.html', error_msg=error, status=500)
 
 
 @app.before_request
@@ -797,8 +846,14 @@ def get_registration_details():
     error_msg = None
     if response.status_code == 404:
         error_msg = "Registration not found please re-enter"
+
     elif response.status_code == 500:
-        error_msg = "An error occured: 500"
+        logging.info('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
+        logging.info(response.text)
+        logging.info(json.dumps(response.text, indent=2))
+        logging.info('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
+        raise CaseworkFrontEndError(response.text)#json.dumps(response.text))
+
     else:
         application_json = response.json()
         if application_json['status'] == 'cancelled' or application_json['status'] == 'superseded':
@@ -816,6 +871,7 @@ def get_registration_details():
             class_of_charge = application_json['class']
             if class_of_charge in ['WO', 'PA', 'WOB', 'PAB', 'PA(B)', 'WO(B)']:
                 error_msg = "You cannot part cancel a bankruptcy registration"
+
     if error_msg is not None:
         if application_type == 'lc_rect':
             template = 'rectification/retrieve.html'

@@ -69,31 +69,40 @@
             <p class="text-24-bold">Please contact the service desk for assistance.</p>
 
             <ul>
+                {% if error_msg.message %}
                 <li><b>Error:</b> {{ error_msg.message }}</li>
-                {%- for k, v in error_msg.dict.items() recursive %}
+                {% endif %}
 
-                    {% if k == 'type' %}
-                    {% elif k == 'stack' %}
-                        <li><b>Stack:</b>
-                        <ul>
-                        {% for line in v %}
-                            <li> {{ line }}</li>
+                {% if error_msg.dict %}
+                    {%- for k, v in error_msg.dict.items() recursive %}
 
-                        {% endfor %}
-                        </ul>
-                    {% elif k == 'dict' %}
-                        <li><b>Cause:</b>
-                        {% if v.items %}
-                            <ul>{{ loop(v.items()) }}</ul>
+                        {% if k == 'type' %}
+                        {% elif k == 'stack' %}
+                            <li><b>Stack:</b>
+                            <ul>
+                            {% for line in v %}
+                                <li> {{ line }}</li>
+
+                            {% endfor %}
+                            </ul>
+                        {% elif k == 'dict' %}
+                            <li><b>Cause:</b>
+                            {% if v.items %}
+                                <ul>{{ loop(v.items()) }}</ul>
+                            {% endif %}
+                            </li>
+                        {% elif k == 'text' %}
+                            <li><b>Error: </b>{{ v }}
+                        {% else %}
+                            <li><b>{{ k }}: </b>{{ v }}
                         {% endif %}
-                        </li>
-                    {% elif k == 'text' %}
-                        <li><b>Error: </b>{{ v }}
-                    {% else %}
-                        <li><b>{{ k }}: </b>{{ v }}
-                    {% endif %}
 
-                {%- endfor %}
+                    {%- endfor %}
+                {% endif %}
+
+                {% if not error_msg.message %}
+                    {{ error_msg }}
+                {% endif %}
             </ul>
 
 
