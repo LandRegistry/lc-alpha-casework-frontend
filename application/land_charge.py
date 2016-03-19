@@ -100,6 +100,7 @@ def build_customer_fee_inputs(data):
     customer_fee_details = {'key_number': data['key_number'],
                             'customer_name': data['customer_name'],
                             'customer_address': cust_address,
+                            'address_type': data['address_type'],
                             'application_reference': data['customer_ref'],
                             'payment': data['payment']}
 
@@ -113,6 +114,7 @@ def submit_lc_registration(cust_fee_data):
     application['key_number'] = cust_fee_data['key_number']
     application['customer_name'] = cust_fee_data['customer_name']
     application['customer_address'] = cust_fee_data['customer_address']
+    application['address_type'] = cust_fee_data['address_type']
     today = datetime.now().strftime('%Y-%m-%d')
     application['date'] = today
     application['residence_withheld'] = False

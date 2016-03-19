@@ -20,9 +20,17 @@
 
                     // alert(JSON.stringify(data));
                     jQuery('#customer_name').val(data.name);
-                    full_address = data.address.address_lines.join('\r\n') + '\r\n'+ data.address.postcode;
+
+                    if (data.dx_number != "") {
+                        full_address = data.dx_number + '\r\n' + data.dx_exchange;
+                        jQuery('#dx_address').prop('checked', true);
+
+                    } else {
+                      full_address = data.address.address_lines.join('\r\n') + '\r\n'+ data.address.postcode;
+                      jQuery('#rm_address').prop('checked', true);
+                    }
                     jQuery('#customer_address').val(full_address);
-                    jQuery('#errorBlock').removeClass("error_block");
+                    jQuery('#key_no_errorBlock').removeClass("error_block");
                     jQuery('#key_no_error').html("");
                     jQuery('#key_no_error').hide();
                 },
@@ -30,7 +38,7 @@
                     jQuery('#customer_name').val('');
                     full_address = '';
                     jQuery('#customer_address').val(full_address);
-                    jQuery('#errorBlock').addClass("error_block");
+                    jQuery('#key_no_errorBlock').addClass("error_block");
                     jQuery('#key_no_error').html("Invalid key number");
                     jQuery('#key_no_error').show();
                 }
@@ -46,21 +54,39 @@
 
     function clearError(){
         if (jQuery('#key_no_error').is(':visible')){
-            jQuery('#errorBlock').removeClass("error_block");
+            jQuery('#key_no_errorBlock').removeClass("error_block");
             jQuery('#key_no_error').html("");
             jQuery('#key_no_error').hide();
         }
+        if (jQuery('#addr_no_error').is(':visible')){
+            jQuery('#addr_errorBlock').removeClass("error_block");
+            jQuery('#addr_no_error').html("");
+            jQuery('#addr_no_error').hide();
+        }
+    }
+
+    function clearAddrType(){
+        jQuery('#dx_address').prop('checked', false);
+        jQuery('#rm_address').prop('checked', false);
     }
 
     function validateForm (){
         if (jQuery('#direct_debit').is(':checked')){
             // there must be a valid keynumber to proceed
             if (jQuery('#key_number').val() == ""){
-                jQuery('#errorBlock').addClass("error_block");
+                jQuery('#key_no_errorBlock').addClass("error_block");
                 jQuery('#key_no_error').html("A valid key number must be provided for direct debit transactions");
                 jQuery('#key_no_error').show();
-                return false
+                return false;
             }
+        }
+
+        if (!jQuery('#dx_address').is(':checked') && !jQuery('#rm_address').is(':checked')){
+            // there must be an address type selected
+                jQuery('#addr_errorBlock').addClass("error_block");
+                jQuery('#addr_no_error').html("The address type must be selected");
+                jQuery('#addr_no_error').show();
+                return false;
         }
 
         // if we got this far the form validation has succeeded
