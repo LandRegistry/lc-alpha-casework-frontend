@@ -1,6 +1,7 @@
 from application import app
 from application.logformat import format_message
 from application.headers import get_headers
+from application.http import http_put, http_post, http_get
 from flask import Response, request, render_template, session, redirect, url_for
 import requests
 from datetime import datetime
@@ -13,7 +14,7 @@ def get_original_data(number, date):
                  "number": number}
     url = app.config['CASEWORK_API_URL'] + '/original'
     headers = {'Content-Type': 'application/json', 'X-Transaction-ID': session['transaction_id']}
-    response = requests.post(url, data=json.dumps(originals), headers=headers)
+    response = http_post(url, data=json.dumps(originals), headers=headers)
     return json.loads(response.text), response.status_code
 
 
@@ -199,7 +200,7 @@ def get_debtor_details(data):
 def register_bankruptcy(key_number):
 
     url = app.config['CASEWORK_API_URL'] + '/keyholders/' + key_number
-    response = requests.get(url, headers={'X-Transaction-ID': session['transaction_id']})
+    response = http_get(url, headers={'X-Transaction-ID': session['transaction_id']})
     text = json.loads(response.text)
     if response.status_code == 200:
         cust_address = ', '.join(text['address']['address_lines']) + ', ' + text['address']['postcode']
@@ -241,7 +242,7 @@ def register_bankruptcy(key_number):
 
     headers = get_headers({'Content-Type': 'application/json'})
     logging.debug("bankruptcy details: " + json.dumps(application))
-    response = requests.put(url, data=json.dumps(application), headers=headers)
+    response = http_put(url, data=json.dumps(application), headers=headers)
     if response.status_code == 200:
         logging.info(format_message("Registration (bank) submitted to CASEWORK_API"))
         data = response.json()
@@ -279,7 +280,7 @@ def register_correction():
 
     headers = {'Content-Type': 'application/json', 'X-Transaction-ID': session['transaction_id']}
     logging.debug("bankruptcy details: " + json.dumps(application))
-    response = requests.put(url, data=json.dumps(application), headers=headers)
+    response = http_put(url, data=json.dumps(application), headers=headers)
     if response.status_code == 200:
         logging.info(format_message("Registration (bank) submitted to CASEWORK_API"))
         data = response.json()
