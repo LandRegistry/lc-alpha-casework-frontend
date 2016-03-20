@@ -208,7 +208,8 @@ def register_bankruptcy(key_number):
         applicant = {'name': cust_name,
                      'address': cust_address,
                      'key_number': key_number,
-                     'reference': ' '}
+                     'reference': ' ',
+                     'address_type': 'NA'}
     else:
         return response
 
