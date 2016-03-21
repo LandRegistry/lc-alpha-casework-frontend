@@ -107,7 +107,7 @@
 
                         <div class="form">
                             <label class="form-label">Forename(s)</label>
-                            <input class="form-textfield" type="text" name="forenames_{{loop.index}}" id="forenames_{{loop.index}}" value="{{name.private.forenames[0]}}">
+                            <input class="form-textfield" type="text" name="forenames_{{loop.index}}" id="forenames_{{loop.index}}" value="{{name.private.forenames|join(' ')}}">
                         </div>
 
                         <div class="form">
