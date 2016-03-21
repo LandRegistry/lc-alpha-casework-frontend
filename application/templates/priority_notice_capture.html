@@ -34,9 +34,16 @@
 
         <div>
             <input id="continue" type="submit" value="Continue" class="form-button"/>
-            <a href="javascript:confirmDelete()" id="reject" class="link-16 right">Reject application</a>
+            <a href="javascript:showDelete()" id="reject" class="link-16 right">Reject application</a>
             <br/>
             <input id="store" type="submit" name="store" value="Return to this application later" class="link-button-16"/>
+        </div>
+
+        <div id="reject_application_dlg" role="dialog" style="display: none;">
+            This will remove and delete the scanned image and application from the worklist.<br/><br/>
+            Are you sure you wish to continue?<br/><br/>
+            <input type="button" id="accept-reject" class="form-button" onclick="confirmDelete();" value="OK"/>
+            <input type="button" id="cancel-reject" class="form-button" onclick="cancelDelete();" value="Cancel"/>
         </div>
     </form>
     </div>
@@ -51,6 +58,33 @@
     <!-- ///////////////////////////////// End of image tool ///////////////////////////////// -->
 
 <script>
+
+    function showDelete() {
+        $("#reject_application_dlg").dialog({
+            modal:true,
+            show: true,
+            title:"Reject Application?",
+            hide:true,
+            width: 600,
+            maxHeight: 500,
+            position: {
+                my: "center",
+                at: "center",
+                of: window,
+                collision: "none"
+            }
+        });
+    }
+
+    function cancelDelete() {
+        $("#reject_application_dlg").dialog('close');
+    }
+
+    function confirmDelete()
+    {
+        jQuery('#lc_reg_form').attr('action', "/rejection");
+        jQuery("#lc_reg_form").submit();
+    }
 
     jQuery(document).ready(function(){
         {% if curr_data.estate_owner_ind == '' %}
