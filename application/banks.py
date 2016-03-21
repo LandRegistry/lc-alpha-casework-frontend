@@ -9,6 +9,7 @@ import logging
 import json
 import re
 
+
 def get_original_data(number, date):
     originals = {"date": date,
                  "number": number}
@@ -136,7 +137,7 @@ def get_debtor_details(data):
     while True:
         forenames = "forenames_" + str(counter)
         surname = "surname_" + str(counter)
-        if surname in data and data[surname] != ' ':
+        if surname in data and data[surname] != ' ' and data[surname] != '':
             private = {'forenames': data[forenames].split(),
                        'surname': data[surname]}
             names.append({'type': 'Private Individual',
