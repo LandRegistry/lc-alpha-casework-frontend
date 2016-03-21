@@ -69,9 +69,12 @@ def error_handler(err):
     else:
         error = {
             "message": str(err),
-            "stack": lines
+            "dict": {
+                "stack": lines
+            }
         }
 
+    # logging.info(lines)
     # logging.info('=======================================')
     # logging.info(json.dumps(error, indent=2))
     # logging.info('=======================================')
@@ -1212,9 +1215,10 @@ def totals():
 
 @app.route('/rejection', methods=['POST'])
 def rejection():
+    logging.info(format_message("Reject application"))
     appn_id = session['worklist_id']
     url = app.config['CASEWORK_API_URL'] + '/applications/' + appn_id
-    response = http_delete(url, headers=get_headers())
+    response = http_delete(url, params={'reject': True}, headers=get_headers())
 
     if response.status_code != 204 and response.status_code != 404:
         return redirect('/rejection_error', code=302, Response=None)

@@ -89,6 +89,8 @@
                             <li><b>Cause:</b>
                             {% if v.items %}
                                 <ul>{{ loop(v.items()) }}</ul>
+                            {% else %}
+                                <ul>{{ v }}</ul>
                             {% endif %}
                             </li>
                         {% elif k == 'text' %}

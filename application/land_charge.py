@@ -1,8 +1,8 @@
 from application import app
 from application.headers import get_headers
 from application.logformat import format_message
+from application.http import http_put
 from flask import Response, request, render_template, session, redirect, url_for
-import requests
 from datetime import datetime
 import logging
 import json
@@ -136,7 +136,7 @@ def submit_lc_registration(cust_fee_data):
 
     url = app.config['CASEWORK_API_URL'] + '/applications/' + session['worklist_id'] + '?action=complete'
     headers = get_headers({'Content-Type': 'application/json'})
-    response = requests.put(url, data=json.dumps(application), headers=headers)
+    response = http_put(url, data=json.dumps(application), headers=headers)
     if response.status_code == 200:
         logging.info(format_message("Registration submitted to CASEWORK_API"))
         data = response.json()
@@ -147,18 +147,6 @@ def submit_lc_registration(cust_fee_data):
         session['confirmation'] = {'reg_no': reg_list}
 
     return response
-
-
-# def convert_estate_owner_ind(data):
-#     estate_ind = {
-#         "privateIndividual": "Private individual",
-#         "limitedCompany": "Company",
-#         "localAuthority": "Local Authority",
-#         "complexName": "Complex name",
-#         "other": "other"
-#     }
-#
-#     return estate_ind.get(data)
 
 
 def convert_application_type(type):

@@ -2,7 +2,7 @@ from application import app
 from application.logformat import format_message
 from application.headers import get_headers
 from flask import Response, request, render_template, session, redirect, url_for
-import requests
+from application.http import http_post
 from datetime import datetime
 import logging
 import json
@@ -142,7 +142,7 @@ def process_search_criteria(data, search_type):
                 'name': data[complex_name],
                 'number': int(data[complex_number])
             }
-            response = requests.post(url, data=json.dumps(comp_name), headers=headers)
+            response = http_post(url, data=json.dumps(comp_name), headers=headers)
             logging.info(format_message('POST {} -- {}'.format(url, response)))
             result = response.json()
 
