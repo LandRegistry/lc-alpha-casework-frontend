@@ -68,14 +68,11 @@
                 <div class="text-19-gray col ten">Official details</div>
                 <div class="col two"><a href="correction_capture" id="change_court">Change</a></div>
             </div>
-            <input type="hidden" id="orig_court" value="{{data.legal_body}}"/>
+
+            <input type="hidden" id="orig_ref_no" value="{{data.case_reference}}"/>
             <div class="grid-row-padded-line">
-                <span class="text-16-bold col five">Court</span>
-                <span class="text-16 col seven" id="court">{{data[0].legal_body}}</span>
-            </div>
-            <div class="grid-row-padded-line bottom-line">
                 <span class="text-16-bold col five">Reference</span>
-                <span class="text-16 col seven" id="court_no">{{data[0].legal_body_ref_no}}</span>
+                <span class="text-16 col seven" id="ref_no">{{data[0].case_reference}}</span>
             </div>
 
             <div class="spacer-20"></div>

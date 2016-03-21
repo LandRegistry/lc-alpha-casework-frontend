@@ -257,10 +257,17 @@ def register_bankruptcy(key_number):
 
 
 def register_correction():
+
+
+    logging.info(session['original_regns']['applicant'])
+
     applicant = {'name': session['original_regns']['applicant']['name'],
                  'address': session['original_regns']['applicant']['address'],
                  'key_number': session['original_regns']['applicant']['key_number'],
-                 'reference': session['original_regns']['applicant']['reference']}
+                 'reference': session['original_regns']['applicant']['reference'],
+                 'address_type': session['original_regns']['applicant']['address_type'],
+
+                 }
 
     registration = {'parties': session['parties'],
                     'class_of_charge': session['original_regns']['class_of_charge'],
