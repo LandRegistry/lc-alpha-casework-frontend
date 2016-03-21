@@ -129,7 +129,7 @@ def process_search_criteria(data, search_type):
             complex_name = 'complex_name_{}'.format(counter)
             complex_number = 'complex_number_{}'.format(counter)
             search_item = {
-                'name_type': 'Complex',
+                'name_type': 'Complex Name',
                 'name': {
                     'complex_name': data[complex_name],
                     'complex_number': int(data[complex_number]),
