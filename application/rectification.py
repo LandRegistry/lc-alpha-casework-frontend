@@ -133,7 +133,8 @@ def submit_lc_rectification(form):
                                    'fee_factor': 1,
                                    'delivery': session['application_dict']['delivery_method']}
                    }
-
+    if "update_registration" in rect_details:
+        application["update_registration"] = rect_details["update_registration"]
     url = app.config['CASEWORK_API_URL'] + '/applications/' + session['worklist_id'] + '?action=rectify'
     headers = get_headers({'Content-Type': 'application/json'})
     response = http_put(url, data=json.dumps(application), headers=headers)

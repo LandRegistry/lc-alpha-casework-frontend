@@ -29,8 +29,8 @@ def build_lc_inputs(data):
         result['estate_owner_ind'] = get_eo_ind(data['estateOwnerTypes'])
 
         result['occupation'] = data['occupation']
-
-        result['additional_info'] = data['addl_info']
+        if "addl_info" in data:
+            result['additional_info'] = data['addl_info']
         if 'priority_notice' in data:
             result['priority_notice'] = data['priority_notice']
 
