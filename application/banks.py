@@ -22,6 +22,8 @@ def get_original_data(number, date):
 def build_original_data(data):
     wob_originals = []
     pab_originals = []
+    wob_canc_ind = False
+    pab_canc_ind = False
     if 'pab_entered' in session:
         del session['pab_entered']
     if 'wob_entered' in session:
@@ -38,6 +40,8 @@ def build_original_data(data):
             if wob_data['class_of_charge'] != 'WOB':
                 wob_status_code = 404
                 wob_data = {}
+            elif wob_data['status'] in ['cancelled', 'superseded']:
+                wob_canc_ind = True
             else:
                 wob_originals = wob_data['parties'][0]['names']
     else:
@@ -57,6 +61,8 @@ def build_original_data(data):
             if pab_data['class_of_charge'] != 'PAB':
                 pab_status_code = 404
                 pab_data = {}
+            elif pab_data['status'] in ['cancelled', 'superseded']:
+                pab_canc_ind = True
             else:
                 pab_originals = pab_data['parties'][0]['names']
 
@@ -83,7 +89,9 @@ def build_original_data(data):
     error_msg = ''
     status_code = wob_status_code
 
-    if wob_status_code == 200 and pab_status_code == 200:
+    if wob_canc_ind or pab_canc_ind:
+        error_msg = 'Application has been cancelled or amended - please re-enter.'
+    elif wob_status_code == 200 and pab_status_code == 200:
         error_msg = ''
     elif wob_status_code == 404 and pab_status_code == 404:
         error_msg = 'No details held for the PAB and WOB entered, please check and re-key.'

@@ -859,7 +859,7 @@ def get_registration_details():
             error_msg = "Application has been cancelled or amended - please re-enter"
         elif 'amends_registration' in application_json:
             if application_json['amends_registration']['type'] == 'Cancellation':
-                error_msg = "Registration has been cancelled - please re-eneter"
+                error_msg = "Registration has been cancelled - please re-enter"
 
     #  check if part cans has been selected for a bankruptcy
     application_json = response.json()
