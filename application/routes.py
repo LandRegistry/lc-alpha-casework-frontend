@@ -870,6 +870,9 @@ def get_registration_details():
             class_of_charge = application_json['class']
             if class_of_charge in ['WO', 'PA', 'WOB', 'PAB', 'PA(B)', 'WO(B)']:
                 error_msg = "You cannot part cancel a bankruptcy registration"
+    elif (error_msg is None) and (application_type == 'lc_rect'):
+        if application_json['class'] in ['WOB', 'PAB', 'PA(B)', 'WO(B)']:
+            error_msg = "You cannot rectify a bankruptcy registration"
 
     if error_msg is not None:
         if application_type == 'lc_rect':
