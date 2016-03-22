@@ -49,13 +49,13 @@
 
                 {% if session.application_dict.application_data %}
 
-                   <div class="col four form-control-div">
+                   <div class="col three form-control-div-small">
                         <label class="form-label" for="full_cans">
                             <input id="full_cans" type="radio" name="full_cans"
                                    required onclick="" value="true" {% if session.cancellation_type == 'Cancellation' %}checked="Checked"{% endif %}>Full
                         </label>
                     </div>
-                    <div class="col four form-control-div">
+                    <div class="col three form-control-div-small">
                         <label class="form-label width-50" for="part_cans">
                             <input id="part_cans" type="radio" name="full_cans"
                                    onclick="" value="false" {% if session.cancellation_type == 'Part Cancellation' %}checked="Checked"{% endif %}>Part
@@ -63,12 +63,12 @@
                     </div>
 
                 {% else %}
-                    <div class="col four form-control-div">
+                    <div class="col three form-control-div-small">
                         <label class="form-label" for="full_cans">
                             <input id="full_cans" type="radio" name="full_cans"  required onclick="" value="true">Full
                         </label>
                     </div>
-                    <div class="col four form-control-div">
+                    <div class="col three form-control-div-small">
                         <label class="form-label width-50" for="part_cans">
                             <input id="part_cans" type="radio" name="full_cans" onclick="" value="false">Part
                         </label>
