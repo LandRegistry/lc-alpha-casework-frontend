@@ -1539,7 +1539,7 @@ def get_reclassify_form(appn_id):
     images = []
     image_data = json.loads(doc_response[0])
     for page in image_data['images']:
-        url = app.config["CASEWORK_FRONTEND_URL"] + "/images/" + str(document_id) + '/' + str(page['page'])
+        url = "/images/" + str(document_id) + '/' + str(page['page'])
         images.append(url)
     template = "reclassify/reclassify.html"
     session['page_template'] = template
