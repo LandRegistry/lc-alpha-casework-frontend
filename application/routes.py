@@ -778,7 +778,7 @@ def submit_search():
     customer = {
         'key_number': request.form['key_number'],
         'name': request.form['customer_name'],
-        'address': request.form['customer_address'],
+        'address': cust_address,
         'address_type': request.form['address_type'],
         'reference': request.form['customer_ref']
     }
