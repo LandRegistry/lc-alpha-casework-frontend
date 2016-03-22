@@ -306,6 +306,7 @@ def application_start(application_type, appn_id, form):
         images.append(url)
 
     template = page_required(application_type, form)
+
     application_json['form'] = form
 
     clear_session()
@@ -354,10 +355,10 @@ def application_start(application_type, appn_id, form):
             return render_template('bank_amend/amend_details.html', images=session['images'], current_page=0,
                                    data=session['original_regns'], application=session, screen='capture',
                                    transaction=session['transaction_id'])
-    else:
-        return render_template(template, application_type=application_type, data=application_json,
-                               images=images, application=application, years=years,
-                               current_page=0, errors=[], curr_data=curr_data, transaction=session['transaction_id'])
+
+    return render_template(template, application_type=application_type, data=application_json,
+                           images=images, application=application, years=years,
+                           current_page=0, errors=[], curr_data=curr_data, transaction=session['transaction_id'])
 
 
 @app.route('/retrieve_new_reg', methods=["GET"])
