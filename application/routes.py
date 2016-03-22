@@ -570,6 +570,12 @@ def re_enter_registration():
                            data=session['curr_data'], application=session, transaction=session['transaction_id'])
 
 
+@app.route('/continue_amendment', methods=['POST'])
+@requires_auth
+def continue_amendment():
+    return redirect('/view_original_details')
+
+
 @app.route('/view_original_details', methods=['GET'])
 @requires_auth
 def view_original_details():

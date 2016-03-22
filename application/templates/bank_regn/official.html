@@ -1,10 +1,35 @@
 {% extends "/page_template/base.html" %}
 
 {% block page_specific_head %}
-{% endblock %}
-{% block maincontent %}
 <script src="/static/js/jquery-ui.js" ></script>
 <link href="/static/css/jquery-ui.css" rel="Stylesheet" type="text/css" />
+<style>
+    /*  Customisation of Modal dialog popup */
+
+    .ui-widget-overlay {
+    opacity: .7;
+    }
+    .ui-widget-header {
+    margin-top:10px;
+    border:0px;
+    background: #ffffff;
+    color: #000000;
+    font-family: Roboto;
+    font-size: 24px;
+    }
+    #ui-id-2 {
+    margin-left:-6px;
+    }
+    .ui-dialog-titlebar .ui-button {
+    display:none;
+    }
+    .stop-scrolling {
+    height: 100%;
+    overflow: hidden;
+    }
+</style>
+{% endblock %}
+{% block maincontent %}
 
 <div class="spacer-10"></div>
 
