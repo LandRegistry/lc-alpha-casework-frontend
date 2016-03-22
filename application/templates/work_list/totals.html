@@ -2,8 +2,6 @@
 {% block page_specific_head %}
 
     <script>
-        HOST = window.location.protocol + "//" + window.location.hostname;
-
         $(document).ready(function() {
             $("#refresh").hide();
             setInterval("getTotals()", 30000);
@@ -12,7 +10,7 @@
         function getTotals(){
 
                 jQuery.ajax( {
-                    url: HOST + ':5010/totals',
+                    url: '/totals',
                     type: 'GET',
                     data: {},
                     success: function( data ) {
