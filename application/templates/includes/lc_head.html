@@ -182,7 +182,7 @@
                 updateComplexName(add_name);
             },
             error: function( data) {
-                jQuery('#modal_add').replaceWith($('<p id="modal_add" class="text-16">Error - please add the name using LCNU, close this box and look up the Complex name again.</p>'));
+                jQuery('#modal_add').replaceWith($('<p id="modal_add" class="text-16">Error - please add the name using #05, close this box and look up the Complex name again.</p>'));
 
             }
         } );
@@ -219,7 +219,7 @@
                         jQuery('#complex_result').append(resultHTML);
                     } else {
                         jQuery('#modal_message').replaceWith('<p id="modal_message" class="text-16">No match found for the name entered.'+
-                        '<br/><br/>Please check the details entered and if correct then create a new complex name using LCNU.</p>');
+                        '<br/><br/>Please check the details entered and if correct then create a new complex name using #05.</p>');
                         jQuery('#add_complex_name').replaceWith($('<p id="add_complex_name" class="text-16"></p>'));
                     }
 
