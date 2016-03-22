@@ -229,7 +229,27 @@ body {
     background-color:#DEE0E2;
     padding:5px;
     margin-right:15px;
-    min-width:120px;
+    width:120px;
+}
+
+.form-control-div-small {
+    background-color:#DEE0E2;
+    padding:5px;
+    margin-right:15px;
+    width:120px;
+}
+
+.form-control-div-med {
+    background-color:#DEE0E2;
+    padding:5px;
+    margin-right:15px;
+    min-width:140px;
+}
+.form-control-div-large {
+    background-color:#DEE0E2;
+    padding:5px;
+    margin-right:15px;
+    min-width:160px;
 }
 
 .form-textfield-verify {
@@ -416,3 +436,5 @@ body {
     color:#ffffff;
     text-decoration: underline;
 }
+
+
