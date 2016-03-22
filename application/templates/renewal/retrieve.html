@@ -1,6 +1,33 @@
 {% extends "/page_template/base.html" %}
 
 {% block page_specific_head %}
+<script src="/static/js/jquery-ui.js" ></script>
+<link href="/static/css/jquery-ui.css" rel="Stylesheet" type="text/css" />
+<style>
+    /*  Customisation of Modal dialog popup */
+
+    .ui-widget-overlay {
+    opacity: .7;
+    }
+    .ui-widget-header {
+    margin-top:10px;
+    border:0px;
+    background: #ffffff;
+    color: #000000;
+    font-family: Roboto;
+    font-size: 24px;
+    }
+    #ui-id-2 {
+    margin-left:-6px;
+    }
+    .ui-dialog-titlebar .ui-button {
+    display:none;
+    }
+    .stop-scrolling {
+    height: 100%;
+    overflow: hidden;
+    }
+</style>
 {% endblock %}
 {% block maincontent %}
 
@@ -37,7 +64,16 @@
             </div>
             <div class="spacer-40"></div>
             <input id="continue" type="submit" value="Continue" class="form-button"/>
+            <a href="javascript:showDelete()" id="reject" class="link-16 right">Reject application</a>
             <div class="spacer-40"></div>
+
+            <div id="reject_application_dlg" role="dialog" style="display: none;">
+                This will remove and delete the scanned image and application from the worklist.<br/><br/>
+                Are you sure you wish to continue?<br/><br/>
+                <input type="button" id="accept-reject" class="form-button" onclick="confirmDelete();" value="OK"/>
+                <input type="button" id="cancel-reject" class="form-button" onclick="cancelDelete();" value="Cancel"/>
+            </div>
+
         </form>
     </div>
     <!-- ///////////////////////////////// end of data entry form ///////////////////////////////// -->
@@ -70,6 +106,33 @@
                 }
             });
         });
+
+        function showDelete() {
+            $("#reject_application_dlg").dialog({
+                modal:true,
+                show: true,
+                title:"Reject Application?",
+                hide:true,
+                width: 600,
+                maxHeight: 500,
+                position: {
+                    my: "center",
+                    at: "center",
+                    of: window,
+                    collision: "none"
+                }
+            });
+        }
+
+        function cancelDelete() {
+            $("#reject_application_dlg").dialog('close');
+        }
+
+        function confirmDelete()
+        {
+            jQuery('#renewal_form').attr('action', "/rejection");
+            jQuery("#renewal_form").submit();
+        }
     </script>
 </div>
 

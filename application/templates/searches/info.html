@@ -52,11 +52,21 @@
             <div class="spacer-40"></div>
             <div>
                 <input id="continue" type="submit" value="Continue" onclick="return validateFields();" class="form-button"/>
-                <a href="javascript:confirmDelete()" id="reject" class="link-16 right">Reject application</a>
+                <a href="javascript:showDelete()" id="reject" class="link-16 right">Reject application</a>
             </div>
             <div class="spacer-20"></div>
             <a href="/get_list?appn=search_full" class="link-16">Return to this application later</a>
             <div class="spacer-40"></div>
+
+            <div id="reject_application_dlg" role="dialog" style="display: none;">
+                <h2 id="modal_header" class="text-24-bold">Reject Application?</h2>
+                <br/>
+                This will remove and delete the scanned image and application from the worklist.<br/><br/>
+                Are you sure you wish to continue?<br/><br/>
+                <input type="button" id="accept-reject" class="form-button" onclick="confirmDelete();" value="OK"/>
+                <input type="button" id="cancel-reject" class="form-button" onclick="cancelDelete();" value="Cancel"/>
+            </div>
+
         </form>
     </div>
     <!-- ///////////////////////////////// end of data entry form ///////////////////////////////// -->
@@ -80,15 +90,31 @@
     });
 
 
+    function showDelete() {
+        $("#reject_application_dlg").dialog({
+            modal:true,
+            show: true,
+            title:"Reject Application?",
+            hide:true,
+            width: 600,
+            maxHeight: 500,
+            position: {
+                my: "center",
+                at: "center",
+                of: window,
+                collision: "none"
+            }
+        });
+    }
+
+    function cancelDelete() {
+        $("#reject_application_dlg").dialog('close');
+    }
+
     function confirmDelete()
     {
-        var x = confirm('This will remove and delete the scanned image and application from the worklist.\n\nAre you sure you wish to continue?')
-        if (x){
-            jQuery('#search_form').attr('action', "/rejection");
-            jQuery("#search_form").submit();
-            }
-        else
-            return;
+        jQuery('#search_form').attr('action', "/rejection");
+        jQuery("#search_form").submit();
     }
 
 </script>
