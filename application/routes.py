@@ -829,7 +829,6 @@ def submit_search():
 # ===== end of search routes =========
 
 
-
 # ======== Rectification routes =============
 @app.route('/start_rectification', methods=["GET"])
 @requires_auth

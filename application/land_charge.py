@@ -45,6 +45,8 @@ def get_eo_ind(eo_type_string):
         return "Private Individual"
     elif eo_type_string.lower() == "countycouncil":
         return "County Council"
+    elif eo_type_string.lower() == "ruralcouncil":
+        return "Rural Council"
     elif eo_type_string.lower() == "parishcouncil":
         return "Parish Council"
     elif eo_type_string.lower() == "othercouncil":
