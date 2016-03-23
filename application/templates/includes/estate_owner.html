@@ -23,6 +23,12 @@
                 <option value="countyCouncil">County Council or Greater London or Manchester Council</option>
                 {% endif %}
 
+                {% if curr_data.estate_owner_ind == 'Rural Council' %}
+                <option value="ruralCouncil" selected="selected">Rural District Council</option>
+                {% else %}
+                <option value="ruralCouncil">Rural District Council</option>
+                {% endif %}
+
                 {% if curr_data.estate_owner_ind == 'Parish Council' %}
                 <option value="parishCouncil" selected="selected">Parish, Town or Community Council</option>
                 {% else %}
