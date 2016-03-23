@@ -169,7 +169,7 @@
         var transid = document.getElementById('transaction_id').value;
 
         jQuery.ajax( {
-            url: '{{config.CASEWORK_FRONTEND_URL}}/complex_names/' + insertName + '/' + insertNumber,
+            url: '/complex_names/' + insertName + '/' + insertNumber,
             type: 'POST',
             headers: {
                 'X-Transaction-ID': transid
