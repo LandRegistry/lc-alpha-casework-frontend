@@ -9,7 +9,7 @@
         } else if (obj.value.length == 7) {
             jQuery.ajax( {
 
-                url: '/keyholders/' + obj.value,
+                url: '{{backend_uri}}/keyholders/' + obj.value,
 
                 type: 'GET',
                 headers: {
@@ -17,7 +17,6 @@
                 },
                 data: {},
                 success: function( data ) {
-
                     // alert(JSON.stringify(data));
                     jQuery('#customer_name').val(data.name);
 

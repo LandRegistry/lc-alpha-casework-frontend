@@ -100,7 +100,7 @@ function addComplexName(ctr){
             updateComplexName(add_name,ctr);
         },
         error: function( data) {
-            jQuery('#modal_add_'+ctr).replaceWith($('<p id="modal_add_'+ctr+'" class="text-16">Error - please add the name using #05, close this box and look up the Complex name again.</p>'));
+            jQuery('#modal_add_'+ctr).replaceWith($('<p id="modal_add_'+ctr+'" class="text-16">Error - please add the name using #06, close this box and look up the Complex name again.</p>'));
 
         }
     } );
@@ -135,7 +135,7 @@ function getComplexName(ctr){
                     jQuery('#complex_result_'+ctr).append(resultHTML);
                 } else {
                     jQuery('#modal_message_'+ ctr).replaceWith('<p id="modal_message_'+ctr+'" class="text-16">No match found for the name entered.'+
-                    '<br/><br/>Please check the details entered and if correct then create a new complex name using #05.</p>');
+                    '<br/><br/>Please check the details entered and if correct then create a new complex name using #06.</p>');
                     jQuery('#add_complex_name_'+ctr).replaceWith($('<p id="add_complex_name_'+ctr+'" class="text-16"></p>'));
                 }
 
