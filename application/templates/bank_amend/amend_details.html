@@ -21,7 +21,7 @@
     function addAddress(sender){
         a++;
         jQuery('<div class="form"> \
-                <label class="form-label">Address</label><div class="right"><a href="javascript:removeAddress(' +a+ ')" class="link-16" id="remove_address_' +a+ '">Remove address</a></div> \
+                <label class="form-label">Address</label><div class="right"><a href="javascript:removeAddress(' + (a - 1) + ')" class="link-16" id="remove_address_' +a+ '">Remove address</a></div> \
                 <input class="form-textfield mr-btm-10" type="text" id="add_' +a+ '_line1" name="add_' +a+ '_line1" value=""> \
                 <input class="form-textfield mr-btm-10" type="text" id="add_' +a+ '_line2" name="add_' +a+ '_line2" value=""> \
                 <input class="form-textfield mr-btm-10" type="text" id="add_' +a+ '_line3" name="add_' +a+ '_line3" value=""> \
