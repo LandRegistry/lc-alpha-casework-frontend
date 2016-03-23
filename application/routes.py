@@ -1,6 +1,6 @@
 from application import app
 from application.logformat import format_message
-from flask import Response, request, render_template, session, redirect, url_for, send_file
+from flask import Response, request, render_template, session, redirect, url_for, send_file, make_response
 from datetime import datetime
 import logging
 import json
@@ -199,8 +199,8 @@ def get_list():
 
 
 def get_list_of_applications(requested_worklist, result, error_msg):
-    logging.debug('--- GET LIST OF APPLICATIONS ---')
-    logging.debug(requested_worklist)
+    logging.info('--- GET LIST OF APPLICATIONS ---')
+    logging.info(requested_worklist)
 
     return_page = ''
     if requested_worklist.startswith('bank'):
@@ -264,14 +264,17 @@ def get_list_of_applications(requested_worklist, result, error_msg):
                 appn_list.append(application)
 
     app_totals = get_totals()
-    return render_template(return_page, worklist=appn_list, requested_list=requested_worklist,
-                           data=app_totals, error_msg=error_msg, result=result)
 
+    # Courtesy of the Intenet; seems to fix the issue where /get_list isn't called on navigating
+    # "back" from an input form. This was leaving applications locked.
+    resp = make_response(render_template(return_page, worklist=appn_list, requested_list=requested_worklist,
+                           data=app_totals, error_msg=error_msg, result=result))
+    resp.headers['X-UA-Compatible'] = 'IE=Edge,chrome=1'
+    resp.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+    resp.headers['Pragma'] = 'no-cache'
+    resp.headers['Expires'] = '0'
+    return resp
 
-# @app.route('/application_resume/<appn_id>', methods=['GET'])
-# def application_result(appn_id):
-#     # Get appliation details from worklist
-#     # Lock application
 
 @app.route('/application_start/<application_type>/<appn_id>/<form>', methods=["GET"])
 @requires_auth
