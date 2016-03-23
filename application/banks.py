@@ -74,8 +74,6 @@ def build_original_data(data):
         session['original_regns'] = wob_data
     else:
         session['original_regns'] = pab_data
-        # form type needs to be set to PAB to ensure class of charge set correctly.
-        session['application_dict']['form'] = 'PA(B) Amend'
 
     curr_data = {'wob': {'date': data['wob_date'],
                          'number': data['wob_ref'],
@@ -222,9 +220,11 @@ def register_bankruptcy(key_number):
     else:
         return response
 
-    if session['application_dict']['form'] == 'PA(B)' or session['application_dict']['form'] == 'PA(B) Amend':
+    if session['application_type'] == 'bank_amend':
+        class_of_charge = session['original_regns']['class_of_charge']
+    elif session['application_dict']['form'] == 'PA(B)':
         class_of_charge = 'PAB'
-    elif session['application_dict']['form'] == 'WO(B)' or session['application_dict']['form'] == 'WO(B) Amend':
+    elif session['application_dict']['form'] == 'WO(B)':
         class_of_charge = 'WOB'
     else:
         class_of_charge = session['application_dict']['form']
