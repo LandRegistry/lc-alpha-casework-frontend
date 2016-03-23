@@ -196,7 +196,7 @@
         clearPreviousResults();
         if (enteredName.length > 3){
             jQuery.ajax( {
-                url: '{{config.CASEWORK_FRONTEND_URL}}/complex_names/' + enteredName,
+                url: '/complex_names/' + enteredName,
                 type: 'GET',
                 data: {},
                 headers: {
