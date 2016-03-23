@@ -4,6 +4,9 @@ import logging
 
 
 def authenticate(username, password):
+    if username == '':
+        return None
+
     host = os.getenv('LDAP_HOST', "DEV")
 
     if host == 'DEV':  # Fake LDAP specified, allow any old nonsense on login (DEV ONLY!)

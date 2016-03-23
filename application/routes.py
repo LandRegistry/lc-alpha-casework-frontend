@@ -105,7 +105,7 @@ def go_to_login():
 def requires_auth(f):
     @wraps(f)
     def decorated(*args, **kwargs):
-        if 'username' not in session:
+        if 'username' not in session or session['username'] == '':
             logging.debug("Login required")
             return go_to_login()
         return f(*args, **kwargs)
