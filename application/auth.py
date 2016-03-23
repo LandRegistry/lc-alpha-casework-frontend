@@ -40,12 +40,11 @@ def authenticate(username, password):
             primary_group = reprinters
 
         if display_name != '' and primary_group != '':
-            return {'username': username, 'display_name': display_name, 'primary_group': primary_group}  # User authenticated and we know their role
+            return {'username': username, 'display_name': str(display_name), 'primary_group': primary_group}  # User authenticated and we know their role
         else:
             return None  # None == not authenticated
 
     except Exception as e:
-        print(e)
         logging.error(str(e))
         return None  # None == not authenticated
 
