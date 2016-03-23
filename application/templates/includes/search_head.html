@@ -90,7 +90,7 @@ function addComplexName(ctr){
     var insertName = document.getElementById("complex_name_addition_"+ctr).value;
     var insertNumber = document.getElementById("complex_number_addition_"+ctr).value;
     jQuery.ajax( {
-        url: '{{config.CASEWORK_FRONTEND_URL}}/complex_names/' + insertName + '/' + insertNumber,
+        url: '/complex_names/' + insertName + '/' + insertNumber,
         type: 'POST',
         data: {},
         success: function( data ) {
@@ -115,7 +115,7 @@ function getComplexName(ctr){
     var apos = "'"
     if (enteredName.length > 3){
         jQuery.ajax( {
-            url: '{{config.CASEWORK_FRONTEND_URL}}/complex_names/' + enteredName,
+            url: '/complex_names/' + enteredName,
             type: 'GET',
             data: {},
             success: function( data ) {
