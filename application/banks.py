@@ -189,17 +189,15 @@ def get_debtor_details(data):
     else:
         case_reference = data['ref_no']
 
-    parties = [
-        {
-            'type': 'Debtor',
-            'names': names,
-            'addresses': addresses,
-            'occupation': data['occupation'],
-            'residence_withheld': False,
-            'trading_name': ' ',
-            'case_reference': case_reference.strip()
-        }
-    ]
+    parties = [{
+        'type': 'Debtor',
+        'names': names,
+        'addresses': addresses,
+        'occupation': data['occupation'],
+        'residence_withheld': False,
+        'trading_name': ' ',
+        'case_reference': case_reference.strip()
+    }]
 
     return parties
 

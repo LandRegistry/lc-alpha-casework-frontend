@@ -378,9 +378,6 @@ def retrieve_new_reg():
 def check_court_details():
 
     if request.form['submit_btn'] == 'No':
-        # TODO: Need to save images somewhere, separate story promised
-        # delete_from_worklist(session['worklist_id'])
-        # return redirect('/get_list?appn=bank_regn', code=302, Response=None)
         return render_template('bank_regn/assoc_image.html', images=session['images'], current_page=0,
                                curr_data=session['current_registrations'], error=' ')
 
@@ -1231,23 +1228,6 @@ def confirmation():
     return render_template('confirmation.html', data=session['regn_no'], application_type=session['application_type'])
 
 
-# @app.route('/notification', methods=['GET'])
-# def notification():
-#     application = session['application_dict']
-#     data = {
-#         "type": application['form'],
-#         "reg_no": session['regn_no'],
-#         "date": application['date'],
-#         "details": [
-#             {
-#                 "name": ' '.join(application['debtor_name']['forenames']) + ' ' + application['debtor_name']['surname'],
-#                 "particulars": 'TODO: what goes here?'
-#             }
-#         ]
-#     }
-#     return render_template('K22.html', data=data)
-
-
 @app.route('/totals', methods=['GET'])
 def totals():
     data = get_totals()
@@ -1375,7 +1355,7 @@ def page_required(appn_type, sub_type=''):
         return html_page.get(appn_type)
 
 
-# TODO: renamed as 'complete', move to back-end?
+# Still used for searches
 def delete_from_worklist(application_id):
     url = app.config['CASEWORK_API_URL'] + '/applications/' + application_id
     response = http_delete(url, headers=get_headers({'X-Transaction-ID': application_id}))
@@ -1589,18 +1569,18 @@ def get_multiple_registrations(reg_date, reg_no):
     return Response(data, status=200, mimetype='application/json')
 
 
-@app.route('/store', methods=['GET'])
-def get_store_form(): # TODO: probably not needed...
-    return render_template('store.html', application_type=session['application_type'],
-                               images=session['images'],
-                               application=session['application_dict'],
-                               current_page=0,
-
-                               # curr_data=entered_fields,
-                               screen='capture',
-                               data=session['application_dict'],
-                               # transaction=session['transaction_id'])
-                           )
+# @app.route('/store', methods=['GET'])
+# def get_store_form(): # TODO: probably not needed...
+#     return render_template('store.html', application_type=session['application_type'],
+#                                images=session['images'],
+#                                application=session['application_dict'],
+#                                current_page=0,
+#
+#                                # curr_data=entered_fields,
+#                                screen='capture',
+#                                data=session['application_dict'],
+#                                # transaction=session['transaction_id'])
+#                            )
 
 
 def store_application():
@@ -1609,7 +1589,7 @@ def store_application():
     if session['application_type'] in ['bank_regn', 'bank_amend']:
         session['parties'] = get_debtor_details(request.form)
     elif session['application_type'] in ['cancel']:
-        # TODO: this duplicates code in /cancellation_customer, which is still in development.
+        # TODO: this duplicates code in /cancellation_customer
         if "plan_attached" in request.form:
             if request.form["plan_attached"] == 'on':
                 session["plan_attached"] = 'true'

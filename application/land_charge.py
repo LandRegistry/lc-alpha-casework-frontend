@@ -120,7 +120,7 @@ def submit_lc_registration(cust_fee_data):
     today = datetime.now().strftime('%Y-%m-%d')
     application['date'] = today
     application['residence_withheld'] = False
-    application['date_of_birth'] = "1980-01-01"  # TODO: what are we doing about the DOB??
+    #application['date_of_birth'] = "1980-01-01"  # DONE?: what are we doing about the DOB??
     application['document_id'] = session['document_id']
     application['fee_details'] = {'type': cust_fee_data['payment'],
                                   'fee_factor': 1,
