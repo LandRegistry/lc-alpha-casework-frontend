@@ -14,6 +14,7 @@
 <div class="spacer-5"></div>
 <div class="grid-row" >
 
+    {% set side_nav_enquiry = 'active' %}
     {% include "includes/side_nav.html" %}
 
     <!-- Content -->
@@ -26,22 +27,6 @@
 
     </div>
     <div class="subservice-box no-margin">
-        <a class="no-link-style {{enquiries_selected}}" tabindex="2" href="/get_list?appn=bank_amend">
-            <div class="spacer-20"></div>
-            <p class="text-16-bold">Enquiries</p>
-            <div class="spacer-30"></div>
-
-        </a>
-    </div>
-    <div class="subservice-box">
-        <a class="no-link-style {{historical_selected}}" tabindex="2" href="/get_list?appn=bank_amend">
-            <div class="spacer-20"></div>
-            <p class="text-16-bold">Historical View</p>
-            <div class="spacer-30"></div>
-
-        </a>
-    </div>
-    <div class="subservice-box">
         <a class="no-link-style {{unidentified_selected}}" tabindex="2" href="/get_list?appn=unknown">
             <div class="spacer-20"></div>
             <p class="text-16-bold">Unidentified</p>
