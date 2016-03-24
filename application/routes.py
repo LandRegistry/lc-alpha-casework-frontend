@@ -898,6 +898,9 @@ def get_registration_details():
                                transaction=session['transaction_id'])
     else:
         data = response.json()
+        session['orig_addl_info'] = data['additional_info']  # A terrible hack, but we need to keep it somewhere
+        # and hidden fields aren't being POSTed. Lovely.
+
         template = ''
         if application_type == 'lc_rect':
             template = 'rectification/amend.html'
@@ -924,27 +927,33 @@ def rectification_capture():
     entered_fields = build_lc_inputs(request.form)
 
     entered_fields['class'] = result['class']
+    entered_fields["additional_info"] = session['orig_addl_info']
 
     if "addl_info_type" in request.form:
         entered_fields["update_registration"] = {"type": "Rectification"}
         if request.form["addl_info_type"] == 'date_of_instrument':
             entered_fields["update_registration"]["instrument"] = {"original": "", "current": ""}
+
             if "orig_data" in request.form:
                 orig_date = datetime.strptime(request.form["orig_data"], "%d/%m/%Y").strftime("%Y-%m-%d")
                 entered_fields["update_registration"]["instrument"]["original"] = orig_date
             if "current_data" in request.form:
                 current_date = datetime.strptime(request.form["current_data"], "%d/%m/%Y").strftime("%Y-%m-%d")
                 entered_fields["update_registration"]["instrument"]["current"] = current_date
-            entered_fields["additional_info"] = "Date of instrument changed from " + \
-                                                request.form["orig_data"] + " to " + request.form["current_data"]
+
+            # entered_fields["additional_info"] = "Date of instrument changed from " + \
+            #                                     request.form["orig_data"] + " to " + request.form["current_data"]
+
         elif request.form["addl_info_type"] == "chargee_details":
             entered_fields["update_registration"]["chargee"] = {"original":"", "current": ""}
             if "orig_data" in request.form:
                 entered_fields["update_registration"]["chargee"]["original"] = request.form["orig_data"]
             if "current_data" in request.form:
                 entered_fields["update_registration"]["chargee"]["current"] = request.form["current_data"]
-            entered_fields["additional_info"] = "Chargees changed from " + \
-                                                request.form["orig_data"] + " to " + request.form["current_data"]
+            #entered_fields["additional_info"] = session['orig_addl_info']
+            # entered_fields["additional_info"] = "Chargees changed from " + \
+            #                                     request.form["orig_data"] + " to " + request.form["current_data"]
+
     if len(result['error']) == 0:
         session['rectification_details'] = entered_fields
         return render_template('rectification/check.html', application_type=session['application_type'], data={},
