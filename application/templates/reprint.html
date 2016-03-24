@@ -7,7 +7,25 @@
 {% endblock %}
 
 {% block maincontent %}
+<input type="hidden" id="requested_list" name="requested_list" value="{{requested_list}}"/>
 
+{% if requested_list == 'cancel' %}
+{% set page_title = 'Cancellation' %}
+{% set cancel_selected = 'selected' %}
+{% elif requested_list == 'cancel_stored' %}
+{% set page_title = 'Stored' %}
+{% set stored_selected = 'selected' %}
+{% endif %}
+<div class="breadcrumb">
+     <ol>
+        <li><a href="/">Home</a></li>
+        <li><a href="/enquiries">Enquiries</a></li>
+        <li class="breadcrumb-no-arrow"><span>Reprint</span></li>
+    </ol>
+</div>
+
+<div class="spacer-5"></div>
+<div class="grid-row" >
 {% set side_nav_enquiry = 'active' %}
 {% include "includes/side_nav.html" %}
 <script>
@@ -197,6 +215,7 @@
 
             </div>
         </form>
+    </div>
     </div>
 </div>
 
