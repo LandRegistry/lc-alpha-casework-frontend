@@ -36,12 +36,11 @@
 
     function setupCountyAutocomplete(element) {
         var a = 0;
-        var host = "{{config.CASEWORK_FRONTEND_URL}}";
 
         var transid = document.getElementById('transaction_id').value;
 
         jQuery.ajax({
-            url: host + '/counties?welsh=no',
+            url: '/counties?welsh=no',
             type: 'GET',
             headers: {
                 'X-Transaction-ID': transid
@@ -75,7 +74,7 @@
 
 		jQuery.ajax({
             'async': false,
-            url: '{{config.CASEWORK_FRONTEND_URL}}/counties?welsh=no',
+            url: '/counties?welsh=no',
             type: 'GET',
             headers: {
                 'X-Transaction-ID': transid
