@@ -9,7 +9,7 @@
 $(document).ready(function() {
     $("#refresh").hide();
     display_list = $('#requested_list').val();
-    var refresh_screen = setInterval(function(){ location.href="/get_list?appn=" + display_list;}, 30000);
+    var refresh_screen = setInterval(function(){ location.href="/enquiries"}, 30000);
     $('#work-list').DataTable({info: false, paging: false, searching: false, ordering:false});
 
     // make table row clickable link to child href
@@ -89,47 +89,6 @@ $(document).ready(function() {
             </div>
 
         </div>
-
-        <!-- List of pending applications -->
-        {% if worklist|length > 0 %}
-        <div class="grid-row">
-            <div class="spacer-15"></div>
-            <h2 class="text-24-bold">{{page_title}} applications</h2>
-            <div class="spacer-15"></div>
-            {% if error_msg|length > 0 %}
-            <p class="text-16-bold error">{{error_msg}}</p>
-            {% endif %}
-            <div class="col nine no-margin">
-                <table id="work-list" class="hover">
-                    <thead>
-                    <tr>
-                        <th class="table-text-black">Date and time received <a href="#"></a></th>
-                        <th class="table-text-black">Form type <a href="#"></a></th>
-                    </tr>
-                    </thead>
-                    {% for n in worklist %}
-                    <tbody>
-                    <tr id="row_{{loop.index}}" tabindex="{{loop.index + sub_cat_qty}}" onkeypress="this.click();">
-                        <td>{{n['date_received']}} {{n['time_received']}}</td>
-                        <td>
-                            {% if n['application_type'] == 'WO(B)' %}
-                            WOB
-                            {% elif n['application_type'] == 'PA(B)'%}
-                            PAB
-                            {% else %}
-                            {{n['application_type']}}
-                            {% endif %}
-                            <a class="hide" id="appn_type{{loop.index}}" href="/reclassify/{{n['appn_id']}}">
-                                link required for clickable table row
-                            </a>
-                        </td>
-                    </tr>
-                    </tbody>
-                    {% endfor %}
-                </table>
-            </div>
-        </div>
-        {% endif %}
     </div>
 </div>
 {% endblock %}
