@@ -39,9 +39,6 @@ $(document).ready(function() {
 {% elif requested_list == 'bank_rect' %}
 {% set page_title = 'Rectification' %}
 {% set rect_selected = 'selected' %}
-{% elif requested_list == 'bank_with' %}
-{% set page_title = 'Withheld Address' %}
-{% set with_selected = 'selected' %}
 {% elif requested_list == 'bank_stored' %}
 {% set page_title = 'Stored' %}
 {% set stored_selected = 'selected' %}
@@ -107,21 +104,6 @@ $(document).ready(function() {
                         <span class="indicator-middle">{{data['bank_amend']}}</span>
                         {% else %}
                         <span class="indicator-middle-2">{{data['bank_amend']}}</span>
-                        {% endif %}
-                    </div>
-                </a>
-            </div>
-
-            <div class="subservice-box">
-                <a class="no-link-style {{with_selected}}" tabindex="4" href="/get_list?appn=bank_with">
-                    <div class="spacer-20"></div>
-                    <p class="text-16-bold">Withheld address</p>
-                    <div class="spacer-30"></div>
-                    <div class="indicator" id="bank_with">
-                        {% if data['bank_with'] < 10 %}
-                        <span class="indicator-middle">{{data['bank_with']}}</span>
-                        {% else %}
-                        <span class="indicator-middle-2">{{data['bank_with']}}</span>
                         {% endif %}
                     </div>
                 </a>
