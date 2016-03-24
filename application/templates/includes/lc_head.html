@@ -38,12 +38,14 @@
         var a = 0;
 
         var transid = document.getElementById('transaction_id').value;
+        var user_id = document.getElementById('user_id').value;
 
         jQuery.ajax({
             url: '/counties?welsh=no',
             type: 'GET',
             headers: {
-                'X-Transaction-ID': transid
+                'X-Transaction-ID': transid,
+                'X-LC-Username': user_id
             },
             counties: {},
             success: function( counties ) {
@@ -71,13 +73,15 @@
                 <div class="spacer-10"><div>').insertBefore("#addcounty");
         n ++;
         var transid = document.getElementById('transaction_id').value;
+        var user_id = document.getElementById('user_id').value;
 
 		jQuery.ajax({
             'async': false,
             url: '/counties?welsh=no',
             type: 'GET',
             headers: {
-                'X-Transaction-ID': transid
+                'X-Transaction-ID': transid,
+                'X-LC-Username': user_id
             },
             counties: {},
             success: function( counties ) {
@@ -166,12 +170,14 @@
         var insertName = document.getElementById("complex_name_addition").value;
         var insertNumber = document.getElementById("complex_number_addition").value;
         var transid = document.getElementById('transaction_id').value;
+        var user_id = document.getElementById('user_id').value;
 
         jQuery.ajax( {
             url: '/complex_names/' + insertName + '/' + insertNumber,
             type: 'POST',
             headers: {
-                'X-Transaction-ID': transid
+                'X-Transaction-ID': transid,
+                'X-LC-Username': user_id
             },
             data: {},
             success: function( data ) {
@@ -190,6 +196,8 @@
     function getComplexName(){
         jQuery('#modal_message').replaceWith($('<p id="modal_message" class="text-16">Please wait...</p>'));
         var transid = document.getElementById('transaction_id').value;
+        var user_id = document.getElementById('user_id').value;
+
         $('body').addClass('stop-scrolling');
         var enteredName = jQuery('#complex_name_field').val().trim();
         clearPreviousResults();
@@ -199,7 +207,8 @@
                 type: 'GET',
                 data: {},
                 headers: {
-                    'X-Transaction-ID': transid
+                    'X-Transaction-ID': transid,
+                    'X-LC-Username': user_id
                 },
                 success: function( data ) {
                     jQuery('#modal_message').replaceWith($('<p id="modal_message" class="text-16">Please select a complex name from the list</p>'));

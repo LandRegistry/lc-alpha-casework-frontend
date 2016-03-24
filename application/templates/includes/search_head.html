@@ -89,10 +89,18 @@ function clearPreviousResults(ctr){
 function addComplexName(ctr){
     var insertName = document.getElementById("complex_name_addition_"+ctr).value;
     var insertNumber = document.getElementById("complex_number_addition_"+ctr).value;
+
+    var user_id = document.getElementById('user_id').value;
+    var transid = document.getElementById('transaction_id').value;
+
     jQuery.ajax( {
         url: '/complex_names/' + insertName + '/' + insertNumber,
         type: 'POST',
         data: {},
+        headers: {
+            'X-Transaction-ID': transid,
+            'X-LC-Username': user_id
+        },
         success: function( data ) {
             jQuery('#modal_add_'+ ctr).replaceWith($('<p id="modal_add_'+ctr+'" class="text-16">Complex name added please close.</p>'));
             var add_name = {};
@@ -112,12 +120,19 @@ function getComplexName(ctr){
     $('body').addClass('stop-scrolling');
     var enteredName = jQuery('#complex_name_field_'+ctr).val().trim();
     clearPreviousResults(ctr);
-    var apos = "'"
+    var apos = "'";
+    var user_id = document.getElementById('user_id').value;
+    var transid = document.getElementById('transaction_id').value;
+
     if (enteredName.length > 3){
         jQuery.ajax( {
             url: '/complex_names/' + enteredName,
             type: 'GET',
             data: {},
+            headers: {
+                'X-Transaction-ID': transid,
+                'X-LC-Username': user_id
+            },
             success: function( data ) {
                 jQuery('#modal_message_'+ ctr).replaceWith($('<p id="modal_message_'+ctr+'" class="text-16">Please select a complex name from the list</p>'));
                 // jQuery('#add_complex_name_'+ctr).replaceWith($('<a href="#here" id="add_complex_name'+ctr+'" data-dismiss="modal" onclick="addComplexNameModal('+apos+'{{id_count}}'+apos+');" class="link-14-right">Add a complex name</a>'));
@@ -214,11 +229,17 @@ else {
 
 function setupCountyAutocomplete(element) {
     var a = 0;
+    var user_id = document.getElementById('user_id').value;
+    var transid = document.getElementById('transaction_id').value;
 
     jQuery.ajax({
         url: '/counties?welsh=yes',
         type: 'GET',
         counties: {},
+        headers: {
+            'X-Transaction-ID': transid,
+            'X-LC-Username': user_id
+        },
         success: function( counties ) {
             jQuery(element).autocomplete({
               source: function( request, response ) {
@@ -234,6 +255,9 @@ function setupCountyAutocomplete(element) {
 
 
 function countyClick(sender){
+    var user_id = document.getElementById('user_id').value;
+    var transid = document.getElementById('transaction_id').value;
+
     if (jQuery("#all_counties").is(':checked') != true) {
         var fldnam = "county_" + n;
         jQuery('<input class="form-textfield" type="text" id="' + fldnam + '" name="' + fldnam+ '"> \
@@ -245,6 +269,10 @@ function countyClick(sender){
         url: '/counties?welsh=yes',
         type: 'GET',
         counties: {},
+        headers: {
+            'X-Transaction-ID': transid,
+            'X-LC-Username': user_id
+        },
         success: function( counties ) {
             jQuery("#"+fldnam).autocomplete({
               source: function( request, response ) {
