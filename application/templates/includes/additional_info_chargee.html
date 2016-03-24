@@ -4,15 +4,15 @@
                 '<div id="date_of_instrument_placeholder"  class="grid-row">'+
                     '<div class="spacer-5"></div>' +
                         '<div class="grid-row">'+
-                        '<div class="col four">'+
-                            '<label class="form-label" for="orig_data">from</label>' +
-                            '<input class="form-textfield width-75 dateEntry" type="text" id="orig_data" ' +
+                        '<div class="col five">'+
+                            '<label class="form-label" for="orig_data">from &nbsp;&nbsp;</label>' +
+                            '<input class="form-textfield dateEntry width-50" type="text" id="orig_data" ' +
                             'placeholder="dd/mm/yyyy" maxlength="10" ' +
                             'name="orig_data" value="{{session.orig_data}}"/>'+
                         '</div>' +
-                        '<div class="col four">' +
-                            '<label class="form-label"  for="current_data">to &nbsp;&nbsp;&nbsp;</label>' +
-                            '<input class="form-textfield width-75 dateEntry" type="text" id="current_data"  ' +
+                        '<div class="col five">' +
+                            '<label class="form-label"  for="current_data">to &nbsp;&nbsp;</label>' +
+                            '<input class="form-textfield dateEntry width-50" type="text" id="current_data"  ' +
                             'placeholder="dd/mm/yyyy" maxlength="10" ' +
                             'name="current_data" value="{{session.current_data}}"/>' +
                         '</div>' +
@@ -20,11 +20,11 @@
 
                 if (document.getElementById('date_of_instrument').checked)
                 {
-                    jQuery('#orig_data').replaceWith('<input class="form-textfield width-75 dateEntry" type="text" ' +
+                    jQuery('#orig_data').replaceWith('<input class="form-textfield dateEntry width-50" type="text" ' +
                         'id="orig_data" required ' +
                                 'placeholder="dd/mm/yyyy" maxlength="10" ' +
                                 'name="orig_data" value="{{session.orig_data}}"/>');
-                    jQuery('#current_data').replaceWith('<input class="form-textfield width-75 dateEntry" type="text"' +
+                    jQuery('#current_data').replaceWith('<input class="form-textfield dateEntry width-50" type="text"' +
                         ' id="current_data" required ' +
                                 'placeholder="dd/mm/yyyy" maxlength="10" ' +
                                 'name="current_data" value="{{session.current_data}}"/>');
@@ -32,10 +32,10 @@
                     }
                 else
                 {
-                    jQuery('#orig_data').replaceWith('<input class="form-textfield width-75 dateEntry" type="text" id="orig_data" ' +
+                    jQuery('#orig_data').replaceWith('<input class="form-textfield dateEntry width-50" type="text" id="orig_data" ' +
                                 'placeholder="chargees" required ' +
                                 'name="orig_data" value="{{session.orig_data}}"/>');
-                    jQuery('#current_data').replaceWith('<input class="form-textfield width-75 dateEntry" type="text" id="current_data" ' +
+                    jQuery('#current_data').replaceWith('<input class="form-textfield dateEntry width-50" type="text" id="current_data" ' +
                                 'placeholder="chargees" required ' +
                                 'name="current_data" value="{{session.current_data}}"/>');
                 }
