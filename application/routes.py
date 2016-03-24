@@ -1436,9 +1436,13 @@ def internal():
 
 @app.route('/enquiries', methods=['GET'])
 def enquiries():
-    curr_data = {'reprint_selected': True, 'estate_owner': {'private': {"forenames": [], "surname": ""},
-                                                            'local': {'name': "", "area": ""}, "complex": {"name": ""}}}
-    return render_template('work_list/enquiries.html', curr_data=curr_data)
+   # curr_data = {'reprint_selected': True, 'estate_owner': {'private': {"forenames": [], "surname": ""},
+   #                                                         'local': {'name': "", "area": ""}, "complex": {"name": ""}}}
+
+    data = get_totals()
+    return render_template('work_list/enquiries.html', data=data)
+
+    #return render_template('work_list/enquiries.html', curr_data=curr_data)
 
 
 @app.route('/reprints', methods=['GET'])

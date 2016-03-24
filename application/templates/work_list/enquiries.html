@@ -1,9 +1,42 @@
 {% extends "/page_template/base.html" %}
+{% block page_specific_head %}
+<link href="/static/datatables/css/jquery.dataTables.css" rel="stylesheet" />
+<link href="/static/datatables/css/dataTables.responsive.css" rel="stylesheet" />
+<script type="text/javascript" src="/static/datatables/js/jquery.dataTables.js"></script>
+<script>
+ HOST = window.location.protocol + "//" + window.location.hostname;
+
+$(document).ready(function() {
+    $("#refresh").hide();
+    display_list = $('#requested_list').val();
+    var refresh_screen = setInterval(function(){ location.href="/get_list?appn=" + display_list;}, 30000);
+    $('#work-list').DataTable({info: false, paging: false, searching: false, ordering:false});
+
+    // make table row clickable link to child href
+    $('#work-list tbody tr').click(function() {
+        var href = $(this).find("a").attr("href");
+        if(href) {
+            window.location = href;
+            clearInterval(refresh_screen);
+        }
+    });
+} );
+
+</script>
+{% endblock %}
+
 {% block maincontent %}
 
-{% set page_title = 'Enquiries' %}
+<input type="hidden" id="requested_list" name="requested_list" value="enq"/>
 
 
+{% if requested_list == 'unknown' %}
+{% set page_title = 'Unidentified' %}
+{% set unidentified_selected = 'selected' %}
+{% elif requested_list == 'bank_amend' %}
+{% set page_title = 'Amendment' %}
+{% set amend_selected = 'selected' %}
+{% endif %}
 <div class="breadcrumb">
     <ol>
         <li><a href="/">Home</a></li>
@@ -14,39 +47,89 @@
 <div class="spacer-5"></div>
 <div class="grid-row" >
 
+    <!-- Side Navigation -->
     {% set side_nav_enquiry = 'active' %}
-    {% include "includes/side_nav.html" %}
+    {% include 'includes/side_nav.html' %}
 
     <!-- Content -->
     <div class="col nine" style="min-width:800px;">
         <div class="spacer-10"></div>
-        <div class="grid-row" >
-            <h1 class="title-36">Enquiries</h1>
-        </div>
+        <h1 class="title-36">Enquiries</h1>
+        <!-- Confirmation -->
+        {% if 'work_type' in result %}
+            {% include 'includes/confirmation_reclassify.html' %}
+        {% endif %}
+
         <div class="spacer-20"></div>
-
-    </div>
-    <div class="subservice-box no-margin">
-        <a class="no-link-style {{unidentified_selected}}" tabindex="2" href="/get_list?appn=unknown">
-            <div class="spacer-20"></div>
-            <p class="text-16-bold">Unidentified</p>
-            <div class="spacer-30"></div>
-            <div class="indicator" id="unidentified">
-                <span class="indicator-middle-2"></span>
+        <!-- Totals -->
+        {% set sub_cat_qty = 3 %}
+        <div class="grid-row">
+            <div class="subservice-box no-margin">
+            <a class="no-link-style {{unidentified_selected}}" tabindex="1"  href="/get_list?appn=unknown">
+                <div class="spacer-20"></div>
+                <p class="text-16-bold">Unidentified</p>
+                <div class="spacer-30"></div>
+                <div class="indicator" id="unknown">
+                    {% if data['unknown'] < 10 %}
+                    <span class="indicator-middle">{{data['unknown']}}</span>
+                    {% else %}
+                    <span class="indicator-middle-2">{{data['unknown']}}</span>
+                    {% endif %}
+                </div>
+            </a>
             </div>
-        </a>
-    </div>
-    <div class="subservice-box">
-        <a class="no-link-style {{reprint_selected}}" tabindex="2" href="/reprints">
-            <div class="spacer-20"></div>
-            <p class="text-16-bold">Reprint</p>
-            <div class="spacer-30"></div>
-        </a>
-    </div>
-    <!-- K22 and K17/18 reprint inputs -->
 
-    <div class="col nine text-19"><div class="spacer-20"></div>
 
+             <div class="subservice-box">
+                <a class="no-link-style {{reprint_selected}}" tabindex="2" href="/reprints">
+                <div class="spacer-20"></div>
+                <p class="text-16-bold">Reprint</p>
+                <div class="spacer-30"></div>
+                </a>
+            </div>
+
+        </div>
+
+        <!-- List of pending applications -->
+        {% if worklist|length > 0 %}
+        <div class="grid-row">
+            <div class="spacer-15"></div>
+            <h2 class="text-24-bold">{{page_title}} applications</h2>
+            <div class="spacer-15"></div>
+            {% if error_msg|length > 0 %}
+            <p class="text-16-bold error">{{error_msg}}</p>
+            {% endif %}
+            <div class="col nine no-margin">
+                <table id="work-list" class="hover">
+                    <thead>
+                    <tr>
+                        <th class="table-text-black">Date and time received <a href="#"></a></th>
+                        <th class="table-text-black">Form type <a href="#"></a></th>
+                    </tr>
+                    </thead>
+                    {% for n in worklist %}
+                    <tbody>
+                    <tr id="row_{{loop.index}}" tabindex="{{loop.index + sub_cat_qty}}" onkeypress="this.click();">
+                        <td>{{n['date_received']}} {{n['time_received']}}</td>
+                        <td>
+                            {% if n['application_type'] == 'WO(B)' %}
+                            WOB
+                            {% elif n['application_type'] == 'PA(B)'%}
+                            PAB
+                            {% else %}
+                            {{n['application_type']}}
+                            {% endif %}
+                            <a class="hide" id="appn_type{{loop.index}}" href="/reclassify/{{n['appn_id']}}">
+                                link required for clickable table row
+                            </a>
+                        </td>
+                    </tr>
+                    </tbody>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+        {% endif %}
     </div>
 </div>
-    {% endblock %}
+{% endblock %}
