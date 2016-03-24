@@ -48,7 +48,6 @@
             <ul class="appn-list">
                 <li><a href="/get_list?appn=bank_regn">Registrations (<span id="bank_regn">{{data['bank_regn']}}</span>)</a></li>
                 <li><a href="/get_list?appn=bank_amend">Amendments (<span id="bank_amend">{{data['bank_amend']}}</span>)</a></li>
-                <li><a href="b_wa_list">Withheld Address (<span id="bank_with">{{data['bank_with']}}</span>)</a></li>
                 <li><a href="/get_list?appn=bank_stored">Stored (<span id="bank_stored">{{data['bank_stored']}}</span>)</a></li>
             </ul>
         </div>
@@ -94,56 +93,37 @@
             </div>
     </div>
         <div class="grid-row">
-        <div class="spacer-15"></div>
-        <div class="col three" >
-            <div class="service-box ">
-                <a class="no-link-style text-19-bold" href="/get_list?appn=bank_regn">Office Copies</a><br/>
-                <a class="no-link-style" href="/get_list?appn=bank_regn">
-                    <img src="/static/images/copy1.png" alt="Office Copies">
-                </a>
-                <ul class="appn-list">
-                    <li><a href="/get_list?appn=bank_regn">Office Copies</a></li>
-                </ul>
+            <div class="spacer-15"></div>
+            <div class="col three" >
+                &nbsp;
+            </div>
+            <div class="col three" >
+                <div class="service-box">
+                    <a class="no-link-style text-19-bold" href="/enquiries">Enquiries</a><br/>
+                    <a class="no-link-style" href="/enquiries">
+                        <img src="/static/images/enquiries.png" alt="Enquiries">
+                    </a>
+                    <ul class="appn-list">
+                        <li><a href="/get_list?appn=unknown">Unidentified Applications (<span id="unknown">{{data['unknown']}}</span>)</a></li>
+                        <li><a href="/reprints">Reprint</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col three" >
+                <div class="service-box">
+                    <a class="no-link-style text-19-bold" href="/internal">Internal Functions</a><br/>
+                    <a class="no-link-style" href="/internal">
+                        <img src="/static/images/image_man.png" alt="Internal Functions">
+                    </a>
+                    <ul class="appn-list">
+                        <li><a href="/correction">Corrections</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col three" >
+                &nbsp;
             </div>
         </div>
-        <div class="col three" >
-            <div class="service-box">
-                <a class="no-link-style text-19-bold" href="/enquiries">Enquiries</a><br/>
-                <a class="no-link-style" href="/enquiries">
-                    <img src="/static/images/enquiries.png" alt="Enquiries">
-                </a>
-                <ul class="appn-list">
-                    <li><a href="/enquiries">Enquiries</a></li>
-                    <li><a href="/get_list?appn=bank_amend">Historical View</a></li>
-                    <li><a href="/get_list?appn=unknown">Unidentified Applications (<span id="unknown">{{data['unknown']}}</span>)</a></li>
-                    <li><a href="/reprints">Reprint</a></li>
-                </ul>
-            </div>
-        </div>
-        <div class="col three" >
-            <div class="service-box">
-                <a class="no-link-style text-19-bold" href="/internal">Internal Functions</a><br/>
-                <a class="no-link-style" href="/internal">
-                    <img src="/static/images/image_man.png" alt="Internal Functions">
-                </a>
-                <ul class="appn-list">
-                    <li><a href="/correction">Corrections</a></li>
-                </ul>
-            </div>
-        </div>
-        <div class="col three" >
-            <div class="service-box">
-                <a class="no-link-style text-19-bold" href="/get_list?appn=bank_regn">General Information</a><br/>
-                <a class="no-link-style" href="/get_list?appn=bank_regn">
-                    <img src="/static/images/info.png" alt="General Information">
-                </a>
-                <ul class="appn-list">
-                    <li><a href="#">MI</a></li>
-                    <li><a href="#">Job Instructions</a></li>
-                </ul>
-            </div>
-        </div>
-            </div>
     </div>
 </div>
 {% endblock %}

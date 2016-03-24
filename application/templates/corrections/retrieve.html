@@ -7,6 +7,19 @@
 
 {% block maincontent %}
 
+<div class="breadcrumb">
+    <ol>
+        <li><a href="/">Home</a></li>
+        <li><a href="/internal">Internal</a></li>
+        <li class="breadcrumb-no-arrow"><span>Corrections</span></li>
+    </ol>
+</div>
+
+<div class="spacer-5"></div>
+<div class="grid-row" >
+
+
+{% set side_nav_int = 'active' %}
 {% include "includes/side_nav.html" %}
 
     <div class="col nine">
@@ -44,6 +57,7 @@
         </form>
         </div>
     </div>
+</div>
 <script>
         $(document).ready(function () {
         //called when key is down
