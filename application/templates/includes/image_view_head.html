@@ -10,6 +10,11 @@
 
     function updateNav() {
         document.getElementById('page_nav_text').textContent = "Page " + ( page + 1 ) + " of";
+        if (jQuery('#next_image').text() == 'Next') {
+            jQuery('#next_image').text('Previous');
+        } else {
+            jQuery('#next_image').text('Next');
+        }
     }
 
 

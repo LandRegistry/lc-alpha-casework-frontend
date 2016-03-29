@@ -359,7 +359,15 @@ body {
     float: right;
     font-family: Roboto;
     color: #666;
-    margin-top: 10px;
+    margin-top: 0px;
+    margin-bottom: 10px;
+}
+
+#next_image {
+    float: right;
+    display:block;
+    width:70px;
+    margin-left:10px;
 }
 
 #zoom_button {
