@@ -44,6 +44,7 @@
 
         {% elif details.estate_owner_ind == 'County Council' or
             details.estate_owner_ind == 'Parish Council' or
+            details.estate_owner_ind == 'Rural Council' or
             details.estate_owner_ind == 'Other Council' %}
 
         <div id="eo_validation">
@@ -353,7 +354,7 @@ function validate(sender) {
     var eo_type = document.getElementById('eo_type').value;
     if(eo_type === 'Private Individual') {
         allOK = validatePrivateInd();
-    } else if(eo_type === 'County Council' || eo_type === 'Parish Council' || eo_type === 'Other Council') {
+    } else if(eo_type === 'County Council' || eo_type === 'Parish Council' || eo_type === 'Other Council' || eo_type === 'Rural Council') {
         allOK = validateCouncil();
     } else if(eo_type === 'Development Corporation' || eo_type === 'Other') {
         allOK = validateCorpOther();
