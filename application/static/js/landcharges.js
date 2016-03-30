@@ -41,3 +41,19 @@
 
 		return allOK;
 	}
+
+	 function removeRequired(obj){
+
+		// identify the parent form
+		parent_form = jQuery(obj).closest('form');
+
+		// loop through all child elements of the parent form and remove the required attribute to allow application to be
+		// stored regardless of what has been entered.
+
+		str = '#' + parent_form.attr("id") + ' *';   // should evaluate to something like this: #form_name *
+		jQuery(str).each(function() {
+				jQuery(this).removeAttr( "required" );
+				jQuery(this).removeAttr( "aria-required" );
+			}
+		);
+	}

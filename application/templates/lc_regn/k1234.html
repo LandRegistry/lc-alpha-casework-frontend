@@ -2,6 +2,7 @@
 {% block page_specific_head %}
 
 {% include 'includes/lc_head.html' %}
+
 {% endblock %}
 
 {% block maincontent %}
@@ -41,7 +42,7 @@
             <br/>
 
 
-            <input id="store" type="submit" name="store" value="Return to this application later" class="link-button-16"/>
+            <input id="store" type="submit" onclick="javascript:removeRequired(this)" name="store" value="Return to this application later" class="link-button-16"/>
         </div>
 
         <div id="reject_application_dlg" role="dialog" style="display: none;">
@@ -98,7 +99,6 @@
         showFields();
         setupCountyAutocomplete("#county_0");
     });
-
 
 
 
