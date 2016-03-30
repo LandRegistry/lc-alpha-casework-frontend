@@ -348,7 +348,7 @@ def application_start(application_type, appn_id, form):
     if stored:
         if application_type == 'cancel':
             logging.debug('---- RESTORING A CANCELLATION ----')
-            date = re.sub("(\d{4})\-(\d\d)\-(\d\d)", r"\3/\2/\1", application_json['application_data']['reg_date'])
+            date = re.sub("(\d{4})\-(\d+)\-(\d\d)", r"\3/\2/\1", application_json['application_data']['reg_date'])
             return render_template('cancellation/canc_retrieve.html', application_type=application_type,
                                    images=session['images'], current_page=0,
                                    reg_no=application_json['application_data']['regn_no'], reg_date=date,
