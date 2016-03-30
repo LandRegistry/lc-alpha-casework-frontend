@@ -137,6 +137,7 @@ function cancelDelete() {
 function confirmDelete()
 {
     jQuery('#cancel_form').attr('action', "/rejection");
+    jQuery('#cancel_form').attr('onsubmit', "");
     jQuery("#cancel_form").submit();
 }
 

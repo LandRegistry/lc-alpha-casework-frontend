@@ -67,20 +67,20 @@
                 {% endif %}
                 <div class="form">
                     <label class="form-label" for="wob_ref">WOB reference number</label><br/>
-                    <input class="form-textfield width-50" autofocus  aria-required="true" type="text" id="wob_ref" name="wob_ref" value="{% if 'wob' in data %}{{data.wob.number}}{% endif %}"/>
+                    <input class="form-textfield width-50" autofocus  type="text" id="wob_ref" name="wob_ref" value="{% if 'wob' in data %}{{data.wob.number}}{% endif %}"/>
                 </div>
                 <div class="form">
                     <label class="form-label" for="wob_date">Date of registration</label><br/>
-                    <input class="form-textfield width-50 dateEntry"  aria-required="true" type="text" placeholder="dd/mm/yyyy" id="wob_date" name="wob_date" value="{% if 'wob' in data%}{{data.wob.date}}{% endif %}"/>
+                    <input class="form-textfield width-50 dateEntry"  type="text" placeholder="dd/mm/yyyy" id="wob_date" name="wob_date" value="{% if 'wob' in data%}{{data.wob.date}}{% endif %}"/>
                 </div>
                 <div class="spacer-40"></div>
                 <div class="form">
                     <label class="form-label" for="pab_ref">PAB reference number</label><br/>
-                    <input class="form-textfield width-50"  aria-required="true" type="text" id="pab_ref" name="pab_ref" value="{% if 'pab' in data%}{{data.pab.number}}{% endif %}"/>
+                    <input class="form-textfield width-50"  type="text" id="pab_ref" name="pab_ref" value="{% if 'pab' in data%}{{data.pab.number}}{% endif %}"/>
                 </div>
                 <div class="form">
                     <label class="form-label" for="pab_date">Date of registration</label><br/>
-                    <input class="form-textfield width-50 dateEntry"   aria-required="true" type="text" placeholder="dd/mm/yyyy" id="pab_date" name="pab_date" value="{% if 'pab' in data%}{{data.pab.date}}{% endif %}"/>
+                    <input class="form-textfield width-50 dateEntry"  type="text" placeholder="dd/mm/yyyy" id="pab_date" name="pab_date" value="{% if 'pab' in data%}{{data.pab.date}}{% endif %}"/>
                 </div>
             </div>
             <div class="spacer-40"></div>
@@ -165,7 +165,7 @@
 		var allOK = true;
 		jQuery('.error_text').hide();
 
-		if (jQuery('#wob_date').val() != ''){
+		if (jQuery('#wob_ref').val() != ''){
 		    if (isValidDate(jQuery('#wob_date').val()) == false) {
 				jQuery('<p class="error_text"><strong>Invalid date please re-enter</strong>'+
 				'</p>').insertBefore(jQuery('#wob_date'));
@@ -173,7 +173,7 @@
 			}
 		}
 
-		if (jQuery('#pab_date').val() != ''){
+		if (jQuery('#pab_ref').val() != ''){
 		    if (isValidDate(jQuery('#pab_date').val()) == false) {
 				jQuery('<p class="error_text"><strong>Invalid date please re-enter</strong>' +
 				'</p>').insertBefore(jQuery('#pab_date'));

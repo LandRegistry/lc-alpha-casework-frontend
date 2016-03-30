@@ -133,6 +133,7 @@
         function confirmDelete()
         {
             jQuery('#renewal_form').attr('action', "/rejection");
+            jQuery('#renewal_form').attr('onsubmit', "");
             jQuery("#renewal_form").submit();
         }
 

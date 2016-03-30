@@ -137,6 +137,7 @@
         function confirmDelete()
         {
             jQuery('#rectify_form').attr('action', "/rejection");
+            jQuery('#rectify_form').attr('onsubmit', "");
             jQuery("#rectify_form").submit();
         }
 
