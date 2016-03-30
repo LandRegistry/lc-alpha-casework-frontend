@@ -33,7 +33,7 @@
             {% include 'includes/confirmation_correction.html' %}
         {% endif %}
         <div class="grid-row">
-        <form id="correct_form" action="/get_original" method="POST">
+        <form id="correct_form" action="/get_original" method="POST" onsubmit="return validateDate(this);">
             <div id="errorBlock" {% if error_msg|length > 0 %}class="error_block"{% endif %}>
                 {% if error_msg|length > 0 %}
                 <span id="key_no_error" class="error_text">{{error_msg}}</span>

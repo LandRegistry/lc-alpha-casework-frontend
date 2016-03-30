@@ -51,7 +51,7 @@
 <div class="grid-row">
     <div class="col four" id="form_panel">
         <!-- ///////////////////////////////// data entry form ///////////////////////////////// -->
-        <form id="cancel_form" action="/get_details" method="POST">
+        <form id="cancel_form" action="/get_details" method="POST" onsubmit="return validateDate(this);">
             <div class="spacer-40"></div>
             <h2 class="text-24-bold">Retrieve original</h2>
             <div class="spacer-10"></div>

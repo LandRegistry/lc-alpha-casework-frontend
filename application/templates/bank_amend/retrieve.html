@@ -57,7 +57,7 @@
 <div class="grid-row">
     <div class="col four" id="form_panel">
         <!-- ///////////////////////////////// data entry form ///////////////////////////////// -->
-        <form id="get_banks" action="/get_original_bankruptcy" method="POST">
+        <form id="get_banks" action="/get_original_bankruptcy" method="POST" onsubmit="return validateDates(this);">
             <div class="spacer-40"></div>
             <h2 class="text-24-bold">Retrieve original(s)</h2>
             <div class="spacer-10"></div>
@@ -132,6 +132,7 @@
         });
     });
 
+
     function showDelete() {
         $("#reject_application_dlg").dialog({
             modal:true,
@@ -158,6 +159,30 @@
         jQuery('#get_banks').attr('action', "/rejection");
         jQuery("#get_banks").submit();
     }
+
+    function validateDates(obj){
+		// loop through all dateEntry fields and check for valid date
+		var allOK = true;
+		jQuery('.error_text').hide();
+
+		if (jQuery('#wob_date').val() != ''){
+		    if (isValidDate(jQuery('#wob_date').val()) == false) {
+				jQuery('<p class="error_text"><strong>Invalid date please re-enter</strong>'+
+				'</p>').insertBefore(jQuery('#wob_date'));
+				allOK = false;
+			}
+		}
+
+		if (jQuery('#pab_date').val() != ''){
+		    if (isValidDate(jQuery('#pab_date').val()) == false) {
+				jQuery('<p class="error_text"><strong>Invalid date please re-enter</strong>' +
+				'</p>').insertBefore(jQuery('#pab_date'));
+				allOK = false;
+			}
+		}
+
+		return allOK;
+	}
 </script>
 
 

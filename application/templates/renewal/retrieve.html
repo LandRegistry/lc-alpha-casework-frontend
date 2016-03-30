@@ -47,13 +47,14 @@
 <div class="grid-row">
     <div class="col four" id="form_panel">
         <!-- ///////////////////////////////// data entry form ///////////////////////////////// -->
-        <form id="renewal_form" action="/get_details" method="POST">
+        <form id="renewal_form" action="/get_details" method="POST" onsubmit="return validateDate(this);">
             <div class="spacer-40"></div>
             <h2 class="text-24-bold">Retrieve original</h2>
             <div class="spacer-10"></div>
-            {% if error_msg|length > 0 %}
-            <p class="error"><strong>{{error_msg}}</strong></p>
-            {% endif %}
+            <div id="errorBlock" {% if error_msg|length > 0 %}class="error_block"{% endif %}>
+                {% if error_msg|length > 0 %}
+                <p class="error_text"><strong>{{error_msg}}</strong></p>
+                {% endif %}
             <div class="form">
                 <label class="form-label" for="reg_no">Original reference number</label><br/>
                 <input class="form-textfield width-50" required  aria-required="true" type="text" id="reg_no" name="reg_no" value="{{reg_no}}"/>
@@ -61,6 +62,7 @@
             <div class="form">
                 <label class="form-label" for="reg_date">Date of registration</label><br/>
                 <input class="form-textfield width-50 dateEntry"  required  aria-required="true" type="text" placeholder="dd/mm/yyyy" id="reg_date" name="reg_date" value="{{reg_date}}"/>
+            </div>
             </div>
             <div class="spacer-40"></div>
             <input id="continue" type="submit" value="Continue" class="form-button"/>
@@ -133,6 +135,7 @@
             jQuery('#renewal_form').attr('action', "/rejection");
             jQuery("#renewal_form").submit();
         }
+
     </script>
 </div>
 
