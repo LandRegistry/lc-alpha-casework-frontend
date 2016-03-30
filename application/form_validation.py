@@ -66,7 +66,7 @@ def validateDevCorp(data):
     if word_match is None:
         return False
 
-    return Truee
+    return True
 
 
 #([('loc_auth', ''), ('loc_auth_area', ''), ('county_0', 'Denbighshire'), ('complex_name', ''), ('continue', 'Continue'),
