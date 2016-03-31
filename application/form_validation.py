@@ -62,7 +62,7 @@ def validateOtherCouncil(data):
 
 
 def validateDevCorp(data):
-    word_match = re.match(".*(DEVELOPMENT).*", data['loc_auth'], re.IGNORECASE)
+    word_match = re.match(".*(DEVELOPMENT).*", data['other_name'], re.IGNORECASE)
     if word_match is None:
         return False
 
