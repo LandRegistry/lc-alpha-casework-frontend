@@ -121,19 +121,47 @@
                 <span class="text-16 col six">{{details.occupation}}</span>
             </div>
         </div>
-        {% if 'additional_info' in details %}
-            {% if details.additional_info != '' %}
+        {% if 'additional_info' in details and details.additional_info != ''
+         or 'chargee' in details.update_registration or 'instrument' in details.update_registration%}
             <div class="grid-row">
                 <div class="text-19-gray col ten">Additional information</div>
                 <div class="col two"><a href="rectification_capture" id="change_addl_info">Change</a></div>
             </div>
-            <div class="grid-row-padded-line bottom-line">
+        {% endif %}
+        {% if 'additional_info' in details and details.additional_info != '' %}
+
+            <div class="grid-row-padded-line ">
                 <span class="text-16-bold col four">Information</span>
                 <span class="col two">&nbsp;</span>
                 <span class="text-16 col six">{{details.additional_info}}</span>
             </div>
-            {% endif %}
         {% endif %}
+                {% if 'update_registration' in details
+                    and 'chargee' in details.update_registration %}
+                    <div class="grid-row-padded-line">
+                        <span class="text-16-bold col four">Chargee from</span>
+                        <span class="col two">&nbsp;</span>
+                        <span class="text-16 col six">{{details.update_registration.chargee.original}}</span>
+                    </div>
+                    <div class="grid-row-padded-line bottom-line">
+                        <span class="text-16-bold col four">Chargee to</span>
+                        <span class="col two">&nbsp;</span>
+                        <span class="text-16 col six">{{details.update_registration.chargee.current}}</span>
+                    </div>
+                {% endif %}
+                {% if 'update_registration' in details
+                and 'instrument' in details.update_registration %}
+                    <div class="grid-row-padded-line">
+                        <span class="text-16-bold col four">DOI date from</span>
+                        <span class="col two">&nbsp;</span>
+                        <span class="text-16 col six">{{details.update_registration.instrument.original}}</span>
+                    </div>
+                    <div class="grid-row-padded-line bottom-line">
+                        <span class="text-16-bold col four">DOI date to</span>
+                        <span class="col two">&nbsp;</span>
+                        <span class="text-16 col six">{{details.update_registration.instrument.current}}</span>
+                    </div>
+                {% endif %}
         <div class="spacer-30"></div>
         <div>
             <a href="rectification_customer" id="continue" class="form-button no-link-style">Continue</a>

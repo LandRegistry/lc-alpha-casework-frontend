@@ -3,8 +3,10 @@ from application.logformat import format_message
 from application.headers import get_headers
 from flask import Response, session
 from application.http import http_put
+from datetime import datetime
 import logging
 import json
+
 
 def convert_response_data(api_data):
 
@@ -21,7 +23,7 @@ def convert_response_data(api_data):
     return result
 
 
-def convert_class_of_charge(type):
+def convert_class_of_charge(type_of_charge):
     charge_class = {
         "C1": "C(I)", "C2": "C(II)", "C3": "C(III)", "C4": "C(IV)",
         "D1": "D(I)", "D2": "D(II)", "D3": "D(III)",
@@ -29,10 +31,10 @@ def convert_class_of_charge(type):
         "D(I)": "D1", "D(II)": "D2", "D(III)": "D3"
     }
 
-    if type in charge_class:
-        return charge_class.get(type)
+    if type_of_charge in charge_class:
+        return charge_class.get(type_of_charge)
     else:
-        return type
+        return type_of_charge
 
 
 def get_additional_info(response):
@@ -114,7 +116,15 @@ def get_party_name(data):
 def submit_lc_rectification(form):
 
     rect_details = (session['rectification_details'])
-    cust_address = form['customer_address'].replace("\r\n", ", ").strip()
+    if 'instrument' in rect_details['update_registration']:
+        orig_date = rect_details['update_registration']['instrument']['original']
+        orig_date = datetime.strptime(orig_date, "%d/%m/%Y").strftime("%Y-%m-%d")
+        cur_date = rect_details['update_registration']['instrument']['current']
+        cur_date = datetime.strptime(cur_date, "%d/%m/%Y").strftime("%Y-%m-%d")
+
+        rect_details['update_registration']['instrument']['original'] = orig_date
+        rect_details['update_registration']['instrument']['current'] = cur_date
+
     application = {'update_registration': {'type': 'Rectification'},
                    'applicant': {
                        'key_number': form['key_number'],

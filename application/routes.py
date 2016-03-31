@@ -932,14 +932,9 @@ def rectification_capture():
             entered_fields["update_registration"]["instrument"] = {"original": "", "current": ""}
 
             if "orig_data" in request.form:
-                orig_date = datetime.strptime(request.form["orig_data"], "%d/%m/%Y").strftime("%Y-%m-%d")
-                entered_fields["update_registration"]["instrument"]["original"] = orig_date
+                entered_fields["update_registration"]["instrument"]["original"] = request.form["doi_orig_data"]
             if "current_data" in request.form:
-                current_date = datetime.strptime(request.form["current_data"], "%d/%m/%Y").strftime("%Y-%m-%d")
-                entered_fields["update_registration"]["instrument"]["current"] = current_date
-
-            # entered_fields["additional_info"] = "Date of instrument changed from " + \
-            #                                     request.form["orig_data"] + " to " + request.form["current_data"]
+                entered_fields["update_registration"]["instrument"]["current"] = request.form["doi_current_data"]
 
         elif request.form["addl_info_type"] == "chargee_details":
             entered_fields["update_registration"]["chargee"] = {"original":"", "current": ""}
@@ -947,9 +942,6 @@ def rectification_capture():
                 entered_fields["update_registration"]["chargee"]["original"] = request.form["orig_data"]
             if "current_data" in request.form:
                 entered_fields["update_registration"]["chargee"]["current"] = request.form["current_data"]
-            #entered_fields["additional_info"] = session['orig_addl_info']
-            # entered_fields["additional_info"] = "Chargees changed from " + \
-            #                                     request.form["orig_data"] + " to " + request.form["current_data"]
 
     if len(result['error']) == 0:
         session['rectification_details'] = entered_fields
