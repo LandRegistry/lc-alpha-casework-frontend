@@ -1,43 +1,18 @@
         <script>
         function toggle_boxes(){
-            jQuery('#instrument_date_placeholder').replaceWith($(
-                '<div id="date_of_instrument_placeholder"  class="grid-row">'+
-                    '<div class="spacer-5"></div>' +
-                        '<div class="grid-row">'+
-                        '<div class="col five">'+
-                            '<label class="form-label" for="orig_data">from &nbsp;&nbsp;</label>' +
-                            '<input class="form-textfield dateEntry width-50" type="text" id="orig_data" ' +
-                            'placeholder="dd/mm/yyyy" maxlength="10" ' +
-                            'name="orig_data" value="{{session.orig_data}}"/>'+
-                        '</div>' +
-                        '<div class="col five">' +
-                            '<label class="form-label"  for="current_data">to &nbsp;&nbsp;</label>' +
-                            '<input class="form-textfield dateEntry width-50" type="text" id="current_data"  ' +
-                            'placeholder="dd/mm/yyyy" maxlength="10" ' +
-                            'name="current_data" value="{{session.current_data}}"/>' +
-                        '</div>' +
-                        '</div></div>'));
-
                 if (document.getElementById('date_of_instrument').checked)
                 {
-                    jQuery('#orig_data').replaceWith('<input class="form-textfield dateEntry width-50" type="text" ' +
-                        'id="orig_data" required ' +
-                                'placeholder="dd/mm/yyyy" maxlength="10" ' +
-                                'name="orig_data" value="{{session.orig_data}}"/>');
-                    jQuery('#current_data').replaceWith('<input class="form-textfield dateEntry width-50" type="text"' +
-                        ' id="current_data" required ' +
-                                'placeholder="dd/mm/yyyy" maxlength="10" ' +
-                                'name="current_data" value="{{session.current_data}}"/>');
-
-                    }
-                else
+                    jQuery('#date_of_instrument_info').show();
+                    jQuery('#chargee_info').hide();
+                }
+                else if (document.getElementById('chargee').checked)
                 {
-                    jQuery('#orig_data').replaceWith('<input class="form-textfield dateEntry width-50" type="text" id="orig_data" ' +
-                                'placeholder="chargees" required ' +
-                                'name="orig_data" value="{{session.orig_data}}"/>');
-                    jQuery('#current_data').replaceWith('<input class="form-textfield dateEntry width-50" type="text" id="current_data" ' +
-                                'placeholder="chargees" required ' +
-                                'name="current_data" value="{{session.current_data}}"/>');
+                    jQuery('#date_of_instrument_info').hide();
+                    jQuery('#chargee_info').show();
+                }
+                else {
+                    jQuery('#date_of_instrument_info').hide();
+                    jQuery('#chargee_info').hide();
                 }
         }
         </script>
@@ -46,27 +21,74 @@
 
         <h2 class="text-24-bold">Additional information</h2>
         <div class="spacer-10"></div>
-        <p class="text-indent">Are there changes to the: </p>
+        <p class="text-indent">Are there changes to : </p>
         <div class="spacer-10"></div>
 
 
-        <div class="grid-row">
-        <div class="col form-control-div-large ">
-        <label class="form-label" for="chargee">
-            <input id="chargee" type="radio" name="addl_info_type" value="chargee_details" onclick="toggle_boxes()">
-            Chargee details
-        </label>
-        </div>
-        <div class="spacer-10"></div>
-        <div class="col form-control-div-large ">
-            <label class="form-label" for="date_of_instrument">
-                <input id="date_of_instrument" type="radio" name="addl_info_type" value="date_of_instrument" onclick="toggle_boxes()">
-                 Date of instrument
+        <div class="form">
+            <div id="chargee_selector" class="form-control-div-xlarge width-50">
+            <label class="form-label" for="chargee">
+                <input id="chargee" type="radio" name="addl_info_type" value="chargee_details" onclick="toggle_boxes()">
+                Chargee details
             </label>
         </div>
-        <div class="spacer-10"></div>
-        <div id="instrument_date_placeholder"></div>
+        <div id="chargee_info"  class="form hide">
+            <div class="spacer-15"></div>
+            <div class="col one">&nbsp;</div>
+            <div class="col two">
+                <label class="form-label" for="orig_data">from &nbsp;&nbsp;</label>
+            </div>
+            <div class="col nine">
+                <input class="form-textfield" type="text" id="orig_data"
+                       placeholder="chargee"
+                       name="orig_data" value="{{session.orig_data}}"/>
+            </div>
+            <div class="spacer-5"></div>
+            <div class="col one">&nbsp;</div>
+            <div class="col two">
+                <label class="form-label" for="current_data">to</label>
+            </div>
+            <div class="col nine">
+                <input class="form-textfield" type="text" id="current_data"
+                       placeholder="chargee"
+                       name="current_data" value="{{session.current_data}}"/>
+            </div>
+            <div class="spacer-5"></div>
         </div>
-
-
-        <div class="spacer-30"></div>
+        <div class="spacer-10"></div>
+        <div class="form">
+            <div id="doi_selector" class="form-control-div-xlarge width-50">
+                <label class="form-label" for="date_of_instrument">
+                    <input id="date_of_instrument" type="radio" name="addl_info_type" value="date_of_instrument" onclick="toggle_boxes()">
+                     Date of instrument
+                </label>
+            </div>
+        </div>
+        <div id="date_of_instrument_info"  class="form hide">
+            <div class="spacer-15"></div>
+                <div class="col one">&nbsp;</div>
+                <div class="col two">
+                    <label class="form-label" for="doi_orig_data">from &nbsp;&nbsp;</label>
+                </div>
+                <div class="col four">
+                    <input class="form-textfield dateEntry width-75" type="text" id="doi_orig_data"
+                    placeholder="dd/mm/yyyy" maxlength="10"
+                    name="orig_data" value="{{session.orig_data}}"/>
+                </div>
+                <div class="col one">
+                    <label class="form-label" for="doi_current_data">to</label>
+                </div>
+                <div class="col four">
+                    <input class="form-textfield dateEntry width-75" type="text" id="doi_current_data"
+                    placeholder="dd/mm/yyyy" maxlength="10"
+                    name="current_data" value="{{session.current_data}}"/>
+                </div>
+            <div class="spacer-5"></div>
+        </div>
+        <div class="form-control-div-xlarge width-50">
+            <label class="form-label" for="none_addl_info">
+                <input id="none_addl_info" checked type="radio" name="addl_info_type"  value="none" onclick="toggle_boxes()">
+                No additional information
+            </label>
+        </div>
+        </div>
