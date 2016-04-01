@@ -22,7 +22,7 @@
 <div class="grid-row">
     <div class="col four" id="form_panel">
         <!-- ///////////////////////////////// data entry form ///////////////////////////////// -->
-        <form id="rectify_form" action="/rectification_capture" method="POST">
+        <form id="rectify_form" action="/rectification_capture" method="POST" onsubmit="return validateDates(this);">
             <div class="spacer-40"></div>
             <h2 class="text-24-bold">Original registration details</h2>
             <p class="text-indent">Please rectify information by over-keying as necessary</p>
@@ -100,7 +100,46 @@
         {% endif %}
         showFields();
         setupCountyAutocomplete("#county_0");
+
+        //called when key is down
+            $(".dateEntry").bind("keydown", function (event) {
+                if ( event.keyCode == 46 || event.keyCode == 8 || event.keyCode == 9 || event.keyCode == 27 || event.keyCode == 13 ||
+                    // Allow: Ctrl+A
+                    (event.keyCode == 65 && event.ctrlKey === true) ||
+                    // Allow: home, end, left, right
+                    (event.keyCode >= 35 && event.keyCode <= 39) ||
+                    // allow forward slash
+                    (event.keyCode == 191) || (event.keyCode == 111)) {
+                    // let it happen, don't do anything
+                    return;
+                } else {
+                    // Ensure that it is a number and stop the keypress
+                    if (event.shiftKey || (event.keyCode < 48 || event.keyCode > 57) && (event.keyCode < 96 || event.keyCode > 105 )) {
+                        event.preventDefault();
+                    }
+                }
+            });
     });
+
+    function validateDates(obj){
+		// loop through all dateEntry fields and check for valid date
+		var allOK = true;
+		jQuery('.error_text').hide();
+
+		if (jQuery('#date_of_instrument').is(':checked')){
+		    if (isValidDate(jQuery('#doi_orig_data').val()) == false) {
+				jQuery('<p class="error_text"><strong>Invalid date please re-enter</strong>'+
+				'</p>').insertAfter(jQuery('#doi_selector'));
+				allOK = false;
+			} else if (isValidDate(jQuery('#doi_current_data').val()) == false) {
+				jQuery('<p class="error_text"><strong>Invalid date please re-enter</strong>'+
+				'</p>').insertAfter(jQuery('#doi_selector'));
+				allOK = false;
+			}
+		}
+		return allOK;
+	}
+
 
 </script>
 

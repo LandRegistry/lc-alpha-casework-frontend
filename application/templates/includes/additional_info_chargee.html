@@ -1,5 +1,6 @@
         <script>
         function toggle_boxes(){
+                jQuery('.error_text').hide();
                 if (document.getElementById('date_of_instrument').checked)
                 {
                     jQuery('#date_of_instrument_info').show();
@@ -91,7 +92,6 @@
                 class="form hide"
             {% endif %}
             >
-            <div class="spacer-15"></div>
                 <div class="col one">&nbsp;</div>
                 <div class="col two">
                     <label class="form-label" for="doi_orig_data">from &nbsp;&nbsp;</label>
