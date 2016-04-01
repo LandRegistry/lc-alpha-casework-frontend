@@ -151,11 +151,11 @@ function validate(sender) {
             </div>
             <div class="grid-row-padded-line">
                 <label for="forename_1" class="text-16-bold col five">Forename</label>
-                <input type="text" autofocus id="forename_1" class="col six form-textfield-verify"/>
+                <input type="text" autocomplete="off" autofocus id="forename_1" class="col six form-textfield-verify"/>
             </div>
             <div class="grid-row-padded-line">
                 <label for="surname_1" class="text-16-bold col five">Surname</label>
-                <input type="text" class="col six form-textfield-verify" id="surname_1"/>
+                <input type="text" autocomplete="off" class="col six form-textfield-verify" id="surname_1"/>
             </div>
             {% if party_data[0].names|length > 1 %}
             <span id="aka_error" class="hide">[placeholder]</span>
@@ -169,11 +169,11 @@ function validate(sender) {
             <input type="hidden" id="orig_surname_{{loop.index}}" value="{{name.private.surname}}"/>
                 <div class="grid-row-padded-line">
                     <label for="forename_1" class="text-16-bold col five">Forename</label>
-                    <input type="text" autofocus id="forename_{{loop.index }}" class="col six form-textfield-verify"/>
+                    <input type="text" autocomplete="off" autofocus id="forename_{{loop.index }}" class="col six form-textfield-verify"/>
                 </div>
                 <div class="grid-row-padded-line">
                     <label for="surname_1" class="text-16-bold col five">Surname</label>
-                    <input type="text" class="col six form-textfield-verify" id="surname_{{ loop.index }}"/>
+                    <input type="text" autocomplete="off" class="col six form-textfield-verify" id="surname_{{ loop.index }}"/>
                 </div>
             {% endif %}
             {% endfor %}
@@ -210,7 +210,7 @@ function validate(sender) {
             <div id="court_field" {%  if court_data.legal_body|length == 0 %}class="hide"{%  endif %}>
                 <div class="grid-row-padded-line">
                     <label for="court_name" class="text-16-bold col five">Court name</label>
-                    <input type="text" id="court_name" class="col six form-textfield-verify"/>
+                    <input type="text" autocomplete="off" id="court_name" class="col six form-textfield-verify"/>
                 </div>
             </div>
             <div class="grid-row-padded-line bottom-line">
