@@ -40,30 +40,35 @@
 
     <div class="col nine text-19">
     <div class="spacer-20"></div>
-    <div class="col six">
-        <h2 class="text-24-bold"> &nbsp;&nbsp;K22 reprint</h2>
-        <form id="page_form_K22" action="/reprints" method="POST" onsubmit="return validateDates(jQuery('#content'));">
-            <input type="hidden" id="k22_reprint_type" name="reprint_type" value="k22"/>
-            <div class="column-form width-75" id="K22_form_panel">
+        <div class="col six">
+            <h2 class="text-24-bold"> &nbsp;&nbsp;K22 reprint</h2>
 
-                <div class="spacer-20"></div>
+            <form id="page_form_K22" action="/reprints" method="POST" onsubmit="return validateDates(jQuery('#content'));">
+                <input type="hidden" id="k22_reprint_type" name="reprint_type" value="k22"/>
+                <div class="column-form width-75" id="K22_form_panel">
 
-                <div class="form">
-                    <label class="form-label" for="k22_reg_no">Registration number</label>
-                    <input class="form-textfield" id="k22_reg_no" name="k22_reg_no" type="text" autofocus>
+                    <div class="spacer-20"></div>
+                    <div id="errorBlock" {% if curr_data.k22_error_message|length > 0 %}class="error_block"{% endif %}>
+                    {% if curr_data.k22_error_message|length > 0 %}
+                            <span id="regn_error" class="error_text">{{curr_data.k22_error_message}}</span>
+                    {% endif %}
+                    <div class="form">
+                        <label class="form-label" for="k22_reg_no">Registration number</label>
+                        <input class="form-textfield" id="k22_reg_no" name="k22_reg_no" type="text" autofocus value="{{curr_data.k22_reg_no}}">
+                    </div>
+                    <div class="form">
+                        <label class="form-label" for="k22_reg_date">Date of registration</label><br/>
+                        <input class="form-textfield width-75 dateEntry"  required  aria-required="true" type="text"
+                               placeholder="dd/mm/yyyy" id="k22_reg_date" name="k22_reg_date" value="{{curr_data.k22_reg_date}}"/>
+                    </div>
+                    <div class="spacer-15"></div>
+
+                    <div class="spacer-30"></div>
+
+                    <input id="k22_search" type="submit" value="Search" class="form-button">
                 </div>
-                <div class="form">
-                    <label class="form-label" for="k22_reg_date">Date of registration</label><br/>
-                    <input class="form-textfield width-75 dateEntry"  required  aria-required="true" type="text"
-                           placeholder="dd/mm/yyyy" id="k22_reg_date" name="k22_reg_date" value="{{k22_reg_date}}"/>
-                </div>
-                <div class="spacer-15"></div>
-
-                <div class="spacer-30"></div>
-
-                <input id="k22_search" type="submit" value="Search" class="form-button">
-            </div>
-        </form>
+            </form>
+        </div>
     </div>
     <div class="col six">
         <h2 class="text-24-bold"> &nbsp;&nbsp;K17/K18 reprint</h2>

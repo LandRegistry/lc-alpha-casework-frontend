@@ -1437,6 +1437,10 @@ def generate_reprints():
     curr_data = {"reprint_selected": True,
                  "estate_owner": {"private": {"forenames": [], "surname": ""}, "company": "",
                                   "local": {'name': "", "area": ""}, "complex": {"name": ""}}}
+    if "k22_reg_no" in request.form:
+        curr_data["k22_reg_no"] = request.form["k22_reg_no"]
+    if "k22_reg_date" in request.form:
+        curr_data["k22_reg_date"] = request.form["k22_reg_date"]
     if 'reprint_type' not in request.form:
         return Response('no reprint type supplied', status=400)
     reprint_type = request.form["reprint_type"]
@@ -1448,8 +1452,13 @@ def generate_reprints():
         url = app.config['CASEWORK_API_URL'] + '/reprints/'
         url += 'registration?registration_no=' + registration_no + '&registration_date=' + registration_date
         response = http_get(url)
-        return send_file(BytesIO(response.content), as_attachment=False, attachment_filename='reprint.pdf',
-                         mimetype='application/pdf')
+        if response.status_code == 200:
+            return send_file(BytesIO(response.content), as_attachment=False, attachment_filename='reprint.pdf',
+                             mimetype='application/pdf')
+        else:
+            curr_data["k22_error_message"] = response.text
+            return render_template('reprint.html', curr_data=curr_data)
+
     elif reprint_type == 'k18':
         if 'estateOwnerTypes' not in request.form:
             return Response('no estate owner type supplied', status=400)
