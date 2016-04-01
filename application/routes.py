@@ -1478,18 +1478,16 @@ def generate_reprints():
         if result['name_type'] == 'Private Individual':
             res['name'] = result['estate_owner']['private']['forenames'] + ' ' + \
                 result['estate_owner']['private']['surname']
-        elif result['name_type'] == 'Local Authority':
+        elif result['name_type'] in ['Local Authority', 'County Council', 'Rural Council', 'Other Council'] :
             res['name'] = result['estate_owner']['local']['name'] + ' - ' + \
                 result['estate_owner']['local']['area']
-        elif result['name_type'] == 'Company':
+        elif result['name_type'] == 'Limited Company':
             res['name'] = result['estate_owner']['company']
-        elif result['name_type'] == 'Complex':
+        elif result['name_type'] == 'Complex Name':
             res['name'] = result['estate_owner']['complex']['name']
-        elif result['name_type'] == 'Other':
+        elif result['name_type'] in ['Other', 'Development Corporation']:
             res['name'] = result['estate_owner']['other']
         results['results'].append(res)
-    #  return Response(json.dumps(data), status=200, mimetype="application/json")
-    #  return Response(json.dumps(results), status=200, mimetype="application/json")
     return render_template('reprint_k18_results.html', curr_data=results)
 
 
