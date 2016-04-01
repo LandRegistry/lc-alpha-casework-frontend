@@ -5,7 +5,9 @@
         jQuery('#customer_address').val("");
         jQuery('#error_msg').html("");
         if (obj.value.length > 7) {
-            jQuery('#error_msg').html("Key number must not exceed a length of 7 characters");
+            jQuery('#key_no_errorBlock').addClass("error_block");
+            jQuery('#key_no_error').html("Key number must not exceed a length of 7 characters");
+            jQuery('#key_no_error').show();
         } else if (obj.value.length == 7) {
             jQuery.ajax( {
 
