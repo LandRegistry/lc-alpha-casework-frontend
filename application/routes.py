@@ -912,7 +912,7 @@ def get_registration_details():
                                transaction=session['transaction_id'])
     else:
         data = response.json()
-        session['orig_addl_info'] = data['additional_info']  # A terrible hack, but we need to keep it somewhere
+        # session['orig_addl_info'] = data['additional_info']  # A terrible hack, but we need to keep it somewhere
         # and hidden fields aren't being POSTed. Lovely.
 
         template = ''
@@ -941,7 +941,7 @@ def rectification_capture():
     entered_fields = build_lc_inputs(request.form)
 
     entered_fields['class'] = result['class']
-    entered_fields["additional_info"] = session['orig_addl_info']
+    # entered_fields["additional_info"] = session['orig_addl_info']
 
     if "addl_info_type" in request.form:
         entered_fields["update_registration"] = {"type": "Rectification"}
