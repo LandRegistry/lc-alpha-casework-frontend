@@ -11,14 +11,17 @@ def authenticate(username, password):
 
     if host == 'DEV':  # Fake LDAP specified, allow any old nonsense on login (DEV ONLY!)
         logging.warning('No authentication host specified - using DEV mode')
-        return {'username': username, 'display_name': 'Test User', 'primary_group': 'blah'}
+        if username == 'print':
+            return {'username': username, 'display_name': 'Printer', 'primary_group': os.getenv('REPRINT_GROUP', 'reprint_group')}
+        else:
+            return {'username': username, 'display_name': 'Test User', 'primary_group': os.getenv('CASEWORKER_GROUP', 'casework_group')}
 
     port = os.getenv('LDAP_PORT', "")
     domain = os.getenv('LDAP_DOMAIN', "")
     search_dn = os.getenv('LDAP_SEARCH_DN', "")
-    caseworkers = os.getenv('CASEWORKER_GROUP', 'not specified')
+    caseworkers = os.getenv('CASEWORKER_GROUP', 'casework_group')
     administrators = os.getenv('ADMIN_GROUP', 'not specified')
-    reprinters = os.getenv('REPRINT_GROUP', 'not specified')
+    reprinters = os.getenv('REPRINT_GROUP', 'reprint_group')
 
     try:
         logging.info('Logging in %s', username)

@@ -38,9 +38,14 @@
 {% endblock %}
 {% block maincontent %}
 <div class="spacer-50"></div>
+
+{% if session['role'] == 'normal' %}
 <div class="grid-row">
+
     <div class="col three">
+
         <div class="service-box">
+
             <a class="no-link-style text-19-bold" href="/get_list?appn=bank">Bankruptcy Applications</a><br/>
             <a class="no-link-style" href="/get_list?appn=bank">
                 <img src="/static/images/pig.png" alt="Bankruptcy Applications">
@@ -50,80 +55,102 @@
                 <li><a href="/get_list?appn=bank_amend">Amendments (<span id="bank_amend">{{data['bank_amend']}}</span>)</a></li>
                 <li><a href="/get_list?appn=bank_stored">Stored (<span id="bank_stored">{{data['bank_stored']}}</span>)</a></li>
             </ul>
-        </div>
-    </div>
-    <div class="col three">
-            <div class="service-box">
-                <a class="no-link-style text-16-bold" href="/get_list?appn=lc">Land Charge Applications</a><br/>
-                <a class="no-link-style" href="/get_list?appn=lc">
-                    <img src="/static/images/land.png" alt="Land Charge Applications">
-                </a>
 
-                <ul class="appn-list">
-                    <li><a href="/get_list?appn=lc_regn">Registrations (<span id="lc_regn">{{data['lc_regn']}}</span>)</a></li>
-                    <li><a href="/get_list?appn=lc_pn">Priority Notices (<span id="lc_prio_not">{{data['lc_pn']}}</span>)</a></li>
-                    <li><a href="/get_list?appn=lc_rect">Rectifications (<span id="lc_rect">{{data['lc_rect']}}</span>)</a></li>
-                    <li><a href="/get_list?appn=lc_renewal">Renewals (<span id="lc_renewal">{{data['lc_renewal']}}</span>)</a></li>
-                    <li><a href="/get_list?appn=lc_stored">Stored (<span id="lc_stored">{{data['lc_stored']}}</span>)</a></li>
-                </ul>
-            </div>
+        </div>
+    </div>
+
+    <div class="col three">
+        <div class="service-box">
+            <a class="no-link-style text-16-bold" href="/get_list?appn=lc">Land Charge Applications</a><br/>
+            <a class="no-link-style" href="/get_list?appn=lc">
+                <img src="/static/images/land.png" alt="Land Charge Applications">
+            </a>
+
+            <ul class="appn-list">
+                <li><a href="/get_list?appn=lc_regn">Registrations (<span id="lc_regn">{{data['lc_regn']}}</span>)</a></li>
+                <li><a href="/get_list?appn=lc_pn">Priority Notices (<span id="lc_prio_not">{{data['lc_pn']}}</span>)</a></li>
+                <li><a href="/get_list?appn=lc_rect">Rectifications (<span id="lc_rect">{{data['lc_rect']}}</span>)</a></li>
+                <li><a href="/get_list?appn=lc_renewal">Renewals (<span id="lc_renewal">{{data['lc_renewal']}}</span>)</a></li>
+                <li><a href="/get_list?appn=lc_stored">Stored (<span id="lc_stored">{{data['lc_stored']}}</span>)</a></li>
+            </ul>
+        </div>
     </div>
     <div class="col three" >
-            <div class="service-box">
-                <a class="no-link-style text-16-bold" href="/get_list?appn=search">Searches</a><br/>
-                <a class="no-link-style" href="/get_list?appn=search">
-                    <img src="/static/images/search.png" alt="Searches">
-                </a>
-                <ul class="appn-list">
-                    <li><a href="/get_list?appn=search_full">Full Search (<span id="search_full">{{data['search_full']}}</span>)</a></li>
-                    <li><a href="/get_list?appn=search_bank">Bankruptcy Search (<span id="search_bank">{{data['search_bank']}}</span>)</a></li>
-                </ul>
-            </div>
+        <div class="service-box">
+            <a class="no-link-style text-16-bold" href="/get_list?appn=search">Searches</a><br/>
+            <a class="no-link-style" href="/get_list?appn=search">
+                <img src="/static/images/search.png" alt="Searches">
+            </a>
+            <ul class="appn-list">
+                <li><a href="/get_list?appn=search_full">Full Search (<span id="search_full">{{data['search_full']}}</span>)</a></li>
+                <li><a href="/get_list?appn=search_bank">Bankruptcy Search (<span id="search_bank">{{data['search_bank']}}</span>)</a></li>
+            </ul>
+        </div>
     </div>
     <div class="col three" >
+        <div class="service-box">
+            <a class="no-link-style text-19-bold" href="/get_list?appn=canc">Cancellations</a><br/>
+            <a class="no-link-style" href="/get_list?appn=canc">
+                <img src="/static/images/cancel.png" alt="Cancellations">
+            </a>
+            <ul class="appn-list">
+                <li><a href="/get_list?appn=cancel">Cancellations (<span id="cancel">{{data['canc']}}</span>)</a></li>
+                <li><a href="/get_list?appn=cancel_stored">Stored (<span id="cancel_stored">{{data['canc_stored']}}</span>)</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="grid-row">
+        <div class="spacer-15"></div>
+        <div class="col three" >
+            &nbsp;
+        </div>
+        <div class="col three" >
             <div class="service-box">
-                <a class="no-link-style text-19-bold" href="/get_list?appn=canc">Cancellations</a><br/>
-                <a class="no-link-style" href="/get_list?appn=canc">
-                    <img src="/static/images/cancel.png" alt="Cancellations">
+                <a class="no-link-style text-19-bold" href="/enquiries">Enquiries</a><br/>
+                <a class="no-link-style" href="/enquiries">
+                    <img src="/static/images/enquiries.png" alt="Enquiries">
                 </a>
                 <ul class="appn-list">
-                    <li><a href="/get_list?appn=cancel">Cancellations (<span id="cancel">{{data['canc']}}</span>)</a></li>
-                    <li><a href="/get_list?appn=cancel_stored">Stored (<span id="cancel_stored">{{data['canc_stored']}}</span>)</a></li>
+                    <li><a href="/get_list?appn=unknown">Unidentified Applications (<span id="unknown">{{data['unknown']}}</span>)</a></li>
+                    <li><a href="/reprints">Reprint</a></li>
                 </ul>
             </div>
+        </div>
+        <div class="col three" >
+            <div class="service-box">
+                <a class="no-link-style text-19-bold" href="/internal">Internal Functions</a><br/>
+                <a class="no-link-style" href="/internal">
+                    <img src="/static/images/image_man.png" alt="Internal Functions">
+                </a>
+                <ul class="appn-list">
+                    <li><a href="/correction">Corrections</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="col three" >
+            &nbsp;
+        </div>
     </div>
-        <div class="grid-row">
-            <div class="spacer-15"></div>
-            <div class="col three" >
-                &nbsp;
-            </div>
-            <div class="col three" >
-                <div class="service-box">
-                    <a class="no-link-style text-19-bold" href="/enquiries">Enquiries</a><br/>
-                    <a class="no-link-style" href="/enquiries">
-                        <img src="/static/images/enquiries.png" alt="Enquiries">
-                    </a>
-                    <ul class="appn-list">
-                        <li><a href="/get_list?appn=unknown">Unidentified Applications (<span id="unknown">{{data['unknown']}}</span>)</a></li>
-                        <li><a href="/reprints">Reprint</a></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="col three" >
-                <div class="service-box">
-                    <a class="no-link-style text-19-bold" href="/internal">Internal Functions</a><br/>
-                    <a class="no-link-style" href="/internal">
-                        <img src="/static/images/image_man.png" alt="Internal Functions">
-                    </a>
-                    <ul class="appn-list">
-                        <li><a href="/correction">Corrections</a></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="col three" >
-                &nbsp;
+
+</div>
+
+{% endif %}
+
+{% if session['role'] == 'reprint' %}
+    <div class="grid-row">
+        <div class="spacer-15"></div>
+        <div class="col three" >
+            <div class="service-box">
+                <a class="no-link-style text-19-bold" href="/enquiries">Enquiries</a><br/>
+                <a class="no-link-style" href="/enquiries">
+                    <img src="/static/images/enquiries.png" alt="Enquiries">
+                </a>
+                <ul class="appn-list">
+                    <li><a href="/reprints">Reprint</a></li>
+                </ul>
             </div>
         </div>
     </div>
-</div>
+{% endif %}
+
 {% endblock %}
