@@ -1726,3 +1726,25 @@ def get_ajax_error(message_id, status):
     error = msg
 
     return render_template('error.html', error_msg=error, status=500)
+
+
+# These routes added because I have a nasty feeling they'll be needed
+@app.route('/forms/<size>', methods=["POST"])
+def create_documents(size):
+    uri = app.config['CASEWORK_API_URL'] + '/forms/' + size
+    response = http_post(uri, data=request.data, params=request.args, headers=request.headers)
+    return Response(response.text, status=response.status_code, mimetype='application/json')
+
+
+@app.route('/forms/<int:doc_id>', methods=["GET"])
+def get_document_info(doc_id):
+    uri = app.config['CASEWORK_API_URL'] + '/forms/' + str(doc_id)
+    response = http_get(uri, headers=get_headers())
+    return Response(response.text, status=response.status_code, mimetype='application/json')
+
+
+@app.route('/applications', methods=['POST'])
+def create_application():
+    uri = app.config['CASEWORK_API_URL'] + '/applications'
+    response = http_post(uri, data=request.data, params=request.args, headers=request.headers)
+    return Response(response.text, status=response.status_code, mimetype='application/json')
