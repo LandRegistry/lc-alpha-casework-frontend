@@ -14,7 +14,10 @@ $(document).ready(function() {
 
     // make table row clickable link to child href
     $('#work-list tbody tr').click(function() {
+        $(this).prop('onclick',null).off('click');
+
         var href = $(this).find("a").attr("href");
+
         if(href) {
             window.location = href;
             clearInterval(refresh_screen);
