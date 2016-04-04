@@ -41,7 +41,7 @@ def authenticate(username, password):
         if len(admin_match) > 0:
             primary_group = administrators
         elif len(casework_match) > 0:
-            primary_group = casework_match
+            primary_group = caseworkers
         elif len(print_match) > 0:
             primary_group = reprinters
 
