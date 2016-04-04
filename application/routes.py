@@ -1762,3 +1762,25 @@ def create_application():
     uri = app.config['CASEWORK_API_URL'] + '/applications'
     response = http_post(uri, data=request.data, params=request.args, headers=request.headers)
     return Response(response.text, status=response.status_code, mimetype='application/json')
+
+
+@app.route('/health', methods=['GET'])
+def health():
+    result = {
+        'status': 'OK',
+        'dependencies': {}
+    }
+    url = app.config['CASEWORK_API_URL'] + '/health'
+    status = 200
+    try:
+        response = http_get(url)
+        data = response.json()
+        status = response.status_code
+        result["dependencies"] = data["dependencies"]
+        result["dependencies"]["casework-api"] = str(response.status_code) + " " + data["status"]
+        result["status"] = "OK"
+    except Exception as e:
+        result["dependencies"]["casework-api"] = "Error"
+        result["status"] = "Error"
+        result["error"] = str(e)
+    return Response(json.dumps(result), status=status, mimetype='application/json')
