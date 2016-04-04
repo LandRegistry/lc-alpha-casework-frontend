@@ -187,7 +187,11 @@
             <span class="text-16 col seven">{{details.district}}</span>
         </div>
         <div class="grid-row-padded-line bottom-line">
-            <span class="text-16-bold col five">Short description</span>
+            {% if application.application_type != 'K2' %}
+                <span class="text-16-bold col five">Short description</span>
+            {% else %}
+                <span class="text-16-bold col five">Known as</span>
+            {% endif %}
             <span class="text-16 col seven">{{details.short_description}}</span>
         </div>
 

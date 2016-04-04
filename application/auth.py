@@ -41,10 +41,11 @@ def authenticate(username, password):
         if len(admin_match) > 0:
             primary_group = administrators
         elif len(casework_match) > 0:
-            primary_group = casework_match
+            primary_group = caseworkers
         elif len(print_match) > 0:
             primary_group = reprinters
 
+        logging.debug("Primary group is %s", primary_group)
         if display_name != '' and primary_group != '':
             return {'username': username, 'display_name': str(display_name), 'primary_group': primary_group}  # User authenticated and we know their role
         else:
