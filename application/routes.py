@@ -109,8 +109,13 @@ def requires_auth_role(roles):
                 logging.debug("Login required")
                 return go_to_login()
 
-            if 'role' not in session or session['role'] not in roles:
-                logging.debug("Invalid role for method")
+            if 'role' not in session:
+                logging.debug("No role allocated")
+                return go_to_home()
+
+            if session['role'] not in roles:
+                logging.debug("Invalid role %s for method", session['role'])
+                logging.debug(roles)
                 return go_to_home()
 
             return func(*args, **kwargs)

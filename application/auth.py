@@ -45,6 +45,7 @@ def authenticate(username, password):
         elif len(print_match) > 0:
             primary_group = reprinters
 
+        logging.debug("Primary group is %s", primary_group)
         if display_name != '' and primary_group != '':
             return {'username': username, 'display_name': str(display_name), 'primary_group': primary_group}  # User authenticated and we know their role
         else:
