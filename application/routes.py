@@ -158,16 +158,25 @@ def login_as_user():
         session['username'] = auth['username']
         session['display_name'] = auth['display_name']
 
-        roles = {
-            os.getenv('CASEWORKER_GROUP', 'casework_group'): 'normal',
-            os.getenv('ADMIN_GROUP', 'not specified'): 'normal',
-            os.getenv('REPRINT_GROUP', 'reprint_group'): 'reprint'
-        }
+        # roles = {
+        #     os.getenv('CASEWORKER_GROUP', 'casework_group'): 'normal',
+        #     os.getenv('ADMIN_GROUP', 'not specified'): 'normal',
+        #     os.getenv('REPRINT_GROUP', 'reprint_group'): 'reprint'
+        # }
 
-        if auth['primary_group'] in roles:
-            session['role'] = roles[auth['primary_group']]
+        if auth['primary_group'] == os.getenv('CASEWORKER_GROUP', 'casework_group'):
+            session['role'] = 'normal'
+        elif auth['primary_group'] == os.getenv('ADMIN_GROUP', 'not specified'):
+            session['role'] = 'normal'
+        elif auth['primary_group'] == os.getenv('REPRINT_GROUP', 'reprint_group'):
+            session['role'] = 'reprint'
         else:
             session['role'] = 'none'
+
+        # if auth['primary_group'] in roles:
+        #     session['role'] = roles[auth['primary_group']]
+        # else:
+        #     session['role'] = 'none'
 
         logging.info(format_message("Login successful for user %s"), username)
         return redirect("/")
