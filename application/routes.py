@@ -6,6 +6,7 @@ import logging
 import json
 import re
 import requests
+import os
 from application.form_validation import validate_land_charge
 from application.land_charge import build_lc_inputs, build_customer_fee_inputs, submit_lc_registration
 from application.search import process_search_criteria
@@ -27,24 +28,7 @@ import traceback
 def error_handler(err):
     logging.error('========== Error Caught ===========')
     logging.error(err)
-    # logging.debug('-----------------')
-    # logging.error(str(err))
-    # logging.error(format_message('Unhandled exception: ' + str(err)))
-    # call_stack = traceback.format_exc()
-    #
-    # lines = call_stack.split("\n")
-    # for line in lines[0:-2]:
-    #     logging.error(format_message(line))
-    #
-    # error = {
-    #     "type": "F",
-    #     "stack": lines[0:-2]
-    # }
-    #
-    # try:
-    #     error["dict"] = json.loads(str(err))
-    # except ValueError as e:
-    #     error["text"] = str(err)
+
     call_stack = traceback.format_exc()
     lines = call_stack.split("\n")[0:-2]
     edata = None
@@ -102,6 +86,10 @@ def go_to_login():
     return redirect("/login")
 
 
+def go_to_home():
+    return redirect("/")
+
+
 def requires_auth(f):
     @wraps(f)
     def decorated(*args, **kwargs):
@@ -113,14 +101,31 @@ def requires_auth(f):
     return decorated
 
 
+def requires_auth_role(roles):
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            if 'username' not in session or session['username'] == '':
+                logging.debug("Login required")
+                return go_to_login()
+
+            if 'role' not in session or session['role'] not in roles:
+                logging.debug("Invalid role for method")
+                return go_to_home()
+
+            return func(*args, **kwargs)
+        return wrapper
+    return decorator
+
+
 def clear_session():
     username = session['username']
     display = session['display_name']
-    group = session['group']
+    role = session['role']
     session.clear()
     session['username'] = username
     session['display_name'] = display
-    session['group'] = group
+    session['role'] = role
 
 
 @app.route("/logout", methods=["GET"])
@@ -152,7 +157,18 @@ def login_as_user():
     else:
         session['username'] = auth['username']
         session['display_name'] = auth['display_name']
-        session['group'] = auth['primary_group']
+
+        roles = {
+            os.getenv('CASEWORKER_GROUP', 'casework_group'): 'normal',
+            os.getenv('ADMIN_GROUP', 'not specified'): 'normal',
+            os.getenv('REPRINT_GROUP', 'reprint_group'): 'reprint'
+        }
+
+        if auth['primary_group'] in roles:
+            session['role'] = roles[auth['primary_group']]
+        else:
+            session['role'] = 'none'
+
         logging.info(format_message("Login successful for user %s"), username)
         return redirect("/")
 
@@ -174,7 +190,7 @@ def index():
 
 
 @app.route('/get_list', methods=["GET"])
-@requires_auth
+@requires_auth_role(['normal'])
 def get_list():
     if 'transaction_id' in session:
         logging.info(format_message('End transaction %s'), session['transaction_id'])
@@ -277,7 +293,7 @@ def get_list_of_applications(requested_worklist, result, error_msg):
 
 
 @app.route('/application_start/<application_type>/<appn_id>/<form>', methods=["GET"])
-@requires_auth
+@requires_auth_role(['normal'])
 def application_start(application_type, appn_id, form):
 
     url = app.config['CASEWORK_API_URL'] + '/applications/' + appn_id
@@ -365,7 +381,7 @@ def application_start(application_type, appn_id, form):
 
 
 @app.route('/retrieve_new_reg', methods=["GET"])
-@requires_auth
+@requires_auth_role(['normal'])
 def retrieve_new_reg():
     return redirect('/application_start/%s/%s/%s' % (session['application_type'], session['worklist_id'],
                     session['application_dict']['form']), code=302, Response=None)
@@ -374,7 +390,7 @@ def retrieve_new_reg():
 # ======Banks Registration routes===========
 
 @app.route('/check_court_details', methods=["POST"])
-@requires_auth
+@requires_auth_role(['normal'])
 def check_court_details():
 
     if request.form['submit_btn'] == 'No':
@@ -425,12 +441,13 @@ def check_court_details():
 
 
 @app.route("/debtor", methods=['GET'])
-@requires_auth
+@requires_auth_role(['normal'])
 def enter_debtor_details():
     return render_template('bank_regn/debtor.html', images=session['images'], current_page=0, data=session)
 
 
 @app.route('/associate_image', methods=['POST'])
+@requires_auth_role(['normal'])
 def associate_image():
     reg = {'reg_no': request.form['reg_no_assoc'],
            'date': request.form['date_assoc'],
@@ -456,7 +473,7 @@ def associate_image():
 
 
 @app.route('/process_debtor_details', methods=['POST'])
-@requires_auth
+@requires_auth_role(['normal'])
 def process_debtor_details():
     logging.debug('PROCESS DEBTOR DETAILS')
     logging.debug(request.form)
@@ -473,7 +490,7 @@ def process_debtor_details():
 
 
 @app.route('/bankruptcy_capture/<page>', methods=['GET'])
-@requires_auth
+@requires_auth_role(['normal'])
 def bankruptcy_capture(page):
     # For returning from verification screen
 
@@ -496,7 +513,7 @@ def bankruptcy_capture(page):
 
 
 @app.route('/submit_banks_registration', methods=['POST'])
-@requires_auth
+@requires_auth_role(['normal'])
 def submit_banks_registration():
 
     logging.info(format_message('submitting banks registration'))
@@ -534,7 +551,7 @@ def submit_banks_registration():
 # =============== Amendment routes ======================
 
 @app.route('/get_original_bankruptcy', methods=['POST'])
-@requires_auth
+@requires_auth_role(['normal'])
 def get_original_banks_details():
 
     curr_data = []
@@ -565,20 +582,20 @@ def get_original_banks_details():
 
 
 @app.route('/re_enter_registration', methods=['GET'])
-@requires_auth
+@requires_auth_role(['normal'])
 def re_enter_registration():
     return render_template('bank_amend/retrieve.html', images=session['images'], current_page=0,
                            data=session['curr_data'], application=session, transaction=session['transaction_id'])
 
 
 @app.route('/continue_amendment', methods=['POST'])
-@requires_auth
+@requires_auth_role(['normal'])
 def continue_amendment():
     return redirect('/view_original_details')
 
 
 @app.route('/view_original_details', methods=['GET'])
-@requires_auth
+@requires_auth_role(['normal'])
 def view_original_details():
     if session['application_type'] == 'correction':
         template = 'corrections/correct_details.html'
@@ -591,7 +608,7 @@ def view_original_details():
 
 
 @app.route('/remove_address/<int:addr>', methods=["POST"])
-@requires_auth
+@requires_auth_role(['normal'])
 def remove_address(addr):
 
     session['parties'] = get_debtor_details(request.form)
@@ -606,7 +623,7 @@ def remove_address(addr):
 
 
 @app.route('/process_amended_details', methods=['POST'])
-@requires_auth
+@requires_auth_role(['normal'])
 def process_amended_details():
     if 'store' in request.form:
         return store_application()
@@ -617,7 +634,7 @@ def process_amended_details():
 
 
 @app.route('/amendment_capture', methods=['GET'])
-@requires_auth
+@requires_auth_role(['normal'])
 def amendment_capture():
     # For returning from check screen
     party_data = {'parties': session['parties']}
@@ -632,7 +649,7 @@ def amendment_capture():
 
 
 @app.route('/amendment_key_no', methods=['GET'])
-@requires_auth
+@requires_auth_role(['normal'])
 def amendment_key_no():
     return render_template('bank_amend/key_no.html',
                            application_type=session['application_type'],
@@ -644,7 +661,7 @@ def amendment_key_no():
 
 
 @app.route('/submit_banks_amendment', methods=['POST'])
-@requires_auth
+@requires_auth_role(['normal'])
 def submit_banks_amendment():
     logging.info(format_message('submitting banks amendment'))
     key_number = request.form['key_number']
@@ -679,14 +696,14 @@ def submit_banks_amendment():
 
 #  Do we need to set the transaction id here for logging later?????
 @app.route('/correction', methods=['GET'])
-@requires_auth
+@requires_auth_role(['normal'])
 def start_correction():
     clear_session()
     return render_template("corrections/retrieve.html", reg_no="", reg_date="", result="")
 
 
 @app.route('/get_original', methods=['POST'])
-@requires_auth
+@requires_auth_role(['normal'])
 def get_original_details():
     session['application_type'] = 'correction'
     curr_data = []
@@ -717,14 +734,14 @@ def get_original_details():
 
 
 @app.route('/process_corrected_details', methods=['POST'])
-@requires_auth
+@requires_auth_role(['normal'])
 def process_corrected_details():
     session['parties'] = get_debtor_details(request.form)
     return render_template('corrections/check.html', data=session['parties'], transaction=session['transaction_id'])
 
 
 @app.route('/correction_capture', methods=['GET'])
-@requires_auth
+@requires_auth_role(['normal'])
 def correction_capture():
     # For returning from check screen
     party_data = {'parties': session['parties']}
@@ -737,7 +754,7 @@ def correction_capture():
 
 
 @app.route('/submit_banks_correction', methods=['POST'])
-@requires_auth
+@requires_auth_role(['normal'])
 def submit_banks_correction():
     logging.info(format_message('submitting banks correction'))
 
@@ -755,7 +772,7 @@ def submit_banks_correction():
 
 
 @app.route('/process_search_name/<application_type>', methods=['POST'])
-@requires_auth
+@requires_auth_role(['normal'])
 def process_search_name(application_type):
     process_search_criteria(request.form, application_type)
 
@@ -770,7 +787,7 @@ def process_search_name(application_type):
 
 
 @app.route('/back_to_search_name', methods=['GET'])
-@requires_auth
+@requires_auth_role(['normal'])
 def back_to_search_name():
     return render_template('searches/info.html', images=session['images'], application=session['application_dict'],
                            application_type=session['application_type'], current_page=0,
@@ -778,7 +795,7 @@ def back_to_search_name():
 
 
 @app.route('/submit_search', methods=['POST'])
-@requires_auth
+@requires_auth_role(['normal'])
 def submit_search():
     logging.info(format_message('Submitting submit search'))
     cust_address = request.form['customer_address'].replace("\r\n", ", ").strip()
@@ -828,14 +845,14 @@ def submit_search():
 
 # ======== Rectification routes =============
 @app.route('/start_rectification', methods=["GET"])
-@requires_auth
+@requires_auth_role(['normal'])
 def start_rectification():
     session['application_type'] = "rectify"
     return render_template('rectification/retrieve.html')
 
 
 @app.route('/get_details', methods=["POST"])
-@requires_auth
+@requires_auth_role(['normal'])
 def get_registration_details():
     application_type = session['application_type']
     multi_reg_class = ""
@@ -895,7 +912,7 @@ def get_registration_details():
                                transaction=session['transaction_id'])
     else:
         data = response.json()
-        session['orig_addl_info'] = data['additional_info']  # A terrible hack, but we need to keep it somewhere
+        # session['orig_addl_info'] = data['additional_info']  # A terrible hack, but we need to keep it somewhere
         # and hidden fields aren't being POSTed. Lovely.
 
         template = ''
@@ -915,7 +932,7 @@ def get_registration_details():
 
 
 @app.route('/rectification_capture', methods=['POST'])
-@requires_auth
+@requires_auth_role(['normal'])
 def rectification_capture():
     if 'store' in request.form:
         return store_application()
@@ -924,7 +941,7 @@ def rectification_capture():
     entered_fields = build_lc_inputs(request.form)
 
     entered_fields['class'] = result['class']
-    entered_fields["additional_info"] = session['orig_addl_info']
+    # entered_fields["additional_info"] = session['orig_addl_info']
 
     if "addl_info_type" in request.form:
         entered_fields["update_registration"] = {"type": "Rectification"}
@@ -958,7 +975,7 @@ def rectification_capture():
 
 
 @app.route('/rectification_capture', methods=['GET'])
-@requires_auth
+@requires_auth_role(['normal'])
 def return_to_rectification_amend():
     # For returning from check rectification screen
     return render_template('rectification/amend.html',
@@ -972,7 +989,7 @@ def return_to_rectification_amend():
 
 
 @app.route('/rectification_customer', methods=['GET'])
-@requires_auth
+@requires_auth_role(['normal'])
 def rectification_capture_customer():
     return render_template('rectification/customer.html', images=session['images'],
                            application=session['application_dict'],
@@ -981,7 +998,7 @@ def rectification_capture_customer():
 
 
 @app.route('/submit_rectification', methods=['POST'])
-@requires_auth
+@requires_auth_role(['normal'])
 def submit_rectification():
     logging.info(format_message('Submitting rectification'))
     response = submit_lc_rectification(request.form)
@@ -1001,7 +1018,7 @@ def submit_rectification():
 
 
 @app.route('/cancellation_customer', methods=['POST'])
-@requires_auth
+@requires_auth_role(['normal'])
 def cancellation_capture_customer():
     if 'store' in request.form:
         return store_application()
@@ -1021,7 +1038,7 @@ def cancellation_capture_customer():
 
 
 @app.route('/submit_cancellation', methods=['POST'])
-@requires_auth
+@requires_auth_role(['normal'])
 def submit_cancellation():
     logging.info(format_message('Submitting cancellation'))
     response = submit_lc_cancellation(request.form)
@@ -1041,7 +1058,7 @@ def submit_cancellation():
 
 
 @app.route('/renewal_customer', methods=['POST'])
-@requires_auth
+@requires_auth_role(['normal'])
 def renewal_capture_customer():
     if 'store' in request.form:
         return store_application()
@@ -1052,7 +1069,7 @@ def renewal_capture_customer():
 
 
 @app.route('/submit_renewal', methods=['POST'])
-@requires_auth
+@requires_auth_role(['normal'])
 def submit_renewal():
     form = request.form
     logging.info(format_message('Submitting renewal'))
@@ -1101,7 +1118,7 @@ def submit_renewal():
 
 
 @app.route('/land_charge_capture', methods=['POST'])
-@requires_auth
+@requires_auth_role(['normal'])
 def land_charge_capture():
     logging.debug(request.form)
 
@@ -1131,7 +1148,7 @@ def land_charge_capture():
 
 
 @app.route('/land_charge_capture', methods=['GET'])
-@requires_auth
+@requires_auth_role(['normal'])
 def get_land_charge_capture():
     # For returning from verification screen
     # session['page_template']
@@ -1147,7 +1164,7 @@ def get_land_charge_capture():
 
 
 @app.route('/land_charge_verification', methods=['GET'])
-@requires_auth
+@requires_auth_role(['normal'])
 def land_charge_verification():
     return render_template('lc_regn/verify.html', application_type=session['application_type'], data={},
                            images=session['images'], application=session['application_dict'],
@@ -1156,13 +1173,13 @@ def land_charge_verification():
 
 
 @app.route('/lc_verify_details', methods=['POST'])
-@requires_auth
+@requires_auth_role(['normal'])
 def lc_verify_details():
     return redirect('/conveyancer_and_fees', code=302, Response=None)
 
 
 @app.route('/conveyancer_and_fees', methods=['GET'])
-@requires_auth
+@requires_auth_role(['normal'])
 def conveyancer_and_fees():
     return render_template('lc_regn/customer.html', application_type=session['application_type'], data={},
                            images=session['images'], application=session['application_dict'],
@@ -1179,7 +1196,7 @@ def conveyancer_and_fees():
 
 
 @app.route('/lc_process_application', methods=['POST'])
-@requires_auth
+@requires_auth_role(['normal'])
 def lc_process_application():
     logging.info(format_message('Submitting LC registration'))
     customer_fee_details = build_customer_fee_inputs(request.form)
@@ -1212,7 +1229,7 @@ def lc_process_application():
 # ============== Common routes =====================
 
 @app.route('/confirmation', methods=['GET'])
-@requires_auth
+@requires_auth_role(['normal'])
 def confirmation():
     if 'regn_no' not in session:
         session['regn_no'] = []
@@ -1227,6 +1244,7 @@ def totals():
 
 
 @app.route('/rejection', methods=['POST'])
+@requires_auth_role(['normal'])
 def rejection():
     logging.info(format_message("Reject application"))
     appn_id = session['worklist_id']
@@ -1402,11 +1420,13 @@ def get_translated_county(county_name):
 
 
 @app.route('/internal', methods=['GET'])
+@requires_auth_role(['normal'])
 def internal():
     return render_template('work_list/internal.html')
 
 
 @app.route('/enquiries', methods=['GET'])
+@requires_auth_role(['normal'])
 def enquiries():
    # curr_data = {'reprint_selected': True, 'estate_owner': {'private': {"forenames": [], "surname": ""},
    #                                                         'local': {'name': "", "area": ""}, "complex": {"name": ""}}}
@@ -1418,6 +1438,7 @@ def enquiries():
 
 
 @app.route('/reprints', methods=['GET'])
+@requires_auth_role(['normal', 'reprint'])
 def reprints():
     curr_data = {'reprint_selected': True, 'estate_owner_ind': 'Private Individual',
                  'estate_owner': {'private': {"forenames": [], "surname": ""},
@@ -1433,10 +1454,15 @@ def reprints():
 
 
 @app.route('/reprints', methods=['POST'])
+@requires_auth_role(['normal', 'reprint'])
 def generate_reprints():
     curr_data = {"reprint_selected": True,
                  "estate_owner": {"private": {"forenames": [], "surname": ""}, "company": "",
                                   "local": {'name': "", "area": ""}, "complex": {"name": ""}}}
+    if "k22_reg_no" in request.form:
+        curr_data["k22_reg_no"] = request.form["k22_reg_no"]
+    if "k22_reg_date" in request.form:
+        curr_data["k22_reg_date"] = request.form["k22_reg_date"]
     if 'reprint_type' not in request.form:
         return Response('no reprint type supplied', status=400)
     reprint_type = request.form["reprint_type"]
@@ -1448,8 +1474,13 @@ def generate_reprints():
         url = app.config['CASEWORK_API_URL'] + '/reprints/'
         url += 'registration?registration_no=' + registration_no + '&registration_date=' + registration_date
         response = http_get(url)
-        return send_file(BytesIO(response.content), as_attachment=False, attachment_filename='reprint.pdf',
-                         mimetype='application/pdf')
+        if response.status_code == 200:
+            return send_file(BytesIO(response.content), as_attachment=False, attachment_filename='reprint.pdf',
+                             mimetype='application/pdf')
+        else:
+            curr_data["k22_error_message"] = response.text
+            return render_template('reprint.html', curr_data=curr_data)
+
     elif reprint_type == 'k18':
         if 'estateOwnerTypes' not in request.form:
             return Response('no estate owner type supplied', status=400)
@@ -1515,6 +1546,7 @@ def insert_complex_name(name, number):
 
 
 @app.route('/reclassify/<appn_id>', methods=['GET'])
+@requires_auth_role(['normal'])
 def get_reclassify_form(appn_id):
     clear_session()
     logging.info("Reclassify %s Application", appn_id)
@@ -1540,6 +1572,7 @@ def get_reclassify_form(appn_id):
 
 
 @app.route('/reclassify', methods=['POST'])
+@requires_auth_role(['normal'])
 def post_reclassify_form():
     appn_id = session['transaction_id']
     form_type = request.form['form_type']
@@ -1693,3 +1726,25 @@ def get_ajax_error(message_id, status):
     error = msg
 
     return render_template('error.html', error_msg=error, status=500)
+
+
+# These routes added because I have a nasty feeling they'll be needed
+@app.route('/forms/<size>', methods=["POST"])
+def create_documents(size):
+    uri = app.config['CASEWORK_API_URL'] + '/forms/' + size
+    response = http_post(uri, data=request.data, params=request.args, headers=request.headers)
+    return Response(response.text, status=response.status_code, mimetype='application/json')
+
+
+@app.route('/forms/<int:doc_id>', methods=["GET"])
+def get_document_info(doc_id):
+    uri = app.config['CASEWORK_API_URL'] + '/forms/' + str(doc_id)
+    response = http_get(uri, headers=get_headers())
+    return Response(response.text, status=response.status_code, mimetype='application/json')
+
+
+@app.route('/applications', methods=['POST'])
+def create_application():
+    uri = app.config['CASEWORK_API_URL'] + '/applications'
+    response = http_post(uri, data=request.data, params=request.args, headers=request.headers)
+    return Response(response.text, status=response.status_code, mimetype='application/json')
