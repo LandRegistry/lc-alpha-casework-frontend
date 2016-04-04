@@ -303,6 +303,7 @@ def application_start(application_type, appn_id, form):
     if stored:
         application_type = application_json['application_data']['application_type']
         form = application_json['application_data']['application_dict']['form']
+        stored_template = application_json['application_data']['page_template']
 
     # Lock application if not in session otherwise assume user has refreshed the browser after select an application
     if 'worklist_id' not in session:
@@ -352,7 +353,8 @@ def application_start(application_type, appn_id, form):
     # land charge input data required for validation on lc_regn/capture.html
     if 'register_details' in session:
         curr_data = session['register_details']
-
+    elif 'rectification_details' in session:
+        curr_data = session['rectification_details']
     else:
         curr_data = build_lc_inputs({})
 
@@ -362,6 +364,7 @@ def application_start(application_type, appn_id, form):
     logging.debug(json.dumps(application_json))
 
     if stored:
+        screen = 'capture'
         if application_type == 'cancel':
             logging.debug('---- RESTORING A CANCELLATION ----')
             date = re.sub("(\d{4})\-(\d+)\-(\d\d)", r"\3/\2/\1", application_json['application_data']['reg_date'])
@@ -370,10 +373,24 @@ def application_start(application_type, appn_id, form):
                                    reg_no=application_json['application_data']['regn_no'], reg_date=date,
                                    transaction=session['transaction_id'])
 
-        if application_type == 'bank_amend':  # Tiresome special case, skip the PAB WOB screen...
+        elif application_type == 'bank_amend':  # Tiresome special case, skip the PAB WOB screen...
             return render_template('bank_amend/amend_details.html', images=session['images'], current_page=0,
                                    data=session['original_regns'], application=session, screen='capture',
                                    transaction=session['transaction_id'])
+
+        elif application_type == 'lc_regn' or application_type == 'lc_pn':
+            if stored_template == 'lc_regn/k1234.html':
+                screen = 'capture'
+            elif stored_template == 'lc_regn/verify.html':
+                screen = 'verify'
+            else:
+                screen = 'customer'
+
+        return render_template(stored_template, application_type=application_type,
+                               data=application_json, images=images,
+                               application=application, details=curr_data,
+                               screen=screen, curr_data=curr_data, errors=[],
+                               current_page=0, transaction=session['transaction_id'])
 
     return render_template(template, application_type=application_type, data=application_json,
                            images=images, application=application, years=years,
@@ -854,7 +871,20 @@ def start_rectification():
 @app.route('/get_details', methods=["POST"])
 @requires_auth_role(['normal'])
 def get_registration_details():
+
     application_type = session['application_type']
+
+    if 'store' in request.form:
+        if application_type == 'lc_rect':
+            session['page_template'] = 'rectification/retrieve.html'
+        elif application_type == 'lc_renewal':
+            session['page_template'] = 'renewal/retrieve.html'
+        elif application_type == 'cancel':
+            session['page_template'] = 'cancellation/canc_retrieve.html'
+        else:
+            session['page_template'] = 'regn_retrieve.html'
+        return store_application()
+
     multi_reg_class = ""
     if "multi_reg_sel" in request.form:
         multi_reg_class = request.form['multi_reg_sel']
@@ -935,6 +965,7 @@ def get_registration_details():
 @requires_auth_role(['normal'])
 def rectification_capture():
     if 'store' in request.form:
+        session['page_template'] = 'rectification/amend.html'
         return store_application()
 
     result = validate_land_charge(request.form)
@@ -988,9 +1019,13 @@ def return_to_rectification_amend():
                            curr_data=session['rectification_details'], transaction=session['transaction_id'])
 
 
-@app.route('/rectification_customer', methods=['GET'])
+@app.route('/rectification_customer', methods=['POST'])
 @requires_auth_role(['normal'])
 def rectification_capture_customer():
+    if 'store' in request.form:
+        session['page_template'] = 'rectification/check.html'
+        return store_application()
+
     return render_template('rectification/customer.html', images=session['images'],
                            application=session['application_dict'],
                            application_type=session['application_type'], current_page=0,
@@ -1000,6 +1035,11 @@ def rectification_capture_customer():
 @app.route('/submit_rectification', methods=['POST'])
 @requires_auth_role(['normal'])
 def submit_rectification():
+
+    if 'store' in request.form:
+        session['page_template'] = 'rectification/customer.html'
+        return store_application()
+
     logging.info(format_message('Submitting rectification'))
     response = submit_lc_rectification(request.form)
 
@@ -1024,7 +1064,6 @@ def cancellation_capture_customer():
         return store_application()
 
     if "plan_attached" in request.form:
-        print("plan attached = ", request.form["plan_attached"])
         if request.form["plan_attached"] == 'on':
             session["plan_attached"] = 'true'
         else:
@@ -1175,6 +1214,10 @@ def land_charge_verification():
 @app.route('/lc_verify_details', methods=['POST'])
 @requires_auth_role(['normal'])
 def lc_verify_details():
+    if 'store' in request.form:
+        session['page_template'] = 'lc_regn/verify.html'
+        return store_application()
+
     return redirect('/conveyancer_and_fees', code=302, Response=None)
 
 
@@ -1198,6 +1241,10 @@ def conveyancer_and_fees():
 @app.route('/lc_process_application', methods=['POST'])
 @requires_auth_role(['normal'])
 def lc_process_application():
+    if 'store' in request.form:
+        session['page_template'] = 'lc_regn/customer.html'
+        return store_application()
+
     logging.info(format_message('Submitting LC registration'))
     customer_fee_details = build_customer_fee_inputs(request.form)
     response = submit_lc_registration(customer_fee_details)
@@ -1621,8 +1668,11 @@ def store_application():
 
         if 'part_cans_text' in request.form:
             session["part_cans_text"] = request.form["part_cans_text"]
-    else:
-        session['register_details'] = build_lc_inputs(request.form)
+    else:  # land charge application
+        if session['page_template'] == 'lc_regn/k1234.html' or session['page_template'] == 'rectification/amend.html':
+            session['register_details'] = build_lc_inputs(request.form)
+        elif session['page_template'] == 'rectification/check.html':
+            session['register_details'] = session['rectification_details']
 
     return render_template('store.html', application_type=session['application_type'],
                            images=session['images'],

@@ -22,11 +22,12 @@
 </div>
 <div class="spacer-40"></div>
 <div class="grid-row">
+    <form id="check_rectify" action="/rectification_customer" method="POST" onsubmit="return validateDate(this);">
     <div class="col four" id="form_panel">
 
         <div class="grid-row">
             <div class="text-19-gray col ten">Class of charge</div>
-            <div class="col two"><a href="rectification_capture" id="change_class">Change</a></div>
+            <div class="col two"><a href="/rectification_capture" id="change_class">Change</a></div>
         </div>
         <div class="grid-row-padded-line bottom-line">
             <span class="text-16-bold col four">Class and subclass</span>
@@ -47,7 +48,7 @@
 
         <div class="grid-row">
             <div class="text-19-gray col ten">Particulars of land affected</div>
-            <div class="col two"><a href="rectification_capture" id="change_particulars">Change</a></div>
+            <div class="col two"><a href="/rectification_capture" id="change_particulars">Change</a></div>
         </div>
         <div class="grid-row-padded-line">
             <span class="text-16-bold col four">County or unitary authority area</span>
@@ -68,7 +69,7 @@
         <div>
             <div class="grid-row">
                 <div class="text-19-gray col ten">Estate owner details</div>
-                <div class="col two"><a href="rectification_capture" id="change_name">Change</a></div>
+                <div class="col two"><a href="/rectification_capture" id="change_name">Change</a></div>
             </div>
             {% if details.estate_owner_ind == 'Private Individual' %}
                 <div class="grid-row-padded-line">
@@ -125,7 +126,7 @@
          or 'chargee' in details.update_registration or 'instrument' in details.update_registration%}
             <div class="grid-row">
                 <div class="text-19-gray col ten">Additional information</div>
-                <div class="col two"><a href="rectification_capture" id="change_addl_info">Change</a></div>
+                <div class="col two"><a href="/rectification_capture" id="change_addl_info">Change</a></div>
             </div>
         {% endif %}
         {% if 'additional_info' in details and details.additional_info != '' %}
@@ -164,10 +165,13 @@
                 {% endif %}
         <div class="spacer-30"></div>
         <div>
-            <a href="rectification_customer" id="continue" class="form-button no-link-style">Continue</a>
+            <input id="continue" type="submit" value="Continue" class="form-button"/>
+            <br/>
+            <input id="store" type="submit" name="store" value="Return to this application later" class="link-button-16"/>
         </div>
         <div class="spacer-40"></div>
     </div>
+    </form>
 
     <!-- ///////////////////////////////// end of data entry form ///////////////////////////////// -->
     <div class="col one"><p></p></div>

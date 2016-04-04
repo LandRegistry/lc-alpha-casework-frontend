@@ -13,7 +13,7 @@
 <div class="grid-row">
     <div class="col four" id="form_panel">
     <!-- ///////////////////////////////// data entry form ///////////////////////////////// -->
-    <form action="/lc_verify_details" method="POST" onsubmit="return validate(this);">
+    <form id="lc_verify" action="/lc_verify_details" method="POST" onsubmit="return validate(this);">
         
         <input type="hidden" id="orig_class" value="{{details.class}}"/>
         <input type="hidden" id="eo_type" value="{{details.estate_owner_ind}}"/>
@@ -26,7 +26,7 @@
             <span id="eo_error" class="hide">[placeholder]</span>
             <div class="grid-row">
                 <div class="text-19-gray col ten">Re-key estate owner details</div>
-                <div class="col two"><a href="land_charge_capture">Change</a></div>
+                <div class="col two"><a href="/land_charge_capture">Change</a></div>
             </div>
             <div class="grid-row-padded-line">
                 <label for="forename" class="text-16-bold col five">Forename</label>
@@ -53,7 +53,7 @@
             <span id="eo_error" class="hide">[placeholder]</span>
             <div class="grid-row">
                 <div class="text-19-gray col ten">Re-key estate owner details</div>
-                <div class="col two"><a href="land_charge_capture">Change</a></div>
+                <div class="col two"><a href="/land_charge_capture">Change</a></div>
             </div>
             <div class="grid-row-padded-line">
                 <label for="fullname" class="text-16-bold col five">Full Name</label>
@@ -76,7 +76,7 @@
             <span id="eo_error" class="hide">[placeholder]</span>
             <div class="grid-row">
                 <div class="text-19-gray col ten">Re-key estate owner details</div>
-                <div class="col two"><a href="land_charge_capture">Change</a></div>
+                <div class="col two"><a href="/land_charge_capture">Change</a></div>
             </div>
             <div class="grid-row-padded-line">
                 <label for="corpname" class="text-16-bold col five">Name</label>
@@ -94,7 +94,7 @@
             <span id="eo_error" class="hide">[placeholder]</span>
             <div class="grid-row">
                 <div class="text-19-gray col ten">Re-key estate owner details</div>
-                <div class="col two"><a href="land_charge_capture">Change</a></div>
+                <div class="col two"><a href="/land_charge_capture">Change</a></div>
             </div>
             <div class="grid-row-padded-line">
                 <label for="company" class="text-16-bold col five">Company Name</label>
@@ -111,7 +111,7 @@
         <div id="eo_validation">
             <div class="grid-row">
                 <div class="text-19-gray col ten">Estate owner details</div>
-                <div class="col two"><a href="land_charge_capture">Change</a></div>
+                <div class="col two"><a href="/land_charge_capture">Change</a></div>
             </div>
             <div class="grid-row-padded-line">
                 <span class="text-16-bold col five">Name</span>
@@ -136,7 +136,7 @@
             </span>
             <div class="grid-row">
                 <div class="text-19-gray col ten">Re-key class of charge</div>
-                <div class="col two"><a href="land_charge_capture">Change</a></div>
+                <div class="col two"><a href="/land_charge_capture">Change</a></div>
             </div>
             <div class="grid-row-padded-line bottom-line">
                 <label for="coc" class="text-16-bold col five">Class and subclass</label>
@@ -166,7 +166,7 @@
         {% if application.application_type != 'K6' %}
         <div class="grid-row">
             <div class="text-19-gray col ten">Priority Notice</div>
-            <div class="col two"><a href="land_charge_capture">Change</a></div>
+            <div class="col two"><a href="/land_charge_capture">Change</a></div>
         </div>
         <div class="grid-row-padded-line  bottom-line">
             <span class="text-16-bold col five">PN Number</span>
@@ -176,7 +176,7 @@
 
         <div class="grid-row">
             <div class="text-19-gray col ten">Particulars of land affected</div>
-            <div class="col two"><a href="land_charge_capture">Change</a></div>
+            <div class="col two"><a href="/land_charge_capture">Change</a></div>
         </div>
         <div class="grid-row-padded-line">
             <span class="text-16-bold col five">County or unitary authority area</span>
@@ -194,7 +194,7 @@
 
         <div class="grid-row">
             <div class="text-19-gray col ten">Additional information</div>
-            <div class="col two"><a href="land_charge_capture">Change</a></div>
+            <div class="col two"><a href="/land_charge_capture">Change</a></div>
         </div>
         <div class="grid-row-padded-line bottom-line">
             <span class="text-16-bold col five">Information</span>
@@ -204,6 +204,8 @@
         <div class="spacer-30"></div>
         <div>
             <input id="continue" type="submit" value="Continue" class="form-button"/>
+            <br/>
+            <input id="store" type="submit" onclick="javascript:removeValidation()" name="store" value="Return to this application later" class="link-button-16"/>
         </div>
     </form>
     </div>
@@ -380,6 +382,10 @@ function validate(sender) {
     }
 
     return allOK;
+}
+
+function removeValidation() {
+    jQuery('#lc_verify').removeAttr(" onsubmit ");
 }
 
 </script>

@@ -21,11 +21,13 @@
 <div class="grid-row">
     <div class="col four" id="form_panel">
         <!-- ///////////////////////////////// data entry form ///////////////////////////////// -->
-        <form action="/submit_rectification" onsubmit="return validateForm()" method="POST">
+        <form id="rect_customer" action="/submit_rectification" onsubmit="return validateForm()" method="POST">
             {% set customer_type = 'Conveyancer' %}
             {% include 'includes/customer_fields.html' %}
 
             <input id="submit" type="submit" class="form-button" value="Complete"/>
+            <br/>
+            <input id="store" type="submit" onclick="javascript:removeValidation(this)" name="store" value="Return to this application later" class="link-button-16"/>
 
         </form>
     </div>
@@ -38,6 +40,13 @@
     </div>
     <!-- ///////////////////////////////// End of image tool ///////////////////////////////// -->
 </div>
+
+<script>
+    function removeValidation(obj) {
+        jQuery('#rect_customer').removeAttr(" onsubmit ");
+        removeRequired(obj);
+    }
+</script>
 
 
 {% endblock %}
