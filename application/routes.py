@@ -298,7 +298,7 @@ def get_list_of_applications(requested_worklist, result, error_msg):
     # Courtesy of the Intenet; seems to fix the issue where /get_list isn't called on navigating
     # "back" from an input form. This was leaving applications locked.
     resp = make_response(render_template(return_page, worklist=appn_list, requested_list=requested_worklist,
-                           data=app_totals, error_msg=error_msg, result=result))
+                                         data=app_totals, error_msg=error_msg, result=result))
     resp.headers['X-UA-Compatible'] = 'IE=Edge,chrome=1'
     resp.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
     resp.headers['Pragma'] = 'no-cache'
@@ -446,7 +446,8 @@ def check_court_details():
                                        court_data=session['court_info'], party_data=session['parties'])
             else:
                 return redirect("/debtor")
-                #return render_template('bank_regn/debtor.html', images=session['images'], current_page=0, data=session)
+                # return render_template('bank_regn/debtor.html',
+                # images=session['images'], current_page=0, data=session)
         else:
             err = 'Failed to process bankruptcy registration application id:%s - Error code: %s' \
                   % (session['worklist_id'], str(response.status_code))
@@ -968,7 +969,7 @@ def rectification_capture():
                 entered_fields["update_registration"]["instrument"]["current"] = request.form["doi_current_data"]
 
         elif request.form["addl_info_type"] == "chargee_details":
-            entered_fields["update_registration"]["chargee"] = {"original":"", "current": ""}
+            entered_fields["update_registration"]["chargee"] = {"original": "", "current": ""}
             if "orig_data" in request.form:
                 entered_fields["update_registration"]["chargee"]["original"] = request.form["orig_data"]
             if "current_data" in request.form:
@@ -1228,7 +1229,6 @@ def lc_process_application():
         #     "stack": exception["stack"]
         # }
 
-
         # err = 'Failed to submit land charges registration application id: {} - Error code: {}; {}'.format(
         #      session['worklist_id'],
         #      str(response.status_code),
@@ -1442,13 +1442,13 @@ def internal():
 @app.route('/enquiries', methods=['GET'])
 @requires_auth_role(['normal'])
 def enquiries():
-   # curr_data = {'reprint_selected': True, 'estate_owner': {'private': {"forenames": [], "surname": ""},
-   #                                                         'local': {'name': "", "area": ""}, "complex": {"name": ""}}}
+    # curr_data = {'reprint_selected': True, 'estate_owner': {'private': {"forenames": [], "surname": ""},
+    #                                                       'local': {'name': "", "area": ""}, "complex": {"name": ""}}}
 
     data = get_totals()
     return render_template('work_list/enquiries.html', data=data)
 
-    #return render_template('work_list/enquiries.html', curr_data=curr_data)
+    # return render_template('work_list/enquiries.html', curr_data=curr_data)
 
 
 @app.route('/reprints', methods=['GET'])
@@ -1462,8 +1462,12 @@ def reprints():
 
         url = app.config['CASEWORK_API_URL'] + '/reprints/search?request_id=' + request_id
         response = http_get(url)
-        return send_file(BytesIO(response.content), as_attachment=False, attachment_filename='reprint.pdf',
+        if response.status_code == 200:
+            return send_file(BytesIO(response.content), as_attachment=False, attachment_filename='reprint.pdf',
                          mimetype='application/pdf')
+        else:
+            return render_template('error.html', error_msg=response.text, status=response.status_code)
+
     return render_template('reprint.html', curr_data=curr_data)
 
 
@@ -1491,6 +1495,8 @@ def generate_reprints():
         if response.status_code == 200:
             return send_file(BytesIO(response.content), as_attachment=False, attachment_filename='reprint.pdf',
                              mimetype='application/pdf')
+        elif response.status_code == 405:
+            return render_template('error.html', error_msg=response.text, status=405)
         else:
             curr_data["k22_error_message"] = response.text
             return render_template('reprint.html', curr_data=curr_data)
@@ -1523,7 +1529,7 @@ def generate_reprints():
         if result['name_type'] == 'Private Individual':
             res['name'] = result['estate_owner']['private']['forenames'] + ' ' + \
                 result['estate_owner']['private']['surname']
-        elif result['name_type'] in ['Local Authority', 'County Council', 'Rural Council', 'Other Council'] :
+        elif result['name_type'] in ['Local Authority', 'County Council', 'Rural Council', 'Other Council']:
             res['name'] = result['estate_owner']['local']['name'] + ' - ' + \
                 result['estate_owner']['local']['area']
         elif result['name_type'] == 'Limited Company':
@@ -1674,7 +1680,8 @@ def post_store():
 
     stored_data = {}
     for key in session:
-        if key not in ['username', 'display_name', 'appn_id', 'transaction_id']:  # Don't want to save this as part of the data
+        if key not in ['username', 'display_name', 'appn_id', 'transaction_id']:
+            # Don't want to save this as part of the data
             stored_data[key] = session[key]
 
     store_app = {
