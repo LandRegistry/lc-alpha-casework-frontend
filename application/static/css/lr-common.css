@@ -708,3 +708,14 @@ td.custom-3 {
   pading: 4px;
   width: 85%;
   }
+
+.wait-message {
+  color: #000000;
+  font-family: Roboto;
+  font-size: 16px;
+  font-weight: 700;
+  margin-top: 0px;
+  margin-bottom: 0px;
+  display:block;
+  padding:10px; 0px;
+}

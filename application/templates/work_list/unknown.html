@@ -3,6 +3,7 @@
 <link href="/static/datatables/css/jquery.dataTables.css" rel="stylesheet" />
 <link href="/static/datatables/css/dataTables.responsive.css" rel="stylesheet" />
 <script type="text/javascript" src="/static/datatables/js/jquery.dataTables.js"></script>
+<script type="text/javascript" src="/static/js/block-ui.js"></script>
 <script>
  HOST = window.location.protocol + "//" + window.location.hostname;
 
@@ -121,7 +122,7 @@ $(document).ready(function() {
                             {% else %}
                             {{n['application_type']}}
                             {% endif %}
-                            <a class="hide" id="appn_type{{loop.index}}" href="/reclassify/{{n['appn_id']}}">
+                            <a class="hide" id="appn_type{{loop.index}}" href="javascript:getApplication({{n['appn_id']}})">
                                 link required for clickable table row
                             </a>
                         </td>
@@ -134,4 +135,14 @@ $(document).ready(function() {
         {% endif %}
     </div>
 </div>
+<script>
+    function getApplication(id){
+		// Display loading message over work_list so user knows something is happening
+		$('#work-list').block({
+			message: '<h2 class="wait-message" >Loading application ....</h2>'
+		});
+		// Open selected application
+		window.location = "/reclassify/"+id;
+	}
+</script>
 {% endblock %}
