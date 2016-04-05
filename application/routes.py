@@ -317,7 +317,7 @@ def application_start(application_type, appn_id, form):
     if stored:
         application_type = application_json['application_data']['application_type']
         form = application_json['application_data']['application_dict']['form']
-        stored_template = application_json['application_data']['page_template']
+        # stored_template = application_json['application_data']['page_template']
 
     # Lock application if not in session otherwise assume user has refreshed the browser after select an application
     if 'worklist_id' not in session:
@@ -378,7 +378,7 @@ def application_start(application_type, appn_id, form):
     logging.debug(json.dumps(application_json))
 
     if stored:
-        screen = 'capture'
+        screen = ''
         if application_type == 'cancel':
             logging.debug('---- RESTORING A CANCELLATION ----')
             date = re.sub("(\d{4})\-(\d+)\-(\d\d)", r"\3/\2/\1", application_json['application_data']['reg_date'])
@@ -392,15 +392,15 @@ def application_start(application_type, appn_id, form):
                                    data=session['original_regns'], application=session, screen='capture',
                                    transaction=session['transaction_id'])
 
-        elif application_type == 'lc_regn' or application_type == 'lc_pn':
-            if stored_template == 'lc_regn/k1234.html':
-                screen = 'capture'
-            elif stored_template == 'lc_regn/verify.html':
-                screen = 'verify'
-            else:
-                screen = 'customer'
+        # elif application_type == 'lc_regn' or application_type == 'lc_pn':
+        #     if stored_template == 'lc_regn/k1234.html':
+        #         screen = 'capture'
+        #     elif stored_template == 'lc_regn/verify.html':
+        #         screen = 'verify'
+        #     else:
+        #         screen = 'customer'
 
-        return render_template(stored_template, application_type=application_type,
+        return render_template(template, application_type=application_type,
                                data=application_json, images=images,
                                application=application, details=curr_data,
                                screen=screen, curr_data=curr_data, errors=[],
@@ -423,6 +423,12 @@ def retrieve_new_reg():
 @app.route('/check_court_details', methods=["POST"])
 @requires_auth_role(['normal'])
 def check_court_details():
+
+    if 'store' in request.form:
+        application = {"legal_body":  request.form['court'],
+                       "legal_body_ref_no": request.form['ref_no']}
+        session['court_info'] = application
+        return store_application()
 
     if request.form['submit_btn'] == 'No':
         return render_template('bank_regn/assoc_image.html', images=session['images'], current_page=0,
@@ -509,12 +515,13 @@ def associate_image():
 def process_debtor_details():
     logging.debug('PROCESS DEBTOR DETAILS')
     logging.debug(request.form)
-    if 'store' in request.form:
-        return store_application()
 
     logging.info(format_message('processing debtor details'))
 
     session['parties'] = get_debtor_details(request.form)
+
+    if 'store' in request.form:
+        return store_application()
 
     return render_template('bank_regn/verify.html', images=session['images'], current_page=0,
                            court_data=session['court_info'], party_data=session['parties'],
@@ -526,10 +533,7 @@ def process_debtor_details():
 def bankruptcy_capture(page):
     # For returning from verification screen
 
-    if page == 'key_no':
-        page_template = 'bank_regn/key_no.html'
-        data = session
-    elif page == 'court':
+    if page == 'court':
         page_template = 'bank_regn/official.html'
         data = session['court_info']
     else:
@@ -544,9 +548,30 @@ def bankruptcy_capture(page):
                            errors=[], from_verify=True, transaction=session['transaction_id'])
 
 
+@app.route('/bankruptcy_capture/key_no', methods=['POST'])
+@requires_auth_role(['normal'])
+def bankruptcy_capture_key():
+
+    if 'store' in request.form:
+        return store_application()
+
+    page_template = 'bank_regn/key_no.html'
+    data = session
+
+    return render_template(page_template,
+                           application_type=session['application_type'],
+                           data=data,
+                           images=session['images'],
+                           current_page=0,
+                           errors=[], from_verify=True, transaction=session['transaction_id'])
+
+
 @app.route('/submit_banks_registration', methods=['POST'])
 @requires_auth_role(['normal'])
 def submit_banks_registration():
+    if 'store' in request.form:
+        session['key_number'] = request.form['key_number']
+        return store_application()
 
     logging.info(format_message('submitting banks registration'))
     key_number = request.form['key_number']
@@ -1177,6 +1202,7 @@ def land_charge_capture():
     logging.debug(request.form)
 
     if 'store' in request.form:
+        session['register_details'] = build_lc_inputs(request.form)
         return store_application()
 
     result = validate_land_charge(request.form)
@@ -1230,7 +1256,7 @@ def land_charge_verification():
 @requires_auth_role(['normal'])
 def lc_verify_details():
     if 'store' in request.form:
-        session['page_template'] = 'lc_regn/verify.html'
+        # session['page_template'] = 'lc_regn/verify.html'
         return store_application()
 
     return redirect('/conveyancer_and_fees', code=302, Response=None)
@@ -1257,7 +1283,7 @@ def conveyancer_and_fees():
 @requires_auth_role(['normal'])
 def lc_process_application():
     if 'store' in request.form:
-        session['page_template'] = 'lc_regn/customer.html'
+        # session['page_template'] = 'lc_regn/customer.html'
         return store_application()
 
     logging.info(format_message('Submitting LC registration'))
@@ -1675,10 +1701,12 @@ def get_multiple_registrations(reg_date, reg_no):
 
 def store_application():
     logging.debug(session)
+    print('session**********', session)
 
-    if session['application_type'] in ['bank_regn', 'bank_amend']:
-        session['parties'] = get_debtor_details(request.form)
-    elif session['application_type'] in ['cancel']:
+    # if session['application_type'] in ['bank_regn', 'bank_amend']:
+    #     if session['page_template'] in ['bank_regn/debtor.html', 'bank_amend/debtor.html']:
+    #         session['parties'] = get_debtor_details(request.form)
+    if session['application_type'] in ['cancel']:
         # TODO: this duplicates code in /cancellation_customer
         if "plan_attached" in request.form:
             if request.form["plan_attached"] == 'on':
@@ -1688,11 +1716,11 @@ def store_application():
 
         if 'part_cans_text' in request.form:
             session["part_cans_text"] = request.form["part_cans_text"]
-    else:  # land charge application
-        if session['page_template'] == 'lc_regn/k1234.html' or session['page_template'] == 'rectification/amend.html':
-            session['register_details'] = build_lc_inputs(request.form)
-        elif session['page_template'] == 'rectification/check.html':
-            session['register_details'] = session['rectification_details']
+    # else:  # land charge application
+    #       if session['page_template'] == 'lc_regn/k1234.html' or session['page_template'] == 'rectification/amend.html':
+     #       session['register_details'] = build_lc_inputs(request.form)
+     #   elif session['page_template'] == 'rectification/check.html':
+     #       session['register_details'] = session['rectification_details']
 
     return render_template('store.html', application_type=session['application_type'],
                            images=session['images'],
