@@ -138,7 +138,7 @@ function validate(sender) {
 <div class="grid-row">
     <div class="col four" id="form_panel">
     <!-- ///////////////////////////////// data entry form ///////////////////////////////// -->
-    <form action="/bankruptcy_capture/key_no" method="GET" onsubmit="return validate(this);">
+    <form id="bank_verify" action="/bankruptcy_capture/key_no" method="POST" onsubmit="return validate(this);">
         <div class="spacer-40"></div>
         <div id="name_validation">
             <input type="hidden" id="orig_forename_1" value="{{party_data[0].names[0].private.forenames|join(' ')}}"/>
@@ -223,6 +223,8 @@ function validate(sender) {
         <div class="spacer-30"></div>
         <div>
             <input id="continue" type="submit" value="Continue" class="form-button"/>
+            <br/>
+            <input id="store" type="submit" onclick="javascript:removeValidation()" name="store" value="Return to this application later" class="link-button-16"/>
         </div>
     </form>
     </div>
@@ -238,5 +240,11 @@ function validate(sender) {
     <!-- ///////////////////////////////// End of image tool ///////////////////////////////// -->
 
 </div>
+
+<script>
+    function removeValidation() {
+        jQuery('#bank_verify').removeAttr(" onsubmit ");
+    }
+</script>
 
 {% endblock %}

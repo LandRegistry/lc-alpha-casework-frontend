@@ -38,6 +38,8 @@
 
             <div class="spacer-40"></div>
             <input id="continue" type="submit" value="Complete" class="form-button"/>
+            <br/>
+            <input id="store" type="submit" onclick="javascript:removeValidation(this)" name="store" value="Return to this application later" class="link-button-16"/>
             <div class="spacer-40"></div>
         </form>
     </div>
@@ -52,6 +54,13 @@
     <!-- ///////////////////////////////// End of image tool ///////////////////////////////// -->
 
 </div>
+
+<script>
+    function removeValidation(obj) {
+        jQuery('#rectify_form').removeAttr(" onsubmit ");
+        removeRequired(obj);
+    }
+</script>
 
 
 
