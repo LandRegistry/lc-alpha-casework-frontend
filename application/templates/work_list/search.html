@@ -39,6 +39,9 @@ $(document).ready(function() {
 {% elif requested_list == 'search_bank' %}
 {% set page_title = 'Bankruptcy search' %}
 {% set bank_selected = 'selected' %}
+{% elif requested_list == 'search_stored' %}
+{% set page_title = 'Stored' %}
+{% set stored_selected = 'selected' %}
 {% endif %}
 <div class="breadcrumb">
     <ol>
@@ -73,7 +76,7 @@ $(document).ready(function() {
 
         <div class="spacer-20"></div>
         <!-- Totals -->
-        {% set sub_cat_qty = 2 %}
+        {% set sub_cat_qty = 3 %}
         <div class="grid-row">
             <div class="subservice-box no-margin">
             <a class="no-link-style {{full_selected}}" tabindex="1"  href="/get_list?appn=search_full">
@@ -103,6 +106,20 @@ $(document).ready(function() {
                 </div>
                 </a>
             </div>
+            <div class="subservice-box">
+                <a class="no-link-style {{stored_selected}}" tabindex="3" href="/get_list?appn=search_stored">
+                    <div class="spacer-20"></div>
+                    <p class="text-16-bold">Stored</p>
+                    <div class="spacer-30"></div>
+                    <div class="indicator" id="search_stored">
+                        {% if data['search_stored'] < 10 %}
+                        <span class="indicator-middle">{{data['search_stored']}}</span>
+                        {% else %}
+                        <span class="indicator-middle-2">{{data['search_stored']}}</span>
+                        {% endif %}
+                    </div>
+                </a>
+            </div>
         </div>
 
         <!-- List of pending applications -->
@@ -121,6 +138,10 @@ $(document).ready(function() {
                         <th class="table-text-black">Date and time received <a href="#"></a></th>
                         <th class="table-text-black">Form type <a href="#"></a></th>
                         <th class="table-text-black">Delivery method <a href="#"></a></th>
+                        {% if requested_list == "search_stored" %}
+                        <th class="table-text-black">Stored by <a href="#"></a></th>
+                        <th class="table-text-black">Reason <a href="#"></a></th>
+                        {% endif %}
                     </tr>
                     </thead>
                     {% for n in worklist %}
@@ -140,6 +161,10 @@ $(document).ready(function() {
                             </a>
                         </td>
                         <td>{{n['delivery_method']}}</td>
+                        {% if requested_list == "search_stored" %}
+                        <td>{{n['stored_by']}}</td>
+                        <td>{{n['store_reason']}}</td>
+                        {% endif %}
                     </tr>
                     </tbody>
                     {% endfor %}

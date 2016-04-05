@@ -61,11 +61,11 @@
                 {% endif %}
                 <div class="form">
                     <label class="form-label" for="reg_no">Original registration number</label><br/>
-                    <input class="form-textfield width-50" required  aria-required="true" type="text" id="reg_no" name="reg_no" value="{{reg_no}}"/>
+                    <input class="form-textfield width-50" id="reg_no" required  aria-required="true" type="text" name="reg_no" value="{{reg_no}}"/>
                 </div>
                 <div class="form">
                     <label class="form-label" for="reg_date">Date of registration</label><br/>
-                    <input class="form-textfield width-50 dateEntry"  required  aria-required="true" type="text" placeholder="dd/mm/yyyy" id="reg_date" name="reg_date" value="{{reg_date}}"/>
+                    <input class="form-textfield width-50 dateEntry" id="reg_date" required  aria-required="true" type="text" placeholder="dd/mm/yyyy" name="reg_date" value="{{reg_date}}"/>
                 </div>
             </div>
             <div class="spacer-20"></div>
@@ -140,6 +140,11 @@
             }
         });
     });
+
+    function removeValidation(obj) {
+        jQuery('#cancel_form').removeAttr(" onsubmit ");
+        removeRequired(obj)
+    }
 
 </script>
 

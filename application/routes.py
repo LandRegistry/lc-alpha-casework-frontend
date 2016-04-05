@@ -266,7 +266,8 @@ def get_list_of_applications(requested_worklist, result, error_msg):
                     "status": item['status'],
                     "work_type": item['work_type'],
                     "stored_by": item['stored_by'],
-                    "store_reason": item['store_reason']
+                    "store_reason": item['store_reason'],
+                    "delivery_method": item['delivery_method']
                 }
                 appn_list.append(application)
     else:
@@ -409,6 +410,11 @@ def application_start(application_type, appn_id, form):
                                    application=application, details=curr_data,
                                    screen=screen, curr_data=curr_data, errors=[],
                                    current_page=0, transaction=session['transaction_id'])
+
+        elif application_type.startswith('search'):
+            return render_template(template, application_type=application_type, data=application_json,
+                                   images=images, application=application, years=years,
+                                   current_page=0, errors=[], curr_data=curr_data, transaction=session['transaction_id'])
 
         return render_template(template, application_type=application_type,
                                data=application_json, images=images, date=date,
@@ -862,7 +868,11 @@ def submit_banks_correction():
 @app.route('/process_search_name/<application_type>', methods=['POST'])
 @requires_auth_role(['normal'])
 def process_search_name(application_type):
+
     process_search_criteria(request.form, application_type)
+
+    if 'store' in request.form:
+        return store_application()
 
     request_data = {}
     for k in request.form:
@@ -1151,6 +1161,9 @@ def cancellation_capture_customer():
 @app.route('/submit_cancellation', methods=['POST'])
 @requires_auth_role(['normal'])
 def submit_cancellation():
+    if 'store' in request.form:
+        return store_application()
+
     logging.info(format_message('Submitting cancellation'))
     response = submit_lc_cancellation(request.form)
     if response.status_code != 200:
@@ -1404,7 +1417,7 @@ def get_totals():
     bank_regn, bank_amend, bank_rect, bank_with, bank_stored = (0,) * 5
     lc_regn, lc_pn, lc_rect, lc_renewal, lc_stored = (0,) * 5
     canc, canc_stored = (0,) * 2
-    search_full, search_bank, = (0,) * 2
+    search_full, search_bank, search_stored = (0,) * 3
     unknown = 0
 
     url = app.config['CASEWORK_API_URL'] + '/applications'
@@ -1420,6 +1433,8 @@ def get_totals():
                     lc_stored += 1
                 elif item['work_type'] in ['cancel']:
                     canc_stored += 1
+                elif item['work_type'] in ['search_full', 'search_bank']:
+                    search_stored += 1
 
             else:
                 if item['work_type'] == "bank_regn":
@@ -1452,7 +1467,7 @@ def get_totals():
         'bank_with': bank_with, 'bank_stored': bank_stored,
         'lc_regn': lc_regn, 'lc_pn': lc_pn, 'lc_rect': lc_rect, 'lc_renewal': lc_renewal, 'lc_stored': lc_stored,
         'canc': canc, 'canc_stored': canc_stored,
-        'search_full': search_full, 'search_bank': search_bank,
+        'search_full': search_full, 'search_bank': search_bank, 'search_stored': search_stored,
         'unknown': unknown
     }
 

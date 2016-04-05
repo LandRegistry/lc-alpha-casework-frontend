@@ -55,7 +55,7 @@
                 <a href="javascript:showDelete()" id="reject" class="link-16 right">Reject application</a>
             </div>
             <div class="spacer-20"></div>
-            <a href="/get_list?appn=search_full" class="link-16">Return to this application later</a>
+            <input id="store" type="submit" onclick="javascript:removeValidation(this)" name="store" value="Return to this application later" class="link-button-16"/>
             <div class="spacer-40"></div>
 
             <div id="reject_application_dlg" role="dialog" style="display: none;">
@@ -117,6 +117,10 @@
         jQuery("#search_form").submit();
     }
 
+    function removeValidation(obj) {
+        jQuery('#search_form').removeAttr(" onsubmit ");
+        removeRequired(obj);
+    }
 </script>
 
 
