@@ -389,9 +389,13 @@ def application_start(application_type, appn_id, form):
                                    transaction=session['transaction_id'])
 
         elif application_type == 'bank_amend':  # Tiresome special case, skip the PAB WOB screen...
-            return render_template('bank_amend/amend_details.html', images=session['images'], current_page=0,
-                                   data=session['original_regns'], application=session, screen='capture',
-                                   transaction=session['transaction_id'])
+            if 'retrieve' in stored_template:
+                return render_template('bank_amend/retrieve.html', images=session['images'], current_page=0,
+                                       data=application_json['application_data'], application=session)
+            else:
+                return render_template('bank_amend/amend_details.html', images=session['images'], current_page=0,
+                                       data=session, application=session, screen='capture',
+                                       transaction=session['transaction_id'])
 
         elif application_type == 'lc_rect':
             if application_json['application_data']['reg_date'] == '':
@@ -617,6 +621,13 @@ def submit_banks_registration():
 @requires_auth_role(['normal'])
 def get_original_banks_details():
 
+    if 'store' in request.form:
+        session['wob'] = {'number': request.form['wob_ref'],
+                          'date': request.form['wob_date']}
+        session['pab'] = {'number': request.form['pab_ref'],
+                          'date': request.form['pab_date']}
+        return store_application()
+
     curr_data = []
     if request.form['wob_ref'] == '' and request.form['pab_ref'] == '':
         error_msg = 'A registration number must be entered'
@@ -688,10 +699,13 @@ def remove_address(addr):
 @app.route('/process_amended_details', methods=['POST'])
 @requires_auth_role(['normal'])
 def process_amended_details():
-    if 'store' in request.form:
-        return store_application()
 
     session['parties'] = get_debtor_details(request.form)
+
+    if 'store' in request.form:
+        session['page_template'] = 'bank_amend/amend_details.html'
+        return store_application()
+
     return render_template('bank_amend/check.html', images=session['images'], current_page=0,
                            data=session['parties'], transaction=session['transaction_id'])
 
@@ -711,12 +725,17 @@ def amendment_capture():
                            transaction=session['transaction_id'])
 
 
-@app.route('/amendment_key_no', methods=['GET'])
+@app.route('/amendment_key_no', methods=['POST'])
 @requires_auth_role(['normal'])
 def amendment_key_no():
+
+    if 'store' in request.form:
+        session['page_template'] = 'bank_amend/amend_details.html'
+        return store_application()
+
     return render_template('bank_amend/key_no.html',
                            application_type=session['application_type'],
-                           data={},
+                           data=session,
                            images=session['images'],
                            current_page=0,
                            errors=[],
@@ -726,6 +745,12 @@ def amendment_key_no():
 @app.route('/submit_banks_amendment', methods=['POST'])
 @requires_auth_role(['normal'])
 def submit_banks_amendment():
+
+    if 'store' in request.form:
+        session['key_number'] = request.form['key_number']
+        session['page_template'] = 'bank_amend/amend_details.html'
+        return store_application()
+
     logging.info(format_message('submitting banks amendment'))
     key_number = request.form['key_number']
 

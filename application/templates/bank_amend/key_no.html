@@ -21,7 +21,7 @@
 <div class="grid-row">
     <div class="col four" id="form_panel">
         <!-- ///////////////////////////////// data entry form ///////////////////////////////// -->
-        <form action="/submit_banks_amendment" method="POST">
+        <form id="amend_key_no" action="/submit_banks_amendment" method="POST">
             <div class="spacer-40"></div>
             <h2 class="text-24-bold">Court</h2>
             <div class="spacer-10"></div>
@@ -32,12 +32,20 @@
                 {% endif %}
             <div class="form">
                 <label class="form-label" for="key_number">Key number</label><br/>
-                <input class="form-textfield width-50" required  aria-required="true" autofocus type="text" id="key_number" name="key_number" value="{{data.key_number}}"/>
+                {% if 'applicant' in data %}
+                    <input class="form-textfield width-50" id="key_number" required  aria-required="true" autofocus type="text" name="key_number"
+                           value="{{data.applicant.key_number}}"/>
+                {% else %}
+                    <input class="form-textfield width-50" id="key_number" required  aria-required="true" autofocus type="text" name="key_number"
+                           value="{{data.key_number}}"/>
+                {% endif %}
             </div>
             </div>
 
             <div class="spacer-40"></div>
             <input id="continue" type="submit" value="Complete" class="form-button"/>
+            <br/>
+            <input id="store" type="submit" name="store" onclick="javascript:removeRequired(this)" value="Return to this application later" class="link-button-16"/>
             <div class="spacer-40"></div>
         </form>
     </div>

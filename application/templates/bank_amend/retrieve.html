@@ -87,6 +87,8 @@
             <div>
                 <input id="continue" type="submit" value="Continue" class="form-button"/>
                 <a href="javascript:showDelete()" id="reject" class="link-16 right">Reject application</a>
+                <br/>
+                <input id="store" type="submit" onclick="javascript:removeValidation()" name="store" value="Return to this application later" class="link-button-16"/>
             </div>
             <div class="spacer-40"></div>
 
@@ -183,6 +185,10 @@
 
 		return allOK;
 	}
+
+	function removeValidation() {
+        jQuery('#get_banks').removeAttr(" onsubmit ");
+    }
 </script>
 
 
