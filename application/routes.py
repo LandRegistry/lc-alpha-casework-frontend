@@ -1542,7 +1542,7 @@ def reprints():
         response = http_get(url)
         if response.status_code == 200:
             return send_file(BytesIO(response.content), as_attachment=False, attachment_filename='reprint.pdf',
-                         mimetype='application/pdf')
+                             mimetype='application/pdf')
         else:
             return render_template('error.html', error_msg=response.text, status=response.status_code)
 
@@ -1607,7 +1607,8 @@ def generate_reprints():
         if result['name_type'] == 'Private Individual':
             res['name'] = result['estate_owner']['private']['forenames'] + ' ' + \
                 result['estate_owner']['private']['surname']
-        elif result['name_type'] in ['Local Authority', 'County Council', 'Rural Council', 'Other Council']:
+        elif result['name_type'] in ['Local Authority', 'County Council', 'Rural Council', 'Other Council',
+                                     'Parish Council']:
             res['name'] = result['estate_owner']['local']['name'] + ' - ' + \
                 result['estate_owner']['local']['area']
         elif result['name_type'] == 'Limited Company':
