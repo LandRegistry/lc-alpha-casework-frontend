@@ -3,7 +3,6 @@
 <link href="/static/datatables/css/jquery.dataTables.css" rel="stylesheet" />
 <link href="/static/datatables/css/dataTables.responsive.css" rel="stylesheet" />
 <script type="text/javascript" src="/static/datatables/js/jquery.dataTables.js"></script>
-<script type="text/javascript" src="/static/js/block-ui.js"></script>
 <script>
  HOST = window.location.protocol + "//" + window.location.hostname;
 
@@ -102,7 +101,7 @@ $(document).ready(function() {
             {% if error_msg|length > 0 %}
             <p class="text-16-bold error">{{error_msg}}</p>
             {% endif %}
-            <div class="col nine no-margin">
+            <div class="col nine no-margin" id="work-list-div">
                 <table id="work-list" class="hover">
                     <thead>
                     <tr>
@@ -136,13 +135,12 @@ $(document).ready(function() {
     </div>
 </div>
 <script>
-    function getApplication(id){
-		// Display loading message over work_list so user knows something is happening
-		$('#work-list').block({
-			message: '<h2 class="wait-message" >Loading application ....</h2>'
-		});
+	function getApplication(id){
 		// Open selected application
 		window.location = "/reclassify/"+id;
+		// Display loading message over work_list so user knows something is happening
+		jQuery('<div id="work-list-div-overlay">'+
+				'<img id="loading_image" src="/static/images/loading.gif"></div>').insertAfter(jQuery('#work-list'));
 	}
 </script>
 {% endblock %}

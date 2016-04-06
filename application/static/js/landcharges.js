@@ -59,10 +59,13 @@
 	}
 
 	function getApplication(list, id, type){
-		// Display loading message over work_list so user knows something is happening
-		$('#work-list').block({
-			message: '<h2 class="wait-message" >Loading application ....</h2>'
-		});
 		// Open selected application
 		window.location = "/application_start/"+list+"/"+id+"/"+type;
+		// Display loading message over work_list so user knows something is happening
+		jQuery('<div id="work-list-div-overlay">'+
+				'<img id="loading_image" src="/static/images/loading.gif"></div>').insertAfter(jQuery('#work-list'));
 	}
+
+
+
+

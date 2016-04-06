@@ -3,7 +3,6 @@
 <link href="/static/datatables/css/jquery.dataTables.css" rel="stylesheet" />
 <link href="/static/datatables/css/dataTables.responsive.css" rel="stylesheet" />
 <script type="text/javascript" src="/static/datatables/js/jquery.dataTables.js"></script>
-<script type="text/javascript" src="/static/js/block-ui.js"></script>
 <script>
  HOST = window.location.protocol + "//" + window.location.hostname;
 
@@ -170,7 +169,7 @@ $(document).ready(function() {
             {% if error_msg|length > 0 %}
             <p class="text-16-bold error">{{error_msg}}</p>
             {% endif %}
-            <div class="col nine no-margin">
+            <div class="col nine no-margin" id="work-list-div">
                 <table id="work-list" class="hover">
                     <thead>
                     <tr>
