@@ -1,0 +1,55 @@
+<!-- CHARGE -->
+        <h2 class="text-24-bold">Class of charge</h2>
+
+        <div class="spacer-10"></div>
+
+        <div class="form">
+            {% if 'class' in errors %}
+                <label class="error-text form-label" for="class">X Class and subclass</label><br/>
+            {% else %}
+                <label class="form-label" for="class">Class and subclass</label><br/>
+            {% endif %}
+
+            {% if ( (data.form == 'K1') or (data.form == 'K6') ) %}
+                <select class="form-select width-50" id="class" name="class" autofocus>
+                    <option value="C(I)">C1</option>
+                    <option value="C(II)">C2</option>
+                    <option value="C(III)">C3</option>
+                    <option value="C(IV)">C4</option>
+                    <option value="D(I)">D1</option>
+                    <option value="D(II)">D2</option>
+                    <option value="D(III)">D3</option>
+                    <option value="A">A</option>
+                    <option value="B">B</option>
+                    <option value="E">E</option>
+                    <option value="F">F</option>
+                    <option value="PA">PA</option>
+                    <option value="WO">WO</option>
+                    <option value="DA">DA</option>
+                    <option value="ANN">ANN</option>
+                    <option value="LC">LC</option>
+                </select>
+            {% elif data.form == 'K2' %}
+                <input type="text" class="form-textfield width-50" disabled id="class_display" value="F" name="class"/>
+                <input type="hidden" id="class" value="F" name="class"/>
+            {% elif data.form == 'K3' %}
+                <input type="text" class="form-textfield width-50" disabled id="class_display" value="PA" name="class"/>
+                <input type="hidden" id="class" value="PA" name="class"/>
+            {% elif data.form == 'K4' %}
+                <input type="text" class="form-textfield width-50" disabled id="class_display" value="WO" name="class"/>
+                <input type="hidden" id="class" value="WO" name="class"/>
+            {% endif %}
+
+
+            <input type="hidden" id="hd_class" value="{{curr_data.class}}"/>
+        </div>
+
+        <div class="spacer-10"></div>
+
+        <script>
+            var el = document.getElementById('hd_class');
+            var coc = el.value;
+            if(coc) {
+                document.getElementById('class').value = coc;
+            }
+        </script>

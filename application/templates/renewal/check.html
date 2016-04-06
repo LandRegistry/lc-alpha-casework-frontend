@@ -1,0 +1,159 @@
+{% extends "/page_template/base.html" %}
+{% block page_specific_head %}
+
+<script>
+</script>
+
+{% endblock %}
+
+{% block maincontent %}
+
+<div class="spacer-10"></div>
+
+<h1 class="title-36">Renewal</h1>
+
+<div class="spacer-5"></div>
+
+<div class="text-16-gray">
+    1. Retrieve original &nbsp;&nbsp;
+    <span class="text-16-bold">2. View and renew</span> &nbsp;&nbsp;
+    3. Conveyancer and fees &nbsp;&nbsp;
+</div>
+<div class="spacer-40"></div>
+<div class="grid-row">
+    <div class="col four" id="form_panel">
+        <h2 class="text-24-bold">Original registration details</h2>
+        <div class="spacer-10"></div>
+        <p class="text-indent">Please check information prior to renewing</p>
+        <div class="spacer-10"></div>
+        <div class="spacer-10"></div>
+        <div class="grid-row">
+            <div class="text-19-gray col ten">Class of charge</div>
+        </div>
+        <div class="grid-row-padded-line bottom-line">
+            <span class="text-16-bold col four">Class and subclass</span>
+            <span class="col two">&nbsp;</span>
+            <span class="text-16 col six">
+            {% if curr_data.class == 'C(I)' %} C1
+            {% elif curr_data.class == 'C(II)' %} C2
+            {% elif curr_data.class == 'C(III)' %} C3
+            {% elif curr_data.class == 'C(IV)' %} C4
+            {% elif curr_data.class == 'D(I)' %} D1
+            {% elif curr_data.class == 'D(II)' %} D2
+            {% elif curr_data.class == 'D(III)' %} D3
+            {% else %}
+                {{curr_data.class}}
+            {% endif %}
+            </span>
+        </div>
+
+        {% if curr_data.class != 'WOB' and curr_data.class != 'PAB' %}
+            <div class="grid-row">
+                <div class="text-19-gray col ten">Particulars of land affected</div>
+            </div>
+            <div class="grid-row-padded-line">
+                <span class="text-16-bold col four">County or unitary authority area</span>
+                <span class="col two">&nbsp;</span>
+                <span class="text-16 col six">{{curr_data.county|join(', ')}}</span>
+            </div>
+            <div class="grid-row-padded-line">
+                <span class="text-16-bold col four">District</span>
+                <span class="col two">&nbsp;</span>
+                <span class="text-16 col six">{{curr_data.district}}</span>
+            </div>
+            <div class="grid-row-padded-line bottom-line">
+                <span class="text-16-bold col four">Short description</span>
+                <span class="col two">&nbsp;</span>
+                <span class="text-16 col six">{{curr_data.short_description}}</span>
+            </div>
+        {% endif %}
+
+        <div>
+            <div class="grid-row">
+                {% if curr_data.class != 'WOB' and curr_data.class != 'PAB' %}
+                    <div class="text-19-gray col ten">Estate owner details</div>
+                {% else %}
+                    <div class="text-19-gray col ten">Debtor details</div>
+                {% endif %}
+            </div>
+            {% if curr_data.estate_owner_ind == 'Private Individual' %}
+                <div class="grid-row-padded-line">
+                    <span class="text-16-bold col four">Forename</span>
+                    <span class="col two">&nbsp;</span>
+                    <span class="text-16 col six">{{curr_data.estate_owner.private.forenames|join(' ')}}</span>
+                </div>
+                <div class="grid-row-padded-line">
+                    <span class="text-16-bold col four">Surname</span>
+                    <span class="col two">&nbsp;</span>
+                    <span class="text-16 col six">{{curr_data.estate_owner.private.surname}}</span>
+                </div>
+            {% elif curr_data.estate_owner_ind == 'County Council' or
+            curr_data.estate_owner_ind == 'Parish Council' or
+            curr_data.estate_owner_ind == 'Other Council' %}
+                <div class="grid-row-padded-line">
+                    <span class="text-16-bold col four">Full Name</span>
+                    <span class="col two">&nbsp;</span>
+                    <span class="text-16 col six">{{curr_data.estate_owner.local.name}}</span>
+                </div>
+                <div class="grid-row-padded-line">
+                    <span class="text-16-bold col four">Area</span>
+                    <span class="col two">&nbsp;</span>
+                    <span class="text-16 col six">{{curr_data.estate_owner.local.area}}</span>
+                </div>
+            {% elif curr_data.estate_owner_ind == 'Development Corporation' or
+            curr_data.estate_owner_ind == 'Other' %}
+                <div class="grid-row-padded-line">
+                    <span class="text-16-bold col four">Name</span>
+                    <span class="col two">&nbsp;</span>
+                    <span class="text-16 col six">{{curr_data.estate_owner.other}}</span>
+                </div>
+            {% elif curr_data.estate_owner_ind == 'Limited Company' %}
+                <div class="grid-row-padded-line">
+                    <span class="text-16-bold col four">Company Name</span>
+                    <span class="col two">&nbsp;</span>
+                    <span class="text-16 col six">{{curr_data.estate_owner.company}}</span>
+                </div>
+            {% elif curr_data.estate_owner_ind == 'Complex Name' %}
+             <div class="grid-row-padded-line">
+                    <span class="text-16-bold col four">Name</span>
+                    <span class="col two">&nbsp;</span>
+                    <span class="text-16 col six">{{curr_data.estate_owner.complex.name}}</span>
+                </div>
+                <div class="grid-row-padded-line">
+                    <span class="text-16-bold col four">Number</span>
+                    <span class="col two">&nbsp;</span>
+                    <span class="text-16 col six">{{curr_data.estate_owner.complex.number}}</span>
+                </div>
+            {% endif %}
+            <div class="grid-row-padded-line bottom-line">
+                <span class="text-16-bold col five">Title, trade or profession</span>
+                <span class="col one">&nbsp;</span>
+                <span class="text-16 col six">{{curr_data.occupation}}</span>
+            </div>
+        </div>
+        <form id="renewal_form" action="/renewal_customer" method="POST">
+            {% if curr_data.full_cans == 'false' %}
+            {% include 'includes/additional_info_plan.html' %}
+            {% endif %}
+            <div class="spacer-30"></div>
+            <div class="spacer-40"></div>
+            <input id="continue" type="submit" value="Continue" class="form-button"/>
+            <br/>
+            <input id="store" type="submit" name="store" value="Return to this application later" class="link-button-16"/>
+            <div class="spacer-40"></div>
+            </form>
+
+    </div>
+
+    <!-- ///////////////////////////////// end of data entry form ///////////////////////////////// -->
+    <div class="col one"><p></p></div>
+    <!-- /////////////////////////////////  Include image tool ///////////////////////////////// -->
+    <div class="col seven">
+    {% include 'includes/image_view_body.html' %}
+
+    <!-- ///////////////////////////////// End of image tool ///////////////////////////////// -->
+    </div>
+
+</div>
+
+{% endblock %}

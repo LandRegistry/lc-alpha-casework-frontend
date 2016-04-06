@@ -1,0 +1,104 @@
+{% extends "/page_template/base.html" %}
+{% block maincontent %}
+<input type="hidden" name="requested_list" value="{{requested_list}}"/>
+
+
+{% if requested_list == 'bank_regn' %}
+{% set page_title = 'Registration' %}
+{% set regn_selected = 'selected' %}
+{% elif requested_list == 'bank_amend' %}
+{% set page_title = 'Amendment' %}
+{% set amend_selected = 'selected' %}
+{% elif requested_list == 'bank_rect' %}
+{% set page_title = 'Rectification' %}
+{% set rect_selected = 'selected' %}
+{% elif requested_list == 'bank_with' %}
+{% set page_title = 'Withheld Address' %}
+{% set with_selected = 'selected' %}
+{% elif requested_list == 'bank_stored' %}
+{% set page_title = 'Stored' %}
+{% set stored_selected = 'selected' %}
+{% endif %}
+<div class="breadcrumb">
+    <ol>
+        <li><a href="/">Home</a></li>
+        {% if requested_list == "bank" %}
+        <li class="breadcrumb-no-arrow"><span>Bankruptcy</span></li>
+        {% else %}
+        <li><a href="/get_list?appn=bank">Bankruptcy</a></li>
+        <li class="breadcrumb-no-arrow"><span>{{page_title}}</span></li>
+        {% endif %}
+    </ol>
+</div>
+
+<div class="spacer-5"></div>
+<div class="grid-row" >
+
+    <!-- Side Navigation -->
+    {% include "includes/side_nav.html" %}
+
+    <!-- Content -->
+    <div class="col nine text-19">
+        <div class="spacer-10"></div>
+        <div class="grid-row" >
+            <div class="col one">
+                <img src="/static/images/error.png" width="75px" />
+            </div>
+            <div class="col eleven">
+                <div class="spacer-20"></div>
+                <h1 class="title-36">Unexpected error</h1>
+            </div>
+
+        </div>
+
+        <div class="spacer-20"></div>
+        <p class="col twelve">
+            <div class="spacer-10"></div>
+            <p class="text-24-bold">Please contact the service desk for assistance.</p>
+
+            <ul>
+                {% if error_msg.message %}
+                <li><b>Error:</b> {{ error_msg.message }}</li>
+                {% endif %}
+
+                {% if error_msg.dict %}
+                    {%- for k, v in error_msg.dict.items() recursive %}
+
+                        {% if k == 'type' %}
+                        {% elif k == 'stack' %}
+                            <li><b>Stack:</b>
+                            <ul>
+                            {% for line in v %}
+                                <li> {{ line }}</li>
+
+                            {% endfor %}
+                            </ul>
+                        {% elif k == 'dict' %}
+                            <li><b>Cause:</b>
+                            {% if v.items %}
+                                <ul>{{ loop(v.items()) }}</ul>
+                            {% else %}
+                                <ul>{{ v }}</ul>
+                            {% endif %}
+                            </li>
+                        {% elif k == 'text' %}
+                            <li><b>Error: </b>{{ v }}
+                        {% else %}
+                            <li><b>{{ k }}: </b>{{ v }}
+                        {% endif %}
+
+                    {%- endfor %}
+                {% endif %}
+
+                {% if not error_msg.message %}
+                    {{ error_msg }}
+                {% endif %}
+            </ul>
+
+
+        </div>
+
+
+    </div>
+</div>
+{% endblock %}

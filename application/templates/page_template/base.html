@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Land Charges</title>
+    <script src="/static/js/landcharges.js" ></script>
+    {% include 'includes/ext_references.html' %}
+
+    {% block page_specific_head %} {% endblock %}
+
+</head>
+<body>
+    <input type="hidden" id="transaction_id" value="{{transaction}}"/>
+    <input type="hidden" id="user_id" value="{{session['username']}}"/>
+<div class="header-container">
+    <div class="header-box">
+        <div class="header-logo"><a href="/"><img src="/static/images/logo_3.png" alt="Land Registry"></a></div>
+        <div class="header-title">Land Charge and Bankruptcy Services</div>
+        <div class="header-user">{{ session['display_name'] }}
+            {% if 'username' in session %}
+                <a id="logout_link" href="/logout">Log Out</a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+<div class="header-container-2">
+    <div class="header-box-line"></div>
+</div>
+<div id="content" >
+
+
+    {% block maincontent %} {% endblock %}
+
+
+</div>
+</body>
+</html>

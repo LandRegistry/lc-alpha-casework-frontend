@@ -1,0 +1,102 @@
+{% extends "/page_template/base.html" %}
+{% block page_specific_head %}
+
+{% include 'includes/lc_head.html' %}
+{% endblock %}
+
+{% block maincontent %}
+
+{% include 'includes/lc_nav_title.html' %}
+
+<div class="grid-row">
+    <div class="col four" id="form_panel">
+    <!-- ///////////////////////////////// data entry form ///////////////////////////////// -->
+    <form id="lc_reg_form" action="/land_charge_capture" method="POST">
+        {% if errors|length > 0 %}
+        <div class="error-text">
+            <h3>Information missing or incorrect. Please amend as applicable.</h3>
+        </div>
+        {% endif %}
+
+        <h2 class="text-24-bold">Particulars of intended registration</h2>
+
+        <div class="spacer-10"></div>
+
+        {% include 'includes/class_of_charge.html' %}
+        <div class="spacer-10"></div>
+
+        <!-- LAND INFO -->
+        {% include 'includes/particulars.html' %}
+
+        {% include 'includes/estate_owner.html' %}
+
+        {% include 'includes/additional_info.html' %}
+
+        <div>
+            <input id="continue" type="submit" value="Continue" class="form-button"/>
+            <a href="javascript:showDelete()" id="reject" class="link-16 right">Reject application</a>
+            <br/>
+            <input id="store" type="submit" name="store" onclick="javascript:removeRequired(this)" value="Return to this application later" class="link-button-16"/>
+        </div>
+
+        <div id="reject_application_dlg" role="dialog" style="display: none;">
+            This will remove and delete the scanned image and application from the worklist.<br/><br/>
+            Are you sure you wish to continue?<br/><br/>
+            <input type="button" id="accept-reject" class="form-button" onclick="confirmDelete();" value="OK"/>
+            <input type="button" id="cancel-reject" class="form-button" onclick="cancelDelete();" value="Cancel"/>
+        </div>
+    </form>
+    </div>
+
+    <!-- ///////////////////////////////// end of data entry form ///////////////////////////////// -->
+    <div class="col one"><p></p></div>
+    <!-- /////////////////////////////////  Include image tool ///////////////////////////////// -->
+
+    <div class="col seven">
+    {% include 'includes/image_view_body.html' %}
+    </div>
+    <!-- ///////////////////////////////// End of image tool ///////////////////////////////// -->
+
+<script>
+
+    function showDelete() {
+        $("#reject_application_dlg").dialog({
+            modal:true,
+            show: true,
+            title:"Reject Application?",
+            hide:true,
+            width: 600,
+            maxHeight: 500,
+            position: {
+                my: "center",
+                at: "center",
+                of: window,
+                collision: "none"
+            }
+        });
+    }
+
+    function cancelDelete() {
+        $("#reject_application_dlg").dialog('close');
+    }
+
+    function confirmDelete()
+    {
+        jQuery('#lc_reg_form').attr('action', "/rejection");
+        jQuery("#lc_reg_form").submit();
+    }
+
+    jQuery(document).ready(function(){
+        {% if curr_data.estate_owner_ind == '' %}
+            jQuery("#estateOwnerTypes").val("{{curr_data.estate_owner_ind}}");
+        {% endif %}
+        showFields();
+        setupCountyAutocomplete("#county_0");
+    });
+
+
+</script>
+
+</div>
+
+{% endblock %}

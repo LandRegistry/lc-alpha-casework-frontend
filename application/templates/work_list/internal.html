@@ -1,0 +1,38 @@
+{% extends "/page_template/base.html" %}
+{% block maincontent %}
+
+<div class="breadcrumb">
+    <ol>
+        <li><a href="/">Home</a></li>
+        <li class="breadcrumb-no-arrow"><span>Internal</span></li>
+    </ol>
+</div>
+
+<div class="spacer-5"></div>
+<div class="grid-row" >
+
+    {% set side_nav_int = 'active' %}
+    {% include "includes/side_nav.html" %}
+
+    <!-- Content -->
+    <div class="col nine text-19">
+        <div class="spacer-10"></div>
+        <div class="grid-row" >
+            <h1 class="title-36">Internal Functions</h1>
+        </div>
+        <div class="col eleven">
+            <div class="spacer-10"></div>
+
+        </div>
+
+    </div>
+    <div class="subservice-box no-margin">
+        <a class="no-link-style" tabindex="2" href="/correction">
+            <div class="spacer-20"></div>
+            <p class="text-16-bold">Corrections</p>
+            <div class="spacer-30"></div>
+
+        </a>
+    </div>
+</div>
+{% endblock %}

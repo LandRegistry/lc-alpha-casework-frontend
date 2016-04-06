@@ -1,0 +1,59 @@
+{% extends "/page_template/base.html" %}
+{% block page_specific_head %}
+{% include 'includes/customer_head.html' %}
+
+{% endblock %}
+{% block maincontent %}
+
+
+{% if application_type == 'search_full' %}
+{% set title = 'Full search' %}
+{% else %}
+{% set title = 'Bankruptcy search' %}
+{% endif %}
+
+<div class="spacer-10"></div>
+
+<h1 class="title-36">{{title}}</h1>
+
+<div class="spacer-5"></div>
+
+<div class="text-16-gray">
+    <a class="link-16 no-link-style"
+       href="/application_start/{{application_type}}/{{application.appn_id}}/{{application.application_type}}">1. Input details</a>
+    &nbsp;&nbsp;
+    2. Applicant and fees
+</div>
+
+<div class="grid-row">
+    <div class="col four" id="form_panel">
+        <!-- ///////////////////////////////// data entry form ///////////////////////////////// -->
+        <form id="search_customer" action="/submit_search" onsubmit="return validateForm()" method="POST">
+            <div class="spacer-30"></div>
+            {% set customer_type = 'Applicant' %}
+            {% include 'includes/customer_fields.html' %}
+
+            <input id="submit" type="submit" class="form-button" value="Complete"/>
+            <br/>
+            <input id="store" type="submit" onclick="javascript:removeValidation(this)" name="store" value="Return to this application later" class="link-button-16"/>
+
+        </form>
+    </div>
+    <!-- ///////////////////////////////// end of data entry form ///////////////////////////////// -->
+    <div class="col one"><p></p></div>
+    <!-- /////////////////////////////////  Include image tool ///////////////////////////////// -->
+
+    <div class="col seven">
+        {% include 'includes/image_view_body.html' %}
+    </div>
+    <!-- ///////////////////////////////// End of image tool ///////////////////////////////// -->
+</div>
+
+<script>
+    function removeValidation(obj) {
+        jQuery('#search_customer').removeAttr(" onsubmit ");
+        removeRequired(obj);
+    }
+</script>
+
+{% endblock %}

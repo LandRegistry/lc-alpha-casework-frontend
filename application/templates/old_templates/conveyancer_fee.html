@@ -1,0 +1,108 @@
+{% extends "/page_template/base.html" %}
+{% block page_specific_head %}
+
+<script>
+</script>
+
+{% endblock %}
+
+{% block maincontent %}
+
+<div class="breadcrumb">
+    <ol>
+        <li><a class="breadcrumb_links" href="/">Home</a></li>
+        <li><a class="breadcrumb_links" href="/get_list?appn=lc">Land Charge</a></li>
+        <li><a class="breadcrumb_links" href="/get_list?appn=lc_regn">Registration</a></li>
+        <li class="breadcrumb-no-arrow"><span>Registration details</span></li>
+    </ol>
+</div>
+<div class="spacer-10"></div>
+
+<h1 class="title-36">Land charge registration</h1>
+
+<div class="spacer-5"></div>
+
+<div class="text-16-gray">
+    <a href="#" class="link-16 no-link-style">1. Input details</a>
+    &nbsp;&nbsp;
+    <a href="#" class="link-16 no-link-style">2. Check details</a>
+    &nbsp;&nbsp;
+    <span class="text-16-bold">3. Conveyancer and fees</span>
+</div>
+<div class="spacer-30"></div>
+
+<div class="grid-row">
+    <div class="col four">
+    <!-- ///////////////////////////////// data entry form ///////////////////////////////// -->
+    <form action="/lc_process_application" method="POST">
+        <h1>Conveyancer and fee page placeholder</h1>
+
+        <div class="spacer-30"></div>
+
+        <div>
+            <input id="complete" type="submit" value="Complete" class="form-button"/>
+        </div>
+
+    </form>
+    </div>
+
+    <!-- ///////////////////////////////// end of data entry form ///////////////////////////////// -->
+    <div class="col one"><p></p></div>
+    <!-- /////////////////////////////////  Include image tool ///////////////////////////////// -->
+    <div class="col seven">
+    {% include 'includes/image_view_body.html' %}
+
+    <!-- ///////////////////////////////// End of image tool ///////////////////////////////// -->
+    </div>
+
+<script>
+        document.getElementById("estateOwnerTypes").onchange = function() {
+        var type = this.value;
+
+        if (type == "privateIndividual") {
+            document.getElementById("private").style.display = 'block';
+            document.getElementById("limited").style.display = 'none';
+            document.getElementById("local").style.display = 'none';
+            document.getElementById("complex").style.display = 'none';
+            document.getElementById("other").style.display = 'none';
+        }
+        if (type == "limitedCompany") {
+            document.getElementById("limited").style.display = 'block';
+            document.getElementById("private").style.display = 'none';
+            document.getElementById("local").style.display = 'none';
+            document.getElementById("complex").style.display = 'none';
+            document.getElementById("other").style.display = 'none';
+        }
+        if (type == "localAuthority") {
+            document.getElementById("local").style.display = 'block';
+            document.getElementById("private").style.display = 'none';
+            document.getElementById("limited").style.display = 'none';
+            document.getElementById("complex").style.display = 'none';
+            document.getElementById("other").style.display = 'none';
+        }
+        if (type == "complexName") {
+            document.getElementById("complex").style.display = 'block';
+            document.getElementById("private").style.display = 'none';
+            document.getElementById("limited").style.display = 'none';
+            document.getElementById("local").style.display = 'none';
+            document.getElementById("other").style.display = 'none';
+        }
+        if (type == "other") {
+            document.getElementById("other").style.display = 'block';
+            document.getElementById("private").style.display = 'none';
+            document.getElementById("limited").style.display = 'none';
+            document.getElementById("local").style.display = 'none';
+            document.getElementById("complex").style.display = 'none';
+        }
+    }
+
+    document.getElementById("private").style.display = 'none';
+    document.getElementById("limited").style.display = 'none';
+    document.getElementById("local").style.display = 'none';
+    document.getElementById("complex").style.display = 'none';
+    document.getElementById("other").style.display = 'none';
+</script>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,66 @@
+{% extends "/page_template/base.html" %}
+
+{% block page_specific_head %}
+{% endblock %}
+{% block maincontent %}
+
+
+<div class="spacer-10"></div>
+
+<h1 class="title-36">Bankruptcy amendment</h1>
+
+<div class="spacer-5"></div>
+
+<div class="text-16-gray">
+    1. Retrieve original &nbsp;&nbsp;
+    2. View and amend &nbsp;&nbsp;
+    3. Check details&nbsp;&nbsp;
+    <span class="text-16-bold">4. Key number</span>  &nbsp;&nbsp;
+</div>
+
+<div class="grid-row">
+    <div class="col four" id="form_panel">
+        <!-- ///////////////////////////////// data entry form ///////////////////////////////// -->
+        <form id="amend_key_no" action="/submit_banks_amendment" method="POST">
+            <div class="spacer-40"></div>
+            <h2 class="text-24-bold">Court</h2>
+            <div class="spacer-10"></div>
+
+            <div id="errorBlock" {% if error_msg|length > 0 %}class="error_block"{% endif %}>
+                {% if error_msg|length > 0 %}
+                    <span id="key_no_error" class="error_text">{{error_msg}}</span>
+                {% endif %}
+            <div class="form">
+                <label class="form-label" for="key_number">Key number</label><br/>
+                {% if 'applicant' in data %}
+                    <input class="form-textfield width-50" id="key_number" required  aria-required="true" autofocus type="text" name="key_number"
+                           value="{{data.applicant.key_number}}"/>
+                {% else %}
+                    <input class="form-textfield width-50" id="key_number" required  aria-required="true" autofocus type="text" name="key_number"
+                           value="{{data.key_number}}"/>
+                {% endif %}
+            </div>
+            </div>
+
+            <div class="spacer-40"></div>
+            <input id="continue" type="submit" value="Complete" class="form-button"/>
+            <br/>
+            <input id="store" type="submit" name="store" onclick="javascript:removeRequired(this)" value="Return to this application later" class="link-button-16"/>
+            <div class="spacer-40"></div>
+        </form>
+    </div>
+    <!-- ///////////////////////////////// end of data entry form ///////////////////////////////// -->
+    <div class="col one"><p></p></div>
+    <!-- /////////////////////////////////  Include image tool ///////////////////////////////// -->
+
+    <div class="col seven">
+        <div class="spacer-40"></div>
+        {% include 'includes/image_view_body.html' %}
+    </div>
+    <!-- ///////////////////////////////// End of image tool ///////////////////////////////// -->
+
+</div>
+
+
+
+{% endblock %}

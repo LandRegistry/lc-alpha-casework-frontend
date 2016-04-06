@@ -1,0 +1,66 @@
+[
+  {
+    "date_received": "1998-08-02 00:00:00",
+    "work_type": "bank_regn",
+    "appn_id": 14,
+    "application_type": "WO(B)",
+    "status": "new",
+    "assigned_to": ""
+  },
+  {
+    "date_received": "1998-08-02 00:00:00",
+    "work_type": "bank_regn",
+    "appn_id": 15,
+    "application_type": "PA(B)",
+    "status": "new",
+    "assigned_to": ""
+  },
+  {
+    "date_received": "1998-08-02 00:00:00",
+    "work_type": "lc_regn",
+    "appn_id": 14,
+    "application_type": "",
+    "status": "new",
+    "assigned_to": ""
+  },
+  {
+    "date_received": "1998-08-02 00:00:00",
+    "work_type": "amend",
+    "appn_id": 15,
+    "application_type": "",
+    "status": "new",
+    "assigned_to": ""
+  },
+  {
+    "date_received": "1998-08-02 00:00:00",
+    "work_type": "cancel",
+    "appn_id": 14,
+    "application_type": "",
+    "status": "new",
+    "assigned_to": ""
+  },
+  {
+    "date_received": "1998-08-02 00:00:00",
+    "work_type": "prt_search",
+    "appn_id": 15,
+    "application_type": "",
+    "status": "new",
+    "assigned_to": ""
+  },
+  {
+    "date_received": "1998-08-02 00:00:00",
+    "work_type": "search",
+    "appn_id": 14,
+    "application_type": "",
+    "status": "new",
+    "assigned_to": ""
+  },
+  {
+    "date_received": "1998-08-02 00:00:00",
+    "work_type": "oc",
+    "appn_id": 15,
+    "application_type": "",
+    "status": "new",
+    "assigned_to": ""
+  }
+]

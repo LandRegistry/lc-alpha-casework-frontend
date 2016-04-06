@@ -1,0 +1,147 @@
+{% extends "/page_template/base.html" %}
+
+{% block page_specific_head %}
+
+<script>
+    no_of_addr = 0;
+
+    function addrClick(sender){
+        no_of_addr++;
+        i = no_of_addr;
+        jQuery('<div class="text-16-bold">Additional address '+(i+1)+' &nbsp;&nbsp;</div> \
+                <div class="form"> \
+                    <label class="form-label" for="add_' +i+ '_line1">Address line 1</label> \
+                    <input class="form-textfield" id="add_' +i+ '_line1" name="add_' +i+ '_line1" /> \
+                </div> \
+                <div class="form"> \
+                    <label class="form-label" for="add_' +i+ '_line2">Address line 2</label> \
+                    <input class="form-textfield" id="add_' +i+ '_line2" name="add_' +i+ 'line2" /> \
+                </div> \
+                <div class="form"> \
+                    <label class="form-label" for="add_' +i+ '_line3">Address line 3</label> \
+                    <input class="form-textfield" id="add_' +i+ 'line3" name="add_' +i+ '_line3" /> \
+                </div> \
+                <div class="form"> \
+                    <label class="form-label" for="add' +i+ '_county">County</label> \
+                    <input class="form-textfield" id="add' +i+ '_county" name="add_' +i+ '_county" /> \
+                </div> \
+                <div class="form"> \
+                    <label class="form-label" for="add_' +i+ '_postcode">Postcode</label> \
+                    <input class="form-textfield" id="add_' +i+ '_postcode" name="add_' +i+ '_postcode" /> \
+                </div> \
+                <div class="spacer-20"></div>').insertBefore("#addaddr1");
+    };
+    </script>
+{% endblock %}
+
+{% block maincontent %}
+
+<div class="breadcrumb">
+    <ol>
+        <li><a class="breadcrumb_links" href="/">Home</a></li>
+        <li><a class="breadcrumb_links" href="/">Bankruptcies</a></li>
+        <li><a class="breadcrumb_links" href="/get_list?appn=bank_regn">List of registration applications</a></li>
+        <li class="breadcrumb-no-arrow"><span>Bankruptcy registration</span></li>
+    </ol>
+</div>
+<div class="spacer-10"></div>
+
+<h1 class="title-36">Bankruptcy registration</h1>
+
+<div class="spacer-5"></div>
+
+<div class="text-16-gray">
+    <span class="text-16">1. Debtor details</span>
+    &nbsp;&nbsp;
+    <span class="text-16-bold">2. Debtor address</span>
+    &nbsp;&nbsp;
+    3. Court details
+    &nbsp;&nbsp;
+    4. Verify registration
+</div>
+
+<div class="spacer-30"></div>
+
+<div class="grid-row">
+    <!-- ///////////////////////////////// data entry form ///////////////////////////////// -->
+    <form id="page_form" action="/address" method="POST">
+        <div class="column-form" id="form_panel">
+
+            <p class="text-24-bold">2. Debtor address</p>
+
+            <div class="spacer-20"></div>
+
+            <div class="form">
+                <label class="form-label" for="add_0_line1" >Address line 1</label>
+                <input class="form-textfield" type="text" id="add_0_line1" autofocus name="add_0_line1">
+            </div>
+
+            <div class="form">
+                <label class="form-label" for="add_0_line2" >Address line 2</label>
+                <input class="form-textfield" type="text" id="add_0_line2" name="add_0_line2">
+            </div>
+
+            <div class="form">
+                <label class="form-label" for="add_0_line3" >Address line 3</label>
+                <input class="form-textfield" type="text" id="add_0_line3" name="add_0_line3">
+            </div>
+
+            <div class="form">
+                <label class="form-label" for="add_0_county" >County</label>
+                <input class="form-textfield" type="text" id="add_0_county" name="add_0_county">
+            </div>
+
+            <div class="form">
+                <label class="form-label" for="add_0_postcode" >Postcode</label>
+                <input class="form-textfield" type="text" id="add_0_postcode" name="add_0_postcode">
+            </div>
+
+            <div class="spacer-5"></div>
+
+            <div class="spacer-20"></div>
+
+            <label id="addaddr1" class="text-16">Do you need to add another address?</label>
+
+            <div class="spacer-10"></div>
+
+            <fieldset class="inline">
+                <div>
+                    <label class="block-label">
+                        <input type="radio" id="addaddr" name="add_address" onclick="addrClick(this)">
+                        <span class="text-16">Yes</span>
+                    </label>
+                </div>
+                <div>
+                    <label class="block-label">
+                        <input type="radio" checked="checked" name="add_address"><span class="text-16">No</span>
+                    </label>
+                </div>
+            </fieldset>
+
+            <div class="spacer-30"></div>
+
+            <div>
+                <table>
+                    <tr>
+                        <td width="50%" class="no-line">
+                            <input type="submit" id="continue" value="Continue" class="form-button">
+                        </td>
+                        <!--<td width="50%" class="custom-3">
+                            <a href="bankruptcy_amendment_step_2" class="link-16">Cancel amends</a>
+                        </td>-->
+                    </tr>
+                </table>
+            </div>
+
+        </div>
+    </form>
+    <!-- ///////////////////////////////// end of data entry form ///////////////////////////////// -->
+
+    <!-- /////////////////////////////////  Include image tool ///////////////////////////////// -->
+
+    {% include 'includes/image_view_body.html' %}
+
+    <!-- ///////////////////////////////// End of image tool ///////////////////////////////// -->
+</div>
+
+{% endblock %}

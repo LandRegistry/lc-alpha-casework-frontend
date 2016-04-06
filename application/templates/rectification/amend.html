@@ -1,0 +1,146 @@
+{% extends "/page_template/base.html" %}
+
+{% block page_specific_head %}
+{% include 'includes/lc_head.html' %}
+{% endblock %}
+{% block maincontent %}
+
+
+<div class="spacer-10"></div>
+
+<h1 class="title-36">Rectification</h1>
+
+<div class="spacer-5"></div>
+
+<div class="text-16-gray">
+    1. Retrieve original &nbsp;&nbsp;
+    <span class="text-16-bold">2. View and amend original</span> &nbsp;&nbsp;
+    3. Check details &nbsp;&nbsp;
+    4. Conveyancer and fees &nbsp;&nbsp;
+</div>
+
+<div class="grid-row">
+    <div class="col four" id="form_panel">
+        <!-- ///////////////////////////////// data entry form ///////////////////////////////// -->
+        <form id="rectify_form" action="/rectification_capture" method="POST" onsubmit="return validateDates(this);">
+            <div class="spacer-40"></div>
+            <h2 class="text-24-bold">Original registration details</h2>
+            <p class="text-indent">Please rectify information by over-keying as necessary</p>
+            <div class="spacer-10"></div>
+            {% if error_msg|length > 0 %}
+            <p class="error"><strong>{{error_msg}}</strong></p>
+            {% endif %}
+            <!-- CHARGE -->
+            <h2 class="text-24-bold">Class of charge</h2>
+
+            <div class="spacer-10"></div>
+
+            <div class="form">
+                <label class="form-label" for="class">Class and subclass</label><br/>
+                <select class="form-select width-50" id="class" name="class">
+                    <option selected value="C(I)" >C1</option>
+                    <option value="C(II)">C2</option>
+                    <option value="C(III)">C3</option>
+                    <option value="C(IV)">C4</option>
+                    <option value="D(I)">D1</option>
+                    <option value="D(II)">D2</option>
+                    <option value="D(III)">D3</option>
+                    <option value="A">A</option>
+                    <option value="B">B</option>
+                    <option value="E">E</option>
+                    <option value="F">F</option>
+                    <option value="PA">PA</option>
+                    <option value="WO">WO</option>
+                    <option value="DA">DA</option>
+                    <option value="ANN">ANN</option>
+                    <option value="LC">LC</option>
+                </select>
+            </div>
+
+            <script></script>
+            <div class="spacer-10"></div>
+            <!-- PARTICULARS -->
+            {% include 'includes/particulars.html' %}
+            <div class="spacer-10"></div>
+
+            <!-- ESTATE OWNER -->
+            {% include 'includes/estate_owner.html' %}
+            <div class="spacer-10"></div>
+
+            <!-- ADDITIONAL INFO -->
+            {% include 'includes/additional_info_chargee.html' %}
+            <div class="spacer-10"></div>
+
+
+            <div class="spacer-40"></div>
+            <input id="continue" type="submit" value="Continue" class="form-button"/>
+            <br/>
+            <input id="store" type="submit" name="store" onclick="javascript:removeRequired(this)" value="Return to this application later" class="link-button-16"/>
+            <div class="spacer-40"></div>
+        </form>
+    </div>
+    <!-- ///////////////////////////////// end of data entry form ///////////////////////////////// -->
+    <div class="col one"><p></p></div>
+    <!-- /////////////////////////////////  Include image tool ///////////////////////////////// -->
+
+    <div class="col seven">
+        <div class="spacer-40"></div>
+        {% include 'includes/image_view_body.html' %}
+    </div>
+    <!-- ///////////////////////////////// End of image tool ///////////////////////////////// -->
+
+</div>
+
+<script>
+
+    jQuery(document).ready(function(){
+        jQuery('#class').val('{{curr_data.class}}');
+        {% if curr_data.estate_owner_ind == '' %}
+            jQuery("#estateOwnerTypes").val("{{curr_data.estate_owner_ind}}");
+        {% endif %}
+        showFields();
+        setupCountyAutocomplete("#county_0");
+
+        //called when key is down
+            $(".dateEntry").bind("keydown", function (event) {
+                if ( event.keyCode == 46 || event.keyCode == 8 || event.keyCode == 9 || event.keyCode == 27 || event.keyCode == 13 ||
+                    // Allow: Ctrl+A
+                    (event.keyCode == 65 && event.ctrlKey === true) ||
+                    // Allow: home, end, left, right
+                    (event.keyCode >= 35 && event.keyCode <= 39) ||
+                    // allow forward slash
+                    (event.keyCode == 191) || (event.keyCode == 111)) {
+                    // let it happen, don't do anything
+                    return;
+                } else {
+                    // Ensure that it is a number and stop the keypress
+                    if (event.shiftKey || (event.keyCode < 48 || event.keyCode > 57) && (event.keyCode < 96 || event.keyCode > 105 )) {
+                        event.preventDefault();
+                    }
+                }
+            });
+    });
+
+    function validateDates(obj){
+		// loop through all dateEntry fields and check for valid date
+		var allOK = true;
+		jQuery('.error_text').hide();
+
+		if (jQuery('#date_of_instrument').is(':checked')){
+		    if (isValidDate(jQuery('#doi_orig_data').val()) == false) {
+				jQuery('<p class="error_text"><strong>Invalid date please re-enter</strong>'+
+				'</p>').insertAfter(jQuery('#doi_selector'));
+				allOK = false;
+			} else if (isValidDate(jQuery('#doi_current_data').val()) == false) {
+				jQuery('<p class="error_text"><strong>Invalid date please re-enter</strong>'+
+				'</p>').insertAfter(jQuery('#doi_selector'));
+				allOK = false;
+			}
+		}
+		return allOK;
+	}
+
+
+</script>
+
+{% endblock %}

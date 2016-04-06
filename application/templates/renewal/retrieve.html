@@ -1,0 +1,152 @@
+{% extends "/page_template/base.html" %}
+
+{% block page_specific_head %}
+<script src="/static/js/jquery-ui.js" ></script>
+<link href="/static/css/jquery-ui.css" rel="Stylesheet" type="text/css" />
+<style>
+    /*  Customisation of Modal dialog popup */
+
+    .ui-widget-overlay {
+    opacity: .7;
+    }
+    .ui-widget-header {
+    margin-top:10px;
+    border:0px;
+    background: #ffffff;
+    color: #000000;
+    font-family: Roboto;
+    font-size: 24px;
+    }
+    #ui-id-2 {
+    margin-left:-6px;
+    }
+    .ui-dialog-titlebar .ui-button {
+    display:none;
+    }
+    .stop-scrolling {
+    height: 100%;
+    overflow: hidden;
+    }
+</style>
+{% endblock %}
+{% block maincontent %}
+
+
+<div class="spacer-10"></div>
+
+<h1 class="title-36">Renewal</h1>
+
+<div class="spacer-5"></div>
+
+<div class="text-16-gray">
+    <span class="text-16-bold">1. Retrieve original</span> &nbsp;&nbsp;
+    2. View and renew &nbsp;&nbsp;
+    3. Conveyancer and fees &nbsp;&nbsp;
+</div>
+
+<div class="grid-row">
+    <div class="col four" id="form_panel">
+        <!-- ///////////////////////////////// data entry form ///////////////////////////////// -->
+        <form id="renewal_form" action="/get_details" method="POST" onsubmit="return validateDate(this);">
+            <div class="spacer-40"></div>
+            <h2 class="text-24-bold">Retrieve original</h2>
+            <div class="spacer-10"></div>
+            <div id="errorBlock" {% if error_msg|length > 0 %}class="error_block"{% endif %}>
+                {% if error_msg|length > 0 %}
+                <p class="error_text"><strong>{{error_msg}}</strong></p>
+                {% endif %}
+            <div class="form">
+                <label class="form-label" for="reg_no">Original reference number</label><br/>
+                <input class="form-textfield width-50" required  aria-required="true" type="text" id="reg_no" name="reg_no" value="{{reg_no}}"/>
+            </div>
+            <div class="form">
+                <label class="form-label" for="reg_date">Date of registration</label><br/>
+                <input class="form-textfield width-50 dateEntry"  required  aria-required="true" type="text" placeholder="dd/mm/yyyy" id="reg_date" name="reg_date" value="{{reg_date}}"/>
+            </div>
+            </div>
+            <div class="spacer-40"></div>
+            <input id="continue" type="submit" value="Continue" class="form-button"/>
+            <a href="javascript:showDelete()" id="reject" class="link-16 right">Reject application</a>
+            <br/>
+            <input id="store" type="submit" onclick="javascript:removeValidation(this)" name="store" value="Return to this application later" class="link-button-16"/>
+            <div class="spacer-40"></div>
+
+            <div id="reject_application_dlg" role="dialog" style="display: none;">
+                This will remove and delete the scanned image and application from the worklist.<br/><br/>
+                Are you sure you wish to continue?<br/><br/>
+                <input type="button" id="accept-reject" class="form-button" onclick="confirmDelete();" value="OK"/>
+                <input type="button" id="cancel-reject" class="form-button" onclick="cancelDelete();" value="Cancel"/>
+            </div>
+
+        </form>
+    </div>
+    <!-- ///////////////////////////////// end of data entry form ///////////////////////////////// -->
+    <div class="col one"><p></p></div>
+    <!-- /////////////////////////////////  Include image tool ///////////////////////////////// -->
+
+    <div class="col seven">
+        <div class="spacer-40"></div>
+        {% include 'includes/image_view_body.html' %}
+    </div>
+    <!-- ///////////////////////////////// End of image tool ///////////////////////////////// -->
+    <script>
+        $(document).ready(function () {
+        //called when key is down
+            $(".dateEntry").bind("keydown", function (event) {
+                if ( event.keyCode == 46 || event.keyCode == 8 || event.keyCode == 9 || event.keyCode == 27 || event.keyCode == 13 ||
+                    // Allow: Ctrl+A
+                    (event.keyCode == 65 && event.ctrlKey === true) ||
+                    // Allow: home, end, left, right
+                    (event.keyCode >= 35 && event.keyCode <= 39) ||
+                    // allow forward slash
+                    (event.keyCode == 191) || (event.keyCode == 111)) {
+                    // let it happen, don't do anything
+                    return;
+                } else {
+                    // Ensure that it is a number and stop the keypress
+                    if (event.shiftKey || (event.keyCode < 48 || event.keyCode > 57) && (event.keyCode < 96 || event.keyCode > 105 )) {
+                        event.preventDefault();
+                    }
+                }
+            });
+        });
+
+        function showDelete() {
+            $("#reject_application_dlg").dialog({
+                modal:true,
+                show: true,
+                title:"Reject Application?",
+                hide:true,
+                width: 600,
+                maxHeight: 500,
+                position: {
+                    my: "center",
+                    at: "center",
+                    of: window,
+                    collision: "none"
+                }
+            });
+        }
+
+        function cancelDelete() {
+            $("#reject_application_dlg").dialog('close');
+        }
+
+        function confirmDelete()
+        {
+            jQuery('#renewal_form').attr('action', "/rejection");
+            jQuery('#renewal_form').attr('onsubmit', "");
+            jQuery("#renewal_form").submit();
+        }
+
+        function removeValidation(obj) {
+            jQuery('#renewal_form').removeAttr(" onsubmit ");
+            removeRequired(obj);
+        }
+
+    </script>
+</div>
+
+
+
+{% endblock %}

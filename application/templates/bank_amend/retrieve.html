@@ -1,0 +1,195 @@
+{% extends "/page_template/base.html" %}
+
+{% block page_specific_head %}
+<script src="/static/js/jquery-ui.js" ></script>
+<link href="/static/css/jquery-ui.css" rel="Stylesheet" type="text/css" />
+<style>
+    /*  Customisation of Modal dialog popup */
+
+    .ui-widget-overlay {
+    opacity: .7;
+    }
+    .ui-widget-header {
+    margin-top:10px;
+    border:0px;
+    background: #ffffff;
+    color: #000000;
+    font-family: Roboto;
+    font-size: 24px;
+    }
+    #ui-id-2 {
+    margin-left:-6px;
+    }
+    .ui-dialog-titlebar .ui-button {
+    display:none;
+    }
+    .stop-scrolling {
+    height: 100%;
+    overflow: hidden;
+    }
+</style>
+{% endblock %}
+{% block maincontent %}
+
+{% if 'wob' in curr_data %}
+    {% set wob_date = curr_data.wob.date %}
+    {% set wob_number = curr_data.wob.number %}
+{% endif %}
+{% if 'pab' in curr_data %}
+    {% set pab_date = curr_data.pab.date %}
+    {% set pab_number = curr_data.pab.number %}
+{% endif %}
+
+
+<div class="spacer-10"></div>
+
+<h1 class="title-36">Bankruptcy amendment</h1>
+
+<div class="spacer-5"></div>
+
+<div class="text-16-gray">
+    <span class="text-16-bold">1. Retrieve original</span> &nbsp;&nbsp;
+    2. View and amend &nbsp;&nbsp;
+    3. Check details &nbsp;&nbsp;
+    4. Key number &nbsp;&nbsp;
+</div>
+
+<div class="grid-row">
+    <div class="col four" id="form_panel">
+        <!-- ///////////////////////////////// data entry form ///////////////////////////////// -->
+        <form id="get_banks" action="/get_original_bankruptcy" method="POST" onsubmit="return validateDates(this);">
+            <div class="spacer-40"></div>
+            <h2 class="text-24-bold">Retrieve original(s)</h2>
+            <div class="spacer-10"></div>
+            <div id="errorBlock" {% if error_msg|length > 0 %}class="error_block"{% endif %}>
+                {% if error_msg|length > 0 %}
+                <span id="key_no_error" class="error_text">{{error_msg}}</span>
+                {% endif %}
+                <div class="form">
+                    <label class="form-label" for="wob_ref">WOB reference number</label><br/>
+                    <input class="form-textfield width-50" autofocus  type="text" id="wob_ref" name="wob_ref" value="{% if 'wob' in data %}{{data.wob.number}}{% endif %}"/>
+                </div>
+                <div class="form">
+                    <label class="form-label" for="wob_date">Date of registration</label><br/>
+                    <input class="form-textfield width-50 dateEntry"  type="text" placeholder="dd/mm/yyyy" id="wob_date" name="wob_date" value="{% if 'wob' in data%}{{data.wob.date}}{% endif %}"/>
+                </div>
+                <div class="spacer-40"></div>
+                <div class="form">
+                    <label class="form-label" for="pab_ref">PAB reference number</label><br/>
+                    <input class="form-textfield width-50"  type="text" id="pab_ref" name="pab_ref" value="{% if 'pab' in data%}{{data.pab.number}}{% endif %}"/>
+                </div>
+                <div class="form">
+                    <label class="form-label" for="pab_date">Date of registration</label><br/>
+                    <input class="form-textfield width-50 dateEntry"  type="text" placeholder="dd/mm/yyyy" id="pab_date" name="pab_date" value="{% if 'pab' in data%}{{data.pab.date}}{% endif %}"/>
+                </div>
+            </div>
+            <div class="spacer-40"></div>
+            <div>
+                <input id="continue" type="submit" value="Continue" class="form-button"/>
+                <a href="javascript:showDelete()" id="reject" class="link-16 right">Reject application</a>
+                <br/>
+                <input id="store" type="submit" onclick="javascript:removeValidation()" name="store" value="Return to this application later" class="link-button-16"/>
+            </div>
+            <div class="spacer-40"></div>
+
+            <div id="reject_application_dlg" role="dialog" style="display: none;">
+                This will remove and delete the scanned image and application from the worklist.<br/><br/>
+                Are you sure you wish to continue?<br/><br/>
+                <input type="button" id="accept-reject" class="form-button" onclick="confirmDelete();" value="OK"/>
+                <input type="button" id="cancel-reject" class="form-button" onclick="cancelDelete();" value="Cancel"/>
+            </div>
+
+        </form>
+    </div>
+    <!-- ///////////////////////////////// end of data entry form ///////////////////////////////// -->
+    <div class="col one"><p></p></div>
+    <!-- /////////////////////////////////  Include image tool ///////////////////////////////// -->
+
+    <div class="col seven">
+        <div class="spacer-40"></div>
+        {% include 'includes/image_view_body.html' %}
+    </div>
+    <!-- ///////////////////////////////// End of image tool ///////////////////////////////// -->
+
+</div>
+<script>
+    $(document).ready(function () {
+    //called when key is down
+        $(".dateEntry").bind("keydown", function (event) {
+            if ( event.keyCode == 46 || event.keyCode == 8 || event.keyCode == 9 || event.keyCode == 27 || event.keyCode == 13 ||
+                // Allow: Ctrl+A
+                (event.keyCode == 65 && event.ctrlKey === true) ||
+                // Allow: home, end, left, right
+                (event.keyCode >= 35 && event.keyCode <= 39) ||
+                // allow forward slash
+                (event.keyCode == 191) || (event.keyCode == 111)) {
+                // let it happen, don't do anything
+                return;
+            } else {
+                // Ensure that it is a number and stop the keypress
+                if (event.shiftKey || (event.keyCode < 48 || event.keyCode > 57) && (event.keyCode < 96 || event.keyCode > 105 )) {
+                    event.preventDefault();
+                }
+            }
+        });
+    });
+
+
+    function showDelete() {
+        $("#reject_application_dlg").dialog({
+            modal:true,
+            show: true,
+            title:"Reject Application?",
+            hide:true,
+            width: 600,
+            maxHeight: 500,
+            position: {
+                my: "center",
+                at: "center",
+                of: window,
+                collision: "none"
+            }
+        });
+    }
+
+    function cancelDelete() {
+        $("#reject_application_dlg").dialog('close');
+    }
+
+    function confirmDelete()
+    {
+        jQuery('#get_banks').attr('action', "/rejection");
+        jQuery("#get_banks").submit();
+    }
+
+    function validateDates(obj){
+		// loop through all dateEntry fields and check for valid date
+		var allOK = true;
+		jQuery('.error_text').hide();
+
+		if (jQuery('#wob_ref').val() != ''){
+		    if (isValidDate(jQuery('#wob_date').val()) == false) {
+				jQuery('<p class="error_text"><strong>Invalid date please re-enter</strong>'+
+				'</p>').insertBefore(jQuery('#wob_date'));
+				allOK = false;
+			}
+		}
+
+		if (jQuery('#pab_ref').val() != ''){
+		    if (isValidDate(jQuery('#pab_date').val()) == false) {
+				jQuery('<p class="error_text"><strong>Invalid date please re-enter</strong>' +
+				'</p>').insertBefore(jQuery('#pab_date'));
+				allOK = false;
+			}
+		}
+
+		return allOK;
+	}
+
+	function removeValidation() {
+        jQuery('#get_banks').removeAttr(" onsubmit ");
+    }
+</script>
+
+
+{% endblock %}

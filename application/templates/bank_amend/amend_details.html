@@ -1,0 +1,200 @@
+{% extends "/page_template/base.html" %}
+{% block page_specific_head %}
+<script src="/static/js/jquery-ui.js" ></script>
+<link href="/static/css/jquery-ui.css" rel="Stylesheet" type="text/css" />
+<script>
+    var n = 1;
+    function addName(sender){
+        n ++;
+        jQuery('<div class="form"> \
+                    <label class="form-label" for="forenames_">Forename(s)</label> \
+                    <input class="form-textfield" id="forenames_' +n+ '" name="forenames_' +n+ '" value="{{forename}}"> \
+                </div> \
+                <div class="form"> \
+                    <label class="form-label" for="surname_">Surname</label> \
+                    <input class="form-textfield" id="surname_' +n+ '" name="surname_' +n+ '" value="{{surname}}"> \
+                </div>').insertBefore("#addname");
+        console.log(n);
+    };
+
+    var a = 1;
+    function addAddress(sender){
+        a++;
+        jQuery('<div class="form"> \
+                <label class="form-label">Address</label><div class="right"><a href="javascript:removeAddress(' + (a - 1) + ')" class="link-16" id="remove_address_' +a+ '">Remove address</a></div> \
+                <input class="form-textfield mr-btm-10" type="text" id="add_' +a+ '_line1" name="add_' +a+ '_line1" value=""> \
+                <input class="form-textfield mr-btm-10" type="text" id="add_' +a+ '_line2" name="add_' +a+ '_line2" value=""> \
+                <input class="form-textfield mr-btm-10" type="text" id="add_' +a+ '_line3" name="add_' +a+ '_line3" value=""> \
+                <input class="form-textfield mr-btm-10" type="text" id="add_' +a+ '_line4" name="add_' +a+ '_line4" value=""> \
+                <input class="form-textfield" type="text" id="add_' +a+ '_line5" name="add_' +a+ '_line5" value=""> \
+            </div> \
+            <div class="form"> \
+                <label class="form-label">County</label> \
+                <input class="form-textfield" type="text" id="county_' +a+ '" name="county_' +a+ '" value=""> \
+            </div> \
+            <div class="form"> \
+                <label class="form-label">Postcode</label> \
+                <input class="form-textfield" type="text" id="postcode_' +a+ '" name="postcode_' +a+ '" value=""> \
+            </div>').insertBefore("#add_address");
+            setupCountyAutocomplete(jQuery('#county_' +a));
+    };
+
+     function setupCountyAutocomplete(element) {
+        var a = 0;
+
+        jQuery.ajax({
+            url: '/counties?welsh=no',
+            type: 'GET',
+            counties: {},
+            success: function( counties ) {
+                jQuery(element).autocomplete({
+                  source: function( request, response ) {
+                    var matcher = new RegExp( "^" + jQuery.ui.autocomplete.escapeRegex( request.term ), "i" );
+                    response( jQuery.grep( counties, function( item ){
+                          return matcher.test( item );
+                        }) );
+                    }
+                });
+            }
+        });
+    }
+
+    function removeAddress(add_index){
+        a --;
+        jQuery('#amend_form').attr('action', "/remove_address/" + add_index);
+        jQuery("#amend_form").submit();
+    }
+
+</script>
+{% endblock %}
+
+{% block maincontent %}
+{% if application_type == 'amend'%}
+{% set trail = 'amendment' %}
+{% elif application_type == 'bank_regn' %}
+{% set trail = 'registration' %}
+{% endif %}
+<div class="spacer-10"></div>
+
+<h1 class="title-36">Bankruptcy amendment</h1>
+
+<div class="spacer-5"></div>
+
+<div class="text-16-gray">
+    1. Retrieve original&nbsp;&nbsp;
+    <span class="text-16-bold">2. View and amend</span>  &nbsp;&nbsp;
+    3. Check details &nbsp;&nbsp;
+    4. Key number &nbsp;&nbsp;
+</div>
+
+<div class="grid-row">
+    <div class="col four" id="form_panel">
+        <!-- ///////////////////////////////// data entry form ///////////////////////////////// -->
+        <form id="amend_form" action="/process_amended_details" method="POST" >
+            <div class="spacer-40"></div>
+            <h2 class="text-24-bold">Original bankruptcy details</h2>
+            <div class="spacer-10"></div>
+            <p class="text-indent">Please amend information by over-keying as necessary</p>
+            <div class="spacer-10"></div>
+            <div class="form">
+                <label class="form-label">Forename(s)</label>
+                <input class="form-textfield" type="text" id="forenames_1" name="forenames_1" autofocus value="{{data.parties[0].names[0].private.forenames|join(' ')}}">
+            </div>
+
+            <div class="form">
+                <label class="form-label">Surname</label>
+                <input class="form-textfield" type="text" id="surname_1" required name="surname_1" value="{{data.parties[0].names[0].private.surname}}">
+            </div>
+
+            {% for name in data.parties[0].names %}
+            {% if loop.index > 1 %}
+            <div class="spacer-20"></div>
+
+            <div class="form">
+                <label class="form-label">Forename(s)</label>
+                <input class="form-textfield" type="text" name="forenames_{{loop.index}}" id="forenames_{{loop.index}}" value="{{name.private.forenames|join(' ')}}">
+            </div>
+
+            <div class="form">
+                <label class="form-label">Surname</label>
+                <input class="form-textfield" type="text" name="surname_{{loop.index}}" id="surname_{{loop.index}}" value="{{name.private.surname}}">
+            </div>
+            {% endif %}
+            {% endfor %}
+            <script> n = {{ data.parties[0].names| length}};</script>
+            <div class="spacer-20"></div>
+
+            <div><a href="#add_name" onclick="addName(this)" class="link-16" id="addname">Add AKA</a></div>
+
+            <div class="spacer-20"></div>
+
+            <div class="form">
+                <label class="form-label">Occupation</label>
+                <input class="form-textfield" type="text" id="occupation" name="occupation" value="{{data.parties[0].occupation}}">
+            </div>
+
+            <div class="spacer-20"></div>
+
+            {% if data.parties[0].addresses|length > 0 %}
+            {% for address in data.parties[0].addresses %}
+            <div class="form">
+                <label class="form-label">Address</label><div class="right">{% if loop.index > 1%}<a href="javascript:removeAddress({{loop.index-1}});" class="link-16" id="remove_address_{{loop.index-1}}">Remove address</a>{% endif %}</div>
+                <input class="form-textfield mr-btm-10" type="text" required id="add_{{loop.index}}_line1" name="add_{{loop.index}}_line1" value="{{address.address_lines[0]}}">
+                <input class="form-textfield mr-btm-10" type="text" id="add_{{loop.index}}_line2" name="add_{{loop.index}}_line2" value="{{address.address_lines[1]}}">
+                <input class="form-textfield mr-btm-10" type="text" id="add_{{loop.index}}_line3" name="add_{{loop.index}}_line3" value="{{address.address_lines[2]}}">
+                <input class="form-textfield mr-btm-10" type="text" id="add_{{loop.index}}_line4" name="add_{{loop.index}}_line4" value="{{address.address_lines[3]}}">
+                <input class="form-textfield" type="text" id="add_{{loop.index}}_line5" name="add_{{loop.index}}_line5" value="{{address.address_lines[4]}}">
+            </div>
+            <div class="form">
+                <label class="form-label">County</label>
+                <input class="form-textfield" type="text" id="county_{{loop.index}}" name="county_{{loop.index}}" value="{{address.county}}">
+            </div>
+            <div class="form">
+                <label class="form-label">Postcode</label>
+                <input class="form-textfield" type="text" id="postcode_{{loop.index}}" name="postcode_{{loop.index}}" value="{{address.postcode}}">
+            </div>
+            <div class="spacer-20"></div>
+            {% endfor %}
+            {% endif %}
+            <script> a = {{ data.parties[0].addresses| length }};</script>
+            <div><a href="#add_address" onclick="addAddress(this)" class="link-16" id="add_address">Add additional address</a></div>
+            <div class="spacer-30"></div>
+            <h2 class="text-24-bold">Official details</h2>
+            <div class="spacer-10"></div>
+            {% if error_msg|length > 0 %}
+            <p class="error"><strong>{{error_msg}}</strong></p>
+            {% endif %}
+            <div class="form col ">
+                <label class="form-label" for="ref_no">Reference</label><br/>
+                <input class="form-textfield" required  aria-required="true" type="text" id="ref_no" name="ref_no" value="{{data.parties[0].case_reference}}"/>
+            </div>
+            <div class="spacer-40"></div>
+            <input id="continue" type="submit" value="Continue" class="form-button"/>
+            <br/>
+            <input id="store" type="submit" name="store" onclick="javascript:removeRequired(this)" value="Return to this application later" class="link-button-16"/>
+            <div class="spacer-40"></div>
+        </form>
+    </div>
+    <!-- ///////////////////////////////// end of data entry form ///////////////////////////////// -->
+    <div class="col one"><p></p></div>
+    <!-- /////////////////////////////////  Include image tool ///////////////////////////////// -->
+
+    <div class="col seven">
+        <div class="spacer-40"></div>
+        {% include 'includes/image_view_body.html' %}
+    </div>
+    <!-- ///////////////////////////////// End of image tool ///////////////////////////////// -->
+
+</div>
+<script>
+
+    jQuery(document).ready(function(){
+        for (i = 1; i <= {{data.parties[0].addresses|length }}; i++) {
+            setupCountyAutocomplete("#county_" + i);
+        }
+    });
+
+
+</script>
+
+{% endblock %}

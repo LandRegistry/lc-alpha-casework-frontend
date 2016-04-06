@@ -1,0 +1,97 @@
+{% extends "/page_template/base.html" %}
+{% block page_specific_head %}
+
+{% endblock %}
+
+{% block maincontent %}
+
+<div class="spacer-10"></div>
+
+<h1 class="title-36">Bankruptcy amendment</h1>
+
+<div class="spacer-5"></div>
+
+<div class="text-16-gray">
+    1. Retrieve original &nbsp;&nbsp;
+    2. View and amend &nbsp;&nbsp;
+    <span class="text-16-bold">3. Check details</span> &nbsp;&nbsp;
+    4. Key number &nbsp;&nbsp;
+</div>
+
+<div class="grid-row">
+    <div class="col four" id="form_panel">
+        <!-- ///////////////////////////////// data entry form ///////////////////////////////// -->
+        <form action="amendment_key_no" method="POST">
+            <div class="spacer-40"></div>
+
+            <div class="grid-row">
+                <div class="text-19-gray col ten">Debtor details</div>
+                <div class="col two"><a href="amendment_capture" id="change_debtor">Change</a></div>
+            </div>
+            <div class="grid-row-padded-line">
+                <span class="text-16-bold col five">Forename</span>
+                <span class="text-16 col seven"  id="forename_1" >{{data[0].names[0].private.forenames|join(' ')}}</span>
+            </div>
+            <div class="grid-row-padded-line">
+                <span class="text-16-bold col five">Surname</span>
+                <span class="text-16 col seven" id="surname_1" >{{data[0].names[0].private.surname}}</span>
+            </div>
+            {% if data[0].names|length > 1 %}
+            <div class="grid-row-padded-line">
+                {% for name in data[0].names %}
+                {% if loop.index > 1 %}
+                <span class="text-16-bold col five">{% if loop.index == 2 %}AKA{% else %}&nbsp;{% endif %}</span>
+                <span class="text-16 col seven" id="aka_name_{{loop.index}}">{{name.private.forenames|join(' ')}} {{name.private.surname}}</span>
+                {% endif %}
+                {% endfor %}
+            </div>
+            {% endif %}
+            <div class="grid-row-padded-line">
+                <span class="text-16-bold col five">Occupation</span>
+                <span class="text-16 col seven" id="occupation" >{{data[0].occupation}}</span>
+            </div>
+
+            <div class="grid-row-padded-line bottom-line">
+                {% for address in data[0].addresses %}
+                <div class="text-16-bold col five">{% if loop.index == 1 %}Address{% else %}&nbsp;{% endif %}</div>
+                <div class="text-16 col seven address" id="address_{{loop.index}}" >
+                    {% for line in address.address_lines %}
+                        {{line}}<br/>
+                    {% endfor %}
+                    {{ address.county }}<br/>
+                    {{ address.postcode }}
+                    {% if loop.index < data[0].addresses|length %} <hr/> {% endif %}
+            </div>
+                {% endfor %}
+            </div>
+
+            <div class="spacer-20"></div>
+            <div class="grid-row">
+                <div class="text-19-gray col ten">Official details</div>
+                <div class="col two"><a href="amendment_capture" id="change_court">Change</a></div>
+            </div>
+            <div class="grid-row-padded-line bottom-line">
+                <span class="text-16-bold col five">Reference</span>
+                <span class="text-16 col seven" id="court_no">{{data[0].case_reference}}</span>
+            </div>
+            <div class="spacer-40"></div>
+            <input id="continue" type="submit" value="Continue" class="form-button"/>
+            <br/>
+            <input id="store" type="submit" name="store" value="Return to this application later" class="link-button-16"/>
+            <div class="spacer-40"></div>
+        </form>
+    </div>
+
+    <!-- ///////////////////////////////// end of data entry form ///////////////////////////////// -->
+    <div class="col one"><p></p></div>
+    <!-- /////////////////////////////////  Include image tool ///////////////////////////////// -->
+
+    <div class="col seven">
+        <div class="spacer-40"></div>
+        {% include 'includes/image_view_body.html' %}
+    </div>
+    <!-- ///////////////////////////////// End of image tool ///////////////////////////////// -->
+
+</div>
+
+{% endblock %}

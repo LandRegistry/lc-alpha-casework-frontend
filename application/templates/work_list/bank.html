@@ -1,0 +1,196 @@
+{% extends "/page_template/base.html" %}
+{% block page_specific_head %}
+<link href="/static/datatables/css/jquery.dataTables.css" rel="stylesheet" />
+<link href="/static/datatables/css/dataTables.responsive.css" rel="stylesheet" />
+<script type="text/javascript" src="/static/datatables/js/jquery.dataTables.js"></script>
+
+<script>
+ HOST = window.location.protocol + "//" + window.location.hostname;
+
+$(document).ready(function() {
+    $("#refresh").hide();
+    display_list = $('#requested_list').val();
+    var refresh_screen = setInterval(function(){ location.href="/get_list?appn=" + display_list;}, 30000);
+    $('#work-list').DataTable({info: false, paging: false, searching: false, ordering:false});
+
+    // make table row clickable link to child href
+    $('#work-list tbody tr').click(function() {
+
+        $(this).prop('onclick',null).off('click');
+
+        var href = $(this).find("a").attr("href");
+        if(href) {
+            window.location = href;
+            clearInterval(refresh_screen);
+        }
+    });
+
+
+
+
+} );
+
+</script>
+{% endblock %}
+
+{% block maincontent %}
+
+<input type="hidden" id="requested_list" name="requested_list" value="{{requested_list}}"/>
+
+
+{% if requested_list == 'bank_regn' %}
+{% set page_title = 'Registration' %}
+{% set regn_selected = 'selected' %}
+{% elif requested_list == 'bank_amend' %}
+{% set page_title = 'Amendment' %}
+{% set amend_selected = 'selected' %}
+{% elif requested_list == 'bank_rect' %}
+{% set page_title = 'Rectification' %}
+{% set rect_selected = 'selected' %}
+{% elif requested_list == 'bank_stored' %}
+{% set page_title = 'Stored' %}
+{% set stored_selected = 'selected' %}
+{% endif %}
+<div class="breadcrumb">
+    <ol>
+        <li><a href="/">Home</a></li>
+        {% if requested_list == "bank" %}
+        <li class="breadcrumb-no-arrow"><span>Bankruptcy</span></li>
+        {% else %}
+        <li><a href="/get_list?appn=bank">Bankruptcy</a></li>
+        <li class="breadcrumb-no-arrow"><span>{{page_title}}</span></li>
+        {% endif %}
+    </ol>
+</div>
+
+<div class="spacer-5"></div>
+<div class="grid-row" >
+
+    <!-- Side Navigation -->
+    <!-- Side Navigation -->
+    {% set side_nav_bank = 'active' %}
+    {% include 'includes/side_nav.html' %}
+
+    <!-- Content -->
+    <div id="content-with-side-nav" class="col nine" >
+        <div class="spacer-10"></div>
+        <h1 class="title-36">Bankruptcy</h1>
+
+        <!-- Confirmation/Rejection -->
+        {% if 'reg_no' in result %}
+        {% include 'includes/confirmation.html' %}
+        {% elif 'rejection' in result %}
+        {% include 'includes/rejection.html' %}
+        {% endif %}
+
+        <div class="spacer-20"></div>
+        <!-- Totals -->
+        {% set sub_cat_qty = 5 %}
+        <div class="grid-row">
+            <div class="subservice-box no-margin">
+                <a class="no-link-style {{regn_selected}}" tabindex="1"  href="/get_list?appn=bank_regn">
+                    <div class="spacer-20"></div>
+                    <p class="text-16-bold">Registrations</p>
+                    <div class="spacer-30"></div>
+                    <div class="indicator" id="bank_regn">
+                        {% if data['bank_regn'] < 10 %}
+                        <span class="indicator-middle">{{data['bank_regn']}}</span>
+                        {% else %}
+                        <span class="indicator-middle-2">{{data['bank_regn']}}</span>
+                        {% endif %}
+                    </div>
+                </a>
+            </div>
+
+            <div class="subservice-box">
+                <a class="no-link-style {{amend_selected}}" tabindex="2" href="/get_list?appn=bank_amend">
+                    <div class="spacer-20"></div>
+                    <p class="text-16-bold">Amendments</p>
+                    <div class="spacer-30"></div>
+                    <div class="indicator" id="bank_amend">
+                        {% if data['bank_amend'] < 10 %}
+                        <span class="indicator-middle">{{data['bank_amend']}}</span>
+                        {% else %}
+                        <span class="indicator-middle-2">{{data['bank_amend']}}</span>
+                        {% endif %}
+                    </div>
+                </a>
+            </div>
+
+            <div class="subservice-box">
+                <a class="no-link-style {{stored_selected}}" tabindex="5" href="/get_list?appn=bank_stored">
+                    <div class="spacer-20"></div>
+                    <p class="text-16-bold">Stored</p>
+                    <div class="spacer-30"></div>
+                    <div class="indicator" id="bank_stored">
+                        {% if data['bank_stored'] < 10 %}
+                        <span class="indicator-middle">{{data['bank_stored']}}</span>
+                        {% else %}
+                        <span class="indicator-middle-2">{{data['bank_stored']}}</span>
+                        {% endif %}
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <!-- List of pending applications -->
+        {% if requested_list != 'bank' %}
+        <div class="grid-row">
+            <div class="spacer-15"></div>
+            <h2 class="text-24-bold">{{page_title}} applications</h2>
+
+            {% if worklist|length > 0 %}
+            <div class="spacer-15"></div>
+            {% if error_msg|length > 0 %}
+            <p class="text-16-bold error">{{error_msg}}</p>
+            {% endif %}
+            <div class="col nine no-margin" id="work-list-div">
+                <table id="work-list" class="hover" >
+                    <thead>
+                    <tr>
+                        <th class="table-text-black">Date and time received <a href="#"></a></th>
+                        <th class="table-text-black">Form type <a href="#"></a></th>
+                        {% if requested_list == "bank_stored" %}
+                        <th class="table-text-black">Stored by <a href="#"></a></th>
+                        <th class="table-text-black">Reason <a href="#"></a></th>
+                        {% endif %}
+                    </tr>
+                    </thead>
+                    {% for n in worklist %}
+                    <tbody>
+                    <tr id="row_{{loop.index}}" tabindex="{{loop.index + sub_cat_qty}}" onkeypress="this.click();">
+                        <td>{{n['date_received']}} {{n['time_received']}}</td>
+                        <td>
+                            {% if n['application_type'] == 'WO(B)' %}
+                            WOB
+                            {% elif n['application_type'] == 'PA(B)'%}
+                            PAB
+                            {% else %}
+                            {{n['application_type']}}
+                            {% endif %}
+                             <a class="hide" id="appn_type{{loop.index}}" href="javascript:getApplication('{{requested_list}}', {{n['appn_id']}}, '{{n['application_type']|replace(' ', '%20')}}');">
+                                link required for clickable table row
+                            </a>
+                        </td>
+                        {% if requested_list == "bank_stored" %}
+                        <td>{{n['stored_by']}}</td>
+                        <td>{{n['store_reason']}}</td>
+                        {% endif %}
+                    </tr>
+                    </tbody>
+                    {% endfor %}
+                </table>
+
+            </div>
+            {% else %}
+            <div class="grid-row text-16">
+                There are no current applications
+            </div>
+            {% endif %}
+        </div>
+
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}

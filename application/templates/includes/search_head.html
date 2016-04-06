@@ -1,0 +1,339 @@
+<script src="/static/js/jquery-ui.js" ></script>
+<link href="/static/css/jquery-ui.css" rel="Stylesheet" type="text/css" />
+<style>
+    /*  Customisation of Modal dialog popup */
+
+    .ui-widget-overlay {
+    opacity: .7;
+    }
+    .ui-widget-header {
+    margin-top:10px;
+    border:0px;
+    background: #ffffff;
+    color: #000000;
+    font-family: Roboto;
+    font-size: 24px;
+    }
+    #ui-id-2 {
+    margin-left:-6px;
+    }
+    .ui-dialog-titlebar {
+    display:none;
+    }
+    .stop-scrolling {
+    height: 100%;
+    overflow: hidden;
+    }
+</style>
+<script>
+
+function showComplexNameModal(ctr) {
+    $("#complex_result_modal_"+ctr).dialog({
+        modal:true,
+        show: true,
+        hide:true,
+        width: 600,
+        maxHeight: 500,
+        position: {
+            my: "left top",
+            at: "left top",
+            of: window,
+            collision: "none"
+        }
+    });
+    getComplexName(ctr);
+}
+
+function addComplexNameModal(ctr) {
+    $("#add_complex_modal_"+ctr).dialog({
+        modal:true,
+        show: true,
+        hide:true,
+        width: 600,
+        maxHeight: 500,
+        position: {
+            my: "left top",
+            at: "left top",
+            of: window,
+            collision: "none"
+        }
+    });
+}
+
+function updateComplexName(obj, ctr){
+    compNameStr = obj.value;
+    name = compNameStr.substring(0,compNameStr.indexOf('*'));
+    number = compNameStr.substring(compNameStr.indexOf('*')+1,compNameStr.length);
+    nameHTML = jQuery('<p class="text-16-bold">' + name +' ('+ number +')' + '</p>');
+    jQuery('#selected_name_' + ctr).empty();
+    jQuery('#selected_name_' + ctr).append(nameHTML);
+    jQuery('#complex_name_' + ctr).val(name);
+    jQuery('#complex_number_' + ctr).val(number);
+}
+
+function closeComplexNameModal(ctr){
+    $('body').removeClass('stop-scrolling');
+    $('#complex_result_modal_' + ctr).dialog('close');
+    $('#add_complex_modal_'+ ctr).dialog('close');
+}
+function clearPreviousResults(ctr){
+    jQuery('#name_results_' + ctr).remove();
+    jQuery('#selected_name_' + ctr).empty();
+    jQuery('#complex_name_' + ctr).val("");
+    jQuery('#complex_number_' + ctr).val("");
+    jQuery('#complex_name_addition_'+ ctr).val("");
+    jQuery('#complex_number_addition_'+ ctr).val("");
+    jQuery('#modal_add_'+ctr).replaceWith($('<p id="modal_add_'+ctr+'" class="text-16"></p>'));
+}
+
+function addComplexName(ctr){
+    var insertName = document.getElementById("complex_name_addition_"+ctr).value;
+    var insertNumber = document.getElementById("complex_number_addition_"+ctr).value;
+
+    var user_id = document.getElementById('user_id').value;
+    var transid = document.getElementById('transaction_id').value;
+
+    jQuery.ajax( {
+        url: '/complex_names/' + insertName + '/' + insertNumber,
+        type: 'POST',
+        data: {},
+        headers: {
+            'X-Transaction-ID': transid,
+            'X-LC-Username': user_id
+        },
+        success: function( data ) {
+            jQuery('#modal_add_'+ ctr).replaceWith($('<p id="modal_add_'+ctr+'" class="text-16">Complex name added please close.</p>'));
+            var add_name = {};
+            add_name.value = insertName + '*' + insertNumber;
+            updateComplexName(add_name,ctr);
+        },
+        error: function( data) {
+            jQuery('#modal_add_'+ctr).replaceWith($('<p id="modal_add_'+ctr+'" class="text-16">Error - please add the name using #06, close this box and look up the Complex name again.</p>'));
+
+        }
+    } );
+}
+
+function getComplexName(ctr){
+
+    jQuery('#modal_message_' + ctr).replaceWith($('<p id="modal_message_' +ctr+ '" class="text-16">Please wait...</p>'));
+    $('body').addClass('stop-scrolling');
+    var enteredName = jQuery('#complex_name_field_'+ctr).val().trim();
+    clearPreviousResults(ctr);
+    var apos = "'";
+    var user_id = document.getElementById('user_id').value;
+    var transid = document.getElementById('transaction_id').value;
+
+    if (enteredName.length > 3){
+        jQuery.ajax( {
+            url: '/complex_names/' + enteredName,
+            type: 'GET',
+            data: {},
+            headers: {
+                'X-Transaction-ID': transid,
+                'X-LC-Username': user_id
+            },
+            success: function( data ) {
+                jQuery('#modal_message_'+ ctr).replaceWith($('<p id="modal_message_'+ctr+'" class="text-16">Please select a complex name from the list</p>'));
+                // jQuery('#add_complex_name_'+ctr).replaceWith($('<a href="#here" id="add_complex_name'+ctr+'" data-dismiss="modal" onclick="addComplexNameModal('+apos+'{{id_count}}'+apos+');" class="link-14-right">Add a complex name</a>'));
+                if (data.length > 0 ){
+                    resultHTML = jQuery('<table id="name_results_'+ctr+'"></table');
+                    for ( var i = 0; i < data.length; i++) {
+                        var name = data[i].name;
+                        var number = data[i].number;
+                        var row =jQuery('<tr/>');
+                        var cells =  jQuery('<td>'+ name +'</td><td>' + number + '</td><td>' +
+                        '<input type="radio" id="comp_name_'+i+'" name="comp_name_sel" onclick="updateComplexName(this,'+ctr+')" value="'+ name +'*' + number +'"/></td>');
+                        row.append(cells);
+                resultHTML.append(row);
+                    }
+                    jQuery('#complex_result_'+ctr).append(resultHTML);
+                } else {
+                    jQuery('#modal_message_'+ ctr).replaceWith('<p id="modal_message_'+ctr+'" class="text-16">No match found for the name entered.'+
+                    '<br/><br/>Please check the details entered and if correct then create a new complex name using #06.</p>');
+                    jQuery('#add_complex_name_'+ctr).replaceWith($('<p id="add_complex_name_'+ctr+'" class="text-16"></p>'));
+                }
+
+            }
+        } );
+    } else {
+        jQuery('#modal_message_'+ ctr).replaceWith('<p id="modal_message_'+ ctr + '" class="text-16">The system is unable to retrieve a list '+
+                    'of complex names due to the name entered was less than 4 characters, please try again.</p>');
+        jQuery('#add_complex_name_'+ctr).replaceWith($('<p id="add_complex_name'+ctr+'" class="text-16"></p>'));
+    }
+}
+
+var nameCount = 0;
+
+function setupNameFields(){
+        $("#search_fields :input").attr("disabled", true);
+        showName();
+        showName();
+}
+
+function showName() {
+    nameCount++;
+    filterNameFields(nameCount);
+    jQuery('#name_' + nameCount).show();
+    if (nameCount == 6) {
+        jQuery('#add_name').hide();
+    }
+}
+
+function filterNameFields(i) {
+    var type = jQuery("#nameType_" + i).val();
+    jQuery("#private_" + i).hide();
+    jQuery("#limited_" + i).hide();
+    jQuery("#local_" + i).hide();
+    jQuery("#complex_" + i).hide();
+    jQuery("#other_" + i).hide();
+    jQuery("#search_name_" + i + " :input").attr("disabled", true);
+
+    if (type == "limitedCompany") {
+        jQuery("#limited_" + i).show();
+        jQuery("#limited_" + i + " :input").attr("disabled", false);
+        jQuery("#forename_" + i + ", #surname_" + i + ", #loc_auth_" + i + ", #loc_auth_area_" + i +
+        ", #complex_name_" + i + ", #other_name_" + i + "").val('');
+    } else if (type == "countyCouncil" || type == "parishCouncil" || type == "otherCouncil" || type == "ruralCouncil" ) {
+        jQuery("#local_" + i).show();
+        jQuery("#local_" + i + " :input").attr("disabled", false);
+        jQuery("#forename_" + i + ", #surname_" + i + ", #company_" + i + ", #complex_name_" + i +
+        ", #other_name_" + i + "").val('');
+    }else if (type == "complexName") {
+        jQuery("#complex_" + i).show();
+        jQuery("#complex_" + i + " :input").attr("disabled", false);
+        jQuery("#forename_" + i + ", #surname_" + i + ", #company_" + i + ", #loc_auth_" + i +
+        ", #loc_auth_area_" + i + ", #other_name_" + i + "").val('');
+    } else if (type == "other" || type == "developmentCorporation" || type == "codedName" ) {
+        jQuery("#other_" + i).show();
+        jQuery("#other_" + i + " :input").attr("disabled", false);
+        jQuery("#forename_" + i + ", #surname_" + i + ", #company_" + i + ", #loc_auth_" + i +
+        ", #loc_auth_area_" + i + ", #complex_name_" + i + "").val('');
+    } else {
+        jQuery("#private_" + i).show();
+        jQuery("#private_" + i + " :input").attr("disabled", false);
+        jQuery("#company_" + i + ", #loc_auth_" + i + ", #loc_auth_area_" + i +
+        ", #complex_name_" + i + ", #other_name_" + i + "").val('');
+    }
+    jQuery("#nameType_" + i).attr("disabled", false);
+    jQuery("#search_date_" + i + " :input").attr("disabled", false);
+}
+
+
+if ({{curr_data.county|length}} > 0) {
+    var n = {{curr_data.county|length}};
+}
+else {
+    var n = 1;
+}
+
+function setupCountyAutocomplete(element) {
+    var a = 0;
+    var user_id = document.getElementById('user_id').value;
+    var transid = document.getElementById('transaction_id').value;
+
+    jQuery.ajax({
+        url: '/counties?welsh=yes',
+        type: 'GET',
+        counties: {},
+        headers: {
+            'X-Transaction-ID': transid,
+            'X-LC-Username': user_id
+        },
+        success: function( counties ) {
+            jQuery(element).autocomplete({
+              source: function( request, response ) {
+                var matcher = new RegExp( "^" + jQuery.ui.autocomplete.escapeRegex( request.term ), "i" );
+                response( jQuery.grep( counties, function( item ){
+                      return matcher.test( item );
+                    }) );
+                }
+            });
+        }
+    });
+}
+
+
+function countyClick(sender){
+    var user_id = document.getElementById('user_id').value;
+    var transid = document.getElementById('transaction_id').value;
+
+    if (jQuery("#all_counties").is(':checked') != true) {
+        var fldnam = "county_" + n;
+        jQuery('<input class="form-textfield" type="text" id="' + fldnam + '" name="' + fldnam+ '"> \
+                <div class="spacer-10"><div>').insertBefore("#addcounty");
+        n ++;
+
+        jQuery.ajax({
+        'async': false,
+        url: '/counties?welsh=yes',
+        type: 'GET',
+        counties: {},
+        headers: {
+            'X-Transaction-ID': transid,
+            'X-LC-Username': user_id
+        },
+        success: function( counties ) {
+            jQuery("#"+fldnam).autocomplete({
+              source: function( request, response ) {
+                var matcher = new RegExp( "^" + jQuery.ui.autocomplete.escapeRegex( request.term ), "i" );
+                response( jQuery.grep( counties, function( item ){
+                      return matcher.test( item );
+                    }) );
+                }
+                });
+            }
+        });
+    }
+};
+
+function allCountyClick(){
+    if (jQuery("#all_counties").is(':checked')) {
+        jQuery("#specified_counties :input").attr("disabled", true);
+        jQuery("#specified_counties :input").val("");
+        jQuery("#specified_counties label").css('color','#dddddd');
+        jQuery("#specified_counties :input").css('background-color','#dddddd');
+        jQuery("#addcounty").removeAttr('href');
+        jQuery("#addcounty").css('color','#dddddd');
+    } else {
+        jQuery("#specified_counties :input").attr("disabled", false);
+        jQuery("#specified_counties label").css('color','#000000');
+        jQuery("#specified_counties :input").css('background-color','#ffffff');
+        jQuery("#addcounty").css('color','##005ea5');
+        jQuery("#addcounty").attr('href','#here' );
+    }
+}
+
+function validateFields(){
+    if ($('#all_counties').is(':checked') == false && $('#county_0').val() == "") {
+        $('#county_error').show();
+        return false;
+    } else {
+        $('#county_error').hide();
+    }
+}
+
+$(document).ready(function () {
+//called when key is down
+    $(".form-number").bind("keydown", function (event) {
+        if ( event.keyCode == 46 || event.keyCode == 8 || event.keyCode == 9 || event.keyCode == 27 || event.keyCode == 13 ||
+            // Allow: Ctrl+A
+            (event.keyCode == 65 && event.ctrlKey === true) ||
+            // Allow: Ctrl+C
+            (event.keyCode == 67 && event.ctrlKey === true) ||
+            // Allow: Ctrl+X
+            (event.keyCode == 88 && event.ctrlKey === true) ||
+            // Allow: home, end, left, right
+            (event.keyCode >= 35) && (event.keyCode <= 39)) {
+            // let it happen, don't do anything
+            return;
+        } else {
+            // Ensure that it is a number and stop the keypress
+            if (event.shiftKey || (event.keyCode < 48 || event.keyCode > 57) && (event.keyCode < 96 || event.keyCode > 105 )) {
+                event.preventDefault();
+            }
+        }
+    });
+});
+
+</script>

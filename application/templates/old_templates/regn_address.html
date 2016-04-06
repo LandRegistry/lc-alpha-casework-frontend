@@ -1,0 +1,110 @@
+{% extends "/page_template/base.html" %}
+
+{% block maincontent %}
+    {% if application_type == 'bank_amend'%}
+    {% set trail = 'amendment' %}
+    {% elif application_type == 'bank_regn' %}
+    {% set trail = 'registration' %}
+    {% endif %}
+    <div class="breadcrumb">
+        <ol>
+            <li><a class="breadcrumb_links" href="/">Home</a></li>
+            <li><a class="breadcrumb_links" href="/">Bankruptcies</a></li>
+            <li><a class="breadcrumb_links" href="/get_list?appn={{application_type}}">List of {{trail}} applications</a></li>
+            <li class="breadcrumb-no-arrow"><span>Bankruptcy {{trail}}</span></li>
+        </ol>
+    </div>
+    <div class="spacer-10"></div>
+
+    <h1 class="title-36">Bankruptcy {{trail}}</h1>
+
+    <div class="spacer-5"></div>
+
+    {% if application_type == 'amend' %}
+    <div class="text-16-gray">
+        <span class="text-16-no-link-style">1. Retrieve registration details</span>
+        &nbsp;&nbsp;
+        <span class="text-16-bold">2. Registration details</span>
+        &nbsp;&nbsp;
+        3. Review amendments
+    </div>
+    {% else %}
+    <div class="text-16-gray">
+        <span class="text-16-no-link-style">1. Debtor details</span>
+        &nbsp;&nbsp;
+        <span class="text-16-bold">2. Debtor address</span>
+        &nbsp;&nbsp;
+        3. Court details
+        &nbsp;&nbsp;
+        4. Verify registration
+    </div>
+    {% endif %}
+
+    <div class="spacer-30"></div>
+
+    <div class="grid-row">
+        <!-- ///////////////////////////////// data entry form ///////////////////////////////// -->
+        <form id="page_form" action="/update_address" method="POST">
+            <div class="column-form" id="form_panel">
+
+                {% if application_type == 'amend' %}
+                <p class="text-24-bold">2. Registration details</p>
+                {% else %}
+                <p class="text-24-bold">2. Debtor address</p>
+                {% endif %}
+
+                <div class="spacer-20"></div>
+
+                <p class="text-19-bold">Address of bankrupt length</p>
+                {% if data.residence|length > 0 %}
+                    {% for address in data.residence %}
+                        <div class="spacer-20"></div>
+                        <input type="hidden" name="address_{{loop.index}}" value="true" />
+                        <div class="text-16-bold">Address {{loop.index}} &nbsp;&nbsp;<a class="link-16-right" id="remove_address_{{loop.index}}" href="/remove_address/{{loop.index-1}}">Remove</a></div>
+
+                        <div id="address{{loop.index}}">
+                            {% include 'includes/address_fields.html' %}
+
+                            {% if data.residence|length == loop.index %}
+                                {% include 'includes/address_yes_no.html' %}
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    {% include 'includes/address_yes_no.html' %}
+                {% endif %}
+
+                <div class="spacer-30"></div>
+
+                <div>
+                    <table>
+                        <tr>
+                            <td width="50%" class="no-line">
+                                <input type="submit" id="continue" value="Continue" class="form-button"></a>
+                            </td>
+                            <!--<td width="50%" class="custom-3">
+                                <a href="bankruptcy_amendment_step_2" class="link-16">Cancel amends</a>
+                            </td>-->
+                        </tr>
+                    </table>
+                </div>
+
+            </div>
+        </form>
+        <!-- ///////////////////////////////// end of data entry form ///////////////////////////////// -->
+
+        <!-- /////////////////////////////////  Include image tool ///////////////////////////////// -->
+
+        {% include 'includes/image_view_body.html' %}
+
+        <!-- ///////////////////////////////// End of image tool ///////////////////////////////// -->
+    </div>
+<input type="hidden" id="address_count" name="address_count" value="{{ focus_on_address }}" />
+<script type="text/javascript">
+    show_address= document.getElementById('address_count').value;
+    $(document).ready(function() {
+       $('#address' + show_address).get(0).scrollIntoView();
+    });
+</script>
+
+{% endblock %}

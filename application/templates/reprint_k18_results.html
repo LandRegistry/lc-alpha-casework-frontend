@@ -1,0 +1,66 @@
+{% extends "/page_template/base.html" %}
+{% block page_specific_head %}
+<link href="/static/datatables/css/jquery.dataTables.css" rel="stylesheet" />
+<link href="/static/datatables/css/dataTables.responsive.css" rel="stylesheet" />
+<script type="text/javascript" src="/static/datatables/js/jquery.dataTables.js"></script>
+<script>
+ HOST = window.location.protocol + "//" + window.location.hostname;
+
+$(document).ready(function() {
+    // make table row clickable link to child href
+    $('#work-list tbody tr').click(function() {
+        var href = $(this).find("a").attr("href");
+        if(href) {
+            window.location = href;
+        }
+    });
+} );
+
+</script>
+
+{% endblock %}
+{% block maincontent %}
+{% set page_title = 'Reprint K17 K18' %}
+
+
+
+
+    <!-- K22 and K17/18 reprint inputs -->
+    <div class="col nine text-19"><div class="spacer-20"></div>
+        <h1 class="title-36"> &nbsp;&nbsp;K17/K18 reprint</h1>
+        <BR>
+    <h2 class="text-24-bold"> &nbsp;&nbsp;Which result would you like?</h2>
+        <BR>
+     <div class="col nine no-margin">
+                <table id="work-list" class="hover">
+                     <tbody>
+                    <tr>
+                        <td>
+                        </td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    </tbody>
+                    {% for n in curr_data['results'] %}
+                    <tbody>
+                    <tr id="row_{{loop.index}}" tabindex="{{loop.index}}" onkeypress="this.click();">
+                        <td><input type="hidden" value="{{n['request_id']}}">
+                            &nbsp;&nbsp;&nbsp;&nbsp;
+                            {{n['name']}}
+
+                            <a class="hide" id="appn_type{{loop.index}}" href="/reprints?request_id={{n['request_id']}}">
+                                link required for clickable table row
+                            </a>
+                        </td>
+                        <td>{{n['search_timestamp']}}</td>
+                        <td><img src="/static/images/pdf_sm.png" alt="View Document"></td>
+                    </tr>
+                    </tbody>
+                    {% endfor %}
+                </table>
+            <BR>
+         <div class="spacer-5"></div>
+         <a href="/reprints" class="link-14-right">Search for another</a>
+     </div>
+</div>
+{% endblock %}

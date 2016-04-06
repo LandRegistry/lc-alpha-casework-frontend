@@ -1,0 +1,153 @@
+
+
+{% extends "/page_template/base.html" %}
+
+{% block page_specific_head %}
+<script src="/static/js/jquery-ui.js" ></script>
+<link href="/static/css/jquery-ui.css" rel="Stylesheet" type="text/css" />
+<style>
+    /*  Customisation of Modal dialog popup */
+
+    .ui-widget-overlay {
+    opacity: .7;
+    }
+    .ui-widget-header {
+    margin-top:10px;
+    border:0px;
+    background: #ffffff;
+    color: #000000;
+    font-family: Roboto;
+    font-size: 24px;
+    }
+    #ui-id-2 {
+    margin-left:-6px;
+    }
+    .ui-dialog-titlebar .ui-button {
+    display:none;
+    }
+    .stop-scrolling {
+    height: 100%;
+    overflow: hidden;
+    }
+</style>
+
+
+{% endblock %}
+{% block maincontent %}
+
+
+<div class="spacer-10"></div>
+
+<h1 class="title-36">Cancellation</h1>
+
+<div class="spacer-5"></div>
+
+<div class="text-16-gray">
+    <span class="text-16-bold">1. Retrieve original</span> &nbsp;&nbsp;
+    2. View and cancel &nbsp;&nbsp;
+    3. Conveyancer and fees &nbsp;&nbsp;
+</div>
+
+<div class="grid-row">
+    <div class="col four" id="form_panel">
+        <!-- ///////////////////////////////// data entry form ///////////////////////////////// -->
+        <form id="cancel_form" action="/get_details" method="POST" onsubmit="return validateDate(this);">
+            <div class="spacer-40"></div>
+            <h2 class="text-24-bold">Retrieve original</h2>
+            <div class="spacer-10"></div>
+            <div id="errorBlock" {% if error_msg|length > 0 %}class="error_block"{% endif %}>
+                {% if error_msg|length > 0 %}
+                <span id="regn_error" class="error_text">{{error_msg}}</span>
+                {% endif %}
+                <div class="form">
+                    <label class="form-label" for="reg_no">Original registration number</label><br/>
+                    <input class="form-textfield width-50" id="reg_no" required  aria-required="true" type="text" name="reg_no" value="{{reg_no}}"/>
+                </div>
+                <div class="form">
+                    <label class="form-label" for="reg_date">Date of registration</label><br/>
+                    <input class="form-textfield width-50 dateEntry" id="reg_date" required  aria-required="true" type="text" placeholder="dd/mm/yyyy" name="reg_date" value="{{reg_date}}"/>
+                </div>
+            </div>
+            <div class="spacer-20"></div>
+            <h2 class="text-24-bold">Is this a full or part cancellation?</h2>
+            <div class="spacer-10"></div>
+            <div class="grid-row">
+
+                {% if session.application_dict.application_data %}
+
+                   <div class="col three form-control-div-small">
+                        <label class="form-label" for="full_cans">
+                            <input id="full_cans" type="radio" name="full_cans"
+                                   required onclick="" value="true" {% if session.cancellation_type == 'Cancellation' %}checked="Checked"{% endif %}>Full
+                        </label>
+                    </div>
+                    <div class="col three form-control-div-small">
+                        <label class="form-label width-50" for="part_cans">
+                            <input id="part_cans" type="radio" name="full_cans"
+                                   onclick="" value="false" {% if session.cancellation_type == 'Part Cancellation' %}checked="Checked"{% endif %}>Part
+                        </label>
+                    </div>
+
+                {% else %}
+                    <div class="col three form-control-div-small">
+                        <label class="form-label" for="full_cans">
+                            <input id="full_cans" type="radio" name="full_cans"  required onclick="" value="true">Full
+                        </label>
+                    </div>
+                    <div class="col three form-control-div-small">
+                        <label class="form-label width-50" for="part_cans">
+                            <input id="part_cans" type="radio" name="full_cans" onclick="" value="false">Part
+                        </label>
+                    </div>
+                {% endif %}
+
+            </div>
+            <div class="spacer-40"></div>
+           {% include 'cancellation/canc_multi_reg_check.html' %}
+        </form>
+
+    </div>
+    <!-- ///////////////////////////////// end of data entry form ///////////////////////////////// -->
+    <div class="col one"><p></p></div>
+    <!-- /////////////////////////////////  Include image tool ///////////////////////////////// -->
+
+    <div class="col seven">
+        <div class="spacer-40"></div>
+        {% include 'includes/image_view_body.html' %}
+    </div>
+    <!-- ///////////////////////////////// End of image tool ///////////////////////////////// -->
+
+</div>
+
+<script>
+    $(document).ready(function () {
+    //called when key is down
+        $(".dateEntry").bind("keydown", function (event) {
+            if ( event.keyCode == 46 || event.keyCode == 8 || event.keyCode == 9 || event.keyCode == 27 || event.keyCode == 13 ||
+                // Allow: Ctrl+A
+                (event.keyCode == 65 && event.ctrlKey === true) ||
+                // Allow: home, end, left, right
+                (event.keyCode >= 35 && event.keyCode <= 39) ||
+                // allow forward slash
+                (event.keyCode == 191) || (event.keyCode == 111)) {
+                // let it happen, don't do anything
+                return;
+            } else {
+                // Ensure that it is a number and stop the keypress
+                if (event.shiftKey || (event.keyCode < 48 || event.keyCode > 57) && (event.keyCode < 96 || event.keyCode > 105 )) {
+                    event.preventDefault();
+                }
+            }
+        });
+    });
+
+    function removeValidation(obj) {
+        jQuery('#cancel_form').removeAttr(" onsubmit ");
+        removeRequired(obj)
+    }
+
+</script>
+
+
+
+{% endblock %}

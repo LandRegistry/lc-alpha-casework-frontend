@@ -1,0 +1,288 @@
+{% set reprint_selected = 'selected' %}
+
+{% extends "/page_template/base.html" %}
+{% block page_specific_head %}
+
+{% include 'includes/lc_head.html' %}
+{% endblock %}
+
+{% block maincontent %}
+<input type="hidden" id="requested_list" name="requested_list" value="{{requested_list}}"/>
+
+{% if requested_list == 'cancel' %}
+{% set page_title = 'Cancellation' %}
+{% set cancel_selected = 'selected' %}
+{% elif requested_list == 'cancel_stored' %}
+{% set page_title = 'Stored' %}
+{% set stored_selected = 'selected' %}
+{% endif %}
+<div class="breadcrumb">
+     <ol>
+        <li><a href="/">Home</a></li>
+        <li><a href="/enquiries">Enquiries</a></li>
+        <li class="breadcrumb-no-arrow"><span>Reprint</span></li>
+    </ol>
+</div>
+
+<div class="spacer-5"></div>
+<div class="grid-row" >
+{% set side_nav_enquiry = 'active' %}
+{% include "includes/side_nav.html" %}
+<script>
+    jQuery(document).ready(function(){
+        {% if curr_data.estate_owner_ind == '' %}
+            jQuery("#estateOwnerTypes").val("{{curr_data.estate_owner_ind}}");
+        {% endif %}
+        showFields();
+    });
+</script>
+        <!-- K22 and K17/18 reprint inputs -->
+
+    <div class="col nine text-19">
+    <div class="spacer-20"></div>
+        <div class="col six">
+            <h2 class="text-24-bold"> &nbsp;&nbsp;K22 reprint</h2>
+
+            <form id="page_form_K22" action="/reprints" method="POST" onsubmit="return validateDates(jQuery('#content'));">
+                <input type="hidden" id="k22_reprint_type" name="reprint_type" value="k22"/>
+                <div class="column-form width-75" id="K22_form_panel">
+
+                    <div class="spacer-20"></div>
+                    <div id="errorBlock" {% if curr_data.k22_error_message|length > 0 %}class="error_block"{% endif %}>
+                    {% if curr_data.k22_error_message|length > 0 %}
+                            <span id="regn_error" class="error_text">{{curr_data.k22_error_message}}</span>
+                    {% endif %}
+                    <div class="form">
+                        <label class="form-label" for="k22_reg_no">Registration number</label>
+                        <input class="form-textfield" id="k22_reg_no" name="k22_reg_no" type="text" autofocus value="{{curr_data.k22_reg_no}}">
+                    </div>
+                    <div class="form">
+                        <label class="form-label" for="k22_reg_date">Date of registration</label><br/>
+                        <input class="form-textfield width-75 dateEntry"  required  aria-required="true" type="text"
+                               placeholder="dd/mm/yyyy" id="k22_reg_date" name="k22_reg_date" value="{{curr_data.k22_reg_date}}"/>
+                    </div>
+                    <div class="spacer-15"></div>
+
+                    <div class="spacer-30"></div>
+
+                    <input id="k22_search" type="submit" value="Search" class="form-button">
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="col six">
+        <h2 class="text-24-bold"> &nbsp;&nbsp;K17/K18 reprint</h2>
+        <form id="page_form_K18" action="/reprints" method="POST" onsubmit="return validateDates(this);">
+            <input type="hidden" id="k18_reprint_type" name="reprint_type" value="k18"/>
+            <div class="column-form width-75" id="K18_form_panel">
+                <div class="spacer-20"></div>
+                <div class="form">
+                    <label class="form-label" for="key_number">Key number</label><BR>
+                    <input class="form-textfield width-75" id="key_number" name="key_number" type="text">
+                </div>
+
+                <div class="form">
+                    <div id="search_date_1">
+                        <h2 class="text-24-bold">Search period</h2>
+                        <div class="col five">
+                            <label class="form-label" for="date_from">Date from</label><br/>
+                            <input class="form-textfield dateEntry"  required  aria-required="true" type="text"
+                                   placeholder="dd/mm/yyyy" id="date_from" name="date_from"
+                                   value="{{date_from}}"/>
+                        </div>
+                        <div class="col one">&nbsp;</div>
+                        <div class="col five">
+                            <label class="form-label" for="date_to">Date to</label><br/>
+                            <input class="form-textfield dateEntry"  required  aria-required="true" type="text"
+                                   placeholder="dd/mm/yyyy" id="date_to" name="date_to"
+                                   value="{{date_to}}"/>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="spacer-5"></div>
+                <p class="text-indent">Please select the type of name from the list</p>
+                <select name="estateOwnerTypes" id="estateOwnerTypes" onchange="javascript:showFields();" class="form-select width-50">
+
+                    {% if curr_data.estate_owner_ind == 'Private Individual' %}
+                    <option value="privateIndividual" selected="selected">Private individual</option>
+                    {% else %}
+                    <option value="privateIndividual">Private individual</option>
+                    {% endif %}
+                    {% if curr_data.estate_owner_ind == 'Local Authority' %}
+                    <option value="countyCouncil" selected="selected">Local Authority</option>
+                    {% else %}
+                    <option value="countyCouncil">Local authority</option>
+                    {% endif %}
+                    {% if curr_data.estate_owner_ind == 'Limited Company' %}
+                    <option value="limitedCompany" selected="selected">Limited company</option>
+                    {% else %}
+                    <option value="limitedCompany">Limited company</option>
+                    {% endif %}
+                    {% if curr_data.estate_owner_ind == 'Complex Name' %}
+                    <option value="complexName" selected="selected">Complex Name</option>
+                    {% else %}
+                    <option value="complexName">Complex Name</option>
+                    {% endif %}
+                    {% if curr_data.estate_owner_ind == 'Other' %}
+                    <option value="other" selected="selected">Other</option>
+                    {% else %}
+                    <option value="other">Other</option>
+                    {% endif %}
+                </select>
+                <div id="private">
+                    <div class="form">
+                        <label class="form-label" for="forename">Forename(s)</label>
+                        <input class="form-textfield" type="text" id="forename" autocomplete="off" name="forename" value="{{curr_data.estate_owner.private.forenames|join(' ')}}"/>
+                    </div>
+
+                    <div class="form">
+                        <label class="form-label" for="surname">Surname</label>
+                        <input class="form-textfield" type="text" id="surname" autocomplete="off" name="surname" value="{{curr_data.estate_owner.private.surname}}"/>
+                    </div>
+                </div>
+
+                <div id="limited">
+                    <div class="form">
+                        <label class="form-label" for="company">Company name</label>
+                        <input class="form-textfield" type="text" id="company" autocomplete="off" name="company" value="{{curr_data.estate_owner.company}}"/>
+                    </div>
+                </div>
+
+                <div id="local">
+                    <div class="form">
+                        <label class="form-label" for="loc_auth">Local authority full name</label>
+                        <input class="form-textfield" type="text" id="loc_auth" autocomplete="off" name="loc_auth" value="{{curr_data.estate_owner.local.name}}"/>
+                    </div>
+                    <div class="form">
+                        <label class="form-label" for="loc_auth_area">Local authority area</label>
+                        <p class="text-indent">This is the area the local authority affects</p>
+                        <input class="form-textfield" type="text" id="loc_auth_area" autocomplete="off" name="loc_auth_area" value="{{curr_data.estate_owner.local.area}}"/>
+                    </div>
+                </div>
+                <div id="complex">
+                    <div class="form">
+                        <label class="form-label" for="complex_name_field">Complex name</label>
+                        <input class="form-textfield" type="text" id="complex_name_field" autocomplete="off" value="{{curr_data.estate_owner.complex.name}}"/>
+                        <div class="spacer-5"></div>
+                        <a href="#here" id="name_lookup_link" onclick="showComplexNameModal();" class="link-14-right">Look up complex name</a>
+                        <div id="complex_result_modal" role="dialog" aria-labelledby="complex_result_modal" style="display: none;">
+                            <p id="modal_message" class="text-16"></p>
+                            <div class="spacer-15"></div>
+                            <div id="complex_result"></div>
+                            <div class="spacer-15"></div>
+                            <div>
+                                <div style="float: left">
+                                    <a href="#here" id="add_complex_name" data-dismiss="modal" onclick="addComplexNameModal();" class="link-14-right">Add a complex name</a>
+                                    <div id="add_complex_modal" role="dialog" style="display: none;">
+                                        <div id="complex_addition"></div>
+                                        <div class="spacer-10"></div>
+                                        <label class="form-label" for="complex_name_addition">Name</label>
+                                        <input class="form-textfield" type="text" id="complex_name_addition"/>
+                                        <label class="form-label" for="complex_number_addition">Number</label>
+                                        <input class="form-textfield" type="text" id="complex_number_addition"/>
+                                        <div class="spacer-15"></div>
+                                        <p id="modal_add" class="text-16"></p>
+                                        <div class="spacer-15"></div>
+                                        <div style="float:left">
+                                            <input id="add" type="button" class="form-button" onclick="addComplexName();" value="Add name"/>
+                                        </div>
+                                        <div style="float:right">
+                                            <input id="close_add" type="button" class="form-button" onclick="closeComplexNameModal();" value="Close"/>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div style="float:right">
+                                    <input id="close" type="button" class="form-button" onclick="closeComplexNameModal();" value="Close"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="spacer-15"></div>
+                        <div id="selected_name"></div>
+                        <input type="hidden" id="complex_name" name="complex_name" value="{{curr_data.estate_owner.complex.name}}"/>
+                        <input type="hidden" id="complex_number" name="complex_number" value="{{curr_data.estate_owner.complex.number}}"/>
+                    </div>
+                </div>
+
+
+                <div id="other">
+                    <div class="form">
+                        <label class="form-label" for="other_name">Name</label>
+                        <input class="form-textfield" type="text" id="other_name" name="other_name" autocomplete="off"
+                               value="{{curr_data.estate_owner.other}}"/>
+                    </div>
+                </div>
+                <div class="spacer-15"></div>
+
+                <div class="spacer-30"></div>
+
+                <input id="k17_k18_search" type="submit" value="Search" class="form-button">
+
+            </div>
+        </form>
+    </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+    //called when key is down
+        $(".dateEntry").bind("keydown", function (event) {
+            if ( event.keyCode == 46 || event.keyCode == 8 || event.keyCode == 9 || event.keyCode == 27 || event.keyCode == 13 ||
+                // Allow: Ctrl+A
+                (event.keyCode == 65 && event.ctrlKey === true) ||
+                // Allow: home, end, left, right
+                (event.keyCode >= 35 && event.keyCode <= 39) ||
+                // allow forward slash
+                (event.keyCode == 191) || (event.keyCode == 111)) {
+                // let it happen, don't do anything
+                return;
+            } else {
+                // Ensure that it is a number and stop the keypress
+                if (event.shiftKey || (event.keyCode < 48 || event.keyCode > 57) && (event.keyCode < 96 || event.keyCode > 105 )) {
+                    event.preventDefault();
+                }
+            }
+        });
+    });
+
+    function validateDates(obj){
+		// loop through all dateEntry fields and check for valid date
+		var allOK = true;
+		jQuery('.error_text').hide();
+
+		if (jQuery('#k22_reg_date').val() != ''){
+		    if (isValidDate(jQuery('#k22_reg_date').val()) == false) {
+				jQuery('<p class="error_text"><strong>Invalid date please re-enter</strong>'+
+				'</p>').insertBefore(jQuery('#k22_reg_date'));
+				allOK = false;
+			}
+		}
+
+		if (jQuery('#date_from').val() != '' || jQuery('#date_to').val() != ''){
+		    if (isValidDate(jQuery('#date_from').val()) == false) {
+				jQuery('<p class="error_text"><strong>Invalid date please re-enter</strong>' +
+				'</p>').insertAfter(jQuery('#date_from'));
+				allOK = false;
+			} else if (isValidDate(jQuery('#date_to').val()) == false) {
+				jQuery('<p class="error_text"><strong>Invalid date please re-enter</strong>' +
+				'</p>').insertAfter(jQuery('#date_to'));
+				allOK = false;
+			} else if (jQuery('#date_from').val() != '' && jQuery('#date_to').val() != ''){
+                var startDate = new Date($('#date_from').val());
+                var endDate = new Date($('#date_to').val());
+                if (startDate > endDate){
+                    jQuery('<p class="error_text"><strong>To date needs to be greater than from date</strong>' +
+                    '</p>').insertAfter(jQuery('#date_to'));
+                    allOK = false;
+                }
+			}
+		}
+
+
+
+		return allOK;
+	}
+</script>
+
+{% endblock %}

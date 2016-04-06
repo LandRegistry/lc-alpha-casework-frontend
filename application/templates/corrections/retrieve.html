@@ -1,0 +1,86 @@
+{% set reprint_selected = 'selected' %}
+
+{% extends "/page_template/base.html" %}
+{% block page_specific_head %}
+
+{% endblock %}
+
+{% block maincontent %}
+
+<div class="breadcrumb">
+    <ol>
+        <li><a href="/">Home</a></li>
+        <li><a href="/internal">Internal</a></li>
+        <li class="breadcrumb-no-arrow"><span>Corrections</span></li>
+    </ol>
+</div>
+
+<div class="spacer-5"></div>
+<div class="grid-row" >
+
+
+{% set side_nav_int = 'active' %}
+{% include "includes/side_nav.html" %}
+
+    <div class="col nine">
+        <div class="spacer-10"></div>
+        <h1 class="title-36">Internal Functions</h1>
+        <div class="spacer-25"></div>
+        <h2 class="text-24-bold">Corrections</h2>
+        <div class="spacer-20"></div>
+        <!-- Confirmation -->
+        {% if 'success' in result %}
+            {% include 'includes/confirmation_correction.html' %}
+        {% endif %}
+        <div class="grid-row">
+        <form id="correct_form" action="/get_original" method="POST" onsubmit="return validateDate(this);">
+            <div id="errorBlock" {% if error_msg|length > 0 %}class="error_block"{% endif %}>
+                {% if error_msg|length > 0 %}
+                <span id="key_no_error" class="error_text">{{error_msg}}</span>
+                {% endif %}
+                <div class="form">
+                    <label class="form-label" for="reg_no">Registration number</label><br/>
+                    <input class="form-textfield width-20" id="reg_no" required  aria-required="true" name="reg_no" type="text" value="{{reg_no}}" autofocus>
+                </div>
+                <div class="form">
+                    <label class="form-label" for="reg_date">Date of registration</label><br/>
+                    <p class="text-indent">For example, 31/03/2014</p>
+                    <input class="form-textfield width-20 dateEntry"  type="text"
+                           placeholder="dd/mm/yyyy" id="reg_date" required  aria-required="true" name="reg_date" value="{{reg_date}}"/>
+                </div>
+            </div>
+            <div class="spacer-15"></div>
+
+            <div class="spacer-30"></div>
+
+            <input id="continue" type="submit" value="Continue" class="form-button">
+        </form>
+        </div>
+    </div>
+</div>
+<script>
+        $(document).ready(function () {
+        //called when key is down
+            $(".dateEntry").bind("keydown", function (event) {
+                if ( event.keyCode == 46 || event.keyCode == 8 || event.keyCode == 9 || event.keyCode == 27 || event.keyCode == 13 ||
+                    // Allow: Ctrl+A
+                    (event.keyCode == 65 && event.ctrlKey === true) ||
+                    // Allow: home, end, left, right
+                    (event.keyCode >= 35 && event.keyCode <= 39) ||
+                    // allow forward slash
+                    (event.keyCode == 191) || (event.keyCode == 111)) {
+                    // let it happen, don't do anything
+                    return;
+                } else {
+                    // Ensure that it is a number and stop the keypress
+                    if (event.shiftKey || (event.keyCode < 48 || event.keyCode > 57) && (event.keyCode < 96 || event.keyCode > 105 )) {
+                        event.preventDefault();
+                    }
+                }
+            });
+        });
+    </script>
+
+
+
+{% endblock %}

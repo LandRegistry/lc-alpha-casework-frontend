@@ -1,0 +1,167 @@
+{% extends "/page_template/base.html" %}
+
+{% block page_specific_head %}
+<script src="/static/js/jquery-ui.js" ></script>
+<link href="/static/css/jquery-ui.css" rel="Stylesheet" type="text/css" />
+<style>
+    /*  Customisation of Modal dialog popup */
+
+    .ui-widget-overlay {
+    opacity: .7;
+    }
+    .ui-widget-header {
+    margin-top:10px;
+    border:0px;
+    background: #ffffff;
+    color: #000000;
+    font-family: Roboto;
+    font-size: 24px;
+    }
+    #ui-id-2 {
+    margin-left:-6px;
+    }
+    .ui-dialog-titlebar .ui-button {
+    display:none;
+    }
+    .stop-scrolling {
+    height: 100%;
+    overflow: hidden;
+    }
+</style>
+{% endblock %}
+{% block maincontent %}
+
+<div class="spacer-10"></div>
+
+<h1 class="title-36">Bankruptcy registration</h1>
+
+<div class="spacer-5"></div>
+
+<div class="text-16-gray">
+    <span class="text-16-bold">1. Input official details</span> &nbsp;&nbsp;
+    2. Input debtor details &nbsp;&nbsp;
+    3. Check and verify details &nbsp;&nbsp;
+    4. Key number &nbsp;&nbsp;
+</div>
+
+<div class="grid-row">
+    <div class="col four" id="form_panel">
+        <!-- ///////////////////////////////// data entry form ///////////////////////////////// -->
+        <form id="bank_reg_form" action="/check_court_details" method="POST">
+            {% if from_verify == True %} <input type="hidden" name="return_to_verify" value="true" />{% endif %}
+            <div class="spacer-40"></div>
+            <h2 class="text-24-bold">Official details</h2>
+            <div class="spacer-10"></div>
+            <div id="errorBlock" {% if error_msg|length > 0 %}class="error_block"{% endif %}>
+                {% if error_msg|length > 0 %}
+                <span id="key_no_error" class="error_text">{{error_msg}}</span>
+                {% endif %}
+                <div class="form">
+                    <label class="form-label" for="court">Name</label><br/>
+                    <input class="form-textfield" type="text" id="court" name="court" value="{% if session.court_info %}{{session.court_info.legal_body}}{% endif %}"/>
+                </div>
+                <div class="spacer-20"></div>
+                <div class="form col ">
+                    <label class="form-label" for="ref_no">Reference</label><br/>
+                    <p class="text-indent">For example, 162 of 2016 or BKT387612</p>
+                    <input class="form-textfield"  required  aria-required="true" type="text" id="ref_no" name="ref_no" value="{% if session.court_info %}{{session.court_info.legal_body_ref_no}}{% endif %}"/>
+                </div>
+            </div>
+            <div class="spacer-40"></div>
+            {% if current_registrations|length >0 %}
+            <div class="alert-box" id="registration_alert">
+                <p class="text-19-bold">The particulars of court have already been used to register:</p><br/>
+                {% for registration in current_registrations %}
+                <p class="text-16" id="alert_{{loop.index}}">{{registration.name}}</p>
+                {% endfor %}
+            </div>
+            <div class="spacer-30"></div>
+            <p class="text-19-bold">Do you want to continue with this registration?</p>
+            <div class="spacer-20"></div>
+            <input id="yes" type="submit" name="submit_btn" value="Yes" class="form-button"/>
+            <input id="no" type="submit" name="submit_btn" value="No" class="form-button-no"/>
+            <a href="javascript:confirmDelete()" id="reject_1" class="link-16 right">Reject application</a>
+            <div class="spacer-20"></div>
+            <a href="/get_list?appn=bank_regn" class="link-16">Return to this application later</a>
+            <div class="spacer-40"></div>
+            {% else %}
+            <div>
+                <input id="continue" type="submit" name="submit_btn" value="Continue" class="form-button"/>
+                <a href="javascript:showDelete()" id="reject_2" class="link-16 right">Reject application</a>
+                <br/>
+                <input id="store" type="submit" onclick="javascript:removeRequired(this)" name="store" value="Return to this application later" class="link-button-16"/>
+            </div>
+            <div class="spacer-20"></div>
+            <div class="spacer-40"></div>
+            {% endif %}
+
+            <div id="reject_application_dlg" role="dialog" style="display: none;">
+                This will remove and delete the scanned image and application from the worklist.<br/><br/>
+                Are you sure you wish to continue?<br/><br/>
+                <input type="button" id="accept-reject" class="form-button" onclick="confirmDelete();" value="OK"/>
+                <input type="button" id="cancel-reject" class="form-button" onclick="cancelDelete();" value="Cancel"/>
+            </div>
+        </form>
+
+    </div>
+    <!-- ///////////////////////////////// end of data entry form ///////////////////////////////// -->
+    <div class="col one"><p></p></div>
+    <!-- /////////////////////////////////  Include image tool ///////////////////////////////// -->
+
+    <div class="col seven">
+        <div class="spacer-40"></div>
+        {% include 'includes/image_view_body.html' %}
+    </div>
+    <!-- ///////////////////////////////// End of image tool ///////////////////////////////// -->
+
+</div>
+
+<script>
+    $(document).ready(function () {
+    //called when key is down
+        $(".numberOnly").bind("keydown", function (event) {
+            if ( event.keyCode == 46 || event.keyCode == 8 || event.keyCode == 9 || event.keyCode == 27 || event.keyCode == 13 ||
+                // Allow: Ctrl+A
+                (event.keyCode == 65 && event.ctrlKey === true) ||
+                // Allow: home, end, left, right
+                (event.keyCode >= 35 && event.keyCode <= 39)) {
+                // let it happen, don't do anything
+                return;
+            } else {
+                // Ensure that it is a number and stop the keypress
+                if (event.shiftKey || (event.keyCode < 48 || event.keyCode > 57) && (event.keyCode < 96 || event.keyCode > 105 )) {
+                    event.preventDefault();
+                }
+            }
+        });
+    });
+
+    function showDelete() {
+        $("#reject_application_dlg").dialog({
+            modal:true,
+            show: true,
+            title:"Reject Application?",
+            hide:true,
+            width: 600,
+            maxHeight: 500,
+            position: {
+                my: "center",
+                at: "center",
+                of: window,
+                collision: "none"
+            }
+        });
+    }
+
+    function cancelDelete() {
+        $("#reject_application_dlg").dialog('close');
+    }
+
+    function confirmDelete()
+    {
+        jQuery('#bank_reg_form').attr('action', "/rejection");
+        jQuery("#bank_reg_form").submit();
+    }
+</script>
+
+{% endblock %}

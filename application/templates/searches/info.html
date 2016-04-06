@@ -1,0 +1,127 @@
+{% extends "/page_template/base.html" %}
+
+{% block page_specific_head %}
+{% include 'includes/search_head.html' %}
+
+{% endblock %}
+{% block maincontent %}
+
+{% if application_type == 'search_full' %}
+{% set title = 'Full search' %}
+{% else %}
+{% set title = 'Bankruptcy search' %}
+{% endif %}
+
+<div class="spacer-10"></div>
+
+<h1 class="title-36">{{title}}</h1>
+
+<div class="spacer-5"></div>
+
+<div class="text-16-gray">
+    <span class="text-16-bold">1. Input details</span>
+    &nbsp;&nbsp;
+    2. Applicant and fees
+</div>
+
+<div class="grid-row">
+    <div class="col four" id="form_panel">
+        <!-- ///////////////////////////////// data entry form ///////////////////////////////// -->
+        <form id="search_form" action="/process_search_name/{{application_type}}" method="POST">
+            <div id="search_fields">
+
+                {% for i in range(6) %}
+                {% set id_count = loop.index %}
+                <div id="name_{{id_count}}" class="col twelve hide ">
+                    {% set is_mandatory = true %}
+                    {% if loop.index == 2 %}
+                    {% set is_mandatory = false %}
+                    {% endif %}
+                    {% include 'includes/search_name_fields.html' %}
+                </div>
+                {% endfor %}
+                <div class="spacer-10"></div>
+                <a href="#here" id="add_name" onclick="showName();" class="link-16">Add additional name</a>
+
+
+            </div>
+            {% if application_type == 'search_full' %}
+            <div class="spacer-10"></div>
+            {% include 'includes/search_counties_fields.html' %}
+            {% endif %}
+            <div class="spacer-40"></div>
+            <div>
+                <input id="continue" type="submit" value="Continue" onclick="return validateFields();" class="form-button"/>
+                <a href="javascript:showDelete()" id="reject" class="link-16 right">Reject application</a>
+            </div>
+            <div class="spacer-20"></div>
+            <input id="store" type="submit" onclick="javascript:removeValidation(this)" name="store" value="Return to this application later" class="link-button-16"/>
+            <div class="spacer-40"></div>
+
+            <div id="reject_application_dlg" role="dialog" style="display: none;">
+                <h2 id="modal_header" class="text-24-bold">Reject Application?</h2>
+                <br/>
+                This will remove and delete the scanned image and application from the worklist.<br/><br/>
+                Are you sure you wish to continue?<br/><br/>
+                <input type="button" id="accept-reject" class="form-button" onclick="confirmDelete();" value="OK"/>
+                <input type="button" id="cancel-reject" class="form-button" onclick="cancelDelete();" value="Cancel"/>
+            </div>
+
+        </form>
+    </div>
+    <!-- ///////////////////////////////// end of data entry form ///////////////////////////////// -->
+    <div class="col one"><p></p></div>
+    <!-- /////////////////////////////////  Include image tool ///////////////////////////////// -->
+
+    <div class="col seven">
+        <div class="spacer-40"></div>
+        {% include 'includes/image_view_body.html' %}
+    </div>
+    <!-- ///////////////////////////////// End of image tool ///////////////////////////////// -->
+
+</div>
+
+<script>
+
+    jQuery(document).ready(function(){
+        setupNameFields();
+        setupCountyAutocomplete("#county_0");
+        allCountyClick();
+    });
+
+
+    function showDelete() {
+        $("#reject_application_dlg").dialog({
+            modal:true,
+            show: true,
+            title:"Reject Application?",
+            hide:true,
+            width: 600,
+            maxHeight: 500,
+            position: {
+                my: "center",
+                at: "center",
+                of: window,
+                collision: "none"
+            }
+        });
+    }
+
+    function cancelDelete() {
+        $("#reject_application_dlg").dialog('close');
+    }
+
+    function confirmDelete()
+    {
+        jQuery('#search_form').attr('action', "/rejection");
+        jQuery("#search_form").submit();
+    }
+
+    function removeValidation(obj) {
+        jQuery('#search_form').removeAttr(" onsubmit ");
+        removeRequired(obj);
+    }
+</script>
+
+
+{% endblock %}

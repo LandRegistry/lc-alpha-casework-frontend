@@ -1,0 +1,153 @@
+{% extends "/page_template/base.html" %}
+{% block maincontent %}
+
+    <div class="breadcrumb">
+        <ol>
+            <li><a class="breadcrumb_links" href="/">Home</a></li>
+            <li><a class="breadcrumb_links" href="/">Bankruptcies</a></li>
+            <li><a class="breadcrumb_links" href="/get_list?appn=cancel">List of cancellation applications</a></li>
+            <li class="breadcrumb-no-arrow"><span>Bankruptcy cancellation</span></li>
+        </ol>
+    </div>
+
+    <div class="spacer-10"></div>
+
+    <h1 class="title-36">Bankruptcy cancellation</h1>
+
+    <div class="spacer-5"></div>
+
+    <div class="text-16-gray">
+        <span class="text-16 no-link-style">1. Retrieve registration details</span>
+        &nbsp;&nbsp;
+        <span class="text-16-bold">2. Review registration details</span>
+    </div>
+
+    <div class="spacer-30"></div>
+
+    <div class="grid-row">
+
+        <!-- ///////////////////////////////// column two-thirds ///////////////////////////////// -->
+        <form action="/submit_cancellation" method="POST">
+        <div class="column-form" id="form_panel">
+
+            <p class="text-24-bold">2. Review registration details</p>
+
+            <div class="spacer-10"></div>
+
+            <table class="review-table">
+
+                <tr>
+                    <th colspan="2" class="table-text-black"><span class="text-19-gray">Registration details</span></th>
+                    <th colspan="1" class="table-text-black link-16-right"><a class="link-16-right" href="#"></a></th>
+                </tr>
+                <tr>
+                    <td width="50%"><span class="text-review-table-bold">Number</span></td>
+                    <td width="50%"><span class="text-review-table">{{data.registration.number}}</span></td>
+                </tr>
+                <tr>
+                    <td colspan="1"><span class="text-review-table-bold">Date</span></td>
+                    <td colspan="2"><span class="text-review-table">{{data.registration.date | date_time_filter}}</span></td>
+                </tr>
+                <tr>
+                    <td colspan="1"><span class="text-review-table-bold">Type</span></td>
+                    <td colspan="2"><span class="text-review-table">{{data.form}}</span></td>
+                </tr>
+            </table>
+
+            <div class="spacer-30"></div>
+
+            <table class="review-table">
+
+                <tr>
+                    <th colspan="2" class="table-text-black"><span class="text-19-gray">Particulars of bankrupt</span></th>
+                    <th colspan="1" class="table-text-black link-16-right"><a class="link-16-right" href="#"></a></th>
+                </tr>
+                <tr>
+                    <td width="45%"><span class="text-review-table-bold">Forename(s)</span></td>
+                    <td width="50%">
+                        <span class="text-review-table">
+                        {% for forename in data.debtor_names[0].forenames %}
+                            {{forename}}
+                        {% endfor %}
+                        </span>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="1"><span class="text-review-table-bold">Surname</span></td>
+                    <td colspan="2"><span class="text-review-table">{{data.debtor_names[0].surname}}</span></td>
+                </tr>
+                <tr>
+                    <td colspan="1"><span class="text-review-table-bold">Occupation</span></td>
+                    <td colspan="2"><span class="text-review-table">{{data.occupation}}</span></td>
+                </tr>
+            </table>
+
+            <div class="spacer-30"></div>
+
+            <div class="spacer-30"></div>
+
+            <table class="review-table">
+                <tr>
+                    <th colspan="2" class="table-text-black"><span class="text-19-gray">Court details</span></th>
+                    <th colspan="1" class="table-text-black link-16-right"><a class="link-16-right" href="#"></a></th>
+                </tr>
+                <tr>
+                    <td colspan="1" width="45%"><span class="text-review-table-bold">Key number</span></td>
+                    <td colspan="2" width="50%"><span class="text-review-table">{{data.key_number}}</span></td>
+                </tr>
+                <tr>
+                    <td colspan="1"><span class="text-review-table-bold">Court name</span></td>
+                    <td colspan="2"><span class="text-review-table">{{data.legal_body}}</span></td>
+                </tr>
+                <tr>
+                    <td colspan="1"><span class="text-review-table-bold">Reference</span></td>
+                    <td colspan="2"><span class="text-review-table">{{data.legal_body_ref}}</span></td>
+                </tr>
+            </table>
+
+            <div class="spacer-30"></div>
+
+            <table class="review-table">
+                <tr>
+                    <td width="10%" class="no-line"><input type="checkbox" id="check_box" onclick="toggle()"></td>
+                    <td width="90%" class="no-line"><span class="text-review-table">I confirm I verified the cancellation</span></td>
+                </tr>
+            </table>
+
+            <div class="spacer-10"></div>
+
+            <div>
+                <table>
+                    <tr>
+                        <td width="50%" class="no-line">
+                            <input type="submit" value="Register cancellation" name="Continue" class="form-button-7" id="submit" disabled></a>
+                        </td>
+                        <td width="50%" class="custom-3">
+                            <a href="/rejection" id="reject" class="link-16">Reject application</a>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+        </div>
+        </form>
+
+        <!-- ///////////////////////////////// end of column-form ///////////////////////////////// -->
+        <!-- /////////////////////////////////  Include image tool ///////////////////////////////// -->
+
+        {% include 'includes/image_view_body.html' %}
+
+        <!-- ///////////////////////////////// End of image tool ///////////////////////////////// -->
+    </div>
+
+<script type="text/javascript">
+
+function toggle() {
+    var cbChecked = document.getElementById('check_box').checked;
+    document.getElementById('submit').disabled = !cbChecked;
+}
+
+</script>
+
+
+{% endblock %}

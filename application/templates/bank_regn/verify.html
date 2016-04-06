@@ -1,0 +1,250 @@
+{% extends "/page_template/base.html" %}
+{% block page_specific_head %}
+
+<script>
+
+function validatePrivateInd() {
+    var origForename = document.getElementById('orig_forename_1').value;
+    var origSurname = document.getElementById('orig_surname_1').value;
+    var enteredForename = document.getElementById('forename_1').value;
+    var enteredSurname = document.getElementById('surname_1').value;
+    var errorBlock = document.getElementById('name_validation');
+    var errorText = document.getElementById('name_error');
+
+    errors = false;
+    errorMsg = ""
+    if(origForename !== enteredForename && origSurname !== enteredSurname) {
+        errors = true;
+        errorMsg = 'The names do not match the previously entered names. Please re-key or select to change the original.';
+    } else if(origForename !== enteredForename) {
+        errors = true;
+        errorMsg = 'The forename does not match the previously entered forename. Please re-key or select to change the original.';
+    } else if(origSurname !== enteredSurname) {
+        errors = true;
+        errorMsg = 'The surname does not match the previously entered surname. Please re-key or select to change the original.';
+    }
+
+    if(errors) {
+        errorBlock.classList.add('error_block');
+        errorText.textContent = errorMsg;
+        errorText.classList.add('error_text');
+        errorText.classList.remove('hide');
+        return false;
+    } else {
+        errorBlock.classList.remove('error_block');
+        errorText.classList.remove('error_text');
+        errorText.classList.add('hide');
+        return true;
+    }
+}
+
+
+function validateAKA() {
+
+    errors = false;
+    errorMsg = ""
+    len = parseInt(document.getElementById('no_of_aka').value) + 1;
+    for (i = 2; i <= len  ; i++) {
+        var origForename = document.getElementById('orig_forename_'+ i).value;
+        var origSurname = document.getElementById('orig_surname_'+ i).value;
+        var enteredForename = document.getElementById('forename_'+ i).value;
+        var enteredSurname = document.getElementById('surname_'+ i).value;
+        var errorBlock = document.getElementById('name_validation');
+        var errorText = document.getElementById('aka_error');
+
+
+        if(origForename != enteredForename && origSurname != enteredSurname) {
+            errors = true;
+            errorMsg = 'The aka names do not match the previously entered names. Please re-key or select to change the original.';
+        } else if(origForename != enteredForename) {
+            errors = true;
+            errorMsg = 'The aka forename does not match the previously entered name. Please re-key or select to change the original.';
+        } else if(origSurname != enteredSurname) {
+            errors = true;
+            errorMsg = 'The aka surname does not match the previously entered name. Please re-key or select to change the original.';
+        }
+
+    }
+
+    if(errors) {
+        errorBlock.classList.add('error_block');
+        errorText.textContent = errorMsg;
+        errorText.classList.add('error_text');
+        errorText.classList.remove('hide');
+        return false;
+    } else {
+        errorBlock.classList.remove('error_block');
+        errorText.classList.remove('error_text');
+        errorText.classList.add('hide');
+        return true;
+    }
+}
+
+function validate(sender) {
+    var allOK = false;
+
+    var origCourt = document.getElementById('orig_court').value;
+    var enteredCourt = document.getElementById('court_name').value;
+
+    allOK = validatePrivateInd();
+
+    no_of_aka = document.getElementById('no_of_aka')
+    if (no_of_aka != 'undefined' && no_of_aka != null) {
+        allOK = validateAKA();
+    }
+
+    if(origCourt != enteredCourt) {
+        var errorBlock = document.getElementById('court_validation');
+        errorBlock.classList.add('error_block');
+
+        var errorText = document.getElementById('court_error');
+        errorText.classList.add('error_text');
+        errorText.textContent = 'The court name does not match the previously entered court name. Please re-key or select to change the original.';
+        errorText.classList.remove('hide');
+        allOK = false;
+
+    } else {
+        var errorBlock = document.getElementById('court_validation');
+        errorBlock.classList.remove('error_block');
+
+        var errorText = document.getElementById('court_error');
+        errorText.classList.remove('error_text');
+        errorText.classList.add('hide');
+        allOk = true;
+    }
+
+    return allOK;
+}
+
+</script>
+
+{% endblock %}
+
+{% block maincontent %}
+
+<div class="spacer-10"></div>
+
+<h1 class="title-36">Bankruptcy registration</h1>
+
+<div class="spacer-5"></div>
+
+<div class="text-16-gray">
+    1. Input court details &nbsp;&nbsp;
+    2. Input debtor details &nbsp;&nbsp;
+    <span class="text-16-bold">3. Check and verify details</span> &nbsp;&nbsp;
+    4. Key number &nbsp;&nbsp;
+</div>
+
+<div class="grid-row">
+    <div class="col four" id="form_panel">
+    <!-- ///////////////////////////////// data entry form ///////////////////////////////// -->
+    <form id="bank_verify" action="/bankruptcy_capture/key_no" method="POST" onsubmit="return validate(this);">
+        <div class="spacer-40"></div>
+        <div id="name_validation">
+            <input type="hidden" id="orig_forename_1" value="{{party_data[0].names[0].private.forenames|join(' ')}}"/>
+            <input type="hidden" id="orig_surname_1" value="{{party_data[0].names[0].private.surname}}"/>
+
+            <span id="name_error" class="hide">[placeholder]</span>
+            <div class="grid-row">
+                <div class="text-19-gray col ten">Re-key debtor details</div>
+                <div class="col two"><a href="bankruptcy_capture/debtor" id="change_debtor">Change</a></div>
+            </div>
+            <div class="grid-row-padded-line">
+                <label for="forename_1" class="text-16-bold col five">Forename</label>
+                <input type="text" autocomplete="off" autofocus id="forename_1" class="col six form-textfield-verify"/>
+            </div>
+            <div class="grid-row-padded-line">
+                <label for="surname_1" class="text-16-bold col five">Surname</label>
+                <input type="text" autocomplete="off" class="col six form-textfield-verify" id="surname_1"/>
+            </div>
+            {% if party_data[0].names|length > 1 %}
+            <span id="aka_error" class="hide">[placeholder]</span>
+            <div class="grid-row">
+                <div class="text-19-gray col ten">AKA details</div>
+                <div class="col two"><a href="bankruptcy_capture/debtor" id="change_aka">Change</a></div>
+            </div>
+            {% for name in party_data[0].names %}
+            {% if loop.index > 1 %}
+            <input type="hidden" id="orig_forename_{{loop.index}}" value="{{name.private.forenames|join(' ')}}"/>
+            <input type="hidden" id="orig_surname_{{loop.index}}" value="{{name.private.surname}}"/>
+                <div class="grid-row-padded-line">
+                    <label for="forename_1" class="text-16-bold col five">Forename</label>
+                    <input type="text" autocomplete="off" autofocus id="forename_{{loop.index }}" class="col six form-textfield-verify"/>
+                </div>
+                <div class="grid-row-padded-line">
+                    <label for="surname_1" class="text-16-bold col five">Surname</label>
+                    <input type="text" autocomplete="off" class="col six form-textfield-verify" id="surname_{{ loop.index }}"/>
+                </div>
+            {% endif %}
+            {% endfor %}
+            <input type="hidden" id="no_of_aka" value="{{party_data[0].names|length - 1}}"/>
+            {% endif %}
+            {% if party_data[0].addresses|length > 0 %}
+            <div class="grid-row-padded-line">
+                {% for address in party_data[0].addresses %}
+                <span class="text-16-bold col five">{% if loop.index == 1 %}Address{% else %}&nbsp;{% endif %}</span>
+                <div class="text-16 col seven" id="address_{{loop.index}}">
+                    {% for line in address.address_lines %}
+                        {{line}}<br/>
+                    {% endfor %}
+                    {{ address.county }}<br/>
+                    {{ address.postcode }}
+                    {% if loop.index < party_data[0].addresses|length %}<hr/>{% endif %}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <div class="grid-row-padded-line bottom-line">
+                <span class="text-16-bold col five">Occupation</span>
+                <span class="text-16 col seven" id="occupation" >{{party_data[0].occupation}}</span>
+            </div>
+        </div>
+        <div id="court_validation">
+            <span id="court_error" class="hide">[placeholder]</span>
+            <div class="grid-row">
+                <div class="text-19-gray col ten">Official details</div>
+                <div class="col two"><a href="bankruptcy_capture/court" id="change_court">Change</a></div>
+            </div>
+            <input type="hidden" id="orig_court" value="{{court_data.legal_body}}"/>
+            <div id="court_field" {%  if court_data.legal_body|length == 0 %}class="hide"{%  endif %}>
+                <div class="grid-row-padded-line">
+                    <label for="court_name" class="text-16-bold col five">Court name</label>
+                    <input type="text" autocomplete="off" id="court_name" class="col six form-textfield-verify"/>
+                </div>
+            </div>
+            <div class="grid-row-padded-line bottom-line">
+                <span class="text-16-bold col five">Reference</span>
+                <span class="text-16 col seven" id="court_no">{{court_data.legal_body_ref_no}}</span>
+            </div>
+        </div>
+
+
+        <div class="spacer-30"></div>
+        <div>
+            <input id="continue" type="submit" value="Continue" class="form-button"/>
+            <br/>
+            <input id="store" type="submit" onclick="javascript:removeValidation()" name="store" value="Return to this application later" class="link-button-16"/>
+        </div>
+    </form>
+    </div>
+
+    <!-- ///////////////////////////////// end of data entry form ///////////////////////////////// -->
+    <div class="col one"><p></p></div>
+    <!-- /////////////////////////////////  Include image tool ///////////////////////////////// -->
+
+    <div class="col seven">
+        <div class="spacer-40"></div>
+        {% include 'includes/image_view_body.html' %}
+    </div>
+    <!-- ///////////////////////////////// End of image tool ///////////////////////////////// -->
+
+</div>
+
+<script>
+    function removeValidation() {
+        jQuery('#bank_verify').removeAttr(" onsubmit ");
+    }
+</script>
+
+{% endblock %}

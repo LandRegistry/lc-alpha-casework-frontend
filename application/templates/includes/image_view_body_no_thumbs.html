@@ -1,0 +1,13 @@
+<div id="images_data" class="col-sm-6">
+<div id="image_area">
+    <div id="imageContainer">
+        {% for image in images %}
+        <div class="sheetImage">
+            <div class="pancontainer" id="container{{loop.index0}}" data-canzoom="yes">
+                <img alt="" src="{{image}}"/>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+</div>

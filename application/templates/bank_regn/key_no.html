@@ -1,0 +1,67 @@
+{% extends "/page_template/base.html" %}
+
+{% block page_specific_head %}
+{% endblock %}
+{% block maincontent %}
+
+
+<div class="spacer-10"></div>
+
+<h1 class="title-36">Bankruptcy registration</h1>
+
+<div class="spacer-5"></div>
+
+<div class="text-16-gray">
+    1. Input court details &nbsp;&nbsp;
+    2. Input debtor details &nbsp;&nbsp;
+    3. Check and verify details &nbsp;&nbsp;
+    <span class="text-16-bold">4. Key number</span> &nbsp;&nbsp;
+</div>
+
+<div class="grid-row">
+    <div class="col four" id="form_panel">
+        <!-- ///////////////////////////////// data entry form ///////////////////////////////// -->
+        <form id="rectify_form" action="/submit_banks_registration" method="POST">
+            <div class="spacer-40"></div>
+            <h2 class="text-24-bold">Court</h2>
+            <div class="spacer-10"></div>
+
+            <div id="errorBlock" {% if error_msg|length > 0 %}class="error_block"{% endif %}>
+                {% if error_msg|length > 0 %}
+                    <span id="key_no_error" class="error_text">{{error_msg}}</span>
+                {% endif %}
+            <div class="form">
+                <label class="form-label" for="key_number">Key number</label><br/>
+                <input class="form-textfield width-50" required  aria-required="true" autofocus type="text" id="key_number" name="key_number" value="{{data.key_number}}"/>
+            </div>
+            </div>
+
+            <div class="spacer-40"></div>
+            <input id="continue" type="submit" value="Complete" class="form-button"/>
+            <br/>
+            <input id="store" type="submit" onclick="javascript:removeValidation(this)" name="store" value="Return to this application later" class="link-button-16"/>
+            <div class="spacer-40"></div>
+        </form>
+    </div>
+    <!-- ///////////////////////////////// end of data entry form ///////////////////////////////// -->
+    <div class="col one"><p></p></div>
+    <!-- /////////////////////////////////  Include image tool ///////////////////////////////// -->
+
+    <div class="col seven">
+        <div class="spacer-40"></div>
+        {% include 'includes/image_view_body.html' %}
+    </div>
+    <!-- ///////////////////////////////// End of image tool ///////////////////////////////// -->
+
+</div>
+
+<script>
+    function removeValidation(obj) {
+        jQuery('#rectify_form').removeAttr(" onsubmit ");
+        removeRequired(obj);
+    }
+</script>
+
+
+
+{% endblock %}

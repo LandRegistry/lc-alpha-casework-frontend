@@ -1,0 +1,167 @@
+{% extends "/page_template/base.html" %}
+
+{% block maincontent %}
+    <div class="breadcrumb">
+        <ol>
+            <li><a class="breadcrumb_links" href="/">Home</a></li>
+            <li><a class="breadcrumb_links" href="/">Bankruptcies</a></li>
+            <li><a class="breadcrumb_links" id="worklist" href="/get_list?appn=bank_regn">List of registration applications</a></li>
+            <li class="breadcrumb-no-arrow"><span>Bankruptcy registration</span></li>
+        </ol>
+    </div>
+    <div class="spacer-10"></div>
+
+    <h1 class="title-36">Bankruptcy registration</h1>
+
+    <div class="spacer-5"></div>
+
+    <div class="text-16-gray">
+        <span class="text-16-no-link-style">1. Debtor details</span>
+        &nbsp;&nbsp;
+        <span class="text-16-no-link-style">2. Debtor address</span>
+        &nbsp;&nbsp;
+        <span class="text-16-no-link-style">3. Court details</span>
+        &nbsp;&nbsp;
+        <span class="text-16-bold">4. Verify registration</span>
+    </div>
+
+    <div class="spacer-30"></div>
+
+    <div class="grid-row">
+        <!-- ///////////////////////////////// data entry form ///////////////////////////////// -->
+        <form action="/process_registration" method="POST">
+            <div class="column-form" id="form_panel">
+
+                <p class="text-24-bold">4. Verify registration</p>
+
+                <div class="spacer-10"></div>
+
+                <table class="review-table">
+
+                    <tr>
+                        <th colspan="2" class="table-text-black"><span class="text-19-gray">Debtor details</span></th>
+                        <th colspan="1" class="table-text-black link-16-right">
+                            <a class="link-16-right" id="amend_name" href="/amend_name">Edit</a>
+                        </th>
+                    </tr>
+                    <tr>
+                        <td width="45%"><span class="text-review-table-bold">Forename(s)</span></td>
+                        <td width="50%">
+                            <span class="text-review-table">
+                                {% for forename in data.debtor_names[0].forenames %}{{forename}} {% endfor %}
+                            </span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="1"><span class="text-review-table-bold">Surname</span></td>
+                        <td colspan="2"><span class="text-review-table">{{data.debtor_names[0].surname}}</span></td>
+                    </tr>
+
+                    <tr>
+                        <td colspan="1" style="vertical-align: top;"><span class="text-review-table-bold">Also known as</span></td>
+                        <td colspan="2"><span class="text-review-table">
+                        {% for name in data.debtor_names[1:] %}
+						    {% for forename in name.forenames %}
+                                {{forename}}
+                            {% endfor %}
+                            {{name.surname}}<br/> </span>
+                            {% endfor %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="1"><span class="text-review-table-bold">Occupation</span></td>
+                        <td colspan="2"><span class="text-review-table">{{data.occupation}}</span></td>
+                    </tr>
+                </table>
+
+                <div class="spacer-30"></div>
+
+                <table class="review-table">
+                    <tr>
+                        <th colspan="2" class="table-text-black"><span class="text-19-gray">Debtor address</span></th>
+                        <th colspan="1" class="table-text-black link-16-right">
+                            <a class="link-16-right" id="amend_address" href="/amend_address">Edit</a>
+                        </th>
+                    </tr>
+                    {% if data.residence|length > 0 and data.residence[0].address_lines|length > 0 %}
+                    {% for address in data.residence %}
+                    <tr>
+                        <td width="45%" style="vertical-align: top;"><span class="text-review-table-bold">Address {{loop.index}}</span></td>
+                        <td width="50%"><span class="text-review-table">
+                                {% for line in address.address_lines %}
+                                {{line}}
+                                {% endfor %}<br/>
+                                {{address.county}}<br/>
+                                {{address.postcode}}
+                            </span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    {% endif %}
+                </table>
+
+                <div class="spacer-30"></div>
+
+                <table class="review-table">
+                    <tr>
+                        <th colspan="2" class="table-text-black"><span class="text-19-gray">Court details</span></th>
+                        <th colspan="1" class="table-text-black link-16-right"><a class="link-16-right" id="amend_court" href="/amend_court">Edit</a></th>
+                    </tr>
+                    <tr>
+                        <td width="45%"><span class="text-review-table-bold">Key number</span></td>
+                        <td width="50%"><span class="text-review-table">{{data.key_number}}</span></td>
+                    </tr>
+                    <tr>
+                        <td colspan="1"><span class="text-review-table-bold">Court name</span></td>
+                        <td colspan="2"><span class="text-review-table">{{data.legal_body}}</span></td>
+                    </tr>
+                    <tr>
+                        <td colspan="1"><span class="text-review-table-bold">Reference</span></td>
+                        <td colspan="2"><span class="text-review-table">{{data.legal_body_ref}}</span></td>
+                    </tr>
+                </table>
+
+                <div class="spacer-30"></div>
+
+                <table class="review-table">
+                    <tr>
+                        <td width="10%" class="no-line"><input type="checkbox" id="check_box" onclick="toggle()"></td>
+                        <td width="90%" class="no-line"><span class="text-review-table">I confirm I have verified all above details</span></td>
+                    </tr>
+                </table>
+
+                <div class="spacer-10"></div>
+
+                <div>
+                    <table>
+                        <tr>
+                            <td width="50%" class="no-line">
+
+                                <input type="submit" id="submit" value="Register" class="form-button-6" disabled>
+                            </td>
+                            <td width="50%" class="custom-3">
+                                <a href="#" class="link-16">Reject application</a>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </form>
+        <!-- ///////////////////////////////// end of data entry form ///////////////////////////////// -->
+
+        <!-- /////////////////////////////////  Include image tool ///////////////////////////////// -->
+
+        {% include 'includes/image_view_body.html' %}
+
+        <!-- ///////////////////////////////// End of image tool ///////////////////////////////// -->
+    </div>
+    <script>
+
+    function toggle() {
+        var cbChecked = document.getElementById('check_box').checked;
+        document.getElementById('submit').disabled = !cbChecked;
+    }
+
+    </script>
+
+{% endblock %}

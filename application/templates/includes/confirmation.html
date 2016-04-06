@@ -1,0 +1,22 @@
+<!-- CONFIRMATION -->
+
+        <div class="col nine confirmation_banner" id="conf_banner">
+            Your application has been successfully completed.
+            {% if ( (result['reg_no']|length > 0) and
+                    (requested_list != 'search_full' and requested_list != 'search_bank') ) %}
+                {% if result['reg_no']|length == 1 %}
+                    Registration number is:
+                {% else %}
+                    Registration numbers are:
+                {% endif%}
+                <span id="conf_reg_numbers">
+                {% for nos in result['reg_no'] %}
+                    {% if loop.index == result['reg_no']|length %}
+                        {{nos}}
+                    {% else %}
+                        {{nos}},
+                    {% endif %}
+                {% endfor %}
+                </span>
+            {% endif %}
+        </div>

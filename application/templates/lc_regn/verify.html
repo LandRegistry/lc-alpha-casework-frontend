@@ -1,0 +1,399 @@
+{% extends "/page_template/base.html" %}
+{% block page_specific_head %}
+
+<script>
+</script>
+
+{% endblock %}
+
+{% block maincontent %}
+
+{% include 'includes/lc_nav_title.html' %}
+
+<div class="grid-row">
+    <div class="col four" id="form_panel">
+    <!-- ///////////////////////////////// data entry form ///////////////////////////////// -->
+    <form id="lc_verify" action="/lc_verify_details" method="POST" onsubmit="return validate(this);">
+        
+        <input type="hidden" id="orig_class" value="{{details.class}}"/>
+        <input type="hidden" id="eo_type" value="{{details.estate_owner_ind}}"/>
+
+        {% if details.estate_owner_ind == 'Private Individual' %}
+        <div id="eo_validation">
+            <input type="hidden" id="orig_forename" value="{{details.estate_owner.private.forenames|join(' ')}}"/>
+            <input type="hidden" id="orig_surname" value="{{details.estate_owner.private.surname}}"/>
+
+            <span id="eo_error" class="hide">[placeholder]</span>
+            <div class="grid-row">
+                <div class="text-19-gray col ten">Re-key estate owner details</div>
+                <div class="col two"><a href="/land_charge_capture">Change</a></div>
+            </div>
+            <div class="grid-row-padded-line">
+                <label for="forename" class="text-16-bold col five">Forename</label>
+                <input type="text" autocomplete="off" autofocus id="forename" class="col six form-textfield-verify"/>
+            </div>
+            <div class="grid-row-padded-line">
+                <label for="surname" class="text-16-bold col five">Surname</label>
+                <input type="text" autocomplete="off" class="col six form-textfield-verify" id="surname"/>
+            </div>
+            <div class="grid-row-padded-line bottom-line">
+                <span class="text-16-bold col five">Title, trade or profession</span>
+                <span class="text-16 col seven">{{details.occupation}}</span>
+            </div>
+        </div>
+
+        {% elif details.estate_owner_ind == 'County Council' or
+            details.estate_owner_ind == 'Parish Council' or
+            details.estate_owner_ind == 'Rural Council' or
+            details.estate_owner_ind == 'Other Council' %}
+
+        <div id="eo_validation">
+            <input type="hidden" id="orig_fullname" value="{{details.estate_owner.local.name}}"/>
+            <input type="hidden" id="orig_area" value="{{details.estate_owner.local.area}}"/>
+            <span id="eo_error" class="hide">[placeholder]</span>
+            <div class="grid-row">
+                <div class="text-19-gray col ten">Re-key estate owner details</div>
+                <div class="col two"><a href="/land_charge_capture">Change</a></div>
+            </div>
+            <div class="grid-row-padded-line">
+                <label for="fullname" class="text-16-bold col five">Full Name</label>
+                <input type="text" autofocus id="fullname" class="col six form-textfield-verify"/>
+            </div>
+            <div class="grid-row-padded-line">
+                <label for="area" class="text-16-bold col five">Area</label>
+                <input type="text" class="col six form-textfield-verify" id="area"/>
+            </div>
+            <div class="grid-row-padded-line bottom-line">
+                <span class="text-16-bold col five">Title, trade or profession</span>
+                <span class="text-16 col seven">{{details.occupation}}</span>
+            </div>
+        </div>
+
+        {% elif details.estate_owner_ind == 'Development Corporation' or
+                details.estate_owner_ind == 'Other' %}
+        <div id="eo_validation">
+            <input type="hidden" id="orig_name" value="{{details.estate_owner.other}}"/>
+            <span id="eo_error" class="hide">[placeholder]</span>
+            <div class="grid-row">
+                <div class="text-19-gray col ten">Re-key estate owner details</div>
+                <div class="col two"><a href="/land_charge_capture">Change</a></div>
+            </div>
+            <div class="grid-row-padded-line">
+                <label for="corpname" class="text-16-bold col five">Name</label>
+                <input type="text" autofocus id="corpname" class="col six form-textfield-verify"/>
+            </div>
+            <div class="grid-row-padded-line bottom-line">
+                <span class="text-16-bold col five">Title, trade or profession</span>
+                <span class="text-16 col seven">{{details.occupation}}</span>
+            </div>
+        </div>
+
+        {% elif details.estate_owner_ind == 'Limited Company' %}
+        <div id="eo_validation">
+            <input type="hidden" id="orig_name" value="{{details.estate_owner.company}}"/>
+            <span id="eo_error" class="hide">[placeholder]</span>
+            <div class="grid-row">
+                <div class="text-19-gray col ten">Re-key estate owner details</div>
+                <div class="col two"><a href="/land_charge_capture">Change</a></div>
+            </div>
+            <div class="grid-row-padded-line">
+                <label for="company" class="text-16-bold col five">Company Name</label>
+                <input type="text" autofocus id="company" class="col six form-textfield-verify"/>
+            </div>
+            <div class="grid-row-padded-line bottom-line">
+                <span class="text-16-bold col five">Title, trade or profession</span>
+                <span class="text-16 col seven">{{details.occupation}}</span>
+            </div>
+        </div>
+
+        {% elif details.estate_owner_ind == 'Complex Name' %}
+
+        <div id="eo_validation">
+            <div class="grid-row">
+                <div class="text-19-gray col ten">Estate owner details</div>
+                <div class="col two"><a href="/land_charge_capture">Change</a></div>
+            </div>
+            <div class="grid-row-padded-line">
+                <span class="text-16-bold col five">Name</span>
+                <span class="text-16 col seven">{{details.estate_owner.complex.name}}</span>
+            </div>
+            <div class="grid-row-padded-line">
+                <span class="text-16-bold col five">Number</span>
+                <span class="text-16 col seven">{{details.estate_owner.complex.number}}</span>
+            </div>
+            <div class="grid-row-padded-line bottom-line">
+                <span class="text-16-bold col five">Title, trade or profession</span>
+                <span class="text-16 col seven">{{details.occupation}}</span>
+            </div>
+        </div>
+
+
+        {% endif %}
+
+        <div id="coc_validation">
+            <span id="coc_error" class="hide">
+                The class of charge does not match the previously entered class of charge. Please re-key or select to change the original.
+            </span>
+            <div class="grid-row">
+                <div class="text-19-gray col ten">Re-key class of charge</div>
+                <div class="col two"><a href="/land_charge_capture">Change</a></div>
+            </div>
+            <div class="grid-row-padded-line bottom-line">
+                <label for="coc" class="text-16-bold col five">Class and subclass</label>
+                <!--<input type="text" class="col six form-textfield-verify" id="coc"/>-->
+                <select class="form-select col six" id="coc" name="coc" required aria-required="true">
+                    <option id="CNONE" value="CNone"></option>
+                    <option id="C1" value="C(I)">C1</option>
+                    <option id="C2" value="C(II)">C2</option>
+                    <option id="C3" value="C(III)">C3</option>
+                    <option id="C4" value="C(IV)">C4</option>
+                    <option id="D1" value="D(I)">D1</option>
+                    <option id="D2" value="D(II)">D2</option>
+                    <option id="D3" value="D(III)">D3</option>
+                    <option id="A" value="A">A</option>
+                    <option id="B" value="B">B</option>
+                    <option id="E" value="E">E</option>
+                    <option id="F" value="F">F</option>
+                    <option id="PA" value="PA">PA</option>
+                    <option id="WO" value="WO">WO</option>
+                    <option id="DA" value="DA">DA</option>
+                    <option id="ANN" value="ANN">ANN</option>
+                    <option id="LC" value="LC">LC</option>
+                </select>
+            </div>
+        </div>
+
+        {% if application.application_type != 'K6' %}
+        <div class="grid-row">
+            <div class="text-19-gray col ten">Priority Notice</div>
+            <div class="col two"><a href="/land_charge_capture">Change</a></div>
+        </div>
+        <div class="grid-row-padded-line  bottom-line">
+            <span class="text-16-bold col five">PN Number</span>
+            <span class="text-16 col seven">{{details.priority_notice}}</span>
+        </div>
+        {% endif %}
+
+        <div class="grid-row">
+            <div class="text-19-gray col ten">Particulars of land affected</div>
+            <div class="col two"><a href="/land_charge_capture">Change</a></div>
+        </div>
+        <div class="grid-row-padded-line">
+            <span class="text-16-bold col five">County or unitary authority area</span>
+            <span class="text-16 col seven">{{details.county|join(', ')}}</span>
+        </div>
+        <div class="grid-row-padded-line">
+            <span class="text-16-bold col five">District</span>
+            <span class="text-16 col seven">{{details.district}}</span>
+        </div>
+        <div class="grid-row-padded-line bottom-line">
+            {% if application.application_type != 'K2' %}
+                <span class="text-16-bold col five">Short description</span>
+            {% else %}
+                <span class="text-16-bold col five">Known as</span>
+            {% endif %}
+            <span class="text-16 col seven">{{details.short_description}}</span>
+        </div>
+
+
+        <div class="grid-row">
+            <div class="text-19-gray col ten">Additional information</div>
+            <div class="col two"><a href="/land_charge_capture">Change</a></div>
+        </div>
+        <div class="grid-row-padded-line bottom-line">
+            <span class="text-16-bold col five">Information</span>
+            <span class="text-16 col seven">{{details.additional_info}}</span>
+        </div>
+
+        <div class="spacer-30"></div>
+        <div>
+            <input id="continue" type="submit" value="Continue" class="form-button"/>
+            <br/>
+            <input id="store" type="submit" onclick="javascript:removeValidation()" name="store" value="Return to this application later" class="link-button-16"/>
+        </div>
+    </form>
+    </div>
+
+    <!-- ///////////////////////////////// end of data entry form ///////////////////////////////// -->
+    <div class="col one"><p></p></div>
+    <!-- /////////////////////////////////  Include image tool ///////////////////////////////// -->
+    <div class="col seven">
+    {% include 'includes/image_view_body.html' %}
+
+    <!-- ///////////////////////////////// End of image tool ///////////////////////////////// -->
+    </div>
+
+<script>
+
+function validatePrivateInd() {
+    var origForename = document.getElementById('orig_forename').value;
+    var origSurname = document.getElementById('orig_surname').value;
+    var enteredForename = document.getElementById('forename').value;
+    var enteredSurname = document.getElementById('surname').value;
+    var errorBlock = document.getElementById('eo_validation');
+    var errorText = document.getElementById('eo_error');
+
+    errors = false;
+    errorMsg = ""
+    if(origForename !== enteredForename && origSurname !== enteredSurname) {
+        errors = true;
+        errorMsg = 'The names do not match the previously entered names. Please re-key or select to change the original.';
+    } else if(origForename !== enteredForename) {
+        errors = true;
+        errorMsg = 'The forename does not match the previously entered forename. Please re-key or select to change the original.';
+    } else if(origSurname !== enteredSurname) {
+        errors = true;
+        errorMsg = 'The surname does not match the previously entered surname. Please re-key or select to change the original.';
+    }
+
+    if(errors) {
+        errorBlock.classList.add('error_block');
+        errorText.textContent = errorMsg;
+        errorText.classList.add('error_text');
+        errorText.classList.remove('hide');
+        return false;
+    } else {
+        errorBlock.classList.remove('error_block');
+        errorText.classList.remove('error_text');
+        errorText.classList.add('hide');
+        return true;
+    }
+}
+
+function validateCouncil() {
+
+
+    var origFullname = document.getElementById('orig_fullname').value;
+    var origArea = document.getElementById('orig_area').value;
+    var enteredFullname = document.getElementById('fullname').value;
+    var enteredArea = document.getElementById('area').value;
+    var errorBlock = document.getElementById('eo_validation');
+    var errorText = document.getElementById('eo_error');
+
+    errors = false;
+    errorMsg = ""
+    if(origFullname !== enteredFullname && origArea !== enteredArea) {
+        errors = true;
+        errorMsg = 'The name and area do not match the previously entered names. Please re-key or select to change the original.';
+    } else if(origFullname !== enteredFullname) {
+        errors = true;
+        errorMsg = 'The name does not match the previously entered forename. Please re-key or select to change the original.';
+    } else if(origArea !== enteredArea) {
+        errors = true;
+        errorMsg = 'The area does not match the previously entered surname. Please re-key or select to change the original.';
+    }
+
+    if(errors) {
+        errorBlock.classList.add('error_block');
+        errorText.textContent = errorMsg;
+        errorText.classList.add('error_text');
+        errorText.classList.remove('hide');
+        return false;
+    } else {
+        errorBlock.classList.remove('error_block');
+        errorText.classList.remove('error_text');
+        errorText.classList.add('hide');
+        return true;
+    }
+}
+
+function validateCorpOther() {
+    var origFullname = document.getElementById('orig_name').value;
+    var enteredFullname = document.getElementById('corpname').value;
+    var errorBlock = document.getElementById('eo_validation');
+    var errorText = document.getElementById('eo_error');
+
+    errors = false;
+    errorMsg = ""
+    if(origFullname !== enteredFullname) {
+        errors = true;
+        errorMsg = 'The name does not match the previously entered name. Please re-key or select to change the original.';
+    }
+
+    if(errors) {
+        errorBlock.classList.add('error_block');
+        errorText.textContent = errorMsg;
+        errorText.classList.add('error_text');
+        errorText.classList.remove('hide');
+        return false;
+    } else {
+        errorBlock.classList.remove('error_block');
+        errorText.classList.remove('error_text');
+        errorText.classList.add('hide');
+        return true;
+    }
+}
+
+function validateCompany() {
+    var origFullname = document.getElementById('orig_name').value;
+    var enteredFullname = document.getElementById('company').value;
+    var errorBlock = document.getElementById('eo_validation');
+    var errorText = document.getElementById('eo_error');
+
+    errors = false;
+    errorMsg = ""
+    if(origFullname !== enteredFullname) {
+        errors = true;
+        errorMsg = 'The name does not match the previously entered name. Please re-key or select to change the original.';
+    }
+
+    if(errors) {
+        errorBlock.classList.add('error_block');
+        errorText.textContent = errorMsg;
+        errorText.classList.add('error_text');
+        errorText.classList.remove('hide');
+        return false;
+    } else {
+        errorBlock.classList.remove('error_block');
+        errorText.classList.remove('error_text');
+        errorText.classList.add('hide');
+        return true;
+    }
+}
+
+function validate(sender) {
+    var allOK = true;
+
+    var origCoc = document.getElementById('orig_class').value;
+    var enteredCoc = document.getElementById('coc').value;
+
+    var eo_type = document.getElementById('eo_type').value;
+    if(eo_type === 'Private Individual') {
+        allOK = validatePrivateInd();
+    } else if(eo_type === 'County Council' || eo_type === 'Parish Council' || eo_type === 'Other Council' || eo_type === 'Rural Council') {
+        allOK = validateCouncil();
+    } else if(eo_type === 'Development Corporation' || eo_type === 'Other') {
+        allOK = validateCorpOther();
+    } else if(eo_type === 'Limited Company') {
+        allOK = validateCompany();
+    }
+
+    if(origCoc !== enteredCoc) {
+        var errorBlock = document.getElementById('coc_validation');
+        errorBlock.classList.add('error_block');
+
+        var errorText = document.getElementById('coc_error');
+        errorText.classList.add('error_text');
+        errorText.classList.remove('hide');
+        allOK = false;
+    } else {
+        var errorBlock = document.getElementById('coc_validation');
+        errorBlock.classList.remove('error_block');
+
+        var errorText = document.getElementById('coc_error');
+        errorText.classList.remove('error_text');
+        errorText.classList.add('hide');
+    }
+
+    return allOK;
+}
+
+function removeValidation() {
+    jQuery('#lc_verify').removeAttr(" onsubmit ");
+}
+
+</script>
+
+</div>
+
+{% endblock %}
