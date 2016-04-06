@@ -398,7 +398,7 @@ def application_start(application_type, appn_id, form):
                                        data=session, application=session, screen='capture',
                                        transaction=session['transaction_id'])
 
-        elif application_type == 'lc_rect':
+        elif application_type == 'lc_rect' or application_type == 'lc_renewal':
             if application_json['application_data']['reg_date'] == '':
                 date = ''
             else:
@@ -895,6 +895,9 @@ def back_to_search_name():
 @app.route('/submit_search', methods=['POST'])
 @requires_auth_role(['normal'])
 def submit_search():
+    if 'store' in request.form:
+        return store_application()
+
     logging.info(format_message('Submitting submit search'))
     cust_address = request.form['customer_address'].replace("\r\n", ", ").strip()
     customer = {
@@ -1195,6 +1198,9 @@ def renewal_capture_customer():
 @app.route('/submit_renewal', methods=['POST'])
 @requires_auth_role(['normal'])
 def submit_renewal():
+    if 'store' in request.form:
+        return store_application()
+
     form = request.form
     logging.info(format_message('Submitting renewal'))
     cust_address = form['customer_address'].replace("\r\n", ", ").strip()
