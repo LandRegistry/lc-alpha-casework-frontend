@@ -23,6 +23,14 @@ def authenticate(username, password):
     administrators = os.getenv('ADMIN_GROUP', 'not specified')
     reprinters = os.getenv('REPRINT_GROUP', 'reprint_group')
 
+    logging.debug(port)
+    logging.debug(domain)
+    logging.debug(search_dn)
+
+    logging.debug(caseworkers)
+    logging.debug(administrators)
+    logging.debug(reprinters)
+
     try:
         logging.info('Logging in %s', username)
         server = Server(host, port=int(port))
@@ -32,11 +40,17 @@ def authenticate(username, password):
 
         display_name = connection.entries[0].displayname
         logging.debug('Display name is %s', display_name)
+
         primary_group = ''
 
         admin_match = [g for g in connection.entries[0].memberof if 'CN=' + administrators in g]
         casework_match = [g for g in connection.entries[0].memberof if 'CN=' + caseworkers in g]
         print_match = [g for g in connection.entries[0].memberof if 'CN=' + reprinters in g]
+
+        logging.debug(connection.entries[0].memberof)
+        logging.debug(admin_match)
+        logging.debug(casework_match)
+        logging.debug(print_match)
 
         if len(admin_match) > 0:
             primary_group = administrators

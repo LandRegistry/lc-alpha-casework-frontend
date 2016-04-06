@@ -67,6 +67,8 @@
             <div class="spacer-40"></div>
             <input id="continue" type="submit" value="Continue" class="form-button"/>
             <a href="javascript:showDelete()" id="reject" class="link-16 right">Reject application</a>
+            <br/>
+            <input id="store" type="submit" onclick="javascript:removeValidation(this)" name="store" value="Return to this application later" class="link-button-16"/>
             <div class="spacer-40"></div>
 
             <div id="reject_application_dlg" role="dialog" style="display: none;">
@@ -135,6 +137,11 @@
             jQuery('#renewal_form').attr('action', "/rejection");
             jQuery('#renewal_form').attr('onsubmit', "");
             jQuery("#renewal_form").submit();
+        }
+
+        function removeValidation(obj) {
+            jQuery('#renewal_form').removeAttr(" onsubmit ");
+            removeRequired(obj);
         }
 
     </script>
