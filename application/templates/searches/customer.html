@@ -28,12 +28,14 @@
 <div class="grid-row">
     <div class="col four" id="form_panel">
         <!-- ///////////////////////////////// data entry form ///////////////////////////////// -->
-        <form action="/submit_search" onsubmit="return validateForm()" method="POST">
+        <form id="search_customer" action="/submit_search" onsubmit="return validateForm()" method="POST">
             <div class="spacer-30"></div>
             {% set customer_type = 'Applicant' %}
             {% include 'includes/customer_fields.html' %}
 
             <input id="submit" type="submit" class="form-button" value="Complete"/>
+            <br/>
+            <input id="store" type="submit" onclick="javascript:removeValidation(this)" name="store" value="Return to this application later" class="link-button-16"/>
 
         </form>
     </div>
@@ -47,5 +49,11 @@
     <!-- ///////////////////////////////// End of image tool ///////////////////////////////// -->
 </div>
 
+<script>
+    function removeValidation(obj) {
+        jQuery('#search_customer').removeAttr(" onsubmit ");
+        removeRequired(obj);
+    }
+</script>
 
 {% endblock %}
