@@ -4,11 +4,12 @@
     var enteredDate = '';
     function check_form()
     {
+        //removed to allow fullcans of "multi" registration
         //if full cans selected submit the form
-        if($('#full_cans').is(':checked'))
-        {
-            submit_form();
-        }
+        // if($('#full_cans').is(':checked'))
+        //{
+        //    //submit_form();
+        //}
 
         newReg = jQuery('#reg_no').val().trim();
         newDate = jQuery('#reg_date').val().trim();
