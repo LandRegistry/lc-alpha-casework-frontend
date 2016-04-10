@@ -50,7 +50,7 @@ def validateParishCouncil(data):
 
 
 def validateOtherCouncil(data):
-    word_match = re.match(".*(BOROUGH|BWRDEISTREF|CITY|DINAS|URBAN|UDC|U D C|METROPOLITAN).*", data['loc_auth'], re.IGNORECASE)
+    word_match = re.match(".*(BOROUGH|BWRDEISTREF|CITY|DINAS|URBAN|UDC|U D C|METROPOLITAN|DISTRICT).*", data['loc_auth'], re.IGNORECASE)
     if word_match is None:
         return False
 
