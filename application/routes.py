@@ -1886,6 +1886,13 @@ def create_documents(size):
     return Response(response.text, status=response.status_code, mimetype='application/json')
 
 
+@app.route('/forms/<int:doc_id>/<size>', methods=['POST'])
+def append_image(doc_id, size):
+    uri = app.config['CASEWORK_API_URL'] + '/forms/' + str(doc_id) +  '/' + size
+    response = http_post(uri, data=request.data, params=request.args, headers=request.headers)
+    return Response(response.text, status=response.status_code, mimetype='application/json')
+
+
 @app.route('/forms/<int:doc_id>', methods=["GET"])
 def get_document_info(doc_id):
     uri = app.config['CASEWORK_API_URL'] + '/forms/' + str(doc_id)
