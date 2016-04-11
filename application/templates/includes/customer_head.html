@@ -20,20 +20,29 @@
                 data: {},
                 success: function( data ) {
                     // alert(JSON.stringify(data));
-                    jQuery('#customer_name').val(data.name);
-
-                    if (data.dx_number != "") {
-                        full_address = data.dx_number + '\r\n' + data.dx_exchange;
-                        jQuery('#dx_address').prop('checked', true);
-
+                    if (data.account_code == 'N') {
+                        jQuery('#customer_name').val('');
+                        full_address = '';
+                        jQuery('#customer_address').val(full_address);
+                        jQuery('#key_no_errorBlock').addClass("error_block");
+                        jQuery('#key_no_error').html("Invalid key number");
+                        jQuery('#key_no_error').show();
                     } else {
-                      full_address = data.address.address_lines.join('\r\n') + '\r\n'+ data.address.postcode;
-                      jQuery('#rm_address').prop('checked', true);
+                        jQuery('#customer_name').val(data.name);
+
+                        if (data.dx_number != "") {
+                            full_address = data.dx_number + '\r\n' + data.dx_exchange;
+                            jQuery('#dx_address').prop('checked', true);
+
+                        } else {
+                          full_address = data.address.address_lines.join('\r\n') + '\r\n'+ data.address.postcode;
+                          jQuery('#rm_address').prop('checked', true);
+                        }
+                        jQuery('#customer_address').val(full_address);
+                        jQuery('#key_no_errorBlock').removeClass("error_block");
+                        jQuery('#key_no_error').html("");
+                        jQuery('#key_no_error').hide();
                     }
-                    jQuery('#customer_address').val(full_address);
-                    jQuery('#key_no_errorBlock').removeClass("error_block");
-                    jQuery('#key_no_error').html("");
-                    jQuery('#key_no_error').hide();
                 },
                 error: function( xhr, textStatus, errorThrown ) {
                     jQuery('#customer_name').val('');
