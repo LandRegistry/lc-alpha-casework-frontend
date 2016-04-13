@@ -293,7 +293,8 @@ def register_correction():
 
     url = app.config['CASEWORK_API_URL'] + '/applications/0' + '?action=correction'
 
-    headers = {'Content-Type': 'application/json', 'X-Transaction-ID': session['transaction_id']}
+    headers = get_headers({'Content-Type': 'application/json'})
+    headers['X-Transaction-ID'] = session['transaction_id']
     logging.debug("bankruptcy details: " + json.dumps(application))
     response = http_put(url, data=json.dumps(application), headers=headers)
     if response.status_code == 200:
