@@ -830,6 +830,8 @@ def get_original_details():
 @app.route('/process_corrected_details', methods=['POST'])
 @requires_auth_role(['normal'])
 def process_corrected_details():
+    # No image for corrections but set image to blank to stop failure in removal of address
+    session['images'] = []
     session['parties'] = get_debtor_details(request.form)
     return render_template('corrections/check.html', data=session['parties'], transaction=session['transaction_id'])
 

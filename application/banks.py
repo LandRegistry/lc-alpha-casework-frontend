@@ -183,7 +183,7 @@ def get_debtor_details(data):
                                     data[postcode_counter]
         addresses.append(address)
         counter += 1
-    print(session)
+
     if 'court_info' in session:
         case_reference = session['court_info']['legal_body'] + ' ' + session['court_info']['legal_body_ref_no']
     else:
