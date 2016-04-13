@@ -43,7 +43,7 @@
             </div>
 
             <div class="spacer-40"></div>
-            <input id="continue" type="submit" value="Complete" class="form-button"/>
+            <input id="continue" type="submit" onclick="disableContinue()" value="Complete" class="form-button"/>
             <br/>
             <input id="store" type="submit" name="store" onclick="javascript:removeRequired(this)" value="Return to this application later" class="link-button-16"/>
             <div class="spacer-40"></div>
@@ -61,6 +61,12 @@
 
 </div>
 
+<script>
+    function disableContinue() {
+        document.getElementById("continue").disabled = true;
+        document.getElementById("store").style.visibility = "hidden";
+    }
+</script>
 
 
 {% endblock %}

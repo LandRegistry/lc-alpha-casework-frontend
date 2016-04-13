@@ -25,7 +25,7 @@
             {% set customer_type = 'Conveyancer' %}
             {% include 'includes/customer_fields.html' %}
 
-            <input id="submit" type="submit" class="form-button" value="Complete"/>
+            <input id="submit" type="submit" class="form-button" onclick="disableContinue()" value="Complete"/>
             <br/>
             <input id="store" type="submit" onclick="javascript:removeValidation(this)" name="store" value="Return to this application later" class="link-button-16"/>
 
@@ -45,6 +45,11 @@
     function removeValidation(obj) {
         jQuery('#rect_customer').removeAttr(" onsubmit ");
         removeRequired(obj);
+    }
+
+    function disableContinue() {
+        document.getElementById("submit").disabled = true;
+        document.getElementById("store").style.visibility = "hidden";
     }
 </script>
 
