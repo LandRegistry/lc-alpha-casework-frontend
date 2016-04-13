@@ -183,7 +183,7 @@ def get_debtor_details(data):
                                     data[postcode_counter]
         addresses.append(address)
         counter += 1
-    print(session)
+
     if 'court_info' in session:
         case_reference = session['court_info']['legal_body'] + ' ' + session['court_info']['legal_body_ref_no']
     else:
@@ -293,7 +293,8 @@ def register_correction():
 
     url = app.config['CASEWORK_API_URL'] + '/applications/0' + '?action=correction'
 
-    headers = {'Content-Type': 'application/json', 'X-Transaction-ID': session['transaction_id']}
+    headers = get_headers({'Content-Type': 'application/json'})
+    headers['X-Transaction-ID'] = session['transaction_id']
     logging.debug("bankruptcy details: " + json.dumps(application))
     response = http_put(url, data=json.dumps(application), headers=headers)
     if response.status_code == 200:
