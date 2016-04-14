@@ -209,9 +209,13 @@ def register_bankruptcy(key_number):
     text = json.loads(response.text)
     if response.status_code == 200:
         cust_address = ', '.join(text['address']['address_lines']) + ', ' + text['address']['postcode']
+        if ("dx_number" in text) and ("dx_exchange" in text):
+            if text["dx_number"]:  # switch to dx address if available
+                if text["dx_exchange"]:
+                    cust_address = "DX " + text["dx_number"] + ', ' + text["dx_exchange"]
         cust_name = text['name']
         applicant = {'name': cust_name,
-                     'address': cust_address,
+                     'address': cust_address.upper(),
                      'key_number': key_number,
                      'reference': ' ',
                      'address_type': 'NA'}
