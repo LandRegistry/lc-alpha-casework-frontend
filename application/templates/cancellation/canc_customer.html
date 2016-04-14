@@ -32,7 +32,7 @@
             </div>
             <div class="spacer-40"></div>
 
-            <input id="submit" type="submit" onclick="disableContinue()" class="form-button" value="Complete"/>
+            <input id="submit" type="submit" class="form-button" value="Complete"/>
             <br/>
             <input id="store" type="submit" onclick="javascript:removeValidation(this)" name="store" value="Return to this application later" class="link-button-16"/>
             <div class="spacer-40"></div>
@@ -54,10 +54,6 @@
         removeRequired(obj)
     }
 
-    function disableContinue() {
-        document.getElementById("submit").disabled = true;
-        document.getElementById("store").style.visibility = "hidden";
-    }
 </script>
 
 

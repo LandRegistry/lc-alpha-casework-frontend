@@ -21,7 +21,7 @@
 <div class="grid-row">
     <div class="col four" id="form_panel">
         <!-- ///////////////////////////////// data entry form ///////////////////////////////// -->
-        <form id="amend_key_no" action="/submit_banks_amendment" method="POST">
+        <form id="amend_key_no" action="/submit_banks_amendment" method="POST" onsubmit="disableComplete()">
             <div class="spacer-40"></div>
             <h2 class="text-24-bold">Court</h2>
             <div class="spacer-10"></div>
@@ -43,7 +43,7 @@
             </div>
 
             <div class="spacer-40"></div>
-            <input id="continue" type="submit" onclick="disableContinue()" value="Complete" class="form-button"/>
+            <input id="continue" type="submit" value="Complete" class="form-button"/>
             <br/>
             <input id="store" type="submit" name="store" onclick="javascript:removeRequired(this)" value="Return to this application later" class="link-button-16"/>
             <div class="spacer-40"></div>
@@ -62,7 +62,7 @@
 </div>
 
 <script>
-    function disableContinue() {
+    function disableComplete() {
         document.getElementById("continue").disabled = true;
         document.getElementById("store").style.visibility = "hidden";
     }

@@ -99,6 +99,8 @@
                 return false;
         }
 
+        document.getElementById("submit").disabled = true;
+        document.getElementById("store").style.visibility = "hidden";
         // if we got this far the form validation has succeeded
         return true;
     }
