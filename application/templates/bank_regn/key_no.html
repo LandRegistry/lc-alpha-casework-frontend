@@ -21,7 +21,7 @@
 <div class="grid-row">
     <div class="col four" id="form_panel">
         <!-- ///////////////////////////////// data entry form ///////////////////////////////// -->
-        <form id="rectify_form" action="/submit_banks_registration" method="POST">
+        <form id="rectify_form" action="/submit_banks_registration" method="POST" onsubmit="disableComplete()">
             <div class="spacer-40"></div>
             <h2 class="text-24-bold">Court</h2>
             <div class="spacer-10"></div>
@@ -59,6 +59,11 @@
     function removeValidation(obj) {
         jQuery('#rectify_form').removeAttr(" onsubmit ");
         removeRequired(obj);
+    }
+
+    function disableComplete() {
+        document.getElementById("continue").disabled = true;
+        document.getElementById("store").style.visibility = "hidden";
     }
 </script>
 

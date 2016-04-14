@@ -21,7 +21,7 @@
 <div class="grid-row">
     <div class="col four" id="form_panel">
         <!-- ///////////////////////////////// data entry form ///////////////////////////////// -->
-        <form id="amend_key_no" action="/submit_banks_amendment" method="POST">
+        <form id="amend_key_no" action="/submit_banks_amendment" method="POST" onsubmit="disableComplete()">
             <div class="spacer-40"></div>
             <h2 class="text-24-bold">Court</h2>
             <div class="spacer-10"></div>
@@ -61,6 +61,12 @@
 
 </div>
 
+<script>
+    function disableComplete() {
+        document.getElementById("continue").disabled = true;
+        document.getElementById("store").style.visibility = "hidden";
+    }
+</script>
 
 
 {% endblock %}

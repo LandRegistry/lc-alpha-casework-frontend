@@ -19,7 +19,7 @@
 <div class="grid-row">
     <div class="col four" id="form_panel">
         <!-- ///////////////////////////////// data entry form ///////////////////////////////// -->
-        <form action="/submit_banks_correction" method="POST">
+        <form action="/submit_banks_correction" method="POST" onsubmit="disableComplete()">
             <div class="spacer-40"></div>
 
             <div class="grid-row">
@@ -107,5 +107,11 @@
     </div>
 
 </div>
+
+<script>
+    function disableComplete() {
+        document.getElementById("complete").disabled = true;
+    }
+</script>
 
 {% endblock %}
