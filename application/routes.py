@@ -1172,9 +1172,10 @@ def submit_cancellation():
     logging.info(format_message('Submitting cancellation'))
     response = submit_lc_cancellation(request.form)
     if response.status_code != 200:
-        err = 'Failed to submit cancellation application id:%s - Error code: %s'.format(
+        err = 'Failed to submit cancellation application id: {} - Error code: {} -- {}'.format(
             session['worklist_id'],
-            str(response.status_code))
+            str(response.status_code),
+            response.text)
         logging.error(err)
         return render_template('error.html', error_msg=err), response.status_code
     else:
