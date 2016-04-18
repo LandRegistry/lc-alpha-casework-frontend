@@ -305,6 +305,25 @@ function allCountyClick(){
 }
 
 function validateFields(){
+    var selects = document.getElementsByTagName("select");
+    for(var i = 0; i < selects.length; i++) {
+        console.log(selects[i].id);
+        var number = selects[i].id.replace("nameType_", "");
+        console.log(number);
+
+        if(selects[i].value === 'complexName') {
+            var numberField = document.getElementById("complex_number_" + number);
+            if(numberField.value === '') {
+                var errorElement = document.getElementById("cname_error_" + number);
+                errorElement.style.display = "block";
+                return false;
+            } else {
+                var errorElement = document.getElementById("cname_error_" + number);
+                errorElement.style.display = "none";
+            }
+        }
+    }
+
     if ($('#all_counties').is(':checked') == false && $('#county_0').val() == "") {
         $('#county_error').show();
         return false;

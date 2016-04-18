@@ -76,6 +76,7 @@
         </div>
         <div id="complex_{{id_count}}">
             <div class="form">
+                <div class="error form-label" style="display:none;" id="cname_error_{{id_count}}">Please look up the complex name.</div>
                 <label class="form-label" for="complex_name_field_{{id_count}}">Complex name</label>
                 <input class="form-textfield" {{required}} type="text" id="complex_name_field_{{id_count}}" value="{{curr_data.estate_owner.complex.name}}"/>
                 <div class="spacer-5"></div>
