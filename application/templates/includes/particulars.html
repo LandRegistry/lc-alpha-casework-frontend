@@ -34,7 +34,7 @@
             {% else %}
                 <label class="form-label" for="district">District</label>
             {% endif %}
-            <input class="form-textfield" type="text" id="district" name="district"
+            <input class="form-textfield" type="text" id="district" name="district" maxlength="254"
                    required aria-required="true" value="{{curr_data.district}}"/>
         </div>
 
@@ -52,7 +52,7 @@
                     <label class="form-label" for="short_desc">Short description</label>
                 {% endif %}
             {% endif %}
-            <textarea class="form-textarea-short" id="short_desc" name="short_desc"
+            <textarea class="form-textarea-short" id="short_desc" name="short_desc" maxlength="254"
                       required >{{curr_data.short_description}}</textarea>
         </div>
 
