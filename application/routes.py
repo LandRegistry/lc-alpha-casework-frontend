@@ -989,10 +989,12 @@ def get_registration_details():
     error_msg = None
     if response.status_code == 404:
         error_msg = "Registration not found please re-enter"
-
     else:
         application_json = response.json()
-        if application_json['status'] == 'cancelled' or application_json['status'] == 'superseded':
+        logging.debug(application_json)
+        if 'additional_classes' in application_json:
+            error_msg = "Unable to process this application"
+        elif application_json['status'] == 'cancelled' or application_json['status'] == 'superseded':
             error_msg = "Application has been cancelled or amended - please re-enter"
         elif 'amends_registration' in application_json:
             if application_json['amends_registration']['type'] == 'Cancellation':

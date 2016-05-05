@@ -85,6 +85,13 @@
     }
 
     function validateForm (){
+        if( jQuery('#key_number').val().length != '' && jQuery('#key_number').val().length !== 7) {
+            jQuery('#key_no_errorBlock').addClass("error_block");
+            jQuery('#key_no_error').html("A valid key number must be provided.");
+            jQuery('#key_no_error').show();
+            return false;
+        }
+
         if (jQuery('#key_number').val() != "" && valid == false) {
             jQuery('#key_no_errorBlock').addClass("error_block");
             jQuery('#key_no_error').html("A valid key number must be provided.");
