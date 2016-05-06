@@ -82,7 +82,7 @@
             <input id="no" type="submit" name="submit_btn" value="No" class="form-button-no"/>
             <a href="javascript:confirmDelete()" id="reject_1" class="link-16 right">Reject application</a>
             <div class="spacer-20"></div>
-            <a href="/get_list?appn=bank_regn" class="link-16">Return to this application later</a>
+            <input id="store" type="submit" onclick="javascript:removeRequired(this)" name="store" value="Return to this application later" class="link-button-16"/>
             <div class="spacer-40"></div>
             {% else %}
             <div>
