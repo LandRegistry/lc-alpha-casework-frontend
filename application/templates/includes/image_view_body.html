@@ -27,7 +27,7 @@
                 <div id="image_container">
                     {% for image in images %}
                     <div class="image_panner" id="container{{loop.index0}}">
-                        <img class="panned_image" alt="" src="{{image}}"/>
+                        <img class="panned_image" alt="large view of selected page" src="{{image}}"/>
                     </div>
                     {% endfor %}
                 </div>
@@ -42,7 +42,7 @@
         <div id="thumbnails">
             {% for image in images %}
             <div class="spacer-15"></div>
-            <img id="thumbnail{{loop.index}}" class="thumbnail{% if loop.index0 == current_page %} active_thumbnail{% endif %}" src="{{image}}" alt=""
+            <img id="thumbnail{{loop.index}}" alt="thumbnail image of page {{loop.index}}" class="thumbnail{% if loop.index0 == current_page %} active_thumbnail{% endif %}" src="{{image}}" alt=""
                  onclick="imgClick(this, {{ loop.index0 }})"/>
             {% endfor %}
         </div>
