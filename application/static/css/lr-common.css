@@ -134,6 +134,14 @@ a {
   color: #005ea5;
   font-family: Roboto; }
 
+a:hover {
+  color: #000000;
+}
+
+a:focus {
+  color: #000000;
+}
+
 .breadcrumb ol{
   padding:0px;
 }
@@ -205,6 +213,7 @@ a {
   font-family: Roboto;
   font-size: 16px;
   font-weight: 400; }
+
 
 .link-16-right {
   color: #005ea5;
@@ -695,6 +704,14 @@ td.custom-3 {
   background-color: transparent;
   cursor: pointer;
   text-decoration: underline;
+}
+
+.link-button-16:hover {
+  color: #000000;
+}
+
+.link-button-16:focus {
+  color: #000000;
 }
 
 .padded-rule {
