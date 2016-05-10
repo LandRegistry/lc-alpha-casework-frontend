@@ -32,7 +32,7 @@
             {% if 'district' in errors %}
                 <label class="error-text form-label" for="district">X District</label>
             {% else %}
-                <label class="form-label" for="district">District</label>
+                <label class="form-label" for="district">District <span class="screenreader">(Required) </span><abbr title="required">*</abbr></label>
             {% endif %}
             <input class="form-textfield" type="text" id="district" name="district" maxlength="254"
                    required aria-required="true" value="{{curr_data.district}}"/>
@@ -49,7 +49,7 @@
                 {% if data.form == 'K2' %}
                     <label class="form-label" for="short_desc">Known as</label>
                 {% else %}
-                    <label class="form-label" for="short_desc">Short description</label>
+                    <label class="form-label" for="short_desc">Short description <span class="screenreader">(Required) </span><abbr title="required">*</abbr></label>
                 {% endif %}
             {% endif %}
             <textarea class="form-textarea-short" id="short_desc" name="short_desc" maxlength="254"
