@@ -102,8 +102,8 @@
             </div>
 
             <div class="form">
-                <label class="form-label">Surname</label>
-                <input class="form-textfield" type="text" id="surname_1" required name="surname_1" value="{{data.parties[0].names[0].private.surname}}">
+                <label class="form-label">Surname <span class="screenreader">(Required) </span><abbr title="required">*</abbr></label>
+                <input class="form-textfield" type="text" id="surname_1" required  aria-required="true"  name="surname_1" value="{{data.parties[0].names[0].private.surname}}">
             </div>
 
             {% for name in data.parties[0].names %}
@@ -117,7 +117,7 @@
 
             <div class="form">
                 <label class="form-label">Surname</label>
-                <input class="form-textfield" type="text" name="surname_{{loop.index}}" id="surname_{{loop.index}}" value="{{name.private.surname}}">
+                <input class="form-textfield" type="text"  name="surname_{{loop.index}}" id="surname_{{loop.index}}" value="{{name.private.surname}}">
             </div>
             {% endif %}
             {% endfor %}
@@ -138,7 +138,7 @@
             {% if data.parties[0].addresses|length > 0 %}
             {% for address in data.parties[0].addresses %}
             <div class="form">
-                <label class="form-label">Address</label><div class="right">{% if loop.index > 1%}<a href="javascript:removeAddress({{loop.index-1}});" class="link-16" id="remove_address_{{loop.index-1}}">Remove address</a>{% endif %}</div>
+                <label class="form-label">Address <span class="screenreader">(Required) </span><abbr title="required">*</abbr></label><div class="right">{% if loop.index > 1%}<a href="javascript:removeAddress({{loop.index-1}});" class="link-16" id="remove_address_{{loop.index-1}}">Remove address</a>{% endif %}</div>
                 <input class="form-textfield mr-btm-10" type="text" required id="add_{{loop.index}}_line1" name="add_{{loop.index}}_line1" value="{{address.address_lines[0]}}">
                 <input class="form-textfield mr-btm-10" type="text" id="add_{{loop.index}}_line2" name="add_{{loop.index}}_line2" value="{{address.address_lines[1]}}">
                 <input class="form-textfield mr-btm-10" type="text" id="add_{{loop.index}}_line3" name="add_{{loop.index}}_line3" value="{{address.address_lines[2]}}">
@@ -165,7 +165,7 @@
             <p class="error"><strong>{{error_msg}}</strong></p>
             {% endif %}
             <div class="form col ">
-                <label class="form-label" for="ref_no">Reference</label><br/>
+                <label class="form-label" for="ref_no">Reference <span class="screenreader">(Required) </span><abbr title="required">*</abbr></label><br/>
                 <input class="form-textfield" required  aria-required="true" type="text" id="ref_no" name="ref_no" value="{{data.parties[0].case_reference}}"/>
             </div>
             <div class="spacer-40"></div>

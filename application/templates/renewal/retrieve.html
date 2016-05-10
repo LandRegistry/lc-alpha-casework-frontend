@@ -56,11 +56,11 @@
                 <p class="error_text"><strong>{{error_msg}}</strong></p>
                 {% endif %}
             <div class="form">
-                <label class="form-label" for="reg_no">Original reference number</label><br/>
+                <label class="form-label" for="reg_no">Original reference number <span class="screenreader">(Required) </span><abbr title="required">*</abbr></label><br/>
                 <input class="form-textfield width-50" required  aria-required="true" type="text" id="reg_no" name="reg_no" value="{{reg_no}}"/>
             </div>
             <div class="form">
-                <label class="form-label" for="reg_date">Date of registration</label><br/>
+                <label class="form-label" for="reg_date">Date of registration <span class="screenreader">(Required) </span><abbr title="required">*</abbr></label><br/>
                 <input class="form-textfield width-50 dateEntry"  required  aria-required="true" type="text" placeholder="dd/mm/yyyy" id="reg_date" name="reg_date" value="{{reg_date}}"/>
             </div>
             </div>

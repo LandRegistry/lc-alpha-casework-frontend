@@ -719,3 +719,12 @@ td.custom-3 {
   display:block;
   padding:10px; 0px;
 }
+
+.screenreader {
+position:absolute;
+left:-10000px;
+top:auto;
+width:1px;
+height:1px;
+overflow:hidden;
+}

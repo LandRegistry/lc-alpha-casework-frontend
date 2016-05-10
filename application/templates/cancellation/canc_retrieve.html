@@ -60,16 +60,16 @@
                 <span id="regn_error" class="error_text">{{error_msg}}</span>
                 {% endif %}
                 <div class="form">
-                    <label class="form-label" for="reg_no">Original registration number</label><br/>
+                    <label class="form-label" for="reg_no">Original registration number <span class="screenreader">(Required) </span><abbr title="required">*</abbr></label><br/>
                     <input class="form-textfield width-50" id="reg_no" required  aria-required="true" type="text" name="reg_no" value="{{reg_no}}"/>
                 </div>
                 <div class="form">
-                    <label class="form-label" for="reg_date">Date of registration</label><br/>
+                    <label class="form-label" for="reg_date">Date of registration <span class="screenreader">(Required) </span><abbr title="required">*</abbr></label><br/>
                     <input class="form-textfield width-50 dateEntry" id="reg_date" required  aria-required="true" type="text" placeholder="dd/mm/yyyy" name="reg_date" value="{{reg_date}}"/>
                 </div>
             </div>
             <div class="spacer-20"></div>
-            <h2 class="text-24-bold">Is this a full or part cancellation?</h2>
+            <h2 class="text-24-bold">Is this a full or part cancellation? <span class="screenreader">(Required) </span><abbr title="required">*</abbr></h2>
             <div class="spacer-10"></div>
             <div class="grid-row">
 

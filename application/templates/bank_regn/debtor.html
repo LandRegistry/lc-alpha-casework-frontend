@@ -96,7 +96,7 @@
                 </div>
 
                 <div class="form">
-                    <label class="form-label">Surname</label>
+                    <label class="form-label">Surname <span class="screenreader">(Required) </span><abbr title="required">*</abbr></label>
                     <input class="form-textfield" type="text" id="surname_1" required name="surname_1" value="{% if 'names' in data%}{{data.names[0].private.surname}}{% endif %}">
                 </div>
                 {% else %}

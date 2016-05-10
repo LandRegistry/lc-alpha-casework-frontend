@@ -31,7 +31,7 @@
                     <span id="key_no_error" class="error_text">{{error_msg}}</span>
                 {% endif %}
             <div class="form">
-                <label class="form-label" for="key_number">Key number</label><br/>
+                <label class="form-label" for="key_number">Key number <span class="screenreader">(Required) </span><abbr title="required">*</abbr></label><br/>
                 <input class="form-textfield width-50" required maxlength="7" aria-required="true" autofocus type="text" id="key_number" name="key_number" value="{{data.key_number}}"/>
             </div>
             </div>

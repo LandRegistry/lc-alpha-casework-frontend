@@ -62,7 +62,7 @@
                 </div>
                 <div class="spacer-20"></div>
                 <div class="form col ">
-                    <label class="form-label" for="ref_no">Reference</label><br/>
+                    <label class="form-label" for="ref_no">Reference <span class="screenreader">(Required) </span><abbr title="required">*</abbr></label><br/>
                     <p class="text-indent">For example, 162 of 2016 or BKT387612</p>
                     <input class="form-textfield"  required  aria-required="true" type="text" id="ref_no" name="ref_no" value="{% if session.court_info %}{{session.court_info.legal_body_ref_no}}{% endif %}"/>
                 </div>
