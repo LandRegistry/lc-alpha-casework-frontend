@@ -70,8 +70,8 @@
                     <input class="form-textfield width-50" autofocus  type="text" id="wob_ref" name="wob_ref" value="{% if 'wob' in data %}{{data.wob.number}}{% endif %}"/>
                 </div>
                 <div class="form">
-                    <label class="form-label" for="wob_date">Date of registration</label><br/>
-                    <input class="form-textfield width-50 dateEntry"  type="text" placeholder="dd/mm/yyyy" id="wob_date" name="wob_date" value="{% if 'wob' in data%}{{data.wob.date}}{% endif %}"/>
+                    <label class="form-label" for="wob_date">Date of registration (dd/mm/yyyy)</label><br/>
+                    <input class="form-textfield width-50 dateEntry"  type="text" id="wob_date" name="wob_date" value="{% if 'wob' in data%}{{data.wob.date}}{% endif %}"/>
                 </div>
                 <div class="spacer-40"></div>
                 <div class="form">
@@ -79,8 +79,8 @@
                     <input class="form-textfield width-50"  type="text" id="pab_ref" name="pab_ref" value="{% if 'pab' in data%}{{data.pab.number}}{% endif %}"/>
                 </div>
                 <div class="form">
-                    <label class="form-label" for="pab_date">Date of registration</label><br/>
-                    <input class="form-textfield width-50 dateEntry"  type="text" placeholder="dd/mm/yyyy" id="pab_date" name="pab_date" value="{% if 'pab' in data%}{{data.pab.date}}{% endif %}"/>
+                    <label class="form-label" for="pab_date">Date of registration (dd/mm/yyyy)</label><br/>
+                    <input class="form-textfield width-50 dateEntry"  type="text" id="pab_date" name="pab_date" value="{% if 'pab' in data%}{{data.pab.date}}{% endif %}"/>
                 </div>
             </div>
             <div class="spacer-40"></div>
