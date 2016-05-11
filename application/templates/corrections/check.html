@@ -79,18 +79,21 @@
             <h2 class="text-19-bold">Do you need a K22?</h2>
             <div class="spacer-20"></div>
             <div class="grid-row">
-                <div class="col two form-control-div-small">
-                    <label class="form-label" for="generate_K22_yes">
-                        <input id="generate_K22_yes" type="radio" name="generate_K22" value="yes"/>
-                        Yes
-                    </label>
-                </div>
-                <div class="col two form-control-div-small">
-                    <label class="form-label" for="generate_K22_no">
-                        <input id="generate_K22_no" type="radio" name="generate_K22" value="no" checked/>
-                        No
-                    </label>
-                </div>
+                <fieldset class="group-no-border">
+                <legend class="screenreader">Do you need a K22?</legend>
+                    <div class="col two form-control-div-small">
+                        <label class="form-label" for="generate_K22_yes">
+                            <input id="generate_K22_yes" type="radio" name="generate_K22" value="yes"/>
+                            Yes
+                        </label>
+                    </div>
+                    <div class="col two form-control-div-small">
+                        <label class="form-label" for="generate_K22_no">
+                            <input id="generate_K22_no" type="radio" name="generate_K22" value="no" checked/>
+                            No
+                        </label>
+                    </div>
+                </fieldset>
             </div>
             <div class="spacer-40"></div>
             <input id="complete" type="submit" value="Complete" class="form-button"/>

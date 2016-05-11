@@ -69,12 +69,12 @@
                 </div>
             </div>
             <div class="spacer-20"></div>
-            <h2 class="text-24-bold">Is this a full or part cancellation? <span class="screenreader">(Required) </span><abbr title="required">*</abbr></h2>
+            <h2 class="text-24-bold">Is this a full or part cancellation? <abbr title="required">*</abbr></h2>
             <div class="spacer-10"></div>
             <div class="grid-row">
-
+                <fieldset class="group-no-border">
+                <legend class="screenreader">Select cancellation type (Required)</legend>
                 {% if session.application_dict.application_data %}
-
                    <div class="col three form-control-div-small">
                         <label class="form-label" for="full_cans">
                             <input id="full_cans" type="radio" name="full_cans"
@@ -87,7 +87,6 @@
                                    onclick="" value="false" {% if session.cancellation_type == 'Part Cancellation' %}checked="Checked"{% endif %}>Part
                         </label>
                     </div>
-
                 {% else %}
                     <div class="col three form-control-div-small">
                         <label class="form-label" for="full_cans">
@@ -100,6 +99,8 @@
                         </label>
                     </div>
                 {% endif %}
+                </fieldset>
+
 
             </div>
             <div class="spacer-40"></div>

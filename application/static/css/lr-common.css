@@ -745,3 +745,8 @@ width:1px;
 height:1px;
 overflow:hidden;
 }
+
+.group-no-border{
+  border:0px;
+  padding:0px;
+}

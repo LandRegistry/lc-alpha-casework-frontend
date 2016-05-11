@@ -37,85 +37,87 @@
         <p class="text-indent">Are there changes to : </p>
         <div class="spacer-10"></div>
 
-
-        <div class="form">
-            <div id="chargee_selector" class="form-control-div-xlarge width-50">
-            <label class="form-label" for="chargee">
-                <input id="chargee" {{chargee_details}} type="radio" name="addl_info_type" value="chargee_details" onclick="toggle_boxes()">
-                Chargee details
-            </label>
-        </div>
-        <div id="chargee_info"
-             {% if chargee_details == 'checked' %}
-                class="form"
-             {% else %}
-                class="form hide"
-             {% endif %}
-            >
-            <div class="spacer-15"></div>
-            <div class="col one">&nbsp;</div>
-            <div class="col two">
-                <label class="form-label" for="orig_data">from &nbsp;&nbsp;</label>
-            </div>
-            <div class="col nine">
-                <input class="form-textfield" type="text" id="orig_data"
-                       placeholder="chargee"
-                       name="orig_data" value="{{original}}"/>
-            </div>
-            <div class="spacer-5"></div>
-            <div class="col one">&nbsp;</div>
-            <div class="col two">
-                <label class="form-label" for="current_data">to</label>
-            </div>
-            <div class="col nine">
-                <input class="form-textfield" type="text" id="current_data"
-                       placeholder="chargee"
-                       name="current_data" value="{{current}}"/>
-            </div>
-            <div class="spacer-5"></div>
-        </div>
-        <div class="spacer-10"></div>
-        <div class="form">
-            <div id="doi_selector" class="form-control-div-xlarge width-50">
-                <label class="form-label" for="date_of_instrument">
-                    <input id="date_of_instrument" type="radio" name="addl_info_type"
-                           {{doi_details}}
-                           value="date_of_instrument" onclick="toggle_boxes()">
-                     Date of instrument
+        <fieldset class="group-no-border">
+        <legend class="screenreader">Change to Additional information options</legend>
+            <div class="form">
+                <div id="chargee_selector" class="form-control-div-xlarge width-50">
+                <label class="form-label" for="chargee">
+                    <input id="chargee" {{chargee_details}} type="radio" name="addl_info_type" value="chargee_details" onclick="toggle_boxes()">
+                    Chargee details
                 </label>
             </div>
-        </div>
-        <div id="date_of_instrument_info"
-            {% if doi_details == 'checked' %}
-                class="form"
-            {% else %}
-                class="form hide"
-            {% endif %}
-            >
+            <div id="chargee_info"
+                 {% if chargee_details == 'checked' %}
+                    class="form"
+                 {% else %}
+                    class="form hide"
+                 {% endif %}
+                >
+                <div class="spacer-15"></div>
                 <div class="col one">&nbsp;</div>
                 <div class="col two">
-                    <label class="form-label" for="doi_orig_data">from &nbsp;&nbsp;</label>
+                    <label class="form-label" for="orig_data">from &nbsp;&nbsp;</label>
                 </div>
-                <div class="col four">
-                    <input class="form-textfield dateEntry width-75" type="text" id="doi_orig_data"
-                    placeholder="dd/mm/yyyy" maxlength="10"
-                    name="doi_orig_data" value="{{doi_original}}"/>
+                <div class="col nine">
+                    <input class="form-textfield" type="text" id="orig_data"
+                           placeholder="chargee"
+                           name="orig_data" value="{{original}}"/>
                 </div>
-                <div class="col one">
-                    <label class="form-label" for="doi_current_data">to</label>
+                <div class="spacer-5"></div>
+                <div class="col one">&nbsp;</div>
+                <div class="col two">
+                    <label class="form-label" for="current_data">to</label>
                 </div>
-                <div class="col four">
-                    <input class="form-textfield dateEntry width-75" type="text" id="doi_current_data"
-                    placeholder="dd/mm/yyyy" maxlength="10"
-                    name="doi_current_data" value="{{doi_current}}"/>
+                <div class="col nine">
+                    <input class="form-textfield" type="text" id="current_data"
+                           placeholder="chargee"
+                           name="current_data" value="{{current}}"/>
                 </div>
-            <div class="spacer-5"></div>
+                <div class="spacer-5"></div>
+            </div>
+            <div class="spacer-10"></div>
+            <div class="form">
+                <div id="doi_selector" class="form-control-div-xlarge width-50">
+                    <label class="form-label" for="date_of_instrument">
+                        <input id="date_of_instrument" type="radio" name="addl_info_type"
+                               {{doi_details}}
+                               value="date_of_instrument" onclick="toggle_boxes()">
+                         Date of instrument
+                    </label>
+                </div>
+            </div>
+            <div id="date_of_instrument_info"
+                {% if doi_details == 'checked' %}
+                    class="form"
+                {% else %}
+                    class="form hide"
+                {% endif %}
+                >
+                    <div class="col one">&nbsp;</div>
+                    <div class="col two">
+                        <label class="form-label" for="doi_orig_data">from &nbsp;&nbsp;</label>
+                    </div>
+                    <div class="col four">
+                        <input class="form-textfield dateEntry width-75" type="text" id="doi_orig_data"
+                        placeholder="dd/mm/yyyy" maxlength="10"
+                        name="doi_orig_data" value="{{doi_original}}"/>
+                    </div>
+                    <div class="col one">
+                        <label class="form-label" for="doi_current_data">to</label>
+                    </div>
+                    <div class="col four">
+                        <input class="form-textfield dateEntry width-75" type="text" id="doi_current_data"
+                        placeholder="dd/mm/yyyy" maxlength="10"
+                        name="doi_current_data" value="{{doi_current}}"/>
+                    </div>
+                <div class="spacer-5"></div>
 
-        </div>
-        <div class="form-control-div-xlarge width-50">
-            <label class="form-label" for="none_addl_info">
-                <input id="none_addl_info" {{no_addl_info}} type="radio" name="addl_info_type"  value="none" onclick="toggle_boxes()">
-                No additional information
-            </label>
-        </div>
-        </div>
+            </div>
+            <div class="form-control-div-xlarge width-50">
+                <label class="form-label" for="none_addl_info">
+                    <input id="none_addl_info" {{no_addl_info}} type="radio" name="addl_info_type"  value="none" onclick="toggle_boxes()">
+                    No additional information
+                </label>
+            </div>
+            </div>
+        </fieldset>

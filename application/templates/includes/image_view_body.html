@@ -42,7 +42,7 @@
         <div id="thumbnails">
             {% for image in images %}
             <div class="spacer-15"></div>
-            <img id="thumbnail{{loop.index}}" alt="thumbnail image of page {{loop.index}}" class="thumbnail{% if loop.index0 == current_page %} active_thumbnail{% endif %}" src="{{image}}" alt=""
+            <img id="thumbnail{{loop.index}}" alt="thumbnail image of page {{loop.index}}" class="thumbnail{% if loop.index0 == current_page %} active_thumbnail{% endif %}" src="{{image}}"
                  onclick="imgClick(this, {{ loop.index0 }})"/>
             {% endfor %}
         </div>
