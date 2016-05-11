@@ -2,27 +2,27 @@
 <div class="spacer-20"></div>
 
 <div class="form">
-    <label class="form-label">Address line 1</label>
+    <label class="form-label" for="add_{{loop.index}}_line1">Address line 1</label>
     <input class="form-textfield" type="text" id="add_{{loop.index}}_line1" name="add_{{loop.index}}_line1" value="{{address.address_lines[0]}}">
 </div>
 
 <div class="form">
-    <label class="form-label">Address line 2</label>
+    <label class="form-label" for="add_{{loop.index}}_line2">Address line 2</label>
     <input class="form-textfield" type="text" id="add_{{loop.index}}_line2" name="add_{{loop.index}}_line2" value="{{address.address_lines[1]}}">
 </div>
 
 <div class="form">
-    <label class="form-label">Address line 3</label>
+    <label class="form-label" for="add_{{loop.index}}_line3" >Address line 3</label>
     <input class="form-textfield" type="text" id="add_{{loop.index}}_line3" name="add_{{loop.index}}_line3" value="{{address.address_lines[2]}}">
 </div>
 
 <div class="form">
-    <label class="form-label">County</label>
+    <label class="form-label" for="add_{{loop.index}}_county">County</label>
     <input class="form-textfield" type="text" id="add_{{loop.index}}_county" name="add_{{loop.index}}_county" value="{{address.county}}">
 </div>
 
 <div class="form">
-    <label class="form-label">Postcode</label>
+    <label class="form-label" for="add_{{loop.index}}_postcode">Postcode</label>
     <input class="form-textfield" type="text" id="add_{{loop.index}}_postcode" name="add_{{loop.index}}_postcode" value="{{address.postcode}}">
 </div>
 
