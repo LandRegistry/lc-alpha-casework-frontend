@@ -21,7 +21,7 @@
     function addAddress(sender){
         a++;
         jQuery('<div class="form"> \
-                <label class="form-label">Address</label> \
+                <label class="form-label" for="add_' +a+ '_line1">Address</label> \
                 <input class="form-textfield mr-btm-10" type="text" id="add_' +a+ '_line1" name="add_' +a+ '_line1" value=""> \
                 <input class="form-textfield mr-btm-10" type="text" id="add_' +a+ '_line2" name="add_' +a+ '_line2" value=""> \
                 <input class="form-textfield mr-btm-10" type="text" id="add_' +a+ '_line3" name="add_' +a+ '_line3" value=""> \
@@ -29,11 +29,11 @@
                 <input class="form-textfield" type="text" id="add_' +a+ '_line5" name="add_' +a+ '_line5" value=""> \
             </div> \
             <div class="form"> \
-                <label class="form-label">County</label> \
+                <label class="form-label" for="county_' +a+ '">County</label> \
                 <input class="form-textfield" type="text" id="county_' +a+ '" name="county_' +a+ '" value=""> \
             </div> \
             <div class="form"> \
-                <label class="form-label">Postcode</label> \
+                <label class="form-label" for="postcode_' +a+ '">Postcode</label> \
                 <input class="form-textfield" type="text" id="postcode_' +a+ '" name="postcode_' +a+ '" value=""> \
             </div>').insertBefore("#add_address");
             setupCountyAutocomplete(jQuery('#county_' +a));
@@ -124,7 +124,7 @@
                 <div class="spacer-20"></div>
 
                 <div class="form">
-                    <label class="form-label">Occupation</label>
+                    <label class="form-label" for="occupation">Occupation</label>
                     <input class="form-textfield" type="text" id="occupation" name="occupation" value="{% if session.parties %}{{session.parties[0].occupation}}{% endif %}">
                 </div>
 
