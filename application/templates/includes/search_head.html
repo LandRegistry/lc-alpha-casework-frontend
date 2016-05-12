@@ -3,9 +3,6 @@
 <style>
     /*  Customisation of Modal dialog popup */
 
-    .ui-widget-overlay {
-    opacity: .7;
-    }
     .ui-widget-header {
     margin-top:10px;
     border:0px;
@@ -31,6 +28,7 @@ function showComplexNameModal(ctr) {
     $("#complex_result_modal_"+ctr).dialog({
         modal:true,
         show: true,
+        title:"Complex name result",
         hide:true,
         width: 600,
         maxHeight: 500,
@@ -48,6 +46,7 @@ function addComplexNameModal(ctr) {
     $("#add_complex_modal_"+ctr).dialog({
         modal:true,
         show: true,
+        title:"Complex name addition",
         hide:true,
         width: 600,
         maxHeight: 500,
@@ -142,8 +141,14 @@ function getComplexName(ctr){
                         var name = data[i].name;
                         var number = data[i].number;
                         var row =jQuery('<tr/>');
-                        var cells =  jQuery('<td>'+ name +'</td><td>' + number + '</td><td>' +
-                        '<input type="radio" id="comp_name_'+i+'" name="comp_name_sel" onclick="updateComplexName(this,'+ctr+')" value="'+ name +'*' + number +'"/></td>');
+                        if (i < data.length -1) {
+                            var cells = jQuery('<td>' + name + '</td><td>' + number + '</td><td>' +
+                                    '<input type="radio" id="comp_name_'+i+'" name="comp_name_sel" onclick="updateComplexName(this,'+ctr+')" value="'+ name +'*' + number +'"/></td>');
+                        } else {
+                            var cells = jQuery('<td class="no-border">' + name + '</td><td class="no-border">' + number + '</td><td class="no-border">' +
+                                    '<input type="radio" id="comp_name_'+i+'" name="comp_name_sel" onclick="updateComplexName(this,'+ctr+')" value="'+ name +'*' + number +'"/></td>');
+                        }
+
                         row.append(cells);
                 resultHTML.append(row);
                     }

@@ -485,5 +485,23 @@ body {
     margin-top:10px;
 }
 
+.ui-widget-overlay {
+    opacity: 0  !important;
+}
 
+.ui-dialog, .ui-widget-header {
+    background-color: #f1f1f1 !important;
+}
 
+ .ui-dialog table {
+     background-color: #ffffff;
+     border-radius: 4px !important;
+ }
+ .ui-dialog table td {
+     padding-left:5px;
+     border-bottom: 1px solid #bfc1c3;
+ }
+
+.no-border {
+    border-bottom: 0px !important;
+}
