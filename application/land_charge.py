@@ -73,11 +73,16 @@ def add_estate_owner_details(result, data):
     result['estate_owner']['local']['name'] = data['loc_auth']
     result['estate_owner']['local']['area'] = data['loc_auth_area']
     result['estate_owner']['complex']['name'] = data['complex_name']
-
-    if data['complex_number'] == "":
+    print("DATA")
+    print(data)
+    if data['complex_number'] == "" or data['estateOwnerTypes'] != "complexName":
         result['estate_owner']['complex']['number'] = 0
     else:
         result['estate_owner']['complex']['number'] = int(data['complex_number'])
+
+
+    print("RESULT")
+    print(result)
 
     result['estate_owner']['other'] = data['other_name']
 

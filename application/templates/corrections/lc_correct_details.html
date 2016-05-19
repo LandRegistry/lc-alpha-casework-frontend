@@ -1,0 +1,311 @@
+{% extends "/page_template/base.html" %}
+{% block page_specific_head %}
+{% include 'includes/lc_head.html' %}
+<script>
+
+
+</script>
+
+{% endblock %}
+
+{% block maincontent %}
+<div class="spacer-10"></div>
+
+<h1 class="title-36">Correction</h1>
+
+<div class="spacer-5"></div>
+
+<div class="text-16-gray">
+    <span class="text-16-bold">1. View and correct details </span>&nbsp;&nbsp;
+    2. Check details &nbsp;&nbsp;
+</div>
+
+<div class="grid-row">
+    <div class="col four" id="form_panel">
+        <!-- ///////////////////////////////// data entry form ///////////////////////////////// -->
+        <form id="correct_form" action="/process_corrected_details" method="POST">
+            <div class="spacer-40"></div>
+            <h2 class="text-24-bold">Land Charge details</h2>
+            <div class="spacer-10"></div>
+            <p class="text-indent">Please correct information by over-keying as necessary</p>
+            <div class="spacer-10"></div>
+
+            <!-- CLASS OF CHARGE  -->
+            <h2 class="text-24-bold">Class of charge</h2>
+            <div class="spacer-10"></div>
+            <div class="form">
+                <label class="form-label" for="class">Class and subclass</label><br/>
+                {% if data.class_of_charge == 'C1' %}
+                {% set class_opt_1 = 'selected' %}
+                {% elif data.class_of_charge == 'C2'%}
+                {% set class_opt_2 = 'selected' %}
+                {% elif data.class_of_charge == 'C3'%}
+                {% set class_opt_3 = 'selected' %}
+                {% elif data.class_of_charge == 'C4'%}
+                {% set class_opt_4 = 'selected' %}
+                {% elif curr_data.class_of_charge == 'D1'%}
+                {% set class_opt_5 = 'selected' %}
+                {% elif curr_data.class_of_charge == 'D2'%}
+                {% set class_opt_6 = 'selected' %}
+                {% elif curr_data.class_of_charge == 'D3'%}
+                {% set class_opt_7 = 'selected' %}
+                {% elif curr_data.class_of_charge == 'A'%}
+                {% set class_opt_8 = 'selected' %}
+                {% elif curr_data.class_of_charge == 'B'%}
+                {% set class_opt_9 = 'selected' %}
+                {% elif curr_data.class_of_charge == 'E'%}
+                {% set class_opt_10 = 'selected' %}
+                {% elif curr_data.class_of_charge == 'F' %}
+                {% set class_opt_11 = 'selected' %}
+                {% elif curr_data.class_of_charge == 'PA'%}
+                {% set class_opt_12 = 'selected' %}
+                {% elif curr_data.class_of_charge == 'WO'%}
+                {% set class_opt_13 = 'selected' %}
+                {% elif curr_data.class_of_charge == 'DA'%}
+                {% set class_opt_14 = 'selected' %}
+                {% elif curr_data.class_of_charge == 'ANN'%}
+                {% set class_opt_15 = 'selected' %}
+                {% elif curr_data.class_of_charge == 'LC'%}
+                {% set class_opt_16 = 'selected' %}
+                {% endif %}
+                <select class="form-select width-50" id="class" name="class">
+                    <option {{class_opt_1}} value="C(I)" >C1</option>
+                    <option {{class_opt_2}} value="C(II)">C2</option>
+                    <option {{class_opt_3}} value="C(III)">C3</option>
+                    <option {{class_opt_4}} value="C(IV)">C4</option>
+                    <option {{class_opt_5}} value="D(I)">D1</option>
+                    <option {{class_opt_6}} value="D(II)">D2</option>
+                    <option {{class_opt_7}} value="D(III)">D3</option>
+                    <option {{class_opt_8}} value="A">A</option>
+                    <option {{class_opt_9}} value="B">B</option>
+                    <option {{class_opt_10}} value="E">E</option>
+                    <option {{class_opt_11}} value="F">F</option>
+                    <option {{class_opt_12}} value="PA">PA</option>
+                    <option {{class_opt_13}} value="WO">WO</option>
+                    <option {{class_opt_14}} value="DA">DA</option>
+                    <option {{class_opt_15}} value="ANN">ANN</option>
+                    <option {{class_opt_16}} value="LC">LC</option>
+                </select>
+            </div>
+            <div class="spacer-30"></div>
+
+            <!-- PARTICULARS -->
+            <h2 class="text-24-bold">Particulars of land affected</h2>
+
+            <div class="spacer-10"></div>
+
+            <div class="form">
+                {% if 'county' in errors %}
+                <label class="error-text form-label" for="county_0">X County or unitary authority area</label>
+                {% else %}
+                <label class="form-label" for="county_0">County or unitary authority area</label>
+                {% endif %}
+                {% if curr_data.particulars.counties|length > 0 %}
+                {% for rows in curr_data.particulars.counties %}
+                <input class="form-textfield" type="text" id="county_{{loop.index-1}}" name="county_{{loop.index-1}}"
+                       value="{{rows}}"/>
+                <div class="spacer-10"></div>
+                {% endfor %}
+                {% else %}
+                <input class="form-textfield" type="text" id="county_0" name="county_0"/>
+                <div class="spacer-10"></div>
+                {% endif %}
+            </div>
+
+            <div><a href="#here" onclick="countyClick(this)" class="link-16" id="addcounty">Add additional county or unitary authority</a></div>
+
+            <div class="spacer-10"></div>
+
+            <div class="form">
+                {% if 'district' in errors %}
+                <label class="error-text form-label" for="district">X District</label>
+                {% else %}
+                <label class="form-label" for="district">District <span class="screenreader">(Required) </span><abbr title="required">*</abbr></label>
+                {% endif %}
+                <input class="form-textfield" type="text" id="district" name="district" maxlength="254"
+                       required aria-required="true" value="{{curr_data.particulars.district}}"/>
+            </div>
+
+            <div class="form">
+                {% if 'short_desc' in errors %}
+                {% if curr_data.form == 'K2' %}
+                <label class="error-text form-label" for="short_desc">X Known as</label>
+                {% else %}
+                <label class="error-text form-label" for="short_desc">X Short description</label>
+                {% endif %}
+                {% else %}
+                {% if data.form == 'K2' %}
+                <label class="form-label" for="short_desc">Known as</label>
+                {% else %}
+                <label class="form-label" for="short_desc">Short description <span class="screenreader">(Required) </span><abbr title="required">*</abbr></label>
+                {% endif %}
+                {% endif %}
+            <textarea class="form-textarea-short" id="short_desc" name="short_desc" maxlength="254"
+                      required >{{curr_data.particulars.description}}</textarea>
+            </div>
+
+            <div class="spacer-30"></div>
+
+            <!-- ESTATE OWNER -->
+            <h2 class="text-24-bold">Estate owner details <span class="screenreader">(Required) </span><abbr title="required">*</abbr></h2>
+
+            <div class="spacer-10"></div>
+            {% if curr_data.parties[0].names[0].type == 'Private Individual' %}
+            {% set name_opt_1 = 'selected' %}
+            {% elif curr_data.parties[0].names[0].type == 'County Council' %}
+            {% set name_opt_2 = 'selected' %}
+            {% elif curr_data.parties[0].names[0].type == 'Rural Council' %}
+            {% set name_opt_3 = 'selected' %}
+            {% elif curr_data.parties[0].names[0].type == 'Parish Council' %}
+            {% set name_opt_4 = 'selected' %}
+            {% elif curr_data.parties[0].names[0].type == 'Other Council' %}
+            {% set name_opt_5 = 'selected' %}
+            {% elif curr_data.parties[0].names[0].type == 'Development Corporation' %}
+            {% set name_opt_6 = 'selected' %}
+            {% elif curr_data.parties[0].names[0].type == 'Limited Company' %}
+            {% set name_opt_7 = 'selected' %}
+            {% elif curr_data.parties[0].names[0].type == 'Complex Name' %}
+            {% set name_opt_8 = 'selected' %}
+            {% elif curr_data.parties[0].names[0].type == 'Coded Name' %}
+            {% set name_opt_9 = 'selected' %}
+            {% elif curr_data.parties[0].names[0].type == 'Other' %}
+            {% set name_opt_10 = 'selected' %}
+            {% endif %}
+            <div class="form">
+                {% if 'estate_owner' in errors %}
+                <label class="error-text">X Estate owner</label>
+                {% endif %}
+                <p class="text-indent">Please select the type of estate owner from the list</p>
+                <select name="estateOwnerTypes" id="estateOwnerTypes" onchange="javascript:showFields();" class="form-select width-50">
+                    <option value="privateIndividual" {{name_opt_1}}>Private individual</option>
+                    <option value="countyCouncil" {{name_opt_2}}>County Council or Greater London or Manchester Council</option>
+                    <option value="ruralCouncil" {{name_opt_3}}>Rural District Council</option>
+                    <option value="parishCouncil" {{name_opt_4}}>Parish, Town or Community Council</option>
+                    <option value="otherCouncil" {{name_opt_5}}>Other Council</option>
+                    <option value="developmentCorporation" {{name_opt_6}}>Development Corporation</option>
+                    <option value="limitedCompany" {{name_opt_7}}>Limited company</option>
+                    <option value="complexName" {{name_opt_8}}>Complex Name</option>
+                    <option value="codedName" {{name_opt_9}}>Coded Name</option>
+                    <option value="other" {{name_opt_10}}>Other</option>
+                </select>
+            </div>
+
+            <div id="private">
+                <div class="form">
+                    <label class="form-label" for="forename">Forename(s)</label>
+                    <input class="form-textfield" type="text" id="forename" autocomplete="off" name="forename" value="{%if 'private' in curr_data.parties[0].names[0] %}{{curr_data.parties[0].names[0].private.forenames|join(' ')}} {% endif %}"/>
+                </div>
+
+                <div class="form">
+                    <label class="form-label" for="surname">Surname</label>
+                    <input class="form-textfield" type="text" id="surname" autocomplete="off" name="surname" value="{%if 'private' in curr_data.parties[0].names[0] %}{{curr_data.parties[0].names[0].private.surname}}{% endif %}"/>
+                </div>
+            </div>
+            <div id="limited">
+                <div class="form">
+                    <label class="form-label" for="company">Company name</label>
+                    <input class="form-textfield" type="text" id="company" autocomplete="off" name="company" value="{{curr_data.parties[0].names[0].company}}"/>
+                </div>
+            </div>
+
+            <div id="local">
+                <div class="form">
+                    <label class="form-label" for="loc_auth">Local authority full name</label>
+                    <input class="form-textfield" type="text" id="loc_auth" autocomplete="off" name="loc_auth" value="{%if 'local' in curr_data.parties[0].names[0] %}{{curr_data.parties[0].names[0].local.name}}{% endif %}"/>
+                </div>
+                <div class="form">
+                    <label class="form-label" for="loc_auth_area">Local authority area</label>
+                    <p class="text-indent">This is the area the local authority affects</p>
+                    <input class="form-textfield" type="text" id="loc_auth_area" autocomplete="off" name="loc_auth_area" value="{%if 'local' in curr_data.parties[0].names[0] %}{{curr_data.parties[0].names[0].local.area}}{% endif %}"/>
+                </div>
+            </div>
+            <div id="complex">
+                <div class="form">
+                    <label class="form-label" for="complex_name_field">Complex name</label>
+                    <input class="form-textfield" type="text" id="complex_name_field" autocomplete="off" value="{%if 'complex' in curr_data.parties[0].names[0] %}{{curr_data.parties[0].names[0].complex.name}}{% endif %}"/>
+                    <div class="spacer-5"></div>
+                    <a href="#here" id="name_lookup_link" onclick="showComplexNameModal();" class="link-14-right">Look up complex name</a>
+                    <div id="complex_result_modal" role="dialog" aria-labelledby="complex_result_modal" style="display: none;">
+                        <p id="modal_message" class="text-16"></p>
+                        <div class="spacer-15"></div>
+                        <div id="complex_result"></div>
+                        <div class="spacer-15"></div>
+                        <div>
+                            <div style="float: left">
+                                <a href="#here" id="add_complex_name" data-dismiss="modal" onclick="addComplexNameModal();" class="link-14-right">Add a complex name</a>
+                                <div id="add_complex_modal" role="dialog" style="display: none;">
+                                    <div id="complex_addition"></div>
+                                    <div class="spacer-10"></div>
+                                    <label class="form-label" for="complex_name_addition">Name</label>
+                                    <input class="form-textfield" type="text" id="complex_name_addition"/>
+                                    <label class="form-label" for="complex_number_addition">Number</label>
+                                    <input class="form-textfield" type="text" id="complex_number_addition"/>
+                                    <div class="spacer-15"></div>
+                                    <p id="modal_add" class="text-16"></p>
+                                    <div class="spacer-15"></div>
+                                    <div style="float:left">
+                                        <input id="add" type="button" class="form-button" onclick="addComplexName();" value="Add name"/>
+                                    </div>
+                                    <div style="float:right">
+                                        <input id="close_add" type="button" class="form-button" onclick="closeComplexNameModal();" value="Close"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="float:right">
+                                <input id="close" type="button" class="form-button" onclick="closeComplexNameModal();" value="Close"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="spacer-15"></div>
+                    <div id="selected_name"></div>
+                    <input type="hidden" id="complex_name" name="complex_name" value="{%if 'complex' in curr_data.parties[0].names[0] %}{{curr_data.parties[0].names[0].complex.name}}{% endif %}"/>
+                    <input type="hidden" id="complex_number" name="complex_number" value="{%if 'complex' in curr_data.parties[0].names[0] %}{{curr_data.parties[0].names[0].complex.number}}{% endif %}"/>
+                </div>
+            </div>
+
+
+            <div id="other">
+                <div class="form">
+                    <label class="form-label" for="other_name">Name</label>
+                    <input class="form-textfield" type="text" id="other_name" name="other_name" autocomplete="off" value="{{curr_data.parties[0].names[0].other}}"/>
+                </div>
+            </div>
+
+            <div class="form">
+                <label class="form-label" for="occupation">Trade, title or profession</label>
+                <input class="form-textfield" type="text" id="occupation" autocomplete="off" name="occupation" value="{{curr_data.parties[0].occupation}}"/>
+            </div>
+
+            <!-- FURTHER INFO -->
+            <div class="spacer-30"></div>
+
+            <h2 class="text-24-bold">Additional information</h2>
+
+            <div class="spacer-10"></div>
+
+            <div class="form">
+                <textarea class="form-textarea-mid" id="addl_info" name="addl_info" maxlength="254">{{curr_data.entered_addl_info}}</textarea>
+            </div>
+            <div class="spacer-40"></div>
+            <input id="continue" type="submit" value="Continue" class="form-button"/>
+            <div class="spacer-40"></div>
+        </form>
+    </div>
+    <!-- ///////////////////////////////// end of data entry form ///////////////////////////////// -->
+    <div class="col one"><p></p></div>
+    <div class="col seven">
+        <div class="spacer-40"></div>
+        <span class="text-19">Please view application in Image Retrieval if required</span>
+    </div>
+</div>
+<script>
+
+        jQuery(document).ready(function(){
+        showFields();
+        setupCountyAutocomplete("#county_0");
+    });
+
+
+</script>
+
+{% endblock %}

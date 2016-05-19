@@ -1,0 +1,222 @@
+{% extends "/page_template/base.html" %}
+{% block page_specific_head %}
+
+<script>
+</script>
+
+{% endblock %}
+
+{% block maincontent %}
+
+<div class="spacer-10"></div>
+
+<h1 class="title-36">Correction</h1>
+
+<div class="spacer-5"></div>
+
+<div class="text-16-gray">
+    1. View and correct details   &nbsp;&nbsp;
+    <span class="text-16-bold">2. Check details</span> &nbsp;&nbsp;
+</div>
+<div class="spacer-40"></div>
+<div class="grid-row">
+    <form id="check_correction" action="/submit_lc_correction" method="POST" >
+    <div class="col four" id="form_panel">
+
+        <div class="grid-row">
+            <div class="text-19-gray col ten">Class of charge</div>
+            <div class="col two"><a href="/amend_lc_correction" id="change_class">Change</a></div>
+        </div>
+        <div class="grid-row-padded-line bottom-line">
+            <span class="text-16-bold col four">Class and subclass</span>
+            <span class="col two">&nbsp;</span>
+            <span class="text-16 col six">
+            {% if data.class == 'C(I)' %} C1
+            {% elif data.class == 'C(II)' %} C2
+            {% elif data.class == 'C(III)' %} C3
+            {% elif data.class == 'C(IV)' %} C4
+            {% elif data.class == 'D(I)' %} D1
+            {% elif data.class == 'D(II)' %} D2
+            {% elif data.class == 'D(III)' %} D3
+            {% else %}
+                {{data.class}}
+            {% endif %}
+            </span>
+        </div>
+
+        <div class="grid-row">
+            <div class="text-19-gray col ten">Particulars of land affected</div>
+            <div class="col two"><a href="/amend_lc_correction" id="change_particulars">Change</a></div>
+        </div>
+        <div class="grid-row-padded-line">
+            <span class="text-16-bold col four">County or unitary authority area</span>
+            <span class="col two">&nbsp;</span>
+            <span class="text-16 col six">{{data.county|join(', ')}}</span>
+        </div>
+        <div class="grid-row-padded-line">
+            <span class="text-16-bold col four">District</span>
+            <span class="col two">&nbsp;</span>
+            <span class="text-16 col six">{{data.district}}</span>
+        </div>
+        <div class="grid-row-padded-line bottom-line">
+            <span class="text-16-bold col four">Short description</span>
+            <span class="col two">&nbsp;</span>
+            <span class="text-16 col six">{{data.short_description}}</span>
+        </div>
+
+        <div>
+            <div class="grid-row">
+                <div class="text-19-gray col ten">Estate owner details</div>
+                <div class="col two"><a href="/amend_lc_correction" id="change_name">Change</a></div>
+            </div>
+            {% if data.estate_owner_ind == 'Private Individual' %}
+                <div class="grid-row-padded-line">
+                    <span class="text-16-bold col four">Forename</span>
+                    <span class="col two">&nbsp;</span>
+                    <span class="text-16 col six">{{data.estate_owner.private.forenames|join(' ')}}</span>
+                </div>
+                <div class="grid-row-padded-line">
+                    <span class="text-16-bold col four">Surname</span>
+                    <span class="col two">&nbsp;</span>
+                    <span class="text-16 col six">{{data.estate_owner.private.surname}}</span>
+                </div>
+            {% elif data.estate_owner_ind == 'County Council' or
+            data.estate_owner_ind == 'Parish Council' or
+            data.estate_owner_ind == 'Other Council' %}
+                <div class="grid-row-padded-line">
+                    <span class="text-16-bold col four">Name</span>
+                    <span class="col two">&nbsp;</span>
+                    <span class="text-16 col six">{{data.estate_owner.local.name}}</span>
+                </div>
+                <div class="grid-row-padded-line">
+                    <span class="text-16-bold col four">Area</span>
+                    <span class="col two">&nbsp;</span>
+                    <span class="text-16 col six">{{data.estate_owner.local.area}}</span>
+                </div>
+            {% elif data.estate_owner_ind == 'Development Corporation' or
+            data.estate_owner_ind == 'Other' %}
+                <div class="grid-row-padded-line">
+                    <span class="text-16-bold col four">Name</span>
+                    <span class="col two">&nbsp;</span>
+                    <span class="text-16 col six">{{data.estate_owner.other}}</span>
+                </div>
+            {% elif data.estate_owner_ind == 'Limited Company' %}
+                <div class="grid-row-padded-line">
+                    <span class="text-16-bold col four">Company Name</span>
+                    <span class="col two">&nbsp;</span>
+                    <span class="text-16 col six">{{data.estate_owner.company}}</span>
+                </div>
+            {% elif data.estate_owner_ind == 'Complex Name' %}
+                <div class="grid-row-padded-line">
+                    <span class="text-16-bold col four">Name</span>
+                    <span class="col two">&nbsp;</span>
+                    <span class="text-16-bold col four">{{data.estate_owner.complex.name}}</span>
+                </div>
+                <div class="grid-row-padded-line">
+                    <span class="text-16-bold col four">Number</span>
+                    <span class="col two">&nbsp;</span>
+                    <span class="text-16-bold col six">{{data.estate_owner.complex.number}}</span>
+                </div>
+            {% endif %}
+            <div class="grid-row-padded-line bottom-line">
+                <span class="text-16-bold col five">Title, trade or profession</span>
+                <span class="col one">&nbsp;</span>
+                <span class="text-16 col six">{{data.occupation}}</span>
+            </div>
+        </div>
+        {% if 'additional_info' in data and data.additional_info != ''
+         or 'chargee' in data.update_registration or 'instrument' in data.update_registration%}
+            <div class="grid-row">
+                <div class="text-19-gray col ten">Additional information</div>
+                <div class="col two"><a href="/amend_lc_correction" id="change_addl_info">Change</a></div>
+            </div>
+        {% endif %}
+        {% if 'additional_info' in data and data.additional_info != '' %}
+
+            <div class="grid-row-padded-line ">
+                <span class="text-16-bold col four">Information</span>
+                <span class="col two">&nbsp;</span>
+                <span class="text-16 col six">{{data.additional_info}}</span>
+            </div>
+        {% endif %}
+
+        <div class="spacer-20"></div>
+        <h2 class="text-19-bold">Do you need a K22?</h2>
+        <div class="spacer-20"></div>
+        <div class="grid-row">
+            <fieldset class="group-no-border">
+                <legend class="screenreader">Do you need a K22?</legend>
+                <div class="col two form-control-div-small">
+                    <label class="form-label" for="K22_yes">
+                        <input id="K22_yes" onclick="printOption()" type="radio" name="generate_K22" value="yes"/>
+                        Yes
+                    </label>
+                </div>
+                <div class="col two form-control-div-small">
+                    <label class="form-label" for="K22_no">
+                        <input id="K22_no" onclick="printOption()" type="radio" name="generate_K22" value="no" />
+                        No
+                    </label>
+                </div>
+            </fieldset>
+        </div>
+        <div class="spacer-20"></div>
+        <div id="print" class="hide">
+            <h2 class="text-19-bold">Where should the K22 be printed?</h2>
+            <div class="spacer-20"></div>
+            <div class="grid-row">
+                <fieldset class="group-no-border">
+                    <legend class="screenreader">Print options</legend>
+                    <div class="col two form-control-div-med">
+                        <label class="form-label" for="central">
+                            <input id="central" onclick="enableSubmit()" type="radio" name="printLocation" value="central"/>
+                            Centrally
+                        </label>
+                    </div>
+                    <div class="col two form-control-div-med">
+                        <label class="form-label" for="local">
+                            <input id="local" onclick="enableSubmit()" type="radio" name="printLocation" value="local" />
+                            Locally
+                        </label>
+                    </div>
+                </fieldset>
+            </div>
+            <div class="spacer-20"></div>
+        </div>
+        <div class="spacer-20"></div>
+        <input id="complete" type="submit" disabled aria-disabled="true" value="Complete" class="form-button"/>
+        <div class="spacer-40"></div>
+
+        <script>
+            function printOption() {
+                if ($( "#K22_yes" ).is( ':checked')){
+                    $('#print').show();
+                    $('#complete').attr('disabled','disabled');
+                    $('#complete').attr('aria-disabled','true');
+                }
+                else {
+                    $('#print').hide();
+                    $('#central').prop( 'checked', false );
+                    $('#local').prop( 'checked', false );
+                    enableSubmit();
+                }
+            }
+
+            function enableSubmit() {
+                $('#complete').removeAttr('disabled');
+                $('#complete').attr('aria-disabled','false');
+            }
+        </script>
+
+    </div>
+    </form>
+
+    <!-- ///////////////////////////////// end of data entry form ///////////////////////////////// -->
+    <div class="col one"><p></p></div>
+    <div class="col seven">
+        <span class="text-19">Please view application in Image Retrieval if required</span>
+    </div>
+
+</div>
+
+{% endblock %}

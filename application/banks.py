@@ -124,10 +124,12 @@ def build_corrections(data):
     fatal = False
     error_msg = ''
     if status_code == 200:
-        if orig_data['class_of_charge'] == 'PAB' or orig_data['class_of_charge'] == 'WOB':
-            session['original_regns'] = orig_data
-        else:
-            error_msg = 'This is not a bankruptcy application. Please check and re-key.'
+        session['original_regns'] = orig_data
+        print(orig_data)
+      #  if orig_data['class_of_charge'] == 'PAB' or orig_data['class_of_charge'] == 'WOB':
+      #      session['original_regns'] = orig_data
+      #  else:
+      #      error_msg = 'This is not a bankruptcy application. Please check and re-key.'
     elif status_code == 404:
         error_msg = 'No details held for registration number and date entered. Please check and re-key.'
     else:

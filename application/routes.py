@@ -12,8 +12,8 @@ from application.land_charge import build_lc_inputs, build_customer_fee_inputs, 
 from application.search import process_search_criteria
 from application.rectification import convert_response_data, submit_lc_rectification, convert_class_of_charge
 from application.cancellation import submit_lc_cancellation
-from application.banks import get_debtor_details, register_bankruptcy, get_original_data, build_original_data, \
-    build_corrections, register_correction
+from application.banks import get_debtor_details, register_bankruptcy, get_original_data, build_original_data
+from application.correction import build_corrections, register_correction, lc_register_correction
 from application.headers import get_headers
 from application.auth import authenticate
 from application.http import http_get, http_delete, http_post, http_put
@@ -810,7 +810,7 @@ def get_original_details():
 
         session['transaction_id'] = uuid.uuid4().int  # consider fields[0] if the int is too long; it *should* be OK
 
-        error_msg, status_code, fatal = build_corrections(request_data)
+        is_banks, error_msg, status_code, fatal = build_corrections(request_data)
         session['curr_data'] = session['details_entered']
 
         if fatal:
@@ -822,18 +822,49 @@ def get_original_details():
     if error_msg != '':
         return render_template('corrections/retrieve.html', data=curr_data, application=session, error_msg=error_msg)
     else:
-        return render_template('corrections/correct_details.html',
-                               data=session['original_regns'], application=session, screen='capture',
-                               transaction=session['transaction_id'])
+        if is_banks:
+            return render_template('corrections/correct_details.html',
+                                   data=session['original_regns'], application=session, screen='capture',
+                                   transaction=session['transaction_id'])
+        else:
+            return render_template('corrections/lc_correct_details.html',
+                                   curr_data=session['original_regns'], application=session, screen='capture',
+                                   transaction=session['transaction_id'], data=session['original_regns'])
 
 
 @app.route('/process_corrected_details', methods=['POST'])
 @requires_auth_role(['normal'])
 def process_corrected_details():
+    # print(session['original_regns']['regn_type'])
     # No image for corrections but set image to blank to stop failure in removal of address
     session['images'] = []
-    session['parties'] = get_debtor_details(request.form)
-    return render_template('corrections/check.html', data=session['parties'], transaction=session['transaction_id'])
+    if 'banks' in session['original_regns']['regn_type']:
+        session['parties'] = get_debtor_details(request.form)
+        return render_template('corrections/check.html', data=session['parties'], transaction=session['transaction_id'])
+    else:
+        result = validate_land_charge(request.form)
+        entered_fields = build_lc_inputs(request.form)
+        entered_fields['class'] = result['class']
+        session['details_entered'] = entered_fields
+
+        if len(result['error']) == 0:
+            session['rectification_details'] = entered_fields
+            return render_template('corrections/lc_check.html',
+                                   data=session['details_entered'], application=session,
+                                   transaction=session['transaction_id'])
+        else:
+            return render_template('corrections/lc_correct_entered_data.html',
+                                   curr_data=session['details_entered'], data=session['details_entered'],
+                                   application=session,
+                                   transaction=session['transaction_id'], errors=result['error'])
+
+@app.route('/amend_lc_correction', methods=['GET'])
+@requires_auth_role(['normal'])
+def amend_lc_correction():
+    return render_template('corrections/lc_correct_entered_data.html',
+                           curr_data=session['details_entered'], data=session['details_entered'],
+                           application=session,
+                           transaction=session['transaction_id'], errors='')
 
 
 @app.route('/correction_capture', methods=['GET'])
@@ -858,6 +889,21 @@ def submit_banks_correction():
 
     if response.status_code != 200:
         err = 'Failed to submit bankruptcy correction for registration :%s dated  - Error code: %s' \
+              % (session['original_regns']['registration']['number'], str(response.status_code))
+        logging.error(err)
+        return render_template('error.html', error_msg=err), response.status_code
+    else:
+        return render_template("corrections/retrieve.html", reg_no="", reg_date="", result="success")
+
+@app.route('/submit_lc_correction', methods=['POST'])
+@requires_auth_role(['normal'])
+def submit_lc_correction():
+    logging.info(format_message('submitting a land charge correction'))
+
+    response = lc_register_correction()
+
+    if response.status_code != 200:
+        err = 'Failed to submit land charge correction for registration :%s dated  - Error code: %s' \
               % (session['original_regns']['registration']['number'], str(response.status_code))
         logging.error(err)
         return render_template('error.html', error_msg=err), response.status_code
