@@ -147,6 +147,9 @@ body {
 #work-list tbody tr:hover {
     background-color: #e9f7d4;
 }
+#work-list tbody tr:focus {
+    background-color: #e9f7d4;
+}
 #work-list td:hover {
     cursor: pointer;
 }
