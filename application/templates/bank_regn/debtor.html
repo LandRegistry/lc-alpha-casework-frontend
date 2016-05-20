@@ -88,7 +88,7 @@
             <div class="spacer-40"></div>
             <h2 class="text-24-bold">Particulars of debtor</h2>
             <div class="spacer-10"></div>
-                {% if session.parties|length == 0 %}
+                {% if (session.parties|length == 0) or (session.parties[0].names|length == 0) %}
 
                 <div class="form" for="forenames_1">
                     <label class="form-label" for="forenames_1">Forename(s)</label>
