@@ -7,11 +7,11 @@
     function addName(sender){
         n ++;
         jQuery('<div class="form"> \
-                    <label class="form-label" for="forenames_">Forename(s)</label> \
+                    <label class="form-label" for="forenames_' +n+ '">Forename(s)</label> \
                     <input class="form-textfield" id="forenames_' +n+ '" name="forenames_' +n+ '" value="{{forename}}"> \
                 </div> \
                 <div class="form"> \
-                    <label class="form-label" for="surname_">Surname</label> \
+                    <label class="form-label" for="surname_' +n+ '">Surname</label> \
                     <input class="form-textfield" id="surname_' +n+ '" name="surname_' +n+ '" value="{{surname}}"> \
                 </div>').insertBefore("#addname");
         console.log(n);
