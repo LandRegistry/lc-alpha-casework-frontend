@@ -66,7 +66,8 @@
 
     function countyClick(sender){
         var fldnam = "county_" + n;
-        jQuery('<input class="form-textfield" type="text" id="' + fldnam + '" name="' + fldnam+ '"> \
+        jQuery('<label class="form-label screenreader" for="' + fldnam + '">County </label> \
+                <input class="form-textfield" type="text" id="' + fldnam + '" name="' + fldnam+ '"> \
                 <div class="spacer-10"><div>').insertBefore("#addcounty");
         n ++;
         var transid = document.getElementById('transaction_id').value;
